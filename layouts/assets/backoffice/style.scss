@@ -1,0 +1,74 @@
+@import '/resources/styles/variables.scss';
+
+body, html {
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.default-layout-wrapper {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  transition: all 0.4s;
+  padding-left: 22rem;
+
+  @media screen and (max-width: $desktop) {
+    padding-left: 20rem;
+  }
+
+  @media screen and (max-width: $ipad) {
+    padding-left: 0rem;
+  }
+
+  &.hide-aside {
+    transition: all 0.4s;
+    padding-left: 0rem;
+
+    .aside-menu-wrapper {
+      transition: all 0.4s;
+      transform: translate(-110%);
+
+      @media screen and (max-width: $ipad) {
+        transform: translate(0%);
+        width: 100%;
+      }
+    }
+  }
+
+  .aside-menu-wrapper {
+    width: 22rem;
+    position: relative;
+    height: 100dvh;
+    position: fixed;
+    top: 0;
+    z-index: 8;
+    transition: all 0.4s;
+    transform: translate(0%);
+
+    @media screen and (max-width: $desktop) {
+      width: 20rem;
+    }
+
+    @media screen and (max-width: $ipad) {
+      transform: translate(-110%);
+    }
+  }
+
+  .modules-wrapper {
+    width: 100%;
+  }
+
+  .modules-content-wrepper {
+    padding: 2rem;
+    position: relative;
+    background-color: $background;
+    padding-top: 8rem;
+    font-size: 0.9rem;
+
+    @media screen and (max-width: $ipad) {
+      font-size: 0.85rem;
+    }
+  }
+}

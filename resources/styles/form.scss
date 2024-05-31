@@ -1,0 +1,31 @@
+:deep(.p-inputtext) {
+  width: 100%;
+}
+
+:deep(.p-password) {
+  width: 100%;
+}
+
+:deep(.p-input-icon) {
+  width: 1rem;
+}
+
+.form-container {
+
+  .input-box {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.input-box {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 450;
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,37 @@
+$phone: 480px;
+$tablet: 768px;
+$ipad: 1024px;
+$desktop: 1440px;
+$desktop-fhd: 1920px;
+$desktop-wide: 2560px;
+$desktop-ultra-wide: 3840px;
+
+.container {
+  position: relative;
+  padding-left: 2rem;
+  padding-right: 2rem;
+
+  @media screen and (min-width: $desktop-wide) {
+    padding-left: 8rem;
+    padding-right: 8rem;
+    max-width: 1920px;
+    margin: auto;
+  }
+
+  @media screen and (max-width: $tablet) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.hide-sm {
+  @media screen and (max-width: $tablet) {
+    display: none !important;
+  }
+}
+
+.show-sm {
+  @media screen and (min-width: $tablet) {
+    display: none !important;
+  }
+}

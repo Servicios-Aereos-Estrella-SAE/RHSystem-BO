@@ -1,0 +1,48 @@
+@import '/resources/styles/variables.scss';
+
+body, html {
+  padding: 0;
+  margin: 0;
+  background-color: white;
+}
+
+.guest-layout-wrapper {
+  display: grid;
+  grid-template-columns: 50rem auto;
+  gap: 2rem;
+  box-sizing: border-box;
+
+  @media screen and (max-width: $desktop) {
+    grid-template-columns: 40rem auto;
+  }
+
+  @media screen and (max-width: $ipad) {
+    grid-template-columns: 1fr;
+  }
+
+  .form-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+  }
+
+  .banner-wrapper {
+    position: relative;
+    box-sizing: border-box;
+    height: 100dvh;
+    min-height: 700px;
+    padding: 2rem;
+
+    @media screen and (max-width: $ipad) {
+      display: none;
+    }
+
+    img {
+      box-sizing: border-box;
+      width: 100%;
+      border-radius: $radius;
+      object-fit: cover;
+      height: 100%;
+    }
+  }
+}

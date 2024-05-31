@@ -1,0 +1,14 @@
+@import '/resources/styles/colors.scss';
+
+:deep(.p-button) {
+
+  &.btn-block {
+    width: 100%;
+    display: block;
+  }
+}
+
+:deep(.p-button-label) {
+  font-weight: normal;
+  font-size: 0.9rem;
+}
