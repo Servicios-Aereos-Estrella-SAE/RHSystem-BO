@@ -4,6 +4,15 @@ body, html {
   padding: 0;
   margin: 0;
   background-color: white;
+
+  * {
+    font-weight: 300;
+    font-size: 0.9rem;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 500;
+  }
 }
 
 .guest-layout-wrapper {

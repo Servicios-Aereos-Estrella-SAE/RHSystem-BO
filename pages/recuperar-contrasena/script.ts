@@ -1,16 +1,17 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: "Login",
+  name: "RecuperarContrasena",
   props: {
   },
   data: () => ({
+    title: 'Hola'
   }),
   mounted() {
   },
   methods: {
-    handlerLogin () {
-      this.$router.push({ path: "/dashboard" })
+    handlerPasswordRequest () {
+      this.$router.push({ path: "/nueva-contrasena" })
     }
   }
 })

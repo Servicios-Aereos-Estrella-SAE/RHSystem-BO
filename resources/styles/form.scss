@@ -2,6 +2,10 @@
   width: 100%;
 }
 
+:deep(.p-inputotp-input) {
+  width: 3rem;
+}
+
 :deep(.p-password) {
   width: 100%;
 }
@@ -27,5 +31,13 @@
     margin-bottom: 0.5rem;
     font-weight: 450;
     font-size: 0.85rem;
+    width: 100%;
+
+    small {
+      display: block;
+      width: 100%;
+      font-size: 0.75rem;
+      margin-top: 1rem;
+    }
   }
 }

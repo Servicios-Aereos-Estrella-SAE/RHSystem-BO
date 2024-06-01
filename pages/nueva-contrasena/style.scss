@@ -15,6 +15,24 @@
     }
   }
 
+  .invalid {
+    text-align: center;
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        width: 5rem;
+      }
+    }
+
+    p {
+      text-wrap: pretty;
+    }
+  }
+
   .logo {
     display: flex;
     justify-content: center;
@@ -30,16 +48,29 @@
   .guest-form {
     box-sizing: border-box;
     border-radius: $radius;
+
+    :deep(.p-inputotp) {
+      margin-top: 1rem;
+    }
   }
 
   .form-bottom {
     margin-top: 1rem;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     a {
       font-weight: normal;
       text-decoration: none !important;
       color: $text !important;
+      display: flex;
+      gap: 0.5rem;
+
+      svg {
+        width: 1rem;
+      }
     }
   }
 }

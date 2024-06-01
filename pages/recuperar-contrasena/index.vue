@@ -7,6 +7,15 @@
             <img src="https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg" alt="SAE">
           </div>
           <div class="guest-form">
+            <h1>
+              ¿Olvidaste tu contraseña?
+            </h1>
+            <p>
+              Para recuperar tu contraseña es necesario que ingreses el correo electrónico con el cual te encuentras registrado.
+              <br>
+              <br>
+              Se te enviará un correo electrónico con los pasos a seguir para cambiar tu contraseña.
+            </p>
             <div class="form-container">
               <div class="input-box">
                 <label for="useremail">
@@ -19,21 +28,11 @@
                   <InputText id="useremail" type="email" />
                 </IconField>
               </div>
-              <div class="input-box">
-                <label for="password">
-                  Contraseña
-                </label>
-                <IconField iconPosition="left">
-                  <InputIcon>
-                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 56"><path d="M16 31a1 1 0 0 1-.6-.2l-4-3a1 1 0 0 1-.4-.8v-9.53a9 9 0 1 1 10 0V19a1 1 0 0 1-.29.71L19.41 21l1.3 1.29a1 1 0 0 1 0 1.42L19.41 25l1.3 1.29a1 1 0 0 1 .29.78 1 1 0 0 1-.4.73l-4 3a1 1 0 0 1-.6.2Zm-3-4.5 3 2.25 2.48-1.86-1.19-1.18a1 1 0 0 1 0-1.42l1.3-1.29-1.3-1.29a1 1 0 0 1 0-1.42l1.71-1.7v-1.67a1 1 0 0 1 .5-.86 7 7 0 1 0-7 0 1 1 0 0 1 .5.86Zm7-7.5Z" fill="#000000" class="fill-101820"></path><circle cx="16" cy="8" r="1" fill="#000000" class="fill-101820"></circle><path d="M16 10a2 2 0 1 1 2-2 2 2 0 0 1-2 2Zm0-2Z" fill="#000000" class="fill-101820"></path></g></svg>
-                  </InputIcon>
-                  <Password id="password" toggleMask :feedback="false" />
-                </IconField>
-              </div>
-              <Button v-ripple label="Iniciar Sesión" class="btn-block" @click="handlerLogin" />
+              <Button v-ripple label="Enviar" class="btn-block" @click="handlerPasswordRequest" />
               <div class="form-bottom">
-                <nuxt-link to="/recuperar-contrasena">
-                  ¿Olvisate tu contraseña? Recuperala aquí
+                <nuxt-link to="/">
+                  <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g data-name="Layer 2"><path d="M13 26a1 1 0 0 1-.71-.29l-9-9a1 1 0 0 1 0-1.42l9-9a1 1 0 1 1 1.42 1.42L5.41 16l8.3 8.29a1 1 0 0 1 0 1.42A1 1 0 0 1 13 26Z" fill="#303e67" class="fill-000000"></path><path d="M28 17H4a1 1 0 0 1 0-2h24a1 1 0 0 1 0 2Z" fill="#303e67" class="fill-000000"></path></g><path d="M0 0h32v32H0z" fill="none"></path></svg>
+                  Regresar al inicio de sesión
                 </nuxt-link>
               </div>
             </div>
