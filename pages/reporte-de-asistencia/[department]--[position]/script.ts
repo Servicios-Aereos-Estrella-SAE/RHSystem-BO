@@ -5,7 +5,7 @@ import { DateTime } from 'luxon'
 
 
 export default defineComponent({
-  name: 'ReporteAsistenciaPosicion',
+  name: 'ReporteAsistencia',
   props: {
   },
   data: () => ({
@@ -86,9 +86,9 @@ export default defineComponent({
       { name: 'Administración', slug: 'administracion' },
       { name: 'Sistemas', slug: 'sistemas' },
       { name: 'Handling', slug: 'handling' },
-      { name: 'Rampa', slug: 'rampa' },
+      { name: 'Taxi Áereo', slug: 'taxi-aereo' },
     ],
-    departmenSelected: { name: 'Rampa', slug: 'rampa' },
+    departmenSelected: { name: 'Taxi Áereo', slug: 'taxi-aereo' },
     visualizationModeOptions: [
       { name: 'Anual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true },
       { name: 'Mensual', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
@@ -97,7 +97,7 @@ export default defineComponent({
     visualizationMode: { name: 'Anual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true } as VisualizationModeOptionInterface,
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
-    departmentPositionList: [] as any
+    employeeDepartmentPositionList: [] as any
   }),
   computed: {
     lineChartTitle () {
@@ -119,7 +119,7 @@ export default defineComponent({
   async mounted() {
     this.periodSelected = new Date()
     this.setGraphsData()
-    await this.setDepartmentPositions()
+    await this.setDepartmentPositionEmployeeList()
   },
   methods: {
     setGeneralData () {
@@ -131,9 +131,9 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode.value, this.periodSelected)
     },
-    async setDepartmentPositions () {
-      const response = await new AttendanceMonitorController().getDepartmentPositions()
-      this.departmentPositionList = response
+    async setDepartmentPositionEmployeeList () {
+      const response = await new AttendanceMonitorController().getDepartmentPositionEmployees()
+      this.employeeDepartmentPositionList = response
     },
     setGraphsData () {
       this.setPeriodData()
@@ -142,7 +142,7 @@ export default defineComponent({
     },
     async handlerDeparmentSelect () {
       this.periodSelected = new Date()
-      await this.setDepartmentPositions()
+      await this.setDepartmentPositionEmployeeList()
       this.setGraphsData()
     },
     handlerVisualizationModeChange () {

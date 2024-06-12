@@ -1,6 +1,7 @@
 import type AttendanceMonitorPeriodType from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
 import DepartmentService from "../services/DepartmentService";
+import EmployeeService from "../services/EmployeeService";
 
 export default class AttendanceMonitorController {
   constructor () {
@@ -132,6 +133,15 @@ export default class AttendanceMonitorController {
     const length = departmentReq.data.response.length
     const random = Math.floor(Math.random() * length);
     const tempList = departmentReq.data.response.splice(random, 20)
+    return tempList
+  }
+
+  async getDepartmentPositionEmployees () {
+    const employeeService = new EmployeeService()
+    const response = await employeeService.getByDepartmentPosition()
+    const length = response.data.response.length
+    const random = Math.floor(Math.random() * length);
+    const tempList = response.data.response
     return tempList
   }
 }

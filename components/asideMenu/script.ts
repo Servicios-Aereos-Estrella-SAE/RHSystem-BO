@@ -25,7 +25,7 @@ export default defineComponent({
     },
     setLinkActive (link: any) {
       const path = this.$route.path
-      return !!link.path.includes(path)
+      return !!path.includes(link.path)
     }
   }
 })

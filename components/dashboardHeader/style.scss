@@ -11,6 +11,7 @@
   width: 100%;
   top: 0;
   z-index: 9;
+  box-shadow: 0rem 0.1rem 0.2rem transparentize($color: $text, $amount: 0.95);
 
   .header-wrapper {
     display: grid;
