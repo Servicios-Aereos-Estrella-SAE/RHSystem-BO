@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type VisualizationModeOptionInterface from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
+import { DateTime } from 'luxon'
 
 
 export default defineComponent({
@@ -101,11 +102,13 @@ export default defineComponent({
   computed: {
     lineChartTitle () {
       if (this.visualizationMode.value === 'yearly') {
-        return 'Comportamiento por meses del año'
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('es')
+        return `Comportamiento mensual en el año ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode.value === 'monthly') {
-        return 'Comportamiento en el mes'
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('es')
+        return `Comportamiento en ${date.toFormat('MMMM').toUpperCase()}, ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode.value === 'weekly') {
