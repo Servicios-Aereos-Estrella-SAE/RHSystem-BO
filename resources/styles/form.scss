@@ -2,6 +2,10 @@
   width: 100%;
 }
 
+:deep(.p-dropdown) {
+  width: 100%;
+}
+
 :deep(.p-inputotp-input) {
   width: 3rem;
 }

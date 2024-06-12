@@ -13,13 +13,18 @@ export default defineNuxtConfig({
       ]
     }
   },
-  modules: ['nuxt-primevue', "@pinia/nuxt"],
+  modules: [
+    'nuxt-primevue',
+    '@pinia/nuxt',
+    ['nuxt-highcharts', {
+    }]
+  ],
 
   css: ['~/assets/theme/primevue-sass-theme-3.52.0/themes/lara/lara-light/blue/theme.scss'],
 
   primevue: {
     directives: {
-        include: ['Ripple']
+      include: ['Ripple']
     }
   },
 })
