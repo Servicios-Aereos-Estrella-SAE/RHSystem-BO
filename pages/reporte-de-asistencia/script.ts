@@ -1,15 +1,10 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type VisualizationModeOptionInterface from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
-import AttendanceMonitorService from '~/resources/scripts/services/AttendanceMonitorService'
+import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 
-interface IChartSerie {
-  name: string,
-  data: [],
-  color: string
-}
 
 export default defineComponent({
+  name: 'ReporteAsistencia',
   props: {
   },
   data: () => ({
@@ -50,7 +45,11 @@ export default defineComponent({
     },
     periodData: {
       chart: {
-        type: 'column'
+        type: 'column',
+        scrollablePlotArea: {
+          minWidth: 1024,
+          scrollPositionX: 1
+        }
       },
       title: {
         text: ''
@@ -96,7 +95,8 @@ export default defineComponent({
     ] as VisualizationModeOptionInterface[],
     visualizationMode: { name: 'Anual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true } as VisualizationModeOptionInterface,
     periodSelected: new Date() as Date,
-    maxDate: new Date() as Date
+    maxDate: new Date() as Date,
+    departmentPositionList: [] as any
   }),
   computed: {
     lineChartTitle () {
@@ -113,27 +113,33 @@ export default defineComponent({
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.periodSelected = new Date()
     this.setGraphsData()
+    await this.setDepartmentPositions()
   },
   methods: {
     setGeneralData () {
-      this.generalData.series[0].data = new AttendanceMonitorService().getDepartmentTotalData(this.visualizationMode.value)
+      this.generalData.series[0].data = new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode.value)
     },
     setPeriodData () {
-      this.periodData.series = new AttendanceMonitorService().getDepartmentPeriodData(this.visualizationMode.value, this.periodSelected)
+      this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode.value, this.periodSelected)
     },
     setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorService().getDepartmentPeriodCategories(this.visualizationMode.value, this.periodSelected)
+      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode.value, this.periodSelected)
+    },
+    async setDepartmentPositions () {
+      const response = await new AttendanceMonitorController().getDepartmentPositions()
+      this.departmentPositionList = response
     },
     setGraphsData () {
       this.setPeriodData()
       this.setPeriodCategories()
       this.setGeneralData()
     },
-    handlerDeparmentSelect () {
+    async handlerDeparmentSelect () {
       this.periodSelected = new Date()
+      await this.setDepartmentPositions()
       this.setGraphsData()
     },
     handlerVisualizationModeChange () {
@@ -149,20 +155,6 @@ export default defineComponent({
     },
     handlerPeriodChange () {
       this.setGraphsData()
-
-      const date = DateTime.fromJSDate(this.periodSelected)
-      const selectedDay = date.toFormat('D')
-      console.log('🚀 ---------------------------------------------------🚀')
-      console.log('🚀 ~ handlerPeriodChange ~ selectedDay:', selectedDay)
-      console.log('🚀 ---------------------------------------------------🚀')
-      const start = date.startOf('week')
-      console.log('🚀 ---------------------------------------🚀')
-      console.log('🚀 ~ handlerPeriodChange ~ start:', start.toFormat('D'))
-      console.log('🚀 ---------------------------------------🚀')
-      const end = date.endOf('week')
-      console.log('🚀 -----------------------------------🚀')
-      console.log('🚀 ~ handlerPeriodChange ~ end:', end.toFormat('D'))
-      console.log('🚀 -----------------------------------🚀')
     }
   }
 })

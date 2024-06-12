@@ -4,6 +4,7 @@ body, html {
   padding: 0;
   margin: 0;
   overflow-x: hidden;
+  color: $text;
 }
 
 .highcharts-credits {
@@ -82,6 +83,42 @@ body, html {
   padding: 1rem;
   box-sizing: border-box;
   border-radius: $radius;
+
+  .box-tools-footer {
+    margin-top: 0.75rem;
+    border-top: $border-dashed;
+    padding-top: 0.75rem;
+
+    .box-button {
+      padding: 1rem;
+      box-sizing: border-box;
+      border-radius: calc($radius / 2);
+      border: none;
+      background-color: white;
+      color: $text;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.4s;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+      border: $border;
+
+      &:hover {
+        transition: all 0.4s;
+        background-color: transparentize($color: $gray, $amount: 0.5);
+      }
+
+      &.block {
+        width: 100%;
+      }
+
+      svg {
+        width: 1rem;
+      }
+    }
+  }
 }
 
 .head-page {

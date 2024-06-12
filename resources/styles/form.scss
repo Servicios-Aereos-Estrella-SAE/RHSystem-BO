@@ -2,6 +2,15 @@
   width: 100%;
 }
 
+.graph-label-attendance-monitor-period {
+  font-size: 0.75rem;
+  
+  &.active {
+    fill: $info;
+    font-weight: 500;
+  }
+}
+
 :deep(.p-dropdown) {
   width: 100%;
 }

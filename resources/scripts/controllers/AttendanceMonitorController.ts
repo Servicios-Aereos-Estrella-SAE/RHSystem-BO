@@ -1,7 +1,8 @@
 import type AttendanceMonitorPeriodType from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
+import DepartmentService from "../services/DepartmentService";
 
-export default class AttendanceMonitorService {
+export default class AttendanceMonitorController {
   constructor () {
 
   }
@@ -55,14 +56,15 @@ export default class AttendanceMonitorService {
           const day = parseInt(currentDay.toFormat('dd'))
           const dayDate = DateTime.local(year, month, day)
           const formatedDay = dayDate.toFormat('DD')
+          const daySelected = date.toFormat('yyyy LLL dd') === dayDate.toFormat('yyyy LLL dd')
 
-          if (index === 0) { daysList.push(`Lunes <br> ${formatedDay}`) }
-          if (index === 1) { daysList.push(`Martes <br> ${formatedDay}`) }
-          if (index === 2) { daysList.push(`Miércoles <br> ${formatedDay}`) }
-          if (index === 3) { daysList.push(`Jueves <br> ${formatedDay}`) }
-          if (index === 4) { daysList.push(`Viernes <br> ${formatedDay}`) }
-          if (index === 5) { daysList.push(`Sábado <br> ${formatedDay}`) }
-          if (index === 6) { daysList.push(`Domingo <br> ${formatedDay}`) }
+          if (index === 0) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Lunes <br> ${formatedDay}</div>`) }
+          if (index === 1) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Martes <br> ${formatedDay}</div>`) }
+          if (index === 2) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Miércoles <br> ${formatedDay}</div>`) }
+          if (index === 3) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Jueves <br> ${formatedDay}</div>`) }
+          if (index === 4) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Viernes <br> ${formatedDay}</div>`) }
+          if (index === 5) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Sábado <br> ${formatedDay}</div>`) }
+          if (index === 6) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Domingo <br> ${formatedDay}</div>`) }
         }
 
         return daysList
@@ -122,5 +124,14 @@ export default class AttendanceMonitorService {
     series.push({ name: 'Faltas', data: faults, color: '#d45633' })
 
     return series
+  }
+
+  async getDepartmentPositions () {
+    const departmentService = new DepartmentService()
+    const departmentReq = await departmentService.getDepartmentPositions()
+    const length = departmentReq.data.response.length
+    const random = Math.floor(Math.random() * length);
+    const tempList = departmentReq.data.response.splice(random, 20)
+    return tempList
   }
 }
