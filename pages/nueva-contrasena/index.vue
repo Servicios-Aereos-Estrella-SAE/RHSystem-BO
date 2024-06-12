@@ -34,7 +34,7 @@
                 </label>
                 <InputOtp id="otp-code" v-model="otpCode" integerOnly />
               </div>
-              <br><br>
+              <br>
               <div class="input-box">
                 <label for="password">
                   Nueva Contraseña

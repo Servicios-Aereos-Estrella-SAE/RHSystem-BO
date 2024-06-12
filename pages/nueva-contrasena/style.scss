@@ -39,6 +39,11 @@
     align-items: center;
     margin-bottom: 8rem;
 
+    @media screen and (max-width: $phone) {
+      margin-bottom: 3rem !important;
+      margin-top: 20rem !important;
+    }
+
     img {
       width: 100%;
       max-width: 13rem;

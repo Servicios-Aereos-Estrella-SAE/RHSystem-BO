@@ -29,6 +29,22 @@ body, html {
     grid-template-columns: 1fr;
   }
 
+  @media screen and (max-width: $phone) {
+    background-image: url('/public/bglogin.png');
+    background-position: top;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    .logo {
+      margin-bottom: 4rem !important;
+      margin-top: 15rem !important;
+
+      img {
+        max-width: 9rem !important;
+      }
+    }
+  }
+
   .form-wrapper {
     box-sizing: border-box;
     display: flex;
