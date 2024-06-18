@@ -1,11 +1,13 @@
-import type AttendanceMonitorPeriodCalendarModeType from "../enums/AttendanceMonitorPeriodCalendarModeType";
-import type AttendanceMonitorPeriodType from "../enums/AttendanceMonitorPeriodType";
-import type AttendanceMonitorMonthInterface from "./AttendanceMonitorMonthInterface";
-import type AttendanceMonitorYearInterface from "./AttendanceMonitorYearInterface";
+import type { AttendanceMonitorPeriodType } from "../enums/AttendanceMonitorPeriodType";
+import type { AttendanceMonitorDateInterface } from "./AttendanceMonitorDateInterface";
+import type  { AttendanceMonitorMonthInterface } from "./AttendanceMonitorMonthInterface";
+import type { AttendanceMonitorYearInterface } from "./AttendanceMonitorYearInterface";
 
-export default interface VisualizationModeOptionInterface {
+interface VisualizationModeOptionInterface {
   name: string,
   value: keyof typeof AttendanceMonitorPeriodType,
-  calendar_format: AttendanceMonitorMonthInterface | AttendanceMonitorYearInterface,
+  calendar_format: AttendanceMonitorMonthInterface | AttendanceMonitorYearInterface | AttendanceMonitorDateInterface,
   selected: boolean
 }
+
+export type { VisualizationModeOptionInterface as VisualizationModeOptionInterface }

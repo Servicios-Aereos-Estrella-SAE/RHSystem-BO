@@ -2,6 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  ssr: true,
+
   app: {
     layoutTransition: { name: 'layout', mode: 'out-in' },
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -16,8 +18,8 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-primevue',
     '@pinia/nuxt',
-    ['nuxt-highcharts', {
-    }]
+    'nuxt-highcharts',
+    '@nuxtjs/color-mode'
   ],
 
   css: ['~/assets/theme/primevue-sass-theme-3.52.0/themes/lara/lara-light/blue/theme.scss'],

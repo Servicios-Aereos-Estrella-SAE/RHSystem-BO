@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxtjs/color-mode": "^3.4.1",
     "@types/luxon": "^3.4.2",
     "nuxt-primevue": "^3.0.0",
     "sass": "^1.22.10",

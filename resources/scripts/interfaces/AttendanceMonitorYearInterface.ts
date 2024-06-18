@@ -1,4 +1,6 @@
-export default interface AttendanceMonitorYearInterface {
+interface AttendanceMonitorYearInterface {
   mode: 'year';
   format: 'yy';
 }
+
+export type { AttendanceMonitorYearInterface }

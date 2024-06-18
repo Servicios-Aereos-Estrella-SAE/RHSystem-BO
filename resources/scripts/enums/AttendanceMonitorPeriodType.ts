@@ -4,4 +4,4 @@ const enum AttendanceMonitorPeriodType {
   weekly,
 }
 
-export default AttendanceMonitorPeriodType
+export type { AttendanceMonitorPeriodType }

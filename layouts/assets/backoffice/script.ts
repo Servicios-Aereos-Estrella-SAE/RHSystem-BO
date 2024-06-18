@@ -7,11 +7,19 @@ export default defineComponent({
   data: () => ({
     asideVisibilityStatus: true
   }),
+  created() {
+    // const colorMode = useColorMode()
+  },
   mounted() {
   },
   methods: {
     handlerAsideVisibilityChange (status: boolean) {
       this.asideVisibilityStatus = status
-    }
+    },
+    // setcolor () {
+    //   definePageMeta({
+    //     colorMode: this.$colorMode.preference,
+    //   })
+    // }
   }
 })

@@ -1,4 +1,4 @@
-import type AttendanceMonitorPeriodType from "../enums/AttendanceMonitorPeriodType"
+import type { AttendanceMonitorPeriodType } from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
 import DepartmentService from "../services/DepartmentService";
 import EmployeeService from "../services/EmployeeService";
@@ -20,10 +20,10 @@ export default class AttendanceMonitorController {
     const delay = Math.floor(((max - assist) - tolerance) * 0.75)
     const fault = Math.floor(max - assist - tolerance - delay)
 
-    serieData.push({ name: 'Asistencias', y: assist, color: '#33D4AD' })
-    serieData.push({ name: 'Tolerancias', y: tolerance, color: '#3CB4E5' })
-    serieData.push({ name: 'Retardos', y: delay, color: '#FF993A' })
-    serieData.push({ name: 'Faltas', y: fault, color: '#d45633' })
+    serieData.push({ name: 'Assists', y: assist, color: '#33D4AD' })
+    serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
+    serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
+    serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
 
     return serieData
   }
@@ -31,7 +31,7 @@ export default class AttendanceMonitorController {
   getDepartmentPeriodCategories (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date): string[] {
     switch (period) {
       case 'yearly':
-        return ['Ene', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
@@ -59,13 +59,13 @@ export default class AttendanceMonitorController {
           const formatedDay = dayDate.toFormat('DD')
           const daySelected = date.toFormat('yyyy LLL dd') === dayDate.toFormat('yyyy LLL dd')
 
-          if (index === 0) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Lunes <br> ${formatedDay}</div>`) }
-          if (index === 1) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Martes <br> ${formatedDay}</div>`) }
-          if (index === 2) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Miércoles <br> ${formatedDay}</div>`) }
-          if (index === 3) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Jueves <br> ${formatedDay}</div>`) }
-          if (index === 4) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Viernes <br> ${formatedDay}</div>`) }
-          if (index === 5) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Sábado <br> ${formatedDay}</div>`) }
-          if (index === 6) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Domingo <br> ${formatedDay}</div>`) }
+          if (index === 0) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Monday <br> ${formatedDay}</div>`) }
+          if (index === 1) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Tuesday <br> ${formatedDay}</div>`) }
+          if (index === 2) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Wednesday <br> ${formatedDay}</div>`) }
+          if (index === 3) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Thursday <br> ${formatedDay}</div>`) }
+          if (index === 4) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Friday <br> ${formatedDay}</div>`) }
+          if (index === 5) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Saturday <br> ${formatedDay}</div>`) }
+          if (index === 6) { daysList.push(`<div class="graph-label-attendance-monitor-period ${daySelected ? 'active' : ''}">Sunday <br> ${formatedDay}</div>`) }
         }
 
         return daysList
@@ -119,10 +119,10 @@ export default class AttendanceMonitorController {
       faults.push(fault)
     }
 
-    series.push({ name: 'Asistencias', data: assists, color: '#33D4AD' })
-    series.push({ name: 'Tolerancias', data: tolerances, color: '#3CB4E5' })
-    series.push({ name: 'Retardos', data: delays, color: '#FF993A' })
-    series.push({ name: 'Faltas', data: faults, color: '#d45633' })
+    series.push({ name: 'Assists', data: assists, color: '#33D4AD' })
+    series.push({ name: 'Tolerances', data: tolerances, color: '#3CB4E5' })
+    series.push({ name: 'Delays', data: delays, color: '#FF993A' })
+    series.push({ name: 'Faults', data: faults, color: '#d45633' })
 
     return series
   }

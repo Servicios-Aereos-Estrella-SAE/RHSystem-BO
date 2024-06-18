@@ -5,6 +5,10 @@ body, html {
   margin: 0;
   overflow-x: hidden;
   color: $text;
+
+  @media screen and (max-width: $desktop) {
+    font-size: 0.8rem;
+  }
 }
 
 .highcharts-credits {
@@ -20,7 +24,7 @@ body, html {
   padding-left: 22rem;
 
   @media screen and (max-width: $desktop) {
-    padding-left: 20rem;
+    padding-left: 17rem;
   }
 
   @media screen and (max-width: $ipad) {
@@ -53,7 +57,7 @@ body, html {
     transform: translate(0%);
 
     @media screen and (max-width: $desktop) {
-      width: 20rem;
+      width: 17rem;
     }
 
     @media screen and (max-width: $ipad) {
@@ -66,14 +70,19 @@ body, html {
   }
 
   .modules-content-wrepper {
-    padding: 2rem;
+    padding: 1rem;
+    padding-top: 7rem;
     position: relative;
     background-color: $background;
-    padding-top: 8rem;
     font-size: 0.9rem;
 
     @media screen and (max-width: $ipad) {
       font-size: 0.85rem;
+    }
+
+    @media screen and (max-width: $phone) {
+      padding: 0.5rem;
+      padding-top: 6.5rem;
     }
   }
 }
@@ -125,3 +134,16 @@ body, html {
 .head-page {
   margin-bottom: 0.5rem;
 }
+
+// body {
+//   background-color: #fff;
+//   color: rgba(0,0,0,0.8);
+// }
+// .dark-mode body {
+//   background-color: #091a28;
+//   color: #ebf4f1;
+// }
+// .sepia-mode body {
+//   background-color: #f1e7d0;
+//   color: #433422;
+// }

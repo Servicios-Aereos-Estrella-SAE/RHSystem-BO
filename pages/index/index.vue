@@ -10,7 +10,7 @@
             <div class="form-container">
               <div class="input-box">
                 <label for="useremail">
-                  Correo electrónico
+                  Email
                 </label>
                 <IconField iconPosition="left">
                   <InputIcon>
@@ -21,7 +21,7 @@
               </div>
               <div class="input-box">
                 <label for="password">
-                  Contraseña
+                  Password
                 </label>
                 <IconField iconPosition="left">
                   <InputIcon>
@@ -30,10 +30,10 @@
                   <Password id="password" toggleMask :feedback="false" />
                 </IconField>
               </div>
-              <Button v-ripple label="Iniciar Sesión" class="btn-block" @click="handlerLogin" />
+              <Button v-ripple label="Log In" class="btn-block" @click="handlerLogin" />
               <div class="form-bottom">
                 <nuxt-link to="/recuperar-contrasena">
-                  ¿Olvisate tu contraseña? Recuperala aquí
+                  Forgot your password? click here to recover
                 </nuxt-link>
               </div>
             </div>
