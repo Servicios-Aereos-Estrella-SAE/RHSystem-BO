@@ -20,6 +20,32 @@
             </h1>
           </div>
           <div></div>
+          <div class="input-box">
+            <label for="employees">
+              Employee
+            </label>
+            <AutoComplete
+              v-model="selectedEmployee"
+              :optionLabel="() => `${selectedEmployee.employee_first_name} ${selectedEmployee.employee_last_name}`"
+              :suggestions="filteredEmployees"
+              @complete="handlerSearchEmployee"
+              @item-select="onEmployeeSelect"
+            >
+              <template #option="employee">
+                <div class="item-employee-filter-attendance-monitor">
+                  <div class="name">
+                    {{ employee.option.employee_first_name }}
+                    {{ employee.option.employee_last_name }}
+                  </div>
+                  <div class="position-department">
+                    {{ employee.option.department.department_alias || employee.option.department.department_name }}
+                    /
+                    {{ employee.option.position.position_alias || employee.option.position.position_name }}
+                  </div>
+                </div>
+              </template>
+            </AutoComplete>
+          </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">
               Visualization mode

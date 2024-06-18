@@ -16,6 +16,7 @@
               </small>
             </h1>
           </div>
+          <div></div>
           <div class="input-box">
             <label for="employees">
               Employee
@@ -42,7 +43,6 @@
               </template>
             </AutoComplete>
           </div>
-          <div></div>
           <div class="input-box">
             <label for="departments">
               Visualization mode

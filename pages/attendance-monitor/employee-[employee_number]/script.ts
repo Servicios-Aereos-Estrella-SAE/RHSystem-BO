@@ -2,6 +2,7 @@ import { defineComponent } from 'vue'
 import type { VisualizationModeOptionInterface } from '../../../resources/scripts/interfaces/VisualizationModeOptionInterface'
 import AttendanceMonitorController from '../../../resources/scripts/controllers/AttendanceMonitorController'
 import { DateTime } from 'luxon'
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 
 
 export default defineComponent({
@@ -90,7 +91,10 @@ export default defineComponent({
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
-    employeeDepartmentPositionList: [] as any
+    employeeDepartmentPositionList: [] as any,
+    employeeList: [] as EmployeeInterface[],
+    selectedEmployee: null as EmployeeInterface | null,
+    filteredEmployees: [] as EmployeeInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -161,6 +165,75 @@ export default defineComponent({
     this.setDefaultVisualizationMode()
     this.setGraphsData()
     await this.setDepartmentPositionEmployeeList()
+
+    this.employeeList = [
+      {
+        employee_id: 1,
+        employee_sync_id: '',
+        employee_code: '50156872',
+        employee_first_name: 'Wilvardo',
+        employee_last_name: 'Ramirez Colunga',
+        employee_payroll_num: '',
+        employee_hire_date: '',
+        company_id: 1,
+        department_id: 1,
+        position_id: 1,
+        department_sync_id: '',
+        position_sync_id: '',
+        employee_last_synchronization_at: '',
+        person_id: 1,
+        employee_created_at: '',
+        employee_updated_at: '',
+        employee_deleted_at: '',
+        person: {
+          person_id: 1,
+          person_firstname: 'Wilvardo',
+          person_lastname: 'Ramirez',
+          person_second_lastname: 'Colunga',
+          person_phone: '',
+          person_gender: '',
+          person_birthday: '',
+          person_curp: '',
+          person_rfc: '',
+          person_imss_nss: '',
+          person_created_at:'',
+          person_updated_at:'',
+          person_deleted_at:''
+        },
+        department: {
+          department_id: 1,
+          department_sync_id: '',
+          department_code: '',
+          department_name: 'Sistemas',
+          department_alias: 'Desarrollo de software',
+          department_is_default: '',
+          department_active: '',
+          parent_department_id: null,
+          parent_department_sync_id: '',
+          company_id: null,
+          department_last_synchronization_at: '',
+          department_created_at: '',
+          department_updated_at: '',
+          department_deleted_at: ''
+        },
+        position: {
+          position_id: 1,
+          position_sync_id: '',
+          position_code: '',
+          position_name: 'Ingeniero de Procedimientos Aeronáuticos y Normatividad',
+          position_alias: '',
+          position_is_default: 1,
+          position_active: 1,
+          parent_position_id: null,
+          parent_position_sync_id: '',
+          company_id: 1,
+          position_last_synchronization_at: '',
+          position_created_at: '',
+          position_updated_at: '',
+          position_deleted_at: ''
+        }
+      }
+    ]
   },
   methods: {
     setDefaultVisualizationMode () {
@@ -208,6 +281,20 @@ export default defineComponent({
     },
     handlerPeriodChange () {
       this.setGraphsData()
+    },
+    handlerSearchEmployee(event: any) {
+      setTimeout(() => {
+          if (event.query.trim().length) {
+            this.filteredEmployees = this.employeeList.filter((employee) => {
+              return employee.employee_first_name.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+          }
+      }, 250);
+    },
+    onEmployeeSelect () {
+      if (this.selectedEmployee && this.selectedEmployee.employee_code) {
+        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employee_code}`)
+      }
     }
   }
 })
