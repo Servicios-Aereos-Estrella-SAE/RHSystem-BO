@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
@@ -31,5 +32,19 @@ export default defineNuxtConfig({
     directives: {
       include: ['Ripple']
     }
+  },
+
+  runtimeConfig: {
+    app: {
+      HOST: process.env.HOST,
+      PORT: process.env.PORT,
+      ENVIRONMENT: process.env.ENVIRONMENT,
+    },
+    port: 8080,
+  },
+
+  devServer: {
+    host: process.env.HOST || '127.0.0.1',
+    port: parseInt(`${process.env.PORT}`) || 3000
   },
 })
