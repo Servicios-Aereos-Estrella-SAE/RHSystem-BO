@@ -2,7 +2,7 @@
   <div class="dashboard-page">
     <Head>
       <Title>
-        Dashboard
+        Department Attendance Monitor
       </Title>
     </Head>
     <NuxtLayout name="backoffice">
@@ -10,22 +10,47 @@
         <div class="box head-page">
           <div class="input-box">
             <label for="departments">
-              Departamento
+              Department
             </label>
             <Dropdown
               id="departments"
               v-model="departmenSelected"
+              optionLabel="label"
               :options="departmentCollection"
-              optionLabel="name"
-              checkmark
               :highlightOnSelect="false"
               @change="handlerDeparmentSelect"
             />
           </div>
           <div></div>
           <div class="input-box">
+            <label for="employees">
+              Employee
+            </label>
+            <AutoComplete
+              v-model="selectedEmployee"
+              :optionLabel="() => `${selectedEmployee.employee_first_name} ${selectedEmployee.employee_last_name}`"
+              :suggestions="filteredEmployees"
+              @complete="handlerSearchEmployee"
+              @item-select="onEmployeeSelect"
+            >
+              <template #option="employee">
+                <div class="item-employee-filter-attendance-monitor">
+                  <div class="name">
+                    {{ employee.option.employee_first_name }}
+                    {{ employee.option.employee_last_name }}
+                  </div>
+                  <div class="position-department">
+                    {{ employee.option.department.department_alias || employee.option.department.department_name }}
+                    /
+                    {{ employee.option.position.position_alias || employee.option.position.position_name }}
+                  </div>
+                </div>
+              </template>
+            </AutoComplete>
+          </div>
+          <div v-if="visualizationMode" class="input-box">
             <label for="departments">
-              Modo de visualización
+              Visualization mode
             </label>
             <SelectButton
               v-model="visualizationMode"
@@ -37,9 +62,9 @@
               @change="handlerVisualizationModeChange"
             />
           </div>
-          <div class="input-box">
+          <div v-if="visualizationMode" class="input-box">
             <label for="departments">
-              Periodo
+              Period
             </label>
             <Calendar
               v-model="periodSelected"
@@ -54,15 +79,20 @@
         <div class="general-graphs">
           <div class="box">
             <h2>
-              Comportamiento total del periodo
+              General behavior into period
             </h2>
             <highchart :options="generalData" style="width: 100%;" />
           </div>
-          <div class="box">
+          <div class="box chart-bar">
             <h2>
               {{ lineChartTitle }}
             </h2>
             <highchart :options="periodData" style="width: 100%;" />
+          </div>
+        </div>
+        <div class="department-positions-wrapper">
+          <div v-for="(position, index) in departmentPositionList" :key="`position-${position.code}-${index}`">
+            <attendanceInfoCard />
           </div>
         </div>
       </div>
@@ -77,4 +107,14 @@
 
 <style lang="scss" scoped>
 @import './style';
+</style>
+
+<style lang="scss">
+:deep(.graph-label) {
+  color: red;
+}
+
+.graph-label {
+  color: red;
+}
 </style>

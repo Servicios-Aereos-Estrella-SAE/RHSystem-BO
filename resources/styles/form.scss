@@ -2,6 +2,15 @@
   width: 100%;
 }
 
+.graph-label-attendance-monitor-period {
+  font-size: 0.75rem;
+  
+  &.active {
+    fill: $info;
+    font-weight: 500;
+  }
+}
+
 :deep(.p-dropdown) {
   width: 100%;
 }
@@ -43,5 +52,26 @@
       font-size: 0.75rem;
       margin-top: 1rem;
     }
+  }
+}
+
+.p-autocomplete-empty-message,
+.p-dropdown-empty-message {
+  text-align: center;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.item-employee-filter-attendance-monitor {
+
+  .name {
+    font-size: 0.9rem;
+  }
+
+  .position-department {
+    font-size: 0.75rem;
+    display: block;
+    margin-top: 0.25rem;
+    opacity: 0.75;
   }
 }

@@ -10,7 +10,7 @@ export default defineComponent({
   },
   methods: {
     handlerLogin () {
-      this.$router.push({ path: "/dashboard" })
+      this.$router.push({ path: "/attendance-monitor" })
     }
   }
 })
