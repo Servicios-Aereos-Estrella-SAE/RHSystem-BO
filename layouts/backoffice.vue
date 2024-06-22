@@ -8,6 +8,15 @@
       <div></div>
       <div class="modules-wrapper">
         <div class="modules-content-wrepper">
+          <!-- <div class="box">
+            <h1>Color mode: {{ $colorMode.value }}</h1>
+            <select v-model="$colorMode.preference" @change="setcolor">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="sepia">Sepia</option>
+            </select>
+          </div> -->
           <slot />
         </div>
       </div>

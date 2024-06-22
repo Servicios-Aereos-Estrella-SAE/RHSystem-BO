@@ -1,0 +1,83 @@
+@import '/resources/styles/variables.scss';
+
+.attendance-employee-info-card {
+  margin-top: 2.25rem;
+  position: relative;
+
+  .avatar {
+    width: 4rem;
+    height: 4rem;
+    background-color: $gray;
+    border-radius: $radius;
+    position: absolute;
+    margin-top: -3rem;
+    border: solid 0.2rem white;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      width: 1.75rem;
+    }
+  }
+
+  .name {
+    text-align: left;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    text-wrap: pretty;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    padding-top: 2rem;
+
+    @media screen and (max-width: $ipad) {
+      font-size: 0.7rem;
+    }
+  }
+
+  .percentage {
+    text-align: center;
+    font-weight: 500;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 1rem;
+
+    small {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 350;
+    }
+  }
+
+  .percentages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .assist {
+    font-size: 1.25rem;
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
+  
+  .tolerance {
+    background-color: transparentize($color: $info, $amount: 0.95);
+    color: $info;
+  }
+
+  .delay {
+    background-color: transparentize($color: $warning, $amount: 0.95);
+    color: $warning;
+  }
+
+  .fault {
+    background-color: transparentize($color: $danger, $amount: 0.95);
+    color: $danger;
+  }
+}

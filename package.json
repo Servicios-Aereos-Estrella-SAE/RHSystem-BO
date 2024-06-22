@@ -10,19 +10,20 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxtjs/color-mode": "^3.4.1",
+    "@types/luxon": "^3.4.2",
     "nuxt-primevue": "^3.0.0",
     "sass": "^1.22.10",
     "sass-loader": "^7.2.0"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "luxon": "^3.4.4",
     "nuxt": "^3.11.2",
+    "nuxt-highcharts": "^3.1.1",
     "pinia": "^2.1.7",
     "primevue": "^3.52.0",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
-  },
-  "overrides": {
-    "vue": "latest"
   }
 }

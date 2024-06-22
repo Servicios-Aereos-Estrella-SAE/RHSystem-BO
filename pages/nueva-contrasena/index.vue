@@ -25,45 +25,45 @@
             <div class="form-container">
               <div class="input-box">
                 <label for="otp-code">
-                  Ingresa el código de validación
+                  Enter the validation code
                   <small>
-                    Te hemos enviado un código de verificación el mismo email con el cual has solicitado el cambio de contraseña.
+                    We have sent a verification code to the same email you used to request the password change.
                     <br>
-                    Ingrésalo para validar tu identidad.
+                    Enter it to validate your identity.
                   </small>
                 </label>
                 <InputOtp id="otp-code" v-model="otpCode" integerOnly />
               </div>
-              <br><br>
+              <br>
               <div class="input-box">
                 <label for="password">
-                  Nueva Contraseña
+                  New Password
                 </label>
-                <Password v-model="newPassword" toggleMask promptLabel="---" weakLabel="Nada segura" mediumLabel="Poco segura" strongLabel="Segura">
+                <Password v-model="newPassword" toggleMask promptLabel="---">
                   <template #header>
-                    <h6>Ingresa tu nueva contraseña</h6>
+                    <h6>Enter new password</h6>
                   </template>
                   <template #footer>
                       <Divider />
-                      <p class="mt-2">Características</p>
+                      <p class="mt-2">Requirements</p>
                       <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                          <li>Al menos una letra minúscula</li>
-                          <li>Al menos una letra mayúscula</li>
-                          <li>Al menos un número</li>
-                          <li>Mínimo 8 caractéres</li>
+                          <li>At least one lowercase letter</li>
+                          <li>At least one uppercase letter</li>
+                          <li>At least one number</li>
+                          <li>Minimum 8 characters</li>
                       </ul>
                   </template>
               </Password>
               </div>
               <div class="input-box">
                 <label for="password">
-                  Confirmar Contraseña
+                  Confirm new password
                 </label>
                 <IconField iconPosition="left">
                   <Password id="password" v-model="newPasswordConfirmed" toggleMask :feedback="false" />
                 </IconField>
               </div>
-              <Button v-ripple label="Guardar" class="btn-block" @click="handlerNewPasswordRequest" />
+              <Button v-ripple label="Confirm" class="btn-block" @click="handlerNewPasswordRequest" />
             </div>
           </div>
         </div>

@@ -26,7 +26,7 @@ $shade800:#374151 !default;    //unused
 $shade900:#1f2937 !default;    //unused
 
 //global
-$fontFamily:'Inter var', sans-serif !default;
+$fontFamily:'Inter', sans-serif !default;
 $fontSize:1rem !default;
 $fontWeight:normal !default;
 $textColor:$shade700 !default;
@@ -856,10 +856,10 @@ $imagePreviewActionIconFontSize:1.5rem !default;
 $imagePreviewActionIconBorderRadius:50% !default;
 
 :root {
-    font-family:'Inter var', sans-serif;
+    font-family:'Inter', sans-serif;
     font-feature-settings: "cv02","cv03","cv04","cv11";
     font-variation-settings: normal;
-    --font-family:'Inter var', sans-serif;
+    --font-family:'Inter', sans-serif;
     --font-feature-settings: "cv02","cv03","cv04","cv11";
     --surface-a:#{$shade000};
     --surface-b:#{$shade100};
