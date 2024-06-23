@@ -1,7 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
 
   ssr: true,
 
@@ -23,8 +30,56 @@ export default defineNuxtConfig({
     'nuxt-primevue',
     '@pinia/nuxt',
     'nuxt-highcharts',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    '@sidebase/nuxt-auth'
   ],
+
+  auth: {
+    baseURL: process.env.BASE_API_PATH,
+    provider: {
+      type: 'local',
+      pages: {
+        login: '/'
+      },
+      endpoints: {
+        signIn: { path: '/auth/login', method: 'post' },
+        signOut: { path: '/auth/logout', method: 'post' },
+        getSession: { path: '/auth/session', method: 'get' }
+      },
+      token: {
+        signInResponseTokenPointer: '/data/token'
+      },
+      sessionDataType: {
+        deletedAt: 'string | null',
+        personId: 'number',
+        roleId: 'number',
+        userActive: 'number',
+        userCreatedAt: 'string',
+        userEmail: 'string',
+        userId: 'number',
+        userToken: 'string | null',
+        userUpdatedAt: 'string',
+        person: {
+          deletedAt: 'string | null',
+          personBirthday: 'string | null',
+          personCreatedAt: 'string | null',
+          personCurp: 'string | null',
+          personFirstname: 'string',
+          personGender: 'string | null',
+          personId: 'number',
+          personImssNss: 'string | null',
+          personLastname: 'string',
+          personPhone: 'string | null',
+          personRfc: 'string | null',
+          personSecondLastname: 'string',
+          personUpdatedAt: 'string | null',
+        }
+      }
+    },
+    globalAppMiddleware: {
+      isEnabled: true
+    }
+  },
 
   css: ['~/assets/theme/primevue-sass-theme-3.52.0/themes/lara/lara-light/blue/theme.scss'],
 
@@ -40,7 +95,7 @@ export default defineNuxtConfig({
       PORT: process.env.PORT,
       ENVIRONMENT: process.env.ENVIRONMENT,
       BASE_API_PATH: process.env.BASE_API_PATH,
-    }
+    },
   },
 
   devServer: {

@@ -19,8 +19,15 @@ export default defineComponent({
   mounted() {
   },
   methods: {
-    handlerLogout () {
-      this.$router.push({ path: "/" })
+    async handlerLogout () {
+      try {
+        const { signOut } = useAuth()
+        await signOut({callbackUrl: '/'})
+      } catch (error) {
+        console.error('🚀 ---------------------------------🚀')
+        console.error('🚀 ~ handlerLogout ~ error:', error)
+        console.error('🚀 ---------------------------------🚀')
+      }
     },
     setLinkActive (link: any) {
       const path = this.$route.path

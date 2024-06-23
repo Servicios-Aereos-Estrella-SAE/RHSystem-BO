@@ -8,6 +8,7 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 

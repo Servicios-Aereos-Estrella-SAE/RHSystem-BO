@@ -9,8 +9,9 @@
   </div>
 </template>
 
-<script setup lang="ts">
-
+<script>
+  import Script from './assets/guest/script.ts'
+  export default Script
 </script>
 
 <style lang="scss">
