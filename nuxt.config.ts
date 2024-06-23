@@ -74,11 +74,11 @@ export default defineNuxtConfig({
           personSecondLastname: 'string',
           personUpdatedAt: 'string | null',
         }
-      }
+      },
     },
     globalAppMiddleware: {
-      isEnabled: true
-    }
+      isEnabled: true,
+    },
   },
 
   css: ['~/assets/theme/primevue-sass-theme-3.52.0/themes/lara/lara-light/blue/theme.scss'],

@@ -13,12 +13,6 @@ export default defineComponent({
     invalidCredentials: false
   }),
   created () {
-    definePageMeta({
-      auth: {
-        unauthenticatedOnly: true,
-        navigateAuthenticatedTo: '/attendance-monitor',
-      },
-    })
   },
   mounted() {
   },
