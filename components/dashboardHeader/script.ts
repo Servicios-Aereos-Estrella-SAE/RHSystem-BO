@@ -1,12 +1,11 @@
 import { defineComponent } from 'vue'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'dashboardHeader',
   props: {
   },
   data: () => ({
-    displayAside: true as boolean,
-    asideVisibilityStatus: null as any
   }),
   computed: {
     displayBackButton () {
@@ -19,8 +18,8 @@ export default defineComponent({
   },
   methods: {
     async toggleAside () {
-      this.displayAside = !this.displayAside
-      this.$emit('onAsideVisibilityChange', this.displayAside)
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.toggleDisplayAside()
     },
     handlerBack () {
       this.$router.go(-1)

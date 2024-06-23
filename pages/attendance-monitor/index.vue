@@ -16,6 +16,7 @@
               id="departments"
               v-model="departmenSelected"
               optionLabel="label"
+              filter
               :options="departmentCollection"
               :highlightOnSelect="false"
               @change="handlerDeparmentSelect"
@@ -28,7 +29,7 @@
             </label>
             <AutoComplete
               v-model="selectedEmployee"
-              :optionLabel="() => `${selectedEmployee.employee_first_name} ${selectedEmployee.employee_last_name}`"
+              :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
               :suggestions="filteredEmployees"
               @complete="handlerSearchEmployee"
               @item-select="onEmployeeSelect"
@@ -36,13 +37,13 @@
               <template #option="employee">
                 <div class="item-employee-filter-attendance-monitor">
                   <div class="name">
-                    {{ employee.option.employee_first_name }}
-                    {{ employee.option.employee_last_name }}
+                    {{ employee.option.employeeFirstName }}
+                    {{ employee.option.employeeLastName }}
                   </div>
                   <div class="position-department">
-                    {{ employee.option.department.department_alias || employee.option.department.department_name }}
+                    {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
                     /
-                    {{ employee.option.position.position_alias || employee.option.position.position_name }}
+                    {{ employee.option.position.positionAlias || employee.option.position.positionName }}
                   </div>
                 </div>
               </template>
@@ -91,8 +92,11 @@
           </div>
         </div>
         <div class="department-positions-wrapper">
-          <div v-for="(position, index) in departmentPositionList" :key="`position-${position.code}-${index}`">
-            <attendanceInfoCard />
+          <div v-for="(position, index) in departmentPositionCollection" :key="`position-${position.parentPositionId}-${index}`">
+            <attendanceInfoCard 
+              :department="departmenSelected"
+              :position="position.position"
+            />
           </div>
         </div>
       </div>

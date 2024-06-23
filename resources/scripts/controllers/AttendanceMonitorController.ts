@@ -127,21 +127,7 @@ export default class AttendanceMonitorController {
     return series
   }
 
-  async getDepartmentPositions () {
-    const departmentService = new DepartmentService()
-    const departmentReq = await departmentService.getDepartmentPositions()
-    const length = departmentReq.data.response.length
-    const random = Math.floor(Math.random() * length);
-    const tempList = departmentReq.data.response.splice(random, 20)
-    return tempList
-  }
-
   async getDepartmentPositionEmployees () {
-    const employeeService = new EmployeeService()
-    const response = await employeeService.getByDepartmentPosition()
-    const length = response.data.response.length
-    const random = Math.floor(Math.random() * length);
-    const tempList = response.data.response
-    return tempList
+    return []
   }
 }

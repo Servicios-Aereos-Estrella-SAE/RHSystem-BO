@@ -1,18 +1,18 @@
 interface PositionInterface {
-  position_id: number,
-  position_sync_id: string,
-  position_code: string,
-  position_name: string,
-  position_alias: string,
-  position_is_default: number,
-  position_active: number,
-  parent_position_id: number | null,
-  parent_position_sync_id: string,
-  company_id: number | null,
-  position_last_synchronization_at: Date | string | null,
-  position_created_at: Date | string | null,
-  position_updated_at: Date | string | null,
-  position_deleted_at: Date | string | null
+  positionId: number,
+  positionSyncId: string,
+  positionCode: string,
+  positionName: string,
+  positionAlias: string,
+  positionIsDefault: number,
+  positionActive: number,
+  parentPositionId: number | null,
+  parentPositionSyncId: string,
+  companyId: number | null,
+  positionLastSynchronizationAt: Date | string | null,
+  positionCreatedAt: Date | string | null,
+  positionUpdatedAt: Date | string | null,
+  positionDeletedAt: Date | string | null
 }
 
 export type { PositionInterface }

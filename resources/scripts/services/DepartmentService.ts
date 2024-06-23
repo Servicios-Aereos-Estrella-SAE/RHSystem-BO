@@ -1,17 +1,52 @@
+import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
+
 export default class DepartmentService {
-  getDepartmentPositions () {
+  protected API_PATH: string
+
+  constructor () {
+    const CONFIG = useRuntimeConfig()
+    this.API_PATH = CONFIG.public.BASE_API_PATH
+  }
+
+  async getAllDepartmentList () {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+  async getDepartmentPositions (departmentId: number) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+  async show (departmentId: number) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments/`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    const list = responseRequest.status === 200 ? responseRequest._data.data.departments : []
+    const department = list.find((item: DepartmentInterface) => item.departmentId === departmentId)
+
     return {
-      data: {
-        response: [
-          {
-            "id": 167,
-            "positionCode": "108",
-            "positionName": "Gerente de Calidad, Normatividad y Mantenimiento AOC",
-            "isDefault": false,
-            "companyId": 1,
-            "parentPositionId": null
-          }
-        ]
+      status: responseRequest.status,
+      _data: {
+        data: {
+          department: department
+        }
       }
     }
   }

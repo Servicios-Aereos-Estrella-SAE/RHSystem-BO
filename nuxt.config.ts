@@ -35,12 +35,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    app: {
+    public: {
       HOST: process.env.HOST,
       PORT: process.env.PORT,
       ENVIRONMENT: process.env.ENVIRONMENT,
-    },
-    port: 8080,
+      BASE_API_PATH: process.env.BASE_API_PATH,
+    }
   },
 
   devServer: {
