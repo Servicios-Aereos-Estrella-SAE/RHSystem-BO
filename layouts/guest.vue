@@ -5,7 +5,7 @@
         <slot />
       </div>
       <div class="banner-wrapper">
-        <img src="/public/121637889_168888608205831_6859140430215543392_n.png" alt="SAE">
+        <img src="https://sae-assets.sfo3.cdn.digitaloceanspaces.com/rh-system/images/100bcbbc-cea7-4c6b-9584-154bdc2144ba.jpg" alt="SAE">
       </div>
     </div>
   </div>
