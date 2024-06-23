@@ -9,3 +9,7 @@ $radius: 0.75rem;
 @import '/resources/styles/breakpoints.scss';
 @import '/resources/styles/form.scss';
 @import '/resources/styles/buttons.scss';
+
+.capitalize {
+  text-transform: capitalize;
+}

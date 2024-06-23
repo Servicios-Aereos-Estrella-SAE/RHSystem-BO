@@ -37,9 +37,9 @@
               </Message>
               <Button v-ripple label="Log In" class="btn-block" @click="handlerLogin" />
               <div class="form-bottom">
-                <nuxt-link to="/recuperar-contrasena">
+                <!-- <nuxt-link to="/recuperar-contrasena">
                   Forgot your password? click here to recover
-                </nuxt-link>
+                </nuxt-link> -->
               </div>
             </div>
           </div>
