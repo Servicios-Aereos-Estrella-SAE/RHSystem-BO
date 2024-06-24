@@ -10,9 +10,9 @@
         <div class="box head-page">
           <div class="department-position">
             <h1>
-              {{ department.department_alias || department.department_name }}
+              {{ department.departmentAlias || department.departmentName }}
               <small>
-                {{ position.position_alias || position.position_name }}
+                {{ position.positionAlias || position.positionName }}
               </small>
             </h1>
           </div>
@@ -23,7 +23,7 @@
             </label>
             <AutoComplete
               v-model="selectedEmployee"
-              :optionLabel="() => `${selectedEmployee.employee_first_name} ${selectedEmployee.employee_last_name}`"
+              :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
               :suggestions="filteredEmployees"
               @complete="handlerSearchEmployee"
               @item-select="onEmployeeSelect"
@@ -31,13 +31,13 @@
               <template #option="employee">
                 <div class="item-employee-filter-attendance-monitor">
                   <div class="name">
-                    {{ employee.option.employee_first_name }}
-                    {{ employee.option.employee_last_name }}
+                    {{ employee.option.employeeFirstName }}
+                    {{ employee.option.employeeLastName }}
                   </div>
                   <div class="position-department">
-                    {{ employee.option.department.department_alias || employee.option.department.department_name }}
+                    {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
                     /
-                    {{ employee.option.position.position_alias || employee.option.position.position_name }}
+                    {{ employee.option.position.positionAlias || employee.option.position.positionName }}
                   </div>
                 </div>
               </template>
