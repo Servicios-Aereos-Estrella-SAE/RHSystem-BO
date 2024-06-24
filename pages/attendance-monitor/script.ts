@@ -6,6 +6,10 @@ import AttendanceMonitorController from '~/resources/scripts/controllers/Attenda
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 
 export default defineComponent({
@@ -96,7 +100,7 @@ export default defineComponent({
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
-    departmentPositionList: [] as any,
+    departmentPositionList: [] as PositionInterface[],
 
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
@@ -118,87 +122,23 @@ export default defineComponent({
         return 'Weekly behavior'
       }
     },
-    departmentCollection () {
-      const list = JSON.parse(JSON.stringify(this.departmentList))
-      const collection = list.map((item: DepartmentInterface) => ({ ...item, label: item.department_alias || item.department_name }))
+    departmentCollection (): DepartmentInterface[] {
+      const list: DepartmentInterface[] = JSON.parse(JSON.stringify(this.departmentList)) as DepartmentInterface[]
+      const collection = list.map((item: DepartmentInterface) => ({ ...item, label: item.departmentAlias || item.departmentName }))
+      return collection
+    },
+    departmentPositionCollection (): PositionInterface[] {
+      const list: PositionInterface[] = JSON.parse(JSON.stringify(this.departmentPositionList)) as PositionInterface[]
+      const collection = list.map((item: PositionInterface) => item)
       return collection
     }
   },
   async mounted() {
     this.periodSelected = new Date()
-    this.setDefaultVisualizationMode()
-    await this.setDepartmetList()
-    this.setGraphsData()
-    await this.setDepartmentPositions()
 
-    this.employeeList = [
-      {
-        employee_id: 1,
-        employee_sync_id: '',
-        employee_code: '50156872',
-        employee_first_name: 'Wilvardo',
-        employee_last_name: 'Ramirez Colunga',
-        employee_payroll_num: '',
-        employee_hire_date: '',
-        company_id: 1,
-        department_id: 1,
-        position_id: 1,
-        department_sync_id: '',
-        position_sync_id: '',
-        employee_last_synchronization_at: '',
-        person_id: 1,
-        employee_created_at: '',
-        employee_updated_at: '',
-        employee_deleted_at: '',
-        person: {
-          person_id: 1,
-          person_firstname: 'Wilvardo',
-          person_lastname: 'Ramirez',
-          person_second_lastname: 'Colunga',
-          person_phone: '',
-          person_gender: '',
-          person_birthday: '',
-          person_curp: '',
-          person_rfc: '',
-          person_imss_nss: '',
-          person_created_at:'',
-          person_updated_at:'',
-          person_deleted_at:''
-        },
-        department: {
-          department_id: 1,
-          department_sync_id: '',
-          department_code: '',
-          department_name: 'Sistemas',
-          department_alias: 'Desarrollo de software',
-          department_is_default: '',
-          department_active: '',
-          parent_department_id: null,
-          parent_department_sync_id: '',
-          company_id: null,
-          department_last_synchronization_at: '',
-          department_created_at: '',
-          department_updated_at: '',
-          department_deleted_at: ''
-        },
-        position: {
-          position_id: 1,
-          position_sync_id: '',
-          position_code: '',
-          position_name: 'SDL Head Leader',
-          position_alias: '',
-          position_is_default: 1,
-          position_active: 1,
-          parent_position_id: null,
-          parent_position_sync_id: '',
-          company_id: 1,
-          position_last_synchronization_at: '',
-          position_created_at: '',
-          position_updated_at: '',
-          position_deleted_at: ''
-        }
-      }
-    ]
+    await this.handlerSetInitialDepartmentList()
+    await this.setDepartmentPositions()
+    await this.setDefaultVisualizationMode()
   },
   methods: {
     setDefaultVisualizationMode () {
@@ -210,48 +150,38 @@ export default defineComponent({
 
       this.handlerVisualizationModeChange()
     },
-    setGeneralData () {
-      this.generalData.series[0].data = new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode?.value || 'weekly')
+    async setGraphsData () {
+      await this.setPeriodData()
+      await this.setPeriodCategories()
+      await this.setGeneralData()
     },
-    setPeriodData () {
-      this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
+    async setPeriodData () {
+      this.periodData.series = await new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+    async setPeriodCategories () {
+      this.periodData.xAxis.categories = await new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    setDepartmetList () {
-      this.departmentList = [{
-        department_id: 1,
-        department_sync_id: '',
-        department_code: '',
-        department_name: 'Rampa',
-        department_alias: null,
-        department_is_default: '',
-        department_active: '',
-        parent_department_id: null,
-        parent_department_sync_id: '',
-        company_id: null,
-        department_last_synchronization_at: null,
-        department_created_at: null,
-        department_updated_at: null,
-        department_deleted_at: null
-      }]
+    async setGeneralData () {
+      this.generalData.series[0].data = await new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode?.value || 'weekly')
+    },
+    async setDepartmetList () {
+      const response = await  new DepartmentService().getAllDepartmentList()
+      this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     async setDepartmentPositions () {
-      const response = await new AttendanceMonitorController().getDepartmentPositions()
-      this.departmentPositionList = response
+      const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
+      this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
-    setGraphsData () {
-      this.setPeriodData()
-      this.setPeriodCategories()
-      this.setGeneralData()
+    async handlerSetInitialDepartmentList () {
+      await this.setDepartmetList()
+      this.departmenSelected = this.departmentCollection.length > 0 ? this.departmentCollection[0] : null
     },
     async handlerDeparmentSelect () {
       this.periodSelected = new Date()
+      await this.setGraphsData()
       await this.setDepartmentPositions()
-      this.setGraphsData()
     },
-    handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
@@ -260,23 +190,21 @@ export default defineComponent({
       }
 
       this.periodSelected = new Date()
-      this.setGraphsData()
+      await this.setGraphsData()
     },
-    handlerPeriodChange () {
-      this.setGraphsData()
+    async handlerPeriodChange () {
+      await this.setGraphsData()
     },
-    handlerSearchEmployee(event: any) {
-      setTimeout(() => {
-          if (event.query.trim().length) {
-            this.filteredEmployees = this.employeeList.filter((employee) => {
-              return employee.employee_first_name.toLowerCase().startsWith(event.query.toLowerCase());
-            });
-          }
-      }, 250);
+    async handlerSearchEmployee(event: any) {
+      if (event.query.trim().length) {
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 10)
+        const list = response.status === 200 ? response._data.data.employees.data : []
+        this.filteredEmployees = list
+      }
     },
     onEmployeeSelect () {
-      if (this.selectedEmployee && this.selectedEmployee.employee_code) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employee_code}`)
+      if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
+        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
     }
   }

@@ -2,9 +2,13 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.13.1"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "start": "node .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -18,6 +22,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@sidebase/nuxt-auth": "^0.7.2",
     "luxon": "^3.4.4",
     "nuxt": "^3.11.2",
     "nuxt-highcharts": "^3.1.1",

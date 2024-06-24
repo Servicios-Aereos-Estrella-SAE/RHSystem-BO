@@ -1,9 +1,9 @@
 <template>
   <div>
-    <dashboardHeader @onAsideVisibilityChange="handlerAsideVisibilityChange" />
+    <dashboardHeader />
     <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
       <div class="aside-menu-wrapper">
-        <aside-menu :asideVisibilityStatus="asideVisibilityStatus" />
+        <aside-menu />
       </div>
       <div></div>
       <div class="modules-wrapper">

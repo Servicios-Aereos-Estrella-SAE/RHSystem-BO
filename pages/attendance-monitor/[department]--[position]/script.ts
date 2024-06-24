@@ -7,6 +7,9 @@ import type { VisualizationModeOptionInterface } from '~/resources/scripts/inter
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
+import PositionService from '~/resources/scripts/services/PositionService'
 
 
 export default defineComponent({
@@ -122,79 +125,9 @@ export default defineComponent({
   async mounted() {
     this.periodSelected = new Date()
     this.setDefaultVisualizationMode()
-    this.setGraphsData()
-    this.setDepartment()
-    this.setPositionDepartment()
+    await this.setDepartment()
+    await this.setPositionDepartment()
     await this.setDepartmentPositionEmployeeList()
-
-    this.employeeList = [
-      {
-        employee_id: 1,
-        employee_sync_id: '',
-        employee_code: '50156872',
-        employee_first_name: 'Wilvardo',
-        employee_last_name: 'Ramirez Colunga',
-        employee_payroll_num: '',
-        employee_hire_date: '',
-        company_id: 1,
-        department_id: 1,
-        position_id: 1,
-        department_sync_id: '',
-        position_sync_id: '',
-        employee_last_synchronization_at: '',
-        person_id: 1,
-        employee_created_at: '',
-        employee_updated_at: '',
-        employee_deleted_at: '',
-        person: {
-          person_id: 1,
-          person_firstname: 'Wilvardo',
-          person_lastname: 'Ramirez',
-          person_second_lastname: 'Colunga',
-          person_phone: '',
-          person_gender: '',
-          person_birthday: '',
-          person_curp: '',
-          person_rfc: '',
-          person_imss_nss: '',
-          person_created_at:'',
-          person_updated_at:'',
-          person_deleted_at:''
-        },
-        department: {
-          department_id: 1,
-          department_sync_id: '',
-          department_code: '',
-          department_name: 'Sistemas',
-          department_alias: 'Desarrollo de software',
-          department_is_default: '',
-          department_active: '',
-          parent_department_id: null,
-          parent_department_sync_id: '',
-          company_id: null,
-          department_last_synchronization_at: '',
-          department_created_at: '',
-          department_updated_at: '',
-          department_deleted_at: ''
-        },
-        position: {
-          position_id: 1,
-          position_sync_id: '',
-          position_code: '',
-          position_name: 'Ingeniero de Procedimientos Aeronáuticos y Normatividad',
-          position_alias: '',
-          position_is_default: 1,
-          position_active: 1,
-          parent_position_id: null,
-          parent_position_sync_id: '',
-          company_id: 1,
-          position_last_synchronization_at: '',
-          position_created_at: '',
-          position_updated_at: '',
-          position_deleted_at: ''
-        }
-      }
-    ]
   },
   methods: {
     setDefaultVisualizationMode () {
@@ -215,45 +148,22 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    setDepartment () {
-      this.department = {
-        department_id: 1,
-        department_sync_id: '',
-        department_code: '',
-        department_name: 'Sistemas',
-        department_alias: 'Desarrollo de software',
-        department_is_default: '',
-        department_active: '',
-        parent_department_id: null,
-        parent_department_sync_id: '',
-        company_id: null,
-        department_last_synchronization_at: '',
-        department_created_at: '',
-        department_updated_at: '',
-        department_deleted_at: ''
-      }
+    async setDepartment () {
+      const departmentId = parseInt(`${this.$route.params.department || 0}`)
+      const response = await new DepartmentService().show(departmentId)
+      this.department = response.status === 200 ? response._data.data.department : null
     },
-    setPositionDepartment () {
-      this.position = {
-        position_id: 1,
-        position_sync_id: '',
-        position_code: '',
-        position_name: 'Ingeniero de Procedimientos Aeronáuticos y Normatividad',
-        position_alias: '',
-        position_is_default: 1,
-        position_active: 1,
-        parent_position_id: null,
-        parent_position_sync_id: '',
-        company_id: 1,
-        position_last_synchronization_at: '',
-        position_created_at: '',
-        position_updated_at: '',
-        position_deleted_at: ''
-      }
+    async setPositionDepartment () {
+      const departmentId = parseInt(`${this.$route.params.department || 0}`)
+      const positionId = parseInt(`${this.$route.params.position || 0}`)
+      const response = await new PositionService().show(departmentId, positionId)
+      this.position = response.status === 200 ? response._data.data.position : null
     },
     async setDepartmentPositionEmployeeList () {
-      const response = await new AttendanceMonitorController().getDepartmentPositionEmployees()
-      this.employeeDepartmentPositionList = response
+      const departmentId = parseInt(`${this.$route.params.department || 0}`)
+      const positionId = parseInt(`${this.$route.params.position || 0}`)
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 99999999999)
+      this.employeeDepartmentPositionList = response.status === 200 ? response._data.data.employees.data : []
     },
     setGraphsData () {
       this.setPeriodData()
@@ -279,18 +189,16 @@ export default defineComponent({
     handlerPeriodChange () {
       this.setGraphsData()
     },
-    handlerSearchEmployee(event: any) {
-      setTimeout(() => {
-          if (event.query.trim().length) {
-            this.filteredEmployees = this.employeeList.filter((employee) => {
-              return employee.employee_first_name.toLowerCase().startsWith(event.query.toLowerCase());
-            });
-          }
-      }, 250);
+    async handlerSearchEmployee(event: any) {
+      if (event.query.trim().length) {
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 10)
+        const list = response.status === 200 ? response._data.data.employees.data : []
+        this.filteredEmployees = list
+      }
     },
     onEmployeeSelect () {
-      if (this.selectedEmployee && this.selectedEmployee.employee_code) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employee_code}`)
+      if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
+        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
     }
   }

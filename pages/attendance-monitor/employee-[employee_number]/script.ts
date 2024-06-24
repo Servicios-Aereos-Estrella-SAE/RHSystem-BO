@@ -3,6 +3,7 @@ import type { VisualizationModeOptionInterface } from '../../../resources/script
 import AttendanceMonitorController from '../../../resources/scripts/controllers/AttendanceMonitorController'
 import { DateTime } from 'luxon'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 
 export default defineComponent({
@@ -91,10 +92,9 @@ export default defineComponent({
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
-    employeeDepartmentPositionList: [] as any,
-    employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
-    filteredEmployees: [] as EmployeeInterface[]
+    filteredEmployees: [] as EmployeeInterface[],
+    employee: null as EmployeeInterface | null
   }),
   computed: {
     lineChartTitle () {
@@ -162,80 +162,16 @@ export default defineComponent({
   },
   async mounted() {
     this.periodSelected = new Date()
+    await this.getEmployee()
     this.setDefaultVisualizationMode()
-    this.setGraphsData()
-    await this.setDepartmentPositionEmployeeList()
-
-    this.employeeList = [
-      {
-        employee_id: 1,
-        employee_sync_id: '',
-        employee_code: '50156872',
-        employee_first_name: 'Wilvardo',
-        employee_last_name: 'Ramirez Colunga',
-        employee_payroll_num: '',
-        employee_hire_date: '',
-        company_id: 1,
-        department_id: 1,
-        position_id: 1,
-        department_sync_id: '',
-        position_sync_id: '',
-        employee_last_synchronization_at: '',
-        person_id: 1,
-        employee_created_at: '',
-        employee_updated_at: '',
-        employee_deleted_at: '',
-        person: {
-          person_id: 1,
-          person_firstname: 'Wilvardo',
-          person_lastname: 'Ramirez',
-          person_second_lastname: 'Colunga',
-          person_phone: '',
-          person_gender: '',
-          person_birthday: '',
-          person_curp: '',
-          person_rfc: '',
-          person_imss_nss: '',
-          person_created_at:'',
-          person_updated_at:'',
-          person_deleted_at:''
-        },
-        department: {
-          department_id: 1,
-          department_sync_id: '',
-          department_code: '',
-          department_name: 'Sistemas',
-          department_alias: 'Desarrollo de software',
-          department_is_default: '',
-          department_active: '',
-          parent_department_id: null,
-          parent_department_sync_id: '',
-          company_id: null,
-          department_last_synchronization_at: '',
-          department_created_at: '',
-          department_updated_at: '',
-          department_deleted_at: ''
-        },
-        position: {
-          position_id: 1,
-          position_sync_id: '',
-          position_code: '',
-          position_name: 'Ingeniero de Procedimientos Aeronáuticos y Normatividad',
-          position_alias: '',
-          position_is_default: 1,
-          position_active: 1,
-          parent_position_id: null,
-          parent_position_sync_id: '',
-          company_id: 1,
-          position_last_synchronization_at: '',
-          position_created_at: '',
-          position_updated_at: '',
-          position_deleted_at: ''
-        }
-      }
-    ]
   },
   methods: {
+    async getEmployee () {
+      const employeCode = this.$route.params.employee_number
+      const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, 1, 1)
+      const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
+      this.employee = employee
+    },
     setDefaultVisualizationMode () {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
@@ -254,19 +190,10 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    async setDepartmentPositionEmployeeList () {
-      const response = await new AttendanceMonitorController().getDepartmentPositionEmployees()
-      this.employeeDepartmentPositionList = response
-    },
     setGraphsData () {
       this.setPeriodData()
       this.setPeriodCategories()
       this.setGeneralData()
-    },
-    async handlerDeparmentSelect () {
-      this.periodSelected = new Date()
-      await this.setDepartmentPositionEmployeeList()
-      this.setGraphsData()
     },
     handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
@@ -282,18 +209,16 @@ export default defineComponent({
     handlerPeriodChange () {
       this.setGraphsData()
     },
-    handlerSearchEmployee(event: any) {
-      setTimeout(() => {
-          if (event.query.trim().length) {
-            this.filteredEmployees = this.employeeList.filter((employee) => {
-              return employee.employee_first_name.toLowerCase().startsWith(event.query.toLowerCase());
-            });
-          }
-      }, 250);
+    async handlerSearchEmployee(event: any) {
+      if (event.query.trim().length) {
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 10)
+        const list = response.status === 200 ? response._data.data.employees.data : []
+        this.filteredEmployees = list
+      }
     },
     onEmployeeSelect () {
-      if (this.selectedEmployee && this.selectedEmployee.employee_code) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employee_code}`)
+      if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
+        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
     }
   }

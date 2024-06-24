@@ -22,13 +22,15 @@
         <div class="avatar">
           <div>
             <div class="avatar-name">
-              Wilvardo Ramirez Colunga
+              {{ authUser?.person?.personFirstname || '' }}
+              {{ authUser?.person?.personLastname || '' }}
+              {{ authUser?.person?.personSecondLastname || '' }}
             </div>
             <div class="avatar-description">
-              wramirez@siler-mx.com
+              {{ authUser?.userEmail || '' }}
             </div>
           </div>
-          <Avatar label="W" size="large" class="avatar-thumbnail" />
+          <Avatar :label="avatarLetter" size="large" class="avatar-thumbnail" />
         </div>
       </div>
     </div>

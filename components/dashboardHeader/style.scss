@@ -144,6 +144,10 @@
           background-color: transparentize($color: $info, $amount: 0.75);
           color: $primary;
           font-size: 1.25rem;
+          
+          span {
+            font-weight: 500;
+          }
         }
       }
 
