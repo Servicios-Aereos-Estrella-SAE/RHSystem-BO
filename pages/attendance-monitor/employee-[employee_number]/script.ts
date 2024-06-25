@@ -93,6 +93,7 @@ export default defineComponent({
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
+    minDate: new Date() as Date,
     maxDate: new Date() as Date,
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
@@ -162,6 +163,11 @@ export default defineComponent({
 
       return daysList
     }
+  },
+  created () {
+    const minDateString = '2024-05-01T00:00:00'
+    const minDate = new Date(minDateString)
+    this.minDate = minDate
   },
   async mounted() {
     this.periodSelected = new Date()

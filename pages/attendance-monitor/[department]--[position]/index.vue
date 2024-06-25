@@ -65,6 +65,7 @@
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
               :maxDate="maxDate"
               showWeek
               @update:modelValue="handlerPeriodChange"

@@ -99,12 +99,12 @@ export default defineComponent({
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
+    minDate: new Date() as Date,
     maxDate: new Date() as Date,
     departmentPositionList: [] as PositionInterface[],
-
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
-    filteredEmployees: [] as EmployeeInterface[]
+    filteredEmployees: [] as EmployeeInterface[],
   }),
   computed: {
     lineChartTitle () {
@@ -132,6 +132,11 @@ export default defineComponent({
       const collection = list.map((item: PositionInterface) => item)
       return collection
     }
+  },
+  created () {
+    const minDateString = '2024-05-01T00:00:00'
+    const minDate = new Date(minDateString)
+    this.minDate = minDate
   },
   async mounted() {
     this.periodSelected = new Date()
