@@ -98,6 +98,7 @@ export default defineComponent({
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
+    minDate: new Date() as Date,
     employeeDepartmentPositionList: [] as EmployeeInterface[],
     department: null as DepartmentInterface | null,
     position: null as PositionInterface | null,
@@ -121,6 +122,11 @@ export default defineComponent({
         return 'Weekly behavior'
       }
     },
+  },
+  created () {
+    const minDateString = '2024-05-01T00:00:00'
+    const minDate = new Date(minDateString)
+    this.minDate = minDate
   },
   async mounted() {
     this.periodSelected = new Date()

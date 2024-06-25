@@ -56,8 +56,21 @@
             font-weight: normal;
           }
 
+          .name-emp-code {
+            font-size: 0.7rem;
+            font-weight: normal;
+
+            @media screen and (max-width: $ipad) {
+              display: none;
+            }
+          }
+
           .emp-code {
             font-size: 0.7rem;
+
+            @media screen and (min-width: $ipad) {
+              display: none;
+            }
           }
         }
       }

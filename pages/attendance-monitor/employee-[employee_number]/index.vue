@@ -15,6 +15,9 @@
             <h1 class="capitalize">
               {{ `${employee.employeeFirstName || ''}`.toLocaleLowerCase() }}
               {{ `${employee.employeeLastName || ''}`.toLocaleLowerCase() }}
+              <span class="name-emp-code">
+                ( Emp. Code: {{ employee.employeeCode }} )
+              </span>
               <small>
                 {{ employee.department.departmentAlias || employee.department.departmentName }}
                 /
@@ -74,6 +77,7 @@
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
               :maxDate="maxDate"
               showWeek
               @update:modelValue="handlerPeriodChange"

@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 
 
 export default defineComponent({
@@ -92,11 +93,12 @@ export default defineComponent({
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
+    minDate: new Date() as Date,
     maxDate: new Date() as Date,
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employee: null as EmployeeInterface | null,
-    dailyAssistList: []
+    dailyAssistList: [] as AssistDayInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -161,6 +163,11 @@ export default defineComponent({
 
       return daysList
     }
+  },
+  created () {
+    const minDateString = '2024-05-01T00:00:00'
+    const minDate = new Date(minDateString)
+    this.minDate = minDate
   },
   async mounted() {
     this.periodSelected = new Date()
@@ -234,7 +241,7 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
 
       const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
-      this.dailyAssistList = assistReq.status === 200 ? assistReq._data.data.data.reverse() : []
+      this.dailyAssistList = (assistReq.status === 200 ? assistReq._data.data.data.reverse() : []) as AssistDayInterface[]
     }
   }
 })
