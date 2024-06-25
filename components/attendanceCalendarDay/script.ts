@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { AssistDayInterface } from '~/resources/scripts/interfaces/assistDayInterface'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
