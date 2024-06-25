@@ -47,7 +47,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.check_in.punchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt').toString().padStart(13, '0')
+      return timeCST.toFormat('tt')
     },
     chekOutTime () {
       if (!this.checkAssist?.assist?.check_out?.punchTimeOrigin) {
@@ -56,7 +56,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.check_out.punchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt').toString().padStart(13, '0')
+      return timeCST.toFormat('tt')
     }
   },
   mounted() {
