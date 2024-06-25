@@ -20,6 +20,9 @@
                 /
                 {{ employee.position.positionAlias || employee.position.positionName }}
               </small>
+              <small class="emp-code">
+                Emp. Code: {{ employee.employeeCode }}
+              </small>
             </h1>
           </div>
           <div></div>
@@ -97,13 +100,18 @@
               Check in & Check out
             </h2>
           </div>
-          <div v-if="weeklyStartDay.length > 0" class="days-wrapper">
-            <div v-for="date in weeklyStartDay" :key="`key-calendar-day-${Math.random()}-${date.day}`">
+          <div v-if="dailyAssistList.length > 0" class="days-wrapper">
+            <div v-for="(assist, index) in dailyAssistList" :key="`key-calendar-day-${Math.random()}-${index}`">
               <attendanceCalendarDay
-                :dateYear="date.year"
-                :dateMonth="date.month"
-                :dateDay="date.day"
+                :checkAssist="assist"
               />
+            </div>
+          </div>
+          <div v-else class="days-wrapper empty">
+            <div class="empty">
+              Empty assist list to display data.
+              <br>
+              Select other date range in Weekly visualization mode
             </div>
           </div>
         </div>

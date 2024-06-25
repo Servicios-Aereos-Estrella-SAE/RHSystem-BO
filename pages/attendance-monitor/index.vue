@@ -91,6 +91,9 @@
             <highchart :options="periodData" style="width: 100%;" />
           </div>
         </div>
+        <h2>
+          Department positions
+        </h2>
         <div class="department-positions-wrapper">
           <div v-for="(position, index) in departmentPositionCollection" :key="`position-${position.parentPositionId}-${index}`">
             <attendanceInfoCard 
