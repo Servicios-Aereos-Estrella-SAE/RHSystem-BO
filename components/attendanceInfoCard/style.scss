@@ -12,10 +12,6 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-
-    @media screen and (max-width: $ipad) {
-      font-size: 0.7rem;
-    }
   }
 
   .percentage {

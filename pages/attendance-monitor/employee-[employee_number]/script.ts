@@ -4,6 +4,7 @@ import AttendanceMonitorController from '../../../resources/scripts/controllers/
 import { DateTime } from 'luxon'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
+import AssistService from '~/resources/scripts/services/AssistService'
 
 
 export default defineComponent({
@@ -94,7 +95,8 @@ export default defineComponent({
     maxDate: new Date() as Date,
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
-    employee: null as EmployeeInterface | null
+    employee: null as EmployeeInterface | null,
+    dailyAssistList: []
   }),
   computed: {
     lineChartTitle () {
@@ -163,7 +165,7 @@ export default defineComponent({
   async mounted() {
     this.periodSelected = new Date()
     await this.getEmployee()
-    this.setDefaultVisualizationMode()
+    await this.setDefaultVisualizationMode()
   },
   methods: {
     async getEmployee () {
@@ -184,8 +186,11 @@ export default defineComponent({
     setGeneralData () {
       this.generalData.series[0].data = new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode?.value || 'weekly')
     },
-    setPeriodData () {
+    async setPeriodData () {
       this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      if (this.visualizationMode?.value === 'weekly') {
+        await this.getEmployeeAssist()
+      }
     },
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
@@ -211,7 +216,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 10)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 30)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
@@ -220,6 +225,16 @@ export default defineComponent({
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
+    },
+    async getEmployeeAssist () {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeID = this.employee?.employeeId || 0
+
+      const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
+      this.dailyAssistList = assistReq.status === 200 ? assistReq._data.data.data.reverse() : []
     }
   }
 })
