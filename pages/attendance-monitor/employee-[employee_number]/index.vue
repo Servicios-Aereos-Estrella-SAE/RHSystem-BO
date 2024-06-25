@@ -15,6 +15,9 @@
             <h1 class="capitalize">
               {{ `${employee.employeeFirstName || ''}`.toLocaleLowerCase() }}
               {{ `${employee.employeeLastName || ''}`.toLocaleLowerCase() }}
+              <span class="name-emp-code">
+                ( Emp. Code: {{ employee.employeeCode }} )
+              </span>
               <small>
                 {{ employee.department.departmentAlias || employee.department.departmentName }}
                 /

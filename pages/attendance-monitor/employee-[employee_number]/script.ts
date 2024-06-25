@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 
 
 export default defineComponent({
@@ -96,7 +97,7 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employee: null as EmployeeInterface | null,
-    dailyAssistList: []
+    dailyAssistList: [] as AssistDayInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -234,7 +235,7 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
 
       const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
-      this.dailyAssistList = assistReq.status === 200 ? assistReq._data.data.data.reverse() : []
+      this.dailyAssistList = (assistReq.status === 200 ? assistReq._data.data.data.reverse() : []) as AssistDayInterface[]
     }
   }
 })
