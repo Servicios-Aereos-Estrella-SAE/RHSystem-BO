@@ -47,7 +47,8 @@ export default defineNuxtConfig({
         getSession: { path: '/auth/session', method: 'get' }
       },
       token: {
-        signInResponseTokenPointer: '/data/token'
+        signInResponseTokenPointer: '/data/token',
+        maxAgeInSeconds: (60 * 60) * 24
       },
       sessionDataType: {
         deletedAt: 'string | null',

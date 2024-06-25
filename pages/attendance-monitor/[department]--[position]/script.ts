@@ -191,7 +191,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 10)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 30)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
