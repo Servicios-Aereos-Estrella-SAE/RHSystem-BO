@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
+import { io } from 'socket.io-client'
 
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 
@@ -105,6 +106,8 @@ export default defineComponent({
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
+    socketIO: null as any,
+    authUser: null as UserInterface | null
   }),
   computed: {
     lineChartTitle () {
@@ -133,10 +136,16 @@ export default defineComponent({
       return collection
     }
   },
-  created () {
+  async created () {
+    await this.setAuthUser()
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
+    this.socketIO = io(this.$config.public.SOCKET)
+    this.socketIO.on(`user-deleted:${this.authUser?.userEmail}`, () => {
+      this.socketIO.close()
+      // this.$auth.logout()
+    })
   },
   async mounted() {
     this.periodSelected = new Date()
@@ -211,6 +220,12 @@ export default defineComponent({
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
-    }
+    },
+    async setAuthUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.authUser = authUser
+    },
   }
 })
