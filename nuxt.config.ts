@@ -96,6 +96,7 @@ export default defineNuxtConfig({
       PORT: process.env.PORT,
       ENVIRONMENT: process.env.ENVIRONMENT,
       BASE_API_PATH: process.env.BASE_API_PATH,
+      SOCKET: process.env.SOCKET,
     },
   },
 
