@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
-import { io } from 'socket.io-client'
 
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 
@@ -9,7 +8,6 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 
@@ -105,9 +103,7 @@ export default defineComponent({
     departmentPositionList: [] as PositionInterface[],
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
-    filteredEmployees: [] as EmployeeInterface[],
-    socketIO: null as any,
-    authUser: null as UserInterface | null
+    filteredEmployees: [] as EmployeeInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -136,16 +132,10 @@ export default defineComponent({
       return collection
     }
   },
-  async created () {
-    await this.setAuthUser()
+  created () {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
-    this.socketIO = io(this.$config.public.SOCKET)
-    this.socketIO.on(`user-deleted:${this.authUser?.userEmail}`, () => {
-      this.socketIO.close()
-      // this.$auth.logout()
-    })
   },
   async mounted() {
     this.periodSelected = new Date()
@@ -220,12 +210,6 @@ export default defineComponent({
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
-    },
-    async setAuthUser () {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
-      this.authUser = authUser
     },
   }
 })
