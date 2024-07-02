@@ -95,7 +95,7 @@
             <h2>
               {{ lineChartTitle }}
             </h2>
-            <highchart :options="periodData" style="width: 100%;" />
+            <!-- <highchart :options="periodData" style="width: 100%;" /> -->
           </div>
         </div>
         <div v-if="visualizationMode && visualizationMode.value !== 'yearly'" class="box report-wrapper">
