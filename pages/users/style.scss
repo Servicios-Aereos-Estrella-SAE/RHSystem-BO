@@ -1,5 +1,5 @@
 @import '/resources/styles/variables.scss';
-
+@import 'primeicons/primeicons.css';
 .user-page {
 
   h2 {
@@ -29,6 +29,19 @@
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
       }
+    }
+    .user-card-wrapper {
+      box-sizing: border-box;
+      display: grid;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      gap: .5rem;
+      margin-top: 0.5rem;
+    }
+
+    .paginator {
+      margin-top: 0.5rem;
+      width: 100%;
     }
   }
 }

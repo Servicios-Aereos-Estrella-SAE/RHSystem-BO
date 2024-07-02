@@ -29,7 +29,7 @@ export default defineComponent({
       this.guest = !(!!authUser)
 
       if (!this.guest) {
-        this.$router.push('/attendance-monitor')
+        this.$router.push('/users')
       }
     },
   }
