@@ -63,8 +63,16 @@ export default defineComponent({
         return ''
       }
 
+      const now = DateTime.now().toFormat('yyyy-LL-dd')
       const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
+      const timeDate = time.toFormat('yyyy-LL-dd')
       const timeCST = time.setZone('UTC-5')
+
+      if (timeDate === now) {
+        this.checkAssist.assist.checkOutStatus = ''
+        return ''
+      }
+
       return timeCST.toFormat('tt')
     }
   },
