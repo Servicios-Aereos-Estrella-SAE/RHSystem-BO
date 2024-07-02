@@ -1,9 +1,17 @@
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+
 export default class AssistService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
+    const { token } = useAuth()
+
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async index (
@@ -14,15 +22,12 @@ export default class AssistService {
     limit: number = 999999999
   ) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    const query = { date, 'date-end': dateEnd, employee, page, limit }
 
     await $fetch(`${this.API_PATH}/v1/assists`, {
-      query: {
-        date,
-        'date-end': dateEnd,
-        employee,
-        page,
-        limit
-      },
+      headers,
+      query,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -40,10 +45,6 @@ export default class AssistService {
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
-
-    console.log('🚀 ------------------------------------------------------------🚀')
-    console.log('🚀 ~ AssistService ~ sync ~ responseRequest:', responseRequest)
-    console.log('🚀 ------------------------------------------------------------🚀')
 
     return responseRequest
   }

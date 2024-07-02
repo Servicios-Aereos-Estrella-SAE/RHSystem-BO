@@ -6,7 +6,7 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-
+import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -98,7 +98,7 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employee: null as EmployeeInterface | null,
-    dailyAssistList: [] as AssistDayInterface[]
+    employeeCalendar: [] as AssistDayInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -195,7 +195,7 @@ export default defineComponent({
     },
     async setPeriodData () {
       this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
-      if (this.visualizationMode?.value === 'weekly') {
+      if (this.visualizationMode?.value !== 'yearly') {
         await this.getEmployeeAssist()
       }
     },
@@ -234,14 +234,19 @@ export default defineComponent({
       }
     },
     async getEmployeeAssist () {
+      if (this.visualizationMode?.value !== 'yearly') {
+        await this.getEmployeeCalendar()
+      }
+    },
+    async getEmployeeCalendar () {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeID = this.employee?.employeeId || 0
-
       const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
-      this.dailyAssistList = (assistReq.status === 200 ? assistReq._data.data.data.reverse() : []) as AssistDayInterface[]
+      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      this.employeeCalendar = employeeCalendar
     }
   }
 })
