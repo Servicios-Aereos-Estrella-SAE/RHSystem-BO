@@ -7,10 +7,23 @@
     {{ activeSwicht ? 'Activo' : 'Inactivo' }}</label>
     <InputSwitch v-model="activeSwicht" />
 </div>
+<div class="input-box">
+  <label for="role">
+    Role
+  </label>
+  <Dropdown v-model="user.roleId" :options="roles" optionLabel="roleName" optionValue="roleId" placeholder="Select a Role" filter class="w-full md:w-14rem" />
+</div>
+<div class="input-box">
+  <label for="role">
+    Empleado
+  </label>
+  <Dropdown v-model="user.personId" :options="employees" optionLabel="employeeFirstName" optionValue="personId" placeholder="Select a Employee" filter class="w-full md:w-14rem" />
+</div>
         <div class="input-box">
           <label for="useremail">
             Email</label>
-            <InputText id="useremail" v-model="user.userEmail" type="email"/>
+            <InputText id="useremail" v-model="user.userEmail" type="email" :invalid="submitted && !user.userEmail"/>
+            <small class="p-error" v-if="submitted && !user.userEmail">Email is required.</small>
         </div>
         <div class="input-box">
           <label for="password">
@@ -21,10 +34,7 @@
         
         <div class="box-tools-footer">
           <Button label="Cancelar" severity="warning" />
-          <Button label="Guardar" severity="primary"/>
-          <!-- <nuxt-link to="/recuperar-contrasena">
-            Forgot your password? click here to recover
-          </nuxt-link> -->
+          <Button label="Guardar" severity="primary" @click="submitted = true"/>
         </div>
       </div>
     </div>
