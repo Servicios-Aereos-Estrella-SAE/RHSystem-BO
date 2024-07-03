@@ -13,8 +13,8 @@
       {{ `${user.role.roleName || ''}`.toLocaleLowerCase() }}
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" severity="info" @click="editUser"/>
-      <Button icon="pi pi-trash" severity="warning" @click="confirmDeleteUser()"/>
+      <Button icon="pi pi-pencil" severity="info" @click="handlerClickOnEdit()"/>
+      <Button icon="pi pi-trash" severity="warning" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>

@@ -14,13 +14,12 @@ export default defineComponent({
     filteredRoles: [] as RoleInterface[],
     filteredUsers: [] as UserInterface[],
     user: null as UserInterface | null,
-    userDialog: false,
     currentPage: 1,
     totalRecords: 0,
     first: 0,
     last: 0,
     rowsPerPage: 30,
-    drawerUserForm: true
+    drawerUserForm: false
   }),
   computed: {
   },
@@ -54,9 +53,13 @@ export default defineComponent({
       this.rowsPerPage = event.rows
       this.handlerSearchUser()
     },
-    editUser(user: UserInterface) {
-      this.user = {...user};
-      this.userDialog = true;
-  }
+    onEdit(user: UserInterface) {
+      this.user = {...user}
+      this.drawerUserForm = true
+    },
+    onDelete(user: UserInterface) {
+      this.user = {...user}
+      this.drawerUserForm = true
+    }
   }
 })

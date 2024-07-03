@@ -5,7 +5,9 @@ import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface
 export default defineComponent({
   name: 'userInfoCard',
   props: {
-    user: { type: Object as PropType<UserInterface>, required: true }
+    user: { type: Object as PropType<UserInterface>, required: true },
+    clickOnEdit: { type: Function, default: null },
+    clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
   }),
@@ -14,5 +16,15 @@ export default defineComponent({
   mounted() {
   },
   methods: {
+    handlerClickOnEdit () {
+      if (this.clickOnEdit) {
+        this.clickOnEdit()
+      }
+    },
+    handlerClickOnDelete () {
+      if (this.clickOnDelete) {
+        this.clickOnDelete()
+      }
+    },
   }
 })

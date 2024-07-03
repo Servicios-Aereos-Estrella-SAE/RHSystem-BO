@@ -44,6 +44,8 @@
             <div v-for="(user, index) in filteredUsers" :key="`user-${user.user_id}-${index}`">
               <userInfoCard
                 :user="user"
+                :click-on-edit="() => { onEdit(user) }"
+                :click-on-delete="() => { onDelete(user) }"
               />
             </div>
           </div>
@@ -56,8 +58,13 @@
               @page="onPageChange"
             />
           <!-- Form user -->
-          <Sidebar v-model:visible="drawerUserForm" header="User form" position="right">
-          </Sidebar>
+          <div class="card flex justify-content-center">
+            <Sidebar v-model:visible="drawerUserForm" header="User form" position="right" class="user-form-sidebar">
+              <userInfoForm
+                :user="user"
+              />
+            </Sidebar>
+          </div>
         </div>
       </div>
     </NuxtLayout>
@@ -83,9 +90,9 @@
 .graph-label {
   color: red;
 }
-.user-form-drawer {
+.user-form-sidebar {
     width: 100% !important;
-    max-width: 90rem !important;
+    max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
