@@ -6,7 +6,7 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-
+import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -87,7 +87,6 @@ export default defineComponent({
       series: [] as Array<Object>
     },
     visualizationModeOptions: [
-      { name: 'Annual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: false },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
     ] as VisualizationModeOptionInterface[],
@@ -98,7 +97,7 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employee: null as EmployeeInterface | null,
-    dailyAssistList: [] as AssistDayInterface[]
+    employeeCalendar: [] as AssistDayInterface[]
   }),
   computed: {
     lineChartTitle () {
@@ -191,11 +190,30 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     setGeneralData () {
-      this.generalData.series[0].data = new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode?.value || 'weekly')
+      const totalDays = this.employeeCalendar.filter((assistDate) => !assistDate.assist.isFutureDay).length
+      const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
+      const rests = this.employeeCalendar.filter((assistDate) => assistDate.assist.isRestDay && !assistDate.assist.isFutureDay).length
+      const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
+      const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
+      const totalAvailable = totalDays - rests
+      const serieData = []
+
+      const assist = (assists / totalAvailable) * 100
+      const tolerance = (tolerances / totalAvailable) * 100
+      const delay = (delays / totalAvailable) * 100
+      const fault = (faults / totalAvailable) * 100
+
+      serieData.push({ name: 'Assists', y: assist, color: '#33D4AD' })
+      serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
+      serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
+      serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
+
+      this.generalData.series[0].data = serieData
     },
     async setPeriodData () {
       this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
-      if (this.visualizationMode?.value === 'weekly') {
+      if (this.visualizationMode?.value !== 'yearly') {
         await this.getEmployeeAssist()
       }
     },
@@ -203,11 +221,11 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     setGraphsData () {
-      this.setPeriodData()
-      this.setPeriodCategories()
-      this.setGeneralData()
+      // this.setPeriodData()
+      // this.setPeriodCategories()
+      // this.setGeneralData()
     },
-    handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
@@ -216,10 +234,11 @@ export default defineComponent({
       }
 
       this.periodSelected = new Date()
-      this.setGraphsData()
+      await this.getEmployeeAssist()
     },
-    handlerPeriodChange () {
-      this.setGraphsData()
+    async handlerPeriodChange () {
+      await this.getEmployeeAssist()
+      // this.setGraphsData()
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
@@ -234,14 +253,20 @@ export default defineComponent({
       }
     },
     async getEmployeeAssist () {
+      if (this.visualizationMode?.value !== 'yearly') {
+        await this.getEmployeeCalendar()
+      }
+    },
+    async getEmployeeCalendar () {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeID = this.employee?.employeeId || 0
-
       const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
-      this.dailyAssistList = (assistReq.status === 200 ? assistReq._data.data.data.reverse() : []) as AssistDayInterface[]
+      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      this.employeeCalendar = employeeCalendar
+      this.setGeneralData()
     }
   }
 })

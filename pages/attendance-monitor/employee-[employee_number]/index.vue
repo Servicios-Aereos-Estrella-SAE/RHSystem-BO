@@ -95,7 +95,7 @@
             <h2>
               {{ lineChartTitle }}
             </h2>
-            <highchart :options="periodData" style="width: 100%;" />
+            <!-- <highchart :options="periodData" style="width: 100%;" /> -->
           </div>
         </div>
         <div v-if="visualizationMode && visualizationMode.value !== 'yearly'" class="box report-wrapper">
@@ -104,10 +104,10 @@
               Check in & Check out
             </h2>
           </div>
-          <div v-if="dailyAssistList.length > 0" class="days-wrapper">
-            <div v-for="(assist, index) in dailyAssistList" :key="`key-calendar-day-${Math.random()}-${index}`">
+          <div v-if="employeeCalendar.length > 0" class="days-wrapper">
+            <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
               <attendanceCalendarDay
-                :checkAssist="assist"
+                :checkAssist="calendarDay"
               />
             </div>
           </div>
