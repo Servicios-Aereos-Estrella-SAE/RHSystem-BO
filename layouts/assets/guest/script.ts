@@ -6,7 +6,7 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    guest: false,
+    guest: true,
   }),
   computed: {
   },
@@ -14,7 +14,7 @@ export default defineComponent({
     // const colorMode = useColorMode()
   },
   async mounted() {
-    await this.verifyAuthStatus()
+    // await this.verifyAuthStatus()
   },
   methods: {
     // setcolor () {
@@ -23,14 +23,14 @@ export default defineComponent({
     //   })
     // },
     async verifyAuthStatus () {
-      const { getSession } = useAuth()
+      /* const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface
       this.guest = !(!!authUser)
 
       if (!this.guest) {
-        this.$router.push('/users')
-      }
+        this.$router.push('/attendance-monitor')
+      } */
     },
   }
 })
