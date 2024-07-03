@@ -220,11 +220,6 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    setGraphsData () {
-      // this.setPeriodData()
-      // this.setPeriodCategories()
-      // this.setGeneralData()
-    },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
@@ -238,7 +233,6 @@ export default defineComponent({
     },
     async handlerPeriodChange () {
       await this.getEmployeeAssist()
-      // this.setGraphsData()
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
