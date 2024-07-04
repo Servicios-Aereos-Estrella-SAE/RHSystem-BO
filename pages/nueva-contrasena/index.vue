@@ -53,7 +53,7 @@
                           <li>Minimum 8 characters</li>
                       </ul>
                   </template>
-              </Password>
+                </Password>
               </div>
               <div class="input-box">
                 <label for="password">

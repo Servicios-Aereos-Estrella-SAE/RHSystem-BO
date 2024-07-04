@@ -6,8 +6,11 @@
     <div class="email">
       {{ `${user.userEmail}`.toLocaleLowerCase() }}
     </div>
-    <div class="name">
+    <div v-if="user.person" class="name">
       {{ `${user.person.personFirstname || ''}`.toLocaleLowerCase() }} {{ `${user.person.personLastname || ''}`.toLocaleLowerCase() }} {{ `${user.person.personSecondLastname || ''}`.toLocaleLowerCase() }}
+    </div>
+    <div v-else class="name">
+      ---
     </div>
     <div class="role assist capitalize">
       {{ `${user.role.roleName || ''}`.toLocaleLowerCase() }}

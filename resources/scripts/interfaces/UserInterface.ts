@@ -1,16 +1,16 @@
 import type { PeopleInterface } from "./PeopleInterface"
 
 interface UserInterface {
-  deletedAt: string | null,
-  personId: number,
-  roleId: number,
+  deletedAt?: string | null,
+  personId: number | null,
+  roleId: number | null,
   userActive: number,
-  userCreatedAt: string,
-  userEmail: string,
+  userCreatedAt?: string,
+  userEmail: string | null,
   userPassword?: string,
-  userId: number,
-  userToken: string | null,
-  userUpdatedAt: string,
+  userId: number | null,
+  userToken?: string | null,
+  userUpdatedAt?: string,
 
   person?: PeopleInterface
 }
