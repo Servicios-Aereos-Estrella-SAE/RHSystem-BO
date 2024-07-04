@@ -1,6 +1,6 @@
 <template>
+  <Toast />
   <div class="user-page">
-
     <Head>
       <Title>
         Users
@@ -8,7 +8,6 @@
     </Head>
     <NuxtLayout name="backoffice">
       <div class="user-wrapper">
-        <Toast />
         <div class="box head-page">
           <div class="input-box">
             <label for="search">
@@ -33,7 +32,8 @@
             </AutoComplete>
           </div>
           <div class="input-box">
-            <Button label="New" icon="pi pi-plus" severity="success" @click="addNew" />
+            <br/>
+            <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
           </div>
           <div></div>
         </div>
@@ -58,6 +58,19 @@
           </div>
         </div>
       </div>
+      <Dialog v-model:visible="drawerUserDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span v-if="user">   Are you sure you want to delete 
+              <b v-if="user.person">{{`${user.person.personFirstname || ''}`.toLocaleLowerCase() }} {{ `${user.person.personLastname || ''}`.toLocaleLowerCase() }} {{ `${user.person.personSecondLastname || ''}`.toLocaleLowerCase() }}</b>
+              <b v-else>{{`${user.userEmail || ''}`.toLocaleLowerCase() }}</b>
+              ?</span>
+        </div>
+        <template #footer>
+            <Button label="No" icon="pi pi-times" text @click="drawerUserDelete = false"/>
+            <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+        </template>
+    </Dialog>
     </NuxtLayout>
   </div>
 </template>

@@ -2,12 +2,11 @@ import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface
 import type { UserInterface } from "~/resources/scripts/interfaces/UserInterface";
 import RoleService from "~/resources/scripts/services/RoleService";
 import UserService from "~/resources/scripts/services/UserService";
-import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 
 export default defineComponent({
   components: {
-    Toast
+    Toast,
   },
   name: 'Users',
   props: {
@@ -25,6 +24,7 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 30,
     drawerUserForm: false,
+    drawerUserDelete: false
   }),
   computed: {
   },
@@ -32,13 +32,6 @@ export default defineComponent({
   },
   async mounted() {
     await this.handlerSearchUser()
-    const toast = useToast();
-    toast.add({
-      severity: 'success',
-      summary: 'Success Message',
-      detail: 'Message Content',
-      life: 31000 // Tiempo de vida en milisegundos
-    });
   },
   methods: {
     async handlerSearchRole(event: any) {
@@ -83,7 +76,38 @@ export default defineComponent({
     },
     onDelete(user: UserInterface) {
       this.user = {...user}
-      this.drawerUserForm = true
+      console.log(this.user)
+      this.drawerUserDelete = true
+    },
+    async confirmDelete() {
+      if (this.user) {
+        this.drawerUserDelete = false
+        const userService = new UserService()
+        const userResponse = await userService.delete(this.user)
+        console.log(userResponse)
+        if (userResponse.status === 201) {
+          const index = this.filteredUsers.findIndex((user: UserInterface) => user.userId === this.user?.userId);
+          console.log(index)
+          if (index !== -1) {
+            this.filteredUsers.splice(index, 1);
+            this.$forceUpdate()
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete user',
+            detail: userResponse._data.message,
+              life: 5000,
+          })
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete user',
+            detail: userResponse._data.message,
+              life: 5000,
+          })
+        }
+        console.log(userResponse._data.message)
+      }
     }
   }
 })

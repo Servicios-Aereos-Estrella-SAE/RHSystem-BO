@@ -1,5 +1,6 @@
 <template>
   <div class="box user-info-form">
+      <Toast />
     <div v-if="user" class="user-form">
       <div class="form-container">
         <div class="input-box">
@@ -41,19 +42,18 @@
           <label for="password">
             Password
           </label>
-          <Password id="password" v-model="user.userPassword" toggleMask :feedback="false" />
+          <Password id="password" v-model="user.userPassword" toggleMask :feedback="false" :invalid="submitted && !user.userPassword" />
+          <small class="p-error" v-if="submitted && !user.userPassword">Password is required.</small>
         </div>
         <div v-if="!user.userId || changePassword" class="input-box">
           <label for="password2">
             Confirm password
           </label>
-          <Password id="password2" v-model="passwordConfirm" toggleMask :feedback="false" />
+          <Password id="password2" v-model="passwordConfirm" toggleMask :feedback="false" :invalid="submitted && passwordConfirm" />
+          <small class="p-error" v-if="submitted && !passwordConfirm">Confirm password is required.</small>
         </div>
-
-
         <div class="box-tools-footer">
-          <Button label="Cancelar" severity="warning" @click="onCancel()" />
-          <Button v-if="user.userId" :label="changePassword ? 'Cancelar Cambio de contraseña' : 'Cambiar contraseña'" severity="danger" @click="onChangePassword()" />
+          <Button v-if="user.userId" :label="changePassword ? 'Cancelar Cambio de contraseña' : 'Cambiar contraseña'" severity="secondary" @click="onChangePassword()" />
           <Button label="Guardar" severity="primary" @click="onSave()" />
         </div>
       </div>

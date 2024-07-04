@@ -52,6 +52,19 @@ export default class UserService {
     return responseRequest
   }
 
+  async delete (user: UserInterface) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/users/${user.userId}`, {
+      method: 'DELETE',
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+
 
   async show (userId: number) {
     let responseRequest: any = null
@@ -72,36 +85,21 @@ export default class UserService {
     }
   }
 
-  validateStrongPass (password: string, passwordConfirm: string) {
-    if (!password) {
-       return false
-     }
-    /**
-    //  * Entre 6 y 40 caracteres
-    //  * Al menos una minuscula
-    //  * Al menos una mayuscula
-    //  * Al menos un numero
-    //  * Al menos un caracter especial
-    //  */
-    const regEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{6,40}$/
-    return !!password.match(regEx)
-  }
-
   validateSamePass (password: string, passwordConfirm: string) {
     return password === passwordConfirm
   }
 
   validateInfo(user: UserInterface): boolean {
     if (!user.userEmail) {
-      console.error('Invalid email');
+      console.error('Wrong email');
       return false;
     }
     if (!user.personId) {
-      console.error('Invalid person id');
+      console.error('Wrong person id');
       return false;
     }
     if (!user.roleId) {
-      console.error('Invalid role id');
+      console.error('Wrong role id');
       return false;
     }
     return true;

@@ -6,12 +6,13 @@ import RoleService from '~/resources/scripts/services/RoleService'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import UserService from '~/resources/scripts/services/UserService'
-import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 export default defineComponent({
   components: {
     Toast,
+    ToastService,
   },
   name: 'userInfoForm',
   props: {
@@ -29,16 +30,6 @@ export default defineComponent({
   computed: {
   },
   async mounted() {
-    const toast = useToast()
-    /* const userService = new UserService()
-    const userResponse = await userService.show(this.user.userId)
-    console.log(userResponse)
-    if (userResponse.status === 200) {
-      this.currenUser = userResponse._data.data.user
-      console.log(this.currenUser)
-    } */
-    toast.add({ severity: 'success', summary: 'Success Message', detail: 'Message Content', group: 'tl', life: 3000 })
-    // this.changePassword = this.user.userId ? false : true
     await this.getRoles()
     await this.getEmployees()
     let isActive: any = 1
@@ -67,40 +58,32 @@ export default defineComponent({
       const userService = new UserService()
       this.user.userActive = this.activeSwicht ? 1 : 0
       if (!userService.validateInfo(this.user)) {
-        // console.log('Debe ingresar todos los datos')
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+            life: 5000,
+        })
         return
       }
       if (!this.user.userId && !this.user.userPassword) {
-        // console.log('Debe ingresar la contraseña')
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing password',
+            life: 5000,
+        })
         return
       }
       if (this.user.userPassword) {
-        if (!userService.validateStrongPass(this.user.userPassword, this.passwordConfirm)) {
-          // console.log('La contraseña debe cumplir con lo siguiente')
-          return
-          /*  return this.$notify({
-            type: 'info',
-            title: 'Problemas con el usuario',
-            dangerouslyUseHTMLString: true,
-            message: `La contraseña debe cumplir con lo siguiente: <br/>
-            <ul>
-              <li>Entre 6 y 40 caracteres</li>
-              <li>Al menos una minúscula</li>
-              <li>Al menos una mayúscula</li>
-              <li>Al menos un número</li>
-              <li>Al menos un caracter especial</li>
-            </ul>`
-          }) */
-        }
-
       if (!userService.validateSamePass(this.user.userPassword, this.passwordConfirm)) {
-        // console.log('Las contraseñas no coinciden')
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Passwords do not match',
+            life: 5000,
+        })
         return
-          /* return this.$notify({
-            type: 'info',
-            title: 'Problemas con el usuario',
-            message: 'Las contraseñas no coinciden'
-          }) */
         }
       }
       let userResponse = null
@@ -109,13 +92,24 @@ export default defineComponent({
       } else {
         userResponse = await userService.update(this.user)
       }
-      // console.log(userResponse)
+      if (userResponse.status === 201) {
+        this.$toast.add({
+          severity: 'success',
+          summary: `User ${this.user.userId ? 'updated' : 'created'}`,
+          detail: userResponse._data.message,
+            life: 5000,
+        })
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: `User ${this.user.userId ? 'updated' : 'created'}`,
+          detail: userResponse._data.message,
+            life: 5000,
+        })
+      }
     },
     onChangePassword() {
       this.changePassword = !this.changePassword
-    },
-    onCancel() {
-
     }
   }
 })
