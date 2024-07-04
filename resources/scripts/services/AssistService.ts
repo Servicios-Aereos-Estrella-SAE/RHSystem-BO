@@ -17,13 +17,11 @@ export default class AssistService {
   async index (
     date: string | Date,
     dateEnd: string | Date,
-    employee: number,
-    page: number = 1,
-    limit: number = 999999999
+    employeeId: number
   ) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
-    const query = { date, 'date-end': dateEnd, employee, page, limit }
+    const query = { date, 'date-end': dateEnd, employeeId }
 
     await $fetch(`${this.API_PATH}/v1/assists`, {
       headers,

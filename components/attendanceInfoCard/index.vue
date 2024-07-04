@@ -1,36 +1,36 @@
 <template>
   <div class="box attendance-info-card">
-    <div class="name">
+    <div v-if="position && !hidePositionTitle" class="name">
       {{ position.positionAlias || position.positionName }}
     </div>
     <div class="percentage assist">
-      -%
+      {{onTimePercentage}}%
       <small>
-        Assists
+        On Time
       </small>
     </div>
     <div class="percentages">
       <div class="percentage tolerance">
-        -%
+        {{onToleracePercentage}}%
         <small>
           Tolerances
         </small>
       </div>
       <div class="percentage delay">
-        -%
+        {{onDelayPercentage}}%
         <small>
           Delays
         </small>
       </div>
       <div class="percentage fault">
-        -%
+        {{onFaultPercentage}}%
         <small>
           Faults
         </small>
       </div>
     </div>
-    <div class="box-tools-footer">
-      <nuxt-link :to="`/attendance-monitor/${department.departmentId}--${position.positionId}`" class="box-button block">
+    <div v-if="!hideLink" class="box-tools-footer">
+      <nuxt-link v-if="department && position" :to="`/attendance-monitor/${department.departmentId}--${position.positionId}`" class="box-button block">
         See details
         <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
       </nuxt-link>
