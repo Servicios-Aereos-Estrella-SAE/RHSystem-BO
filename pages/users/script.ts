@@ -2,8 +2,13 @@ import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface
 import type { UserInterface } from "~/resources/scripts/interfaces/UserInterface";
 import RoleService from "~/resources/scripts/services/RoleService";
 import UserService from "~/resources/scripts/services/UserService";
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 
 export default defineComponent({
+  components: {
+    Toast
+  },
   name: 'Users',
   props: {
   },
@@ -19,14 +24,21 @@ export default defineComponent({
     first: 0,
     last: 0,
     rowsPerPage: 30,
-    drawerUserForm: false
+    drawerUserForm: false,
   }),
   computed: {
   },
   created () {
   },
   async mounted() {
-    this.handlerSearchUser()
+    await this.handlerSearchUser()
+    const toast = useToast();
+    toast.add({
+      severity: 'success',
+      summary: 'Success Message',
+      detail: 'Message Content',
+      life: 31000 // Tiempo de vida en milisegundos
+    });
   },
   methods: {
     async handlerSearchRole(event: any) {
@@ -40,6 +52,7 @@ export default defineComponent({
       /* if (this.search || this.selectedRole) {
         this.currentPage = 0
       } */
+
       const roleId = this.selectedRole ? this.selectedRole.roleId : null
       const response = await new UserService().getFilteredList(this.search, roleId, this.currentPage, this.rowsPerPage)
       const list = response.status === 200 ? response._data.data.users.data : []
@@ -52,6 +65,17 @@ export default defineComponent({
       this.currentPage = event.page + 1
       this.rowsPerPage = event.rows
       this.handlerSearchUser()
+    },
+    addNew() {
+      const newUser: UserInterface = {
+        userId: null,
+        userEmail: null,
+        userActive: 1,
+        personId: null,
+        roleId: null,
+      }
+      this.user = newUser
+      this.drawerUserForm = true
     },
     onEdit(user: UserInterface) {
       this.user = {...user}
