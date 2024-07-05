@@ -7,14 +7,14 @@ export default class EmployeeService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
-  async getFilteredList (searchText: string, department: number | null, position: number | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/employees`, {
       query: {
         search: searchText,
-        department,
-        position,
+        departmentId,
+        positionId,
         page,
         limit
       },

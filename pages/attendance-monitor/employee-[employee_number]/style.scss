@@ -12,7 +12,7 @@
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: auto auto 15rem 18rem 10rem;
+        grid-template-columns: auto auto 15rem 12rem 10rem;
       }
 
       @media screen and (max-width: $tablet) {
