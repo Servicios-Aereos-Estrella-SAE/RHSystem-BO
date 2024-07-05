@@ -28,27 +28,29 @@ export default class UserService {
 
   async store (user: UserInterface) {
     let responseRequest: any = null
-
-    await $fetch(`${this.API_PATH}/users`, {
-      method: 'POST',
-      query: { ...user },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
-    })
-
+    try {
+      await $fetch(`${this.API_PATH}/users`, {
+        method: 'POST',
+        query: { ...user },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 
   async update (user: UserInterface) {
     let responseRequest: any = null
-
-    await $fetch(`${this.API_PATH}/users/${user.userId}`, {
-      method: 'PUT',
-      query: { ...user },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
-    })
-
+    try {
+      await $fetch(`${this.API_PATH}/users/${user.userId}`, {
+        method: 'PUT',
+        query: { ...user },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 
@@ -101,6 +103,16 @@ export default class UserService {
     if (!user.roleId) {
       console.error('Wrong role id');
       return false;
+    }
+    return true;
+  }
+
+  validateEmail(userEmail: string): boolean {
+    // Expresión regular para validar el formato de un correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const isValidEmail = emailRegex.test(userEmail)
+    if (!isValidEmail) {
+      return false
     }
     return true;
   }
