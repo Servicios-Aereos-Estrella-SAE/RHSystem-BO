@@ -84,39 +84,45 @@
             />
           </div>
         </div>
-        <div class="general-graphs">
+        <div v-if="employeeCalendar.length > 0" class="general-graphs">
           <div class="box">
-            <h2>
-              General behavior into period
-            </h2>
-            <highchart :options="generalData" style="width: 100%;" />
-          </div>
-          <div class="box chart-bar">
-            <h2>
-              {{ lineChartTitle }}
-            </h2>
-            <!-- <highchart :options="periodData" style="width: 100%;" /> -->
-          </div>
-        </div>
-        <div v-if="visualizationMode && visualizationMode.value !== 'yearly'" class="box report-wrapper">
-          <div class="head">
-            <h2>
-              Check in & Check out
-            </h2>
-          </div>
-          <div v-if="employeeCalendar.length > 0" class="days-wrapper">
-            <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
-              <attendanceCalendarDay
-                :checkAssist="calendarDay"
+            <div class="pay-chart">
+              <h2>
+                General behavior into period
+              </h2>
+              <highchart :options="generalData" style="width: 100%;" />
+            </div>
+            <div class="indicators">
+              <attendanceInfoCard
+                :hideLink="true"
+                :hidePositionTitle="true"
+                :onTimePercentage="onTimePercentage"
+                :onToleracePercentage="onTolerancePercentage"
+                :onDelayPercentage="onDelayPercentage"
+                :onFaultPercentage="onFaultPercentage"
               />
             </div>
           </div>
-          <div v-else class="days-wrapper empty">
-            <div class="empty">
-              Empty assist list to display data.
-              <br>
-              Select other date range in Weekly visualization mode
+          <div v-if="visualizationMode" class="box report-wrapper">
+            <div class="head">
+              <h2>
+                {{ calendarTitle }}
+              </h2>
             </div>
+            <div class="days-wrapper">
+              <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
+                <attendanceCalendarDay
+                  :checkAssist="calendarDay"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="box">
+          <div class="empty">
+            Empty assist list to display data.
+            <br>
+            Select other date range in Weekly visualization mode
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@
               optionLabel="name"
               aria-labelledby="basic"
               optionDisabled="selected"
-              @change="handlerVisualizationModeChange"
+              @change="onInputVisualizationModeChange"
             />
           </div>
           <div class="input-box">
@@ -67,8 +67,8 @@
               :dateFormat="visualizationMode.calendar_format.format"
               :minDate="minDate"
               :maxDate="maxDate"
-              showWeek
               @update:modelValue="handlerPeriodChange"
+              showWeek
             />
           </div>
         </div>
@@ -90,9 +90,9 @@
           Employees
         </h2>
         <div class="department-positions-wrapper">
-          <div v-for="(employee, index) in employeeDepartmentPositionList" :key="`employee-position-${employee.employee_id}-${index}`">
+          <div v-for="(employeeAssist, index) in employeeDepartmentPositionList" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
             <attendanceEmployeeInfoCard
-              :employee="employee"
+              :employee="employeeAssist"
             />
           </div>
         </div>
@@ -108,14 +108,4 @@
 
 <style lang="scss" scoped>
 @import './style';
-</style>
-
-<style lang="scss">
-:deep(.graph-label) {
-  color: red;
-}
-
-.graph-label {
-  color: red;
-}
 </style>

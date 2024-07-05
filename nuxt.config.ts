@@ -1,6 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
-
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
@@ -10,7 +7,7 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: true,
+  ssr: false,
 
   app: {
     layoutTransition: { name: 'layout', mode: 'out-in' },

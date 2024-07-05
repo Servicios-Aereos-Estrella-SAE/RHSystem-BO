@@ -7,9 +7,14 @@ import type { VisualizationModeOptionInterface } from '~/resources/scripts/inter
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/interfaces/EmployeeAssistStatisticInterface'
+
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import PositionService from '~/resources/scripts/services/PositionService'
+import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
+import AssistService from '~/resources/scripts/services/AssistService'
 
 
 export default defineComponent({
@@ -91,7 +96,7 @@ export default defineComponent({
       series: [] as Array<Object>
     },
     visualizationModeOptions: [
-      { name: 'Annual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true },
+      // { name: 'Annual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
     ] as VisualizationModeOptionInterface[],
@@ -99,7 +104,7 @@ export default defineComponent({
     periodSelected: new Date() as Date,
     maxDate: new Date() as Date,
     minDate: new Date() as Date,
-    employeeDepartmentPositionList: [] as EmployeeInterface[],
+    employeeDepartmentPositionList: [] as EmployeeAssistStatisticInterface[],
     department: null as DepartmentInterface | null,
     position: null as PositionInterface | null,
     employeeList: [] as EmployeeInterface[],
@@ -107,6 +112,57 @@ export default defineComponent({
     filteredEmployees: [] as EmployeeInterface[]
   }),
   computed: {
+    weeklyStartDay () {
+      const daysList =[]
+
+      if (!this.periodSelected) {
+        return []
+      }
+
+      switch (this.visualizationMode?.value) {
+        case 'monthly': {
+          const date = DateTime.fromJSDate(this.periodSelected)
+          const start = date.startOf('month')
+          const daysInMonth = (start.daysInMonth || 0)
+          
+          for (let index = 0; index < daysInMonth; index++) {
+            const currentDay = start.plus({ days: index })
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+  
+            daysList.push({
+              year,
+              month,
+              day
+            })
+          }
+          break;
+        }
+        case 'weekly': {
+          const date = DateTime.fromJSDate(this.periodSelected)
+          const start = date.startOf('week')
+          
+          for (let index = 0; index < 7; index++) {
+            const currentDay = start.plus({ days: index })
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+  
+            daysList.push({
+              year,
+              month,
+              day
+            })
+          }
+          break;
+        }
+        default:
+          break;
+      }
+
+      return daysList
+    },
     lineChartTitle () {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
@@ -131,25 +187,129 @@ export default defineComponent({
   async mounted() {
     this.periodSelected = new Date()
     this.setDefaultVisualizationMode()
-    await this.setDepartment()
-    await this.setPositionDepartment()
-    await this.setDepartmentPositionEmployeeList()
+    await Promise.all([
+      this.setDepartment(),
+      this.setPositionDepartment(),
+      this.setDepartmentPositionEmployeeList()
+    ])
+    await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+    this.setGeneralData()
+    this.setPeriodData()
   },
   methods: {
-    setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+    async setDefaultVisualizationMode () {
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
       }
 
-      this.handlerVisualizationModeChange()
+      await this.handlerVisualizationModeChange()
     },
     setGeneralData () {
-      this.generalData.series[0].data = new AttendanceMonitorController().getDepartmentTotalData(this.visualizationMode?.value || 'weekly')
+      const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
+      const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
+      const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
+      const faults = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
+      const totalAvailable = assists + tolerances + delays + faults
+      const serieData = []
+
+      const assist = Math.round((assists / totalAvailable) * 100)
+      const tolerance = Math.round((tolerances / totalAvailable) * 100)
+      const delay = Math.round((delays / totalAvailable) * 100)
+      const fault = Math.round((faults / totalAvailable) * 100)
+
+      serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
+      serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
+      serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
+      serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
+
+      this.generalData.series[0].data = serieData
     },
     setPeriodData () {
-      this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      let periodLenght = 12
+
+      const monthPerdiod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('dd'))
+      let start
+
+      switch (this.visualizationMode?.value) {
+        case 'monthly': {
+          const date = DateTime.local(yearPeriod, monthPerdiod, 1)
+          const days = date.daysInMonth
+          start = date.startOf('month')
+          periodLenght = days || 0
+          break
+        }
+        case 'weekly':
+          const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+          start = date.startOf('week')
+          periodLenght = 7
+          break
+        default:
+          periodLenght = 0
+          break
+      }
+
+      const dayStatisticsCollection: any = []
+
+      if (start) {
+        for (let index = 0; index < periodLenght; index++) {
+          const currentDay = start.plus({ days: index })
+          const year = parseInt(currentDay.toFormat('yyyy'))
+          const month = parseInt(currentDay.toFormat('LL'))
+          const day = parseInt(currentDay.toFormat('dd'))
+          const evalDate = `${year}-${`${month}`.padStart(2, '0')}-${`${day}`.padStart(2, '0')}`
+          let dayCalendar: any[] = []
+  
+          this.employeeDepartmentPositionList.forEach(item => {
+            const currentCalendar: AssistDayInterface[] = item.calendar.filter(calendar => calendar.day === evalDate)
+            if (currentCalendar.length > 0) {
+              dayCalendar.push(currentCalendar[0].assist)
+            }
+          })
+  
+          dayStatisticsCollection.push({
+            day: evalDate,
+            assist: dayCalendar
+          })
+        }
+  
+        const assistSerie: number[] = []
+        const toleranceSerie: number[] = []
+        const delaySerie: number[] = []
+        const faultSerie: number[] = []
+  
+        dayStatisticsCollection.forEach((element: any) => {
+          const assists = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'ontime').length
+          const tolerances = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'tolerance').length
+          const delays = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'delay').length
+          const faults = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'fault' && !assistDate.isFutureDay && !assistDate.isRestDay).length
+          const totalAvailable = assists + tolerances + delays + faults
+  
+          const assist = Math.round((assists / totalAvailable) * 100)
+          const tolerance = Math.round((tolerances / totalAvailable) * 100)
+          const delay = Math.round((delays / totalAvailable) * 100)
+          const fault = Math.round((faults / totalAvailable) * 100)
+  
+          assistSerie.push(Number.isNaN(assist) ? 0 : assist)
+          toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
+          delaySerie.push(Number.isNaN(delay) ? 0 : delay)
+          faultSerie.push(Number.isNaN(fault) ? 0 : fault)
+        });
+  
+        
+        const serieData = []
+  
+        serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
+        serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
+        serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
+        serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
+  
+        this.periodData.series = serieData
+        this.setPeriodCategories()
+      }
     },
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
@@ -169,19 +329,48 @@ export default defineComponent({
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
       const positionId = parseInt(`${this.$route.params.position || 0}`)
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 99999999999)
-      this.employeeDepartmentPositionList = response.status === 200 ? response._data.data.employees.data : []
+      const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
+      this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
+
+      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
-    setGraphsData () {
-      this.setPeriodData()
-      this.setPeriodCategories()
-      this.setGeneralData()
+    async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeID = employee?.employee?.employeeId || 0
+
+      try {
+        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        employee.calendar = employeeCalendar
+        this.setGeneralStatisticsData(employee, employee.calendar)
+      } catch (error) {
+      }
     },
-    async handlerDeparmentSelect () {
-      this.periodSelected = new Date()
-      await this.setDepartmentPositionEmployeeList()
-      this.setGraphsData()
+    setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
+      const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
+      const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
+      const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
+      const totalAvailable = assists + tolerances + delays + faults
+
+      const assist = Math.round((assists / totalAvailable) * 100)
+      const tolerance = Math.round((tolerances / totalAvailable) * 100)
+      const delay = Math.round((delays / totalAvailable) * 100)
+      const fault = Math.round((faults / totalAvailable) * 100)
+
+      const assistStatistics = {
+        onTimePercentage: assist,
+        onTolerancePercentage: tolerance,
+        onDelayPercentage: delay,
+        onFaultPercentage: fault,
+      }
+
+      employee.assistStatistics = assistStatistics
     },
-    handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
@@ -190,10 +379,17 @@ export default defineComponent({
       }
 
       this.periodSelected = new Date()
-      this.setGraphsData()
     },
-    handlerPeriodChange () {
-      this.setGraphsData()
+    async onInputVisualizationModeChange () {
+      this.handlerVisualizationModeChange()
+      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      this.setGeneralData()
+      this.setPeriodData()
+    },
+    async handlerPeriodChange () {
+      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      this.setGeneralData()
+      this.setPeriodData()
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
@@ -206,6 +402,15 @@ export default defineComponent({
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
+    },
+    onEmployeStatisticsChange (newStatistcs: EmployeeAssistStatisticInterface) {
+      // const employeeIdx = this.employeeDepartmentPositionList.findIndex(assist => assist.employee.employeeId === newStatistcs.employee.employeeId)
+      // if (employeeIdx >= 0) {
+      //   this.employeeDepartmentPositionList[employeeIdx].assistStatistics = newStatistcs.assistStatistics
+      //   this.employeeDepartmentPositionList[employeeIdx].calendar = newStatistcs.calendar
+        // this.setGeneralData()
+        // this.setPeriodData()
+      // }
     }
   }
 })
