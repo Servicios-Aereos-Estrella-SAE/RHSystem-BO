@@ -14,10 +14,10 @@ export default defineComponent({
   data: () => ({
     search: '' as string,
     roleList: [] as RoleInterface[],
-    selectedRole: null as RoleInterface | null,
     filteredRoles: [] as RoleInterface[],
     filteredUsers: [] as UserInterface[],
     user: null as UserInterface | null,
+    selectedRoleId: null as number | null,
     currentPage: 1,
     totalRecords: 0,
     first: 0,
@@ -32,22 +32,19 @@ export default defineComponent({
   },
   async mounted() {
     await this.handlerSearchUser()
+    await this.handlerSearchRole()
   },
   methods: {
-    async handlerSearchRole(event: any) {
-      if (event.query.trim().length) {
-        const response = await new RoleService().getFilteredList(event.query.trim(), 1, 30)
+    async handlerSearchRole() {
+        const response = await new RoleService().getFilteredList('',1, 100)
         const list = response.status === 200 ? response._data.data.roles.data : []
         this.filteredRoles = list
-      }
     },
     async handlerSearchUser() {
       /* if (this.search || this.selectedRole) {
         this.currentPage = 0
       } */
-
-      const roleId = this.selectedRole ? this.selectedRole.roleId : null
-      const response = await new UserService().getFilteredList(this.search, roleId, this.currentPage, this.rowsPerPage)
+      const response = await new UserService().getFilteredList(this.search, this.selectedRoleId, this.currentPage, this.rowsPerPage)
       const list = response.status === 200 ? response._data.data.users.data : []
       this.totalRecords = response.status === 200 ? response._data.data.users.meta.total : 0
       this.first = response.status === 200 ? response._data.data.users.meta.first : 0
@@ -70,13 +67,24 @@ export default defineComponent({
       this.user = newUser
       this.drawerUserForm = true
     },
+    onSave(user: UserInterface) {
+      this.user = {...user}
+      const index = this.filteredUsers.findIndex((user: UserInterface) => user.userId === this.user?.userId)
+      if (index !== -1) {
+        this.filteredUsers[index] = user
+        this.$forceUpdate()
+      } else {
+        this.filteredUsers.push(user)
+        this.$forceUpdate()
+      }
+      this.drawerUserForm = false
+    },
     onEdit(user: UserInterface) {
       this.user = {...user}
       this.drawerUserForm = true
     },
     onDelete(user: UserInterface) {
       this.user = {...user}
-      console.log(this.user)
       this.drawerUserDelete = true
     },
     async confirmDelete() {
@@ -84,12 +92,10 @@ export default defineComponent({
         this.drawerUserDelete = false
         const userService = new UserService()
         const userResponse = await userService.delete(this.user)
-        console.log(userResponse)
         if (userResponse.status === 201) {
-          const index = this.filteredUsers.findIndex((user: UserInterface) => user.userId === this.user?.userId);
-          console.log(index)
+          const index = this.filteredUsers.findIndex((user: UserInterface) => user.userId === this.user?.userId)
           if (index !== -1) {
-            this.filteredUsers.splice(index, 1);
+            this.filteredUsers.splice(index, 1)
             this.$forceUpdate()
           }
           this.$toast.add({
@@ -106,7 +112,6 @@ export default defineComponent({
               life: 5000,
           })
         }
-        console.log(userResponse._data.message)
       }
     }
   }
