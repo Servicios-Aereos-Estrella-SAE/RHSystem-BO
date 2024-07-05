@@ -68,7 +68,6 @@
               :minDate="minDate"
               :maxDate="maxDate"
               showWeek
-              @update:modelValue="handlerPeriodChange"
             />
           </div>
         </div>
@@ -83,16 +82,19 @@
             <h2>
               {{ lineChartTitle }}
             </h2>
-            <highchart :options="periodData" style="width: 100%;" />
+            <!-- <highchart :options="periodData" style="width: 100%;" /> -->
           </div>
         </div>
         <h2>
           Employees
         </h2>
         <div class="department-positions-wrapper">
-          <div v-for="(employee, index) in employeeDepartmentPositionList" :key="`employee-position-${employee.employee_id}-${index}`">
+          <div v-for="(employeeAssist, index) in employeeDepartmentPositionList" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
             <attendanceEmployeeInfoCard
-              :employee="employee"
+              :employee="employeeAssist"
+              :visualizationMode="visualizationMode?.value || 'monthly'"
+              :periodSelected="periodSelected"
+              @onStatisticsChange="onEmployeStatisticsChange"
             />
           </div>
         </div>
@@ -108,14 +110,4 @@
 
 <style lang="scss" scoped>
 @import './style';
-</style>
-
-<style lang="scss">
-:deep(.graph-label) {
-  color: red;
-}
-
-.graph-label {
-  color: red;
-}
 </style>

@@ -7,8 +7,14 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 export default defineComponent({
   name: 'attendanceInfoCard',
   props: {
-    department: { type: Object as PropType<DepartmentInterface>, required: true },
-    position: { type: Object as PropType<PositionInterface>, required: true }
+    department: { type: Object as PropType<DepartmentInterface>, required: false },
+    position: { type: Object as PropType<PositionInterface>, required: false },
+    onTimePercentage: { type: Number, required: false, default: 0 },
+    onToleracePercentage: { type: Number, required: false, default: 0 },
+    onDelayPercentage: { type: Number, required: false, default: 0 },
+    onFaultPercentage: { type: Number, required: false, default: 0 },
+    hideLink: { type: Boolean, required: false, default: false },
+    hidePositionTitle: { type: Boolean, required: false, default: false }
   },
   data: () => ({
   }),

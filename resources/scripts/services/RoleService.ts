@@ -1,5 +1,5 @@
 
-export default class EmployeeService {
+export default class RoleService {
   protected API_PATH: string
 
   constructor () {
@@ -7,14 +7,12 @@ export default class EmployeeService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
-  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
 
-    await $fetch(`${this.API_PATH}/employees`, {
+    await $fetch(`${this.API_PATH}/roles`, {
       query: {
         search: searchText,
-        departmentId,
-        positionId,
         page,
         limit
       },

@@ -27,6 +27,7 @@
     "nuxt": "^3.11.2",
     "nuxt-highcharts": "^3.1.1",
     "pinia": "^2.1.7",
+    "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "socket.io-client": "^4.7.5",
     "vue": "^3.4.27",

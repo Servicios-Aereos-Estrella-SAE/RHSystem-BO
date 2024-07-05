@@ -97,24 +97,13 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employee: null as EmployeeInterface | null,
-    employeeCalendar: [] as AssistDayInterface[]
+    employeeCalendar: [] as AssistDayInterface[],
+    onTimePercentage: 0 as number,
+    onTolerancePercentage: 0 as number,
+    onDelayPercentage: 0 as number,
+    onFaultPercentage: 0 as number
   }),
   computed: {
-    lineChartTitle () {
-      if (this.visualizationMode?.value === 'yearly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
-      }
-
-      if (this.visualizationMode?.value === 'monthly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Behavior in ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
-      }
-
-      if (this.visualizationMode?.value === 'weekly') {
-        return 'Weekly behavior'
-      }
-    },
     weeklyStartDay () {
       const daysList =[]
 
@@ -161,6 +150,13 @@ export default defineComponent({
       }
 
       return daysList
+    },
+    calendarTitle () {
+      const date = DateTime.fromJSDate(this.periodSelected)
+      const start = date.startOf('week')
+      const text = this.visualizationMode?.value === 'weekly' ? `Week #${start.weekNumber}` : start.toFormat('LLLL')
+
+      return `Check in & Check out on ${text}`
     }
   },
   created () {
@@ -181,7 +177,7 @@ export default defineComponent({
       this.employee = employee
     },
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -199,12 +195,17 @@ export default defineComponent({
       const totalAvailable = totalDays - rests
       const serieData = []
 
-      const assist = (assists / totalAvailable) * 100
-      const tolerance = (tolerances / totalAvailable) * 100
-      const delay = (delays / totalAvailable) * 100
-      const fault = (faults / totalAvailable) * 100
+      const assist = Math.round((assists / totalAvailable) * 100)
+      const tolerance = Math.round((tolerances / totalAvailable) * 100)
+      const delay = Math.round((delays / totalAvailable) * 100)
+      const fault = Math.round((faults / totalAvailable) * 100)
 
-      serieData.push({ name: 'Assists', y: assist, color: '#33D4AD' })
+      this.onTimePercentage = assist
+      this.onTolerancePercentage = tolerance
+      this.onDelayPercentage = delay
+      this.onFaultPercentage = fault
+
+      serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
       serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
       serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
@@ -257,7 +258,7 @@ export default defineComponent({
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeID = this.employee?.employeeId || 0
-      const assistReq = await new AssistService().index(startDay, endDay, employeeID, 1, 50)
+      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar
       this.setGeneralData()
