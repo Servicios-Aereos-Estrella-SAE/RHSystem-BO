@@ -192,7 +192,7 @@ export default defineComponent({
       const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
-      const totalAvailable = totalDays - rests
+      const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
       const assist = Math.round((assists / totalAvailable) * 100)

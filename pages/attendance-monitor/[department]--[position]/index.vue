@@ -54,7 +54,7 @@
               optionLabel="name"
               aria-labelledby="basic"
               optionDisabled="selected"
-              @change="handlerVisualizationModeChange"
+              @change="onInputVisualizationModeChange"
             />
           </div>
           <div class="input-box">
@@ -67,6 +67,7 @@
               :dateFormat="visualizationMode.calendar_format.format"
               :minDate="minDate"
               :maxDate="maxDate"
+              @update:modelValue="handlerPeriodChange"
               showWeek
             />
           </div>
@@ -82,7 +83,7 @@
             <h2>
               {{ lineChartTitle }}
             </h2>
-            <!-- <highchart :options="periodData" style="width: 100%;" /> -->
+            <highchart :options="periodData" style="width: 100%;" />
           </div>
         </div>
         <h2>
@@ -92,9 +93,6 @@
           <div v-for="(employeeAssist, index) in employeeDepartmentPositionList" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
             <attendanceEmployeeInfoCard
               :employee="employeeAssist"
-              :visualizationMode="visualizationMode?.value || 'monthly'"
-              :periodSelected="periodSelected"
-              @onStatisticsChange="onEmployeStatisticsChange"
             />
           </div>
         </div>
