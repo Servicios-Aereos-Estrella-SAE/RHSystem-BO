@@ -8,7 +8,7 @@
       <div class="form-container">
         <div class="input-box">
           <label for="userActive">
-            {{ activeSwicht ? 'Activo' : 'Inactivo' }}</label>
+            {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
           <InputSwitch v-model="activeSwicht" />
         </div>
         <div class="input-box">
@@ -21,7 +21,7 @@
         </div>
         <div class="input-box">
           <label for="role">
-            Empleado
+            Employee
           </label>
           <Dropdown v-model="user.personId" :options="employees" optionLabel="label" optionValue="personId"
             placeholder="Select a Employee" filter class="w-full md:w-14rem" :invalid="submitted && !user.personId"
@@ -37,24 +37,29 @@
         <div class="input-box">
           <label for="useremail">
             Email</label>
-          <InputText id="useremail" v-model="user.userEmail" type="email" :invalid="submitted && (!user.userEmail || isEmailInvalid)" />
+          <InputText id="useremail" v-model="user.userEmail" type="email"
+            :invalid="submitted && (!user.userEmail || isEmailInvalid)" />
           <small class="p-error" v-if="submitted && (!user.userEmail || isEmailInvalid)">Email is required.</small>
         </div>
         <div v-if="isNewUser || changePassword" class="input-box">
           <label for="password">
             Enter new password</label>
-          <Password v-model="user.userPassword" toggleMask promptLabel="---" :invalid="submitted && !user.userPassword">
-            <template #footer>
-              <Divider />
-              <p class="mt-2">Requirements</p>
-              <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                <li>At least one lowercase letter</li>
-                <li>At least one uppercase letter</li>
-                <li>At least one number</li>
-                <li>Minimum 8 characters</li>
-              </ul>
-            </template>
-          </Password>
+          <div class="password-box">
+            <Password v-model="user.userPassword" toggleMask promptLabel="---"
+              :invalid="submitted && !user.userPassword">
+              <template #footer>
+                <Divider />
+                <p class="mt-2">Requirements</p>
+                <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
+                  <li>At least one lowercase letter</li>
+                  <li>At least one uppercase letter</li>
+                  <li>At least one number</li>
+                  <li>Minimum 8 characters</li>
+                </ul>
+              </template>
+            </Password>
+            <Button label="Generate" severity="secondary" @click="generatePassword()" />
+          </div>
           <small class="p-error" v-if="submitted && !user.userPassword">Password is required.</small>
         </div>
         <div v-if="isNewUser || changePassword" class="input-box">
