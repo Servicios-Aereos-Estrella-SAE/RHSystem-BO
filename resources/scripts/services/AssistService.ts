@@ -46,4 +46,23 @@ export default class AssistService {
 
     return responseRequest
   }
+
+  async getExcel (
+    date: string | Date,
+    dateEnd: string | Date,
+    employeeId: number
+  ) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    const query = { date, 'date-end': dateEnd, employeeId }
+
+    await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
+      headers,
+      query,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 }
