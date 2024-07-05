@@ -16,6 +16,11 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.displayAside
       return status
+    },
+    statusFullLoader () {
+      const myGeneralStore = useMyGeneralStore()
+      const status = myGeneralStore.fullLoader
+      return status
     }
   },
   async created() {

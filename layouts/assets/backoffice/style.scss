@@ -138,6 +138,18 @@ body, html {
   }
 }
 
+.page-loader {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparentize($color: #fff, $amount: 0.1);
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  top: 0;
+}
+
 .head-page {
   margin-bottom: 0.5rem;
 }

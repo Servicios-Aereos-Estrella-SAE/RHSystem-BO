@@ -7,6 +7,7 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -165,9 +166,12 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
+    myGeneralStore.setFullLoader(false)
   },
   methods: {
     async getEmployee () {
@@ -186,9 +190,7 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     setGeneralData () {
-      const totalDays = this.employeeCalendar.filter((assistDate) => !assistDate.assist.isFutureDay).length
       const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
-      const rests = this.employeeCalendar.filter((assistDate) => assistDate.assist.isRestDay && !assistDate.assist.isFutureDay).length
       const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
@@ -230,7 +232,11 @@ export default defineComponent({
       }
 
       this.periodSelected = new Date()
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       await this.getEmployeeAssist()
+      myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange () {
       await this.getEmployeeAssist()
@@ -253,6 +259,8 @@ export default defineComponent({
       }
     },
     async getEmployeeCalendar () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
@@ -262,6 +270,7 @@ export default defineComponent({
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar
       this.setGeneralData()
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
