@@ -15,5 +15,9 @@ export const useMyGeneralStore = defineStore({
       const currentStatus = this.displayAside
       this.displayAside = !currentStatus
     },
+
+    setFullLoader (status: boolean) {
+      this.fullLoader = status
+    },
   }
 })
