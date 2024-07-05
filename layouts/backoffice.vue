@@ -1,23 +1,30 @@
 <template>
   <div>
-    <dashboardHeader />
-    <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
-      <div class="aside-menu-wrapper">
-        <aside-menu />
+    <transition name="page">
+      <div v-show="statusFullLoader" class="page-loader">
+        <ProgressSpinner aria-label="Loading" strokeWidth="3" style="width: 5rem; height: 5rem;" />
       </div>
-      <div></div>
-      <div class="modules-wrapper">
-        <div class="modules-content-wrepper">
-          <!-- <div class="box">
-            <h1>Color mode: {{ $colorMode.value }}</h1>
-            <select v-model="$colorMode.preference" @change="setcolor">
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="sepia">Sepia</option>
-            </select>
-          </div> -->
-          <slot />
+    </transition>
+    <div>
+      <dashboardHeader />
+      <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
+        <div class="aside-menu-wrapper">
+          <aside-menu />
+        </div>
+        <div></div>
+        <div class="modules-wrapper">
+          <div class="modules-content-wrepper">
+            <!-- <div class="box">
+              <h1>Color mode: {{ $colorMode.value }}</h1>
+              <select v-model="$colorMode.preference" @change="setcolor">
+                <option value="system">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="sepia">Sepia</option>
+              </select>
+            </div> -->
+            <slot />
+          </div>
         </div>
       </div>
     </div>

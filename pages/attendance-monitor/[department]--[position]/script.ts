@@ -15,6 +15,7 @@ import PositionService from '~/resources/scripts/services/PositionService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import AssistService from '~/resources/scripts/services/AssistService'
+import { useMyGeneralStore } from '~/store/general'
 
 
 export default defineComponent({
@@ -185,6 +186,8 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
     this.setDefaultVisualizationMode()
     await Promise.all([
@@ -192,9 +195,9 @@ export default defineComponent({
       this.setPositionDepartment(),
       this.setDepartmentPositionEmployeeList()
     ])
-    await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     this.setGeneralData()
     this.setPeriodData()
+    myGeneralStore.setFullLoader(false)
   },
   methods: {
     async setDefaultVisualizationMode () {
@@ -381,15 +384,21 @@ export default defineComponent({
       this.periodSelected = new Date()
     },
     async onInputVisualizationModeChange () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
       this.setGeneralData()
       this.setPeriodData()
+      myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
       this.setGeneralData()
       this.setPeriodData()
+      myGeneralStore.setFullLoader(false)
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
@@ -402,15 +411,6 @@ export default defineComponent({
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
-    },
-    onEmployeStatisticsChange (newStatistcs: EmployeeAssistStatisticInterface) {
-      // const employeeIdx = this.employeeDepartmentPositionList.findIndex(assist => assist.employee.employeeId === newStatistcs.employee.employeeId)
-      // if (employeeIdx >= 0) {
-      //   this.employeeDepartmentPositionList[employeeIdx].assistStatistics = newStatistcs.assistStatistics
-      //   this.employeeDepartmentPositionList[employeeIdx].calendar = newStatistcs.calendar
-        // this.setGeneralData()
-        // this.setPeriodData()
-      // }
     }
   }
 })
