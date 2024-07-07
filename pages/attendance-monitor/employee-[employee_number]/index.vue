@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-page">
+    <Toast />
     <Head>
       <Title>
         Employee Attendance Monitor
@@ -15,6 +16,9 @@
             <h1 class="capitalize">
               {{ `${employee.employeeFirstName || ''}`.toLocaleLowerCase() }}
               {{ `${employee.employeeLastName || ''}`.toLocaleLowerCase() }}
+              <span class="name-emp-code">
+                ( Emp. Code: {{ employee.employeeCode }} )
+              </span>
               <small>
                 {{ employee.department.departmentAlias || employee.department.departmentName }}
                 /
@@ -74,45 +78,56 @@
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
               :maxDate="maxDate"
               showWeek
               @update:modelValue="handlerPeriodChange"
             />
           </div>
+          <div v-if="visualizationMode" class="input-box">
+            <br/>
+            <Button icon="pi pi-file-excel" severity="success" class="btn-excel" @click="getExcel"/>
+          </div>
         </div>
-        <div class="general-graphs">
+        <div v-if="employeeCalendar.length > 0" class="general-graphs">
           <div class="box">
-            <h2>
-              General behavior into period
-            </h2>
-            <highchart :options="generalData" style="width: 100%;" />
-          </div>
-          <div class="box chart-bar">
-            <h2>
-              {{ lineChartTitle }}
-            </h2>
-            <highchart :options="periodData" style="width: 100%;" />
-          </div>
-        </div>
-        <div v-if="visualizationMode && visualizationMode.value !== 'yearly'" class="box report-wrapper">
-          <div class="head">
-            <h2>
-              Check in & Check out
-            </h2>
-          </div>
-          <div v-if="dailyAssistList.length > 0" class="days-wrapper">
-            <div v-for="(assist, index) in dailyAssistList" :key="`key-calendar-day-${Math.random()}-${index}`">
-              <attendanceCalendarDay
-                :checkAssist="assist"
+            <div class="pay-chart">
+              <h2>
+                General behavior into period
+              </h2>
+              <highchart :options="generalData" style="width: 100%;" />
+            </div>
+            <div class="indicators">
+              <attendanceInfoCard
+                :hideLink="true"
+                :hidePositionTitle="true"
+                :onTimePercentage="onTimePercentage"
+                :onToleracePercentage="onTolerancePercentage"
+                :onDelayPercentage="onDelayPercentage"
+                :onFaultPercentage="onFaultPercentage"
               />
             </div>
           </div>
-          <div v-else class="days-wrapper empty">
-            <div class="empty">
-              Empty assist list to display data.
-              <br>
-              Select other date range in Weekly visualization mode
+          <div v-if="visualizationMode" class="box report-wrapper">
+            <div class="head">
+              <h2>
+                {{ calendarTitle }}
+              </h2>
             </div>
+            <div class="days-wrapper">
+              <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
+                <attendanceCalendarDay
+                  :checkAssist="calendarDay"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="box">
+          <div class="empty">
+            Empty assist list to display data.
+            <br>
+            Select other date range in Weekly visualization mode
           </div>
         </div>
       </div>

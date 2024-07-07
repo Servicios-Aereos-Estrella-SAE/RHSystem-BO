@@ -60,7 +60,7 @@
               optionLabel="name"
               aria-labelledby="basic"
               optionDisabled="selected"
-              @change="handlerVisualizationModeChange"
+              @change="onInputVisualizationModeChange"
             />
           </div>
           <div v-if="visualizationMode" class="input-box">
@@ -71,6 +71,7 @@
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
               :maxDate="maxDate"
               showWeek
               @update:modelValue="handlerPeriodChange"
@@ -95,10 +96,14 @@
           Department positions
         </h2>
         <div class="department-positions-wrapper">
-          <div v-for="(position, index) in departmentPositionCollection" :key="`position-${position.parentPositionId}-${index}`">
-            <attendanceInfoCard 
+          <div v-for="(item, index) in getDepartmentPositionAssistStatistics()" :key="`position-${item.position.parentPositionId}-${index}`">
+            <attendanceInfoCard
               :department="departmenSelected"
-              :position="position.position"
+              :position="item?.position"
+              :onTimePercentage="item?.statistics?.onTimePercentage || 0"
+              :onToleracePercentage="item?.statistics?.onToleracePercentage || 0"
+              :onDelayPercentage="item?.statistics?.onDelayPercentage || 0"
+              :onFaultPercentage="item?.statistics?.onFaultPercentage || 0"
             />
           </div>
         </div>

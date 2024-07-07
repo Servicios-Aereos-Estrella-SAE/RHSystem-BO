@@ -2,6 +2,9 @@ import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
+import type { DailyEmployeeShiftsInterface } from '~/resources/scripts/interfaces/DailyEmployeeShiftsInterface'
+import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
+import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
@@ -12,7 +15,7 @@ export default defineComponent({
   }),
   computed: {
     dateYear () {
-      if (!this.checkAssist) {
+      if (!this.checkAssist?.day) {
         return 0
       }
 
@@ -20,7 +23,7 @@ export default defineComponent({
       return year
     },
     dateMonth () {
-      if (!this.checkAssist) {
+      if (!this.checkAssist?.day) {
         return 0
       }
 
@@ -28,7 +31,7 @@ export default defineComponent({
       return month
     },
     dateDay () {
-      if (!this.checkAssist) {
+      if (!this.checkAssist?.day) {
         return 0
       }
 
@@ -40,22 +43,35 @@ export default defineComponent({
       const day = date.toFormat('cccc')
       return day
     },
+    calendarDay () {
+      const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
+      const day = date.toFormat('DD')
+      return day
+    },
     chekInTime () {
-      if (!this.checkAssist?.assist?.check_in?.punchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkIn?.assistPunchTimeOrigin) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.check_in.punchTimeOrigin.toString(), { setZone: true })
+      const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
       return timeCST.toFormat('tt')
     },
     chekOutTime () {
-      if (!this.checkAssist?.assist?.check_out?.punchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.check_out.punchTimeOrigin.toString(), { setZone: true })
+      const now = DateTime.now().toFormat('yyyy-LL-dd')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
+      const timeDate = time.toFormat('yyyy-LL-dd')
       const timeCST = time.setZone('UTC-5')
+
+      if (timeDate === now) {
+        this.checkAssist.assist.checkOutStatus = ''
+        return ''
+      }
+
       return timeCST.toFormat('tt')
     }
   },
