@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-page">
+    <Toast />
     <Head>
       <Title>
         Employee Attendance Monitor
@@ -82,6 +83,10 @@
               showWeek
               @update:modelValue="handlerPeriodChange"
             />
+          </div>
+          <div v-if="visualizationMode" class="input-box">
+            <br/>
+            <Button icon="pi pi-file-excel" severity="success" class="btn-excel" @click="getExcel"/>
           </div>
         </div>
         <div v-if="employeeCalendar.length > 0" class="general-graphs">

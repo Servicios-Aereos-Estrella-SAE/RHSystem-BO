@@ -8,8 +8,14 @@ import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 import { useMyGeneralStore } from '~/store/general'
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 export default defineComponent({
+  components: {
+    Toast,
+    ToastService,
+  },
   name: 'AttendanceMonitorByEmployee',
   props: {
   },
@@ -271,6 +277,31 @@ export default defineComponent({
       this.employeeCalendar = employeeCalendar
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
+    },
+    async getExcel() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeID = this.employee?.employeeId || 0
+      const assistService = new AssistService()
+      const assistResponse = await assistService.getExcel(startDay, endDay, employeeID)
+      if (assistResponse.status === 200) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel assist',
+          detail: assistResponse._data.message,
+            life: 5000,
+        })
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel assist',
+          detail: msgError,
+            life: 5000,
+        })
+      }
     }
   }
 })
