@@ -35,15 +35,12 @@ export default defineComponent({
   },
   async mounted() {
     this.isReady = false
+    let isActive: number = 1
+    isActive = this.user.userActive
+    this.activeSwicht = isActive === 1 ? true : false
+    this.isNewUser = !this.user.userId ? true : false
     await this.getRoles()
     await this.getEmployees()
-    let isActive: any = 1
-    isActive = this.user.userActive
-    if (isActive === 1) {
-      isActive = true
-    }
-    this.activeSwicht = isActive
-    this.isNewUser = !this.user.userId ? true : false
     this.isReady = true
   },
   methods: {
@@ -54,10 +51,10 @@ export default defineComponent({
     },
     async getEmployees() {
       let response = null
-      if (!this.user.userId) {
-        response = await new EmployeeService().getOnlyWithOutUser('', 1, 100)
+      if (this.isNewUser) {
+        response = await new EmployeeService().getOnlyWithOutUser('',null,null)
       } else {
-        response = await new EmployeeService().getFilteredList('', 1, 100)
+        response = await new EmployeeService().getFilteredList('', null, null)
       }
       const list = response.status === 200 ? response._data.data.employees.data : []
       for await (const employee of list) {
@@ -91,7 +88,7 @@ export default defineComponent({
         }
       }
     
-      if (!this.user.userId && !this.user.userPassword) {
+      if ((!this.user.userId || this.changePassword) && !this.user.userPassword) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -101,14 +98,23 @@ export default defineComponent({
         return
       }
       if (this.user.userPassword) {
-      if (!userService.validateSamePass(this.user.userPassword, this.passwordConfirm)) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Passwords do not match',
-            life: 5000,
-        })
-        return
+        if (!userService.validateSamePass(this.user.userPassword, this.passwordConfirm)) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Passwords do not match',
+              life: 5000,
+          })
+          return
+        }
+        if (!userService.isValidPassword(this.user.userPassword)) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Passwords not is valid',
+              life: 5000,
+          })
+          return
         }
       }
       this.user.userActive = this.activeSwicht ? 1 : 0
@@ -143,6 +149,14 @@ export default defineComponent({
     },
     onChangePassword() {
       this.changePassword = !this.changePassword
-    }
+      this.user.userPassword = ''
+      this.passwordConfirm = ''
+    },
+   async generatePassword() {
+    const userService = new UserService()
+    const password = userService.generatePassword()
+    this.user.userPassword = password
+    this.passwordConfirm = password
+   }
   }
 })

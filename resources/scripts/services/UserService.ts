@@ -116,4 +116,39 @@ export default class UserService {
     }
     return true;
   }
+
+  generatePassword() {
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz'
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const numbers = '0123456789'
+    const specialCharacters = '!@#$%^&*()_+[]{}|;:,.<>?'
+    const allCharacters = lowercase + uppercase + numbers + specialCharacters
+    let password = ''
+
+    password += lowercase[Math.floor(Math.random() * lowercase.length)]
+    password += uppercase[Math.floor(Math.random() * uppercase.length)]
+    password += numbers[Math.floor(Math.random() * numbers.length)]
+    password += specialCharacters[Math.floor(Math.random() * specialCharacters.length)]
+    for (let i = 4; i < 8; i++) {
+      password += allCharacters[Math.floor(Math.random() * allCharacters.length)]
+    }
+    password = password.split('').sort(() => Math.random() - 0.5).join('')
+    while (password.length < 8) {
+      password += allCharacters[Math.floor(Math.random() * allCharacters.length)]
+    }
+    return password
+  }
+
+  isValidPassword(password: string) {
+    const hasLowercase = /[a-z]/.test(password)
+    const hasUppercase = /[A-Z]/.test(password)
+    const hasNumber = /[0-9]/.test(password)
+    const hasSpecialCharacter = /[!@#$%^&*()_+\[\]{}|;:,.<>?]/.test(password)
+    const isValidLength = password.length >= 8
+    if (hasLowercase && hasUppercase && hasNumber && hasSpecialCharacter && isValidLength) {
+      return true
+    } else {
+      return false
+    }
+  }
 }
