@@ -8,7 +8,7 @@ export default class ShiftService {
       this.API_PATH = CONFIG.public.BASE_API_PATH
     }
   
-    async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+    async getFilteredList(searchText: string, page: number = 1, limit: number = 10) {
       let responseRequest: any = null
   
       await $fetch(`${this.API_PATH}/shift`, {
@@ -17,9 +17,20 @@ export default class ShiftService {
           page,
           limit
         },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) {
+          responseRequest = response
+        },
+        onRequestError({ response }) {
+          responseRequest = response
+        }
       })
+  
+      if (responseRequest?.data) {
+        return {
+          data: responseRequest.data.data,
+          meta: responseRequest.data.meta
+        }
+      }
   
       return responseRequest
     }

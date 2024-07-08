@@ -79,6 +79,7 @@ export default defineComponent({
       console.log(this.user)
       this.drawerUserDelete = true
     },
+    
     async confirmDelete() {
       if (this.user) {
         this.drawerUserDelete = false
