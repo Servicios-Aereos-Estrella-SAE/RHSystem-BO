@@ -5,7 +5,7 @@
         <ProgressSpinner aria-label="Loading" strokeWidth="3" style="width: 5rem; height: 5rem;" />
       </div>
     </transition>
-    <div>
+    <div v-if="authAccess">
       <dashboardHeader />
       <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
         <div class="aside-menu-wrapper">

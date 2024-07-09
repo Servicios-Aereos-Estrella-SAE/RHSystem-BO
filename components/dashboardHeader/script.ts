@@ -16,7 +16,7 @@ export default defineComponent({
       return isRoot
     },
     avatarLetter () {
-      const initial = `${this.authUser?.userEmail.charAt(0) || ''}`.toLocaleUpperCase()
+      const initial = `${this.authUser?.userEmail?.charAt(0) || ''}`.toLocaleUpperCase()
       return initial
     }
   },

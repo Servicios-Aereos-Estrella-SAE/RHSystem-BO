@@ -7,18 +7,30 @@ export default defineComponent({
   },
   data: () => ({
     credentials: {
-      userEmail: 'developer@sae.com.mx',
+      userEmail: '',
       userPassword: 'adminSystemSAE123.'
     } as UserCredentialsInterface,
-    invalidCredentials: false
+    invalidCredentials: false,
+    isGuest: false
   }),
   created () {
+    this.validateSession()
   },
   mounted() {
   },
   methods: {
     resetInvalidCredentials () {
       this.invalidCredentials = false
+    },
+    async validateSession () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      
+      if (session) {
+        return this.$router.push({ path: '/attendance-monitor' })
+      }
+
+      this.isGuest = true
     },
     async handlerLogin () {
       if (!this.credentials.userEmail || !this.credentials.userPassword) {
