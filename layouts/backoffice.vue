@@ -2,7 +2,14 @@
   <div>
     <transition name="page">
       <div v-show="statusFullLoader" class="page-loader">
-        <ProgressSpinner aria-label="Loading" strokeWidth="3" style="width: 5rem; height: 5rem;" />
+        <div>
+          <center>
+            <img src="/public/isotipo-v1-loader.png" alt="">
+          </center>
+          <div class="loader-text">
+            Loading content...
+          </div>
+        </div>
       </div>
     </transition>
     <div v-if="authAccess">
