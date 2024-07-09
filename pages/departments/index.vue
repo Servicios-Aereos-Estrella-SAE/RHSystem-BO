@@ -1,48 +1,86 @@
 <template>
-    <div>
-      <h1>Departamentos</h1>
-      <div v-for="department in departments" :key="department.id" class="department-card">
-        <h2>{{ department.name }}</h2>
-        <p>{{ department.description }}</p>
-        <button @click="viewDepartment(department.id)">Ver Detalles</button>
+  <Toast />
+  <div class="department-page">
+    <Head>
+      <Title>
+        Departments
+      </Title>
+    </Head>
+    <NuxtLayout name="backoffice">
+      <div class="department-wrapper">
+        <div class="box head-page">
+          <div class="input-box">
+            <label for="search">
+              Search
+            </label>
+            <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchDepartment" @keyup.delete="handlerSearchDepartment" />
+          </div>
+        </div>
+        <div>
+          <h2>
+            Departments
+          </h2>
+          <div class="department-card-wrapper">
+            <div v-for="(department, index) in filteredDepartments" :key="`department-${department.departmentId}-${index}`">
+              <DepartmentInfoCard
+                :department="department"
+                :click-on-view="() => { onView(department) }"
+              />
+            </div>
+          </div>
+          
+          <div></div>
+          <Paginator 
+              class="paginator"
+              :first="first" 
+              :rows="rowsPerPage" 
+              :totalRecords="totalRecords" 
+              @page="onPageChange"
+            />
+          <!-- Detail Department -->
+          <div class="card flex justify-content-center">
+            <Sidebar v-model:visible="drawerDepartmentDetail" header="Department Detail" position="right" class="department-detail-sidebar">
+              <DepartmentDetailForm
+                :department="department"
+              />
+            </Sidebar>
+          </div> 
+        </div>
       </div>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        departments: []
-      };
-    },
-    mounted() {
-      this.fetchDepartments();
-    },
-    methods: {
-      fetchDepartments() {
-        fetch('/api/departments')
-          .then(response => response.json())
-          .then(data => {
-            this.departments = data;
-          })
-          .catch(error => {
-            console.error('Error fetching departments:', error);
-          });
-      },
-      viewDepartment(departmentId) {
-        // Lógica para ver los detalles de un departamento
-        this.$router.push(`/departments/${departmentId}`);
-      }
-    }
-  };
-  </script>
-  
-  <style scoped>
-  .department-card {
-    border: 1px solid #ccc;
-    padding: 16px;
-    margin: 16px 0;
-  }
-  </style>
-  
+    </NuxtLayout>
+  </div>
+</template>
+
+<script>
+  import Script from './script.ts'
+  export default Script
+</script>
+
+<style lang="scss" scoped>
+@import './style';
+
+.department-card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.department-detail-sidebar {
+  width: 100% !important;
+  max-width: 50rem !important;
+
+  // @media screen and (max-width: $sm) {
+  //   width: 100% !important;
+  // }
+}
+</style>
+
+<style lang="scss">
+@import '/resources/styles/variables.scss';
+:deep(.graph-label) {
+  color: red;
+}
+
+.graph-label {
+  color: red;
+}
+</style>

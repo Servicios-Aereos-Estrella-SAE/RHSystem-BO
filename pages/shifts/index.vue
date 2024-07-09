@@ -44,7 +44,7 @@
             />
           <!-- Form Shift -->
           <div class="card flex justify-content-center">
-            <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar">
+            <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
               <shiftInfoForm
                 :shift="shift"
                 @save="onSave"

@@ -88,6 +88,19 @@ export default defineComponent({
         }
         console.log(shiftResponse._data.message);
       }
+    },
+    onSave(shift: ShiftInterface) {
+      this.shift = { ...shift };
+      const index = this.filteredShifts.findIndex((s: ShiftInterface) => s.shiftId === this.shift?.shiftId);
+      if (index !== -1) {
+        this.filteredShifts[index] = shift;
+        this.$forceUpdate();
+      } else {
+        this.filteredShifts.push(shift);
+        this.$forceUpdate();
+      }
+      this.drawerShiftForm = false;
     }
+  
   }
 });
