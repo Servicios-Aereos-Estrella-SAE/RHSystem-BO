@@ -286,7 +286,24 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcel(startDay, endDay, employeeID)
+      const blob = await assistResponse
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', 'Report Assist.xlsx') // nombre del archivo
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
       if (assistResponse.status === 200) {
+        // Crear un enlace de descarga
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'datos.xlsx') // nombre del archivo
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      
         this.$toast.add({
           severity: 'success',
           summary: 'Excel assist',
