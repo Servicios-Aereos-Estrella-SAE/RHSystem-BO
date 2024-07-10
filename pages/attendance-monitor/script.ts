@@ -14,6 +14,7 @@ import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
+import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 
 
 export default defineComponent({
@@ -108,7 +109,8 @@ export default defineComponent({
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
-    employeeDepartmentList: [] as EmployeeAssistStatisticInterface[]
+    employeeDepartmentList: [] as EmployeeAssistStatisticInterface[],
+    statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
     weeklyStartDay () {
@@ -186,6 +188,15 @@ export default defineComponent({
       const list: PositionInterface[] = JSON.parse(JSON.stringify(this.departmentPositionList)) as PositionInterface[]
       const collection = list.map((item: PositionInterface) => item)
       return collection
+    },
+    assistSyncStatusDate () {
+      if (this.statusInfo) {
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTimeFormat = dateTime.toFormat('ff')
+        return dateTimeFormat
+      }
+
+      return ''
     }
   },
   created () {
@@ -199,6 +210,7 @@ export default defineComponent({
     this.periodSelected = new Date()
 
     await Promise.all([
+      this.setAssistSyncStatus(),
       this.setDepartmetList(),
       this.setDefaultVisualizationMode()
     ])
@@ -458,5 +470,10 @@ export default defineComponent({
         this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
       }
     },
+    async setAssistSyncStatus () {
+      const res = await new AssistService().syncStatus()
+      const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
+      this.statusInfo = statusInfo
+    }
   }
 })

@@ -78,6 +78,15 @@
             />
           </div>
         </div>
+        <div class="box head-page sync">
+          <h6>
+            Last attendance sync on
+            {{ assistSyncStatusDate }}
+            <small>
+              ( Every 3 minutes )
+            </small>
+          </h6>
+        </div>
         <div class="general-graphs">
           <div class="box">
             <h2>

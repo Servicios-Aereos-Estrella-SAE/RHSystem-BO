@@ -29,6 +29,24 @@
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
       }
+
+      &.sync {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        border-radius: calc($radius / 2);
+
+        h6 {
+          margin: 0;
+          font-weight: 500;
+          font-size: 0.7rem;
+          opacity: 0.75;
+
+          small {
+            display: block;
+            margin-top: 0.25rem;
+          }
+        }
+      }
     }
 
     .general-graphs {

@@ -65,4 +65,18 @@ export default class AssistService {
 
     return responseRequest
   }
+
+  async syncStatus () {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/v1/assists/status`, {
+      method: 'GET',
+      headers,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 }

@@ -3,9 +3,7 @@
     <transition name="page">
       <div v-show="statusFullLoader" class="page-loader">
         <div>
-          <center>
-            <img src="/public/isotipo-v1-loader.png" alt="">
-          </center>
+          <img src="/public/isotipo-v1-loader.png" alt="">
           <div class="loader-text">
             Loading content...
           </div>
