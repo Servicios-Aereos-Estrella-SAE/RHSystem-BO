@@ -1,6 +1,6 @@
 <template>
-  <Toast />
   <div class="department-page">
+    <Toast />
     <Head>
       <Title>
         Departments
@@ -24,7 +24,6 @@
             <div v-for="(department, index) in filteredDepartments" :key="`department-${department.departmentId}-${index}`">
               <DepartmentInfoCard
                 :department="department"
-                :click-on-view="() => { onView(department) }"
               />
             </div>
           </div>
@@ -35,16 +34,15 @@
               :first="first" 
               :rows="rowsPerPage" 
               :totalRecords="totalRecords" 
-              @page="onPageChange"
             />
           <!-- Detail Department -->
-          <div class="card flex justify-content-center">
+          <!-- <div class="card flex justify-content-center">
             <Sidebar v-model:visible="drawerDepartmentDetail" header="Department Detail" position="right" class="department-detail-sidebar">
               <DepartmentDetailForm
                 :department="department"
               />
             </Sidebar>
-          </div> 
+          </div>  -->
         </div>
       </div>
     </NuxtLayout>
@@ -68,9 +66,9 @@
   width: 100% !important;
   max-width: 50rem !important;
 
-  // @media screen and (max-width: $sm) {
-  //   width: 100% !important;
-  // }
+  @media screen and (max-width: $sm) {
+     width: 100% !important;
+   }
 }
 </style>
 

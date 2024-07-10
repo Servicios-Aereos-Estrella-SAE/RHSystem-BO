@@ -6,11 +6,11 @@
     <div class="department-alias">
       {{ `Alias: ${department.departmentAlias || 'N/A'}` }}
     </div>
-    <div class="department-status">
+    <div class="department-status assist">
       {{ `Active: ${department.departmentActive ? 'Yes' : 'No'}` }}
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-info" severity="primary" @click="handlerClickOnDetail()" />
+      <Button icon="pi pi-pencil" @click="handlerClickOnDetail(department.departmentId)" />
     </div>
   </div>
 </template>
@@ -36,7 +36,12 @@ export default Script
     box-sizing: border-box;
     padding: 1rem;
   }
-
+  .assist {
+    font-size: 1.25rem;
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
   .department-code,
   .department-alias,
   .department-status {
