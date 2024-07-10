@@ -471,9 +471,12 @@ export default defineComponent({
       }
     },
     async setAssistSyncStatus () {
-      const res = await new AssistService().syncStatus()
-      const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
-      this.statusInfo = statusInfo
+      try {
+        const res = await new AssistService().syncStatus()
+        const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
+        this.statusInfo = statusInfo
+      } catch (error) {
+      }
     }
   }
 })
