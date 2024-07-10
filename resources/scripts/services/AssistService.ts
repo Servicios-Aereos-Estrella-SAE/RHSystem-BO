@@ -53,19 +53,17 @@ export default class AssistService {
   ) {
     let responseRequest: any = null
     try {
-      const headers = { ...this.GENERAL_HEADERS }
       const query = { date, 'date-end': dateEnd, employeeId }
-  
-      const res = await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
         },
         query,
-       /*  onResponse ({ response }) { responseRequest = response.json() },
-        onRequestError ({ response }) { responseRequest = response } */
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
       })
-      responseRequest = res
     } catch (error) {
     }
     return responseRequest
