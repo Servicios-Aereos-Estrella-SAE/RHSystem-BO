@@ -14,7 +14,7 @@ export default defineComponent({
   methods: {
     
     handlerClickOnDetail(ids: any) {
-      this.router.push({ path: './detail-position/' + ids , })
+      this.router.push({ path: './position/' + ids , })
     }
   }
 
