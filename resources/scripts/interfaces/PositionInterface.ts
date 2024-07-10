@@ -2,7 +2,7 @@ interface PositionInterface {
   positionId: number,
   positionSyncId: string,
   positionCode: string,
-  positionName: string,
+  positionName: any,
   positionAlias: string,
   positionIsDefault: number,
   positionActive: number,

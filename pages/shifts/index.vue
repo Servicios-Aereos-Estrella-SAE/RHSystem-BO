@@ -1,6 +1,6 @@
 <template>
-  <Toast />
   <div class="shift-page">
+    <Toast />
     <Head>
       <Title>
         Shifts
@@ -47,7 +47,7 @@
             <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
               <shiftInfoForm
                 :shift="shift"
-                @save="onSave"
+                @onShiftSave="onSave"
               />
             </Sidebar>
           </div> 
@@ -56,8 +56,7 @@
       <Dialog v-model:visible="drawerShiftDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="shift">   Are you sure you want to delete 
-           
+            <span v-if="shift">   Are you sure you want to delete
               ?</span>
         </div>
         <template #footer>

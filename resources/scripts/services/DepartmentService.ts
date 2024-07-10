@@ -1,6 +1,7 @@
 import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
 
 export default class DepartmentService {
+ 
   protected API_PATH: string
 
   constructor () {
@@ -17,6 +18,31 @@ export default class DepartmentService {
     })
 
     return responseRequest
+  }
+  async getSearchDepartmentList(search: string, currentPage: number, rowsPerPage: number) {
+    let responseRequest: any = null
+  
+    await $fetch(`${this.API_PATH}/departments/search`, {
+      query: {
+        departmentName: search,
+        currentPage,
+        rowsPerPage
+      },
+      onResponse({ response }) {
+        responseRequest = response
+      },
+      onRequestError({ response }) {
+        responseRequest = response
+      }
+    })
+
+    if (responseRequest?.data) {
+      return {
+        data: responseRequest.data.data,
+        meta: responseRequest.data.meta
+      }
+    }
+    return responseRequest  
   }
 
   async getDepartmentPositions (departmentId: number) {
