@@ -7,7 +7,7 @@ export default defineComponent({
   },
   data: () => ({
     credentials: {
-      userEmail: '',
+      userEmail: 'developer@sae.com.mx',
       userPassword: 'adminSystemSAE123.'
     } as UserCredentialsInterface,
     invalidCredentials: false,

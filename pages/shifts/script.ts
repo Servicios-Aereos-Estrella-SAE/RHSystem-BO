@@ -101,6 +101,5 @@ export default defineComponent({
       }
       this.drawerShiftForm = false;
     }
-  
   }
 });

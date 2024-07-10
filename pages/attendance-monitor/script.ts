@@ -210,7 +210,7 @@ export default defineComponent({
     this.periodSelected = new Date()
 
     await Promise.all([
-      this.setAssistSyncStatus(),
+      // this.setAssistSyncStatus(),
       this.setDepartmetList(),
       this.setDefaultVisualizationMode()
     ])
