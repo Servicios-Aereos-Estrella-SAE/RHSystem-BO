@@ -27,7 +27,7 @@ export default defineComponent({
     });
 
     const closeDetail = () => {
-      router.push({ path: '/positions' }); // Ajusta la ruta de navegación según tu aplicación
+      router.push({ path: '/positions' }); 
     };
 
     return {
