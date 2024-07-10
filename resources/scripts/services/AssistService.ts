@@ -43,7 +43,6 @@ export default class AssistService {
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
-
     return responseRequest
   }
 
@@ -53,16 +52,20 @@ export default class AssistService {
     employeeId: number
   ) {
     let responseRequest: any = null
-    const headers = { ...this.GENERAL_HEADERS }
-    const query = { date, 'date-end': dateEnd, employeeId }
-
-    await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
-      headers,
-      query,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
-    })
-
+    try {
+      const query = { date, 'date-end': dateEnd, employeeId }
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 

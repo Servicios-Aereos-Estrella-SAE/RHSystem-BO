@@ -287,10 +287,19 @@ export default defineComponent({
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcel(startDay, endDay, employeeID)
       if (assistResponse.status === 200) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'Report Assist.xlsx')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      
         this.$toast.add({
           severity: 'success',
           summary: 'Excel assist',
-          detail: assistResponse._data.message,
+          detail: 'Excel was created successfully',
             life: 5000,
         })
       } else {
