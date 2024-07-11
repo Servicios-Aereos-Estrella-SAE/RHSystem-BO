@@ -20,8 +20,8 @@
 </template>
 
 <script>
- import Script from './script.ts'
- export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss">
