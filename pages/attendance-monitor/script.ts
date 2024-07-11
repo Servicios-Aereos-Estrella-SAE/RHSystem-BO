@@ -15,9 +15,14 @@ import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
-
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 export default defineComponent({
+  components: {
+    Toast,
+    ToastService,
+  },
   name: 'AttendanceMonitorByDepartment',
   props: {
   },
@@ -476,6 +481,44 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) {
+      }
+    },
+    async getExcel() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const departmentId = this.departmenSelected?.departmentId || 0
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      
+      const assistService = new AssistService()
+      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId)
+      if (assistResponse.status === 200) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'Report Department Assist.xlsx')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel assist',
+          detail: 'Excel was created successfully',
+            life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel assist',
+          detail: msgError,
+            life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
       }
     }
   }
