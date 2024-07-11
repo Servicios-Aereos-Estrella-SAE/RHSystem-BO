@@ -23,6 +23,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
     "@sidebase/nuxt-auth": "^0.7.2",
+    "axios": "^1.7.2",
     "luxon": "^3.4.4",
     "nuxt": "^3.11.2",
     "nuxt-highcharts": "^3.1.1",
