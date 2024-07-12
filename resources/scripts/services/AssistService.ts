@@ -43,26 +43,76 @@ export default class AssistService {
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
-
     return responseRequest
   }
 
-  async getExcel (
+  async getExcelByEmployee (
     date: string | Date,
     dateEnd: string | Date,
     employeeId: number
   ) {
     let responseRequest: any = null
-    const headers = { ...this.GENERAL_HEADERS }
-    const query = { date, 'date-end': dateEnd, employeeId }
+    try {
+      const query = { date, 'date-end': dateEnd, employeeId }
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-employee`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 
-    await $fetch(`${this.API_PATH}/v1/assists/get-excel`, {
-      headers,
-      query,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
-    })
+  async getExcelByPosition (
+    date: string | Date,
+    dateEnd: string | Date,
+    departmentId: number,
+    positionId: number
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { date, 'date-end': dateEnd, departmentId, positionId }
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-position`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 
+  async getExcelByDepartment (
+    date: string | Date,
+    dateEnd: string | Date,
+    departmentId: number
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { date, 'date-end': dateEnd, departmentId }
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-department`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 

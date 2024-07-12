@@ -1,0 +1,45 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.position-info-card {
+  margin-top: 2.25rem;
+  position: relative;
+  margin-left: 5%;
+
+  .position-name {
+    text-align: center;
+    font-weight: 500;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 1rem;
+  }
+
+  .position-status {
+    text-align: left;
+    font-weight: 400;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 1rem;
+    font-size: 0.8rem; // Example: Adjust font size as needed
+  }
+
+  .assist {
+    font-size: 1.25rem;
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    button {
+      width: 100%;
+    }
+  }
+}
