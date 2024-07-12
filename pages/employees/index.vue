@@ -13,7 +13,7 @@
                 <label for="search">
                 Buscar
                 </label>
-                <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchShift" @keyup.delete="handlerSearchShift"/>
+                <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchEmployee" @keyup.delete="handlerSearchEmployee"/>
             </div>
             <div class="input-box">
                 <br/>
@@ -25,11 +25,12 @@
                 Employees
             </h2>
             <div class="shift-card-wrapper">
-                <div v-for="(shift, index) in filteredShifts" :key="`shift-${shift.shiftId}-${index}`">
-                <ShiftInfoCard
-                    :shift="shift"
-                    :click-on-edit="() => { onEdit(shift) }"
-                    :click-on-delete="() => { onDelete(shift) }"
+                <div v-for="(employee, index) in filteredEmployees" :key="`employee-${employee.employeeId}-${index}`">
+                <EmployeeInfoCard
+                    :click-on-photo="() => { onPhoto(employee) }"
+                    :employee="employee"
+                    :click-on-edit="() => { onEdit(employee) }"
+                    :click-on-delete="() => { onDelete(employee) }"
                 />
                 </div>
             </div>
@@ -43,23 +44,29 @@
                 />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
-                <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
-                <shiftInfoForm
-                    :shift="shift"
+                <Sidebar v-model:visible="drawerEmployeeForm" header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                <employeeInfoForm
+                    :employee="employee"
                     @save="onSave"
+                />
+                </Sidebar>
+
+                <Sidebar v-model:visible="drawerEmployeePhotoForm" header="Employee photo form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                <employeePhotoForm
+                    :employee="employee"
                 />
                 </Sidebar>
             </div>
             </div>
         </div>
-        <Dialog v-model:visible="drawerShiftDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog v-model:visible="drawerEmployeeDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="shift">   Are you sure you want to delete
+                <span v-if="employee">   Are you sure you want to delete
                 ?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="drawerShiftDelete = false"/>
+                <Button label="No" icon="pi pi-times" text @click="drawerEmployeeDelete = false"/>
                 <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
             </template>
         </Dialog>
