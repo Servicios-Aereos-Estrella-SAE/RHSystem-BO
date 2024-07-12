@@ -4,12 +4,18 @@ import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
+  watch: {
+    async '$route.path' () {
+      await this.validateSession()
+    }
+  },
   name: 'backoffice',
   props: {
   },
   data: () => ({
     socketIO: null as any,
-    authUser: null as UserInterface | null
+    authUser: null as UserInterface | null,
+    authAccess: false
   }),
   computed: {
     asideVisibilityStatus () {
@@ -24,6 +30,7 @@ export default defineComponent({
     }
   },
   async created() {
+    await this.validateSession()
     await this.setAuthUser()
     this.socketIO = io(this.$config.public.SOCKET)
     this.socketIO.on(`user-forze-logout:${this.authUser?.userEmail}`, async () => {
@@ -32,6 +39,15 @@ export default defineComponent({
     })
   },
   mounted() {
+    document.addEventListener('visibilitychange', async () => {
+      if (document.visibilityState === 'visible') {
+        await this.validateSession()
+      }
+    })
+
+    window.addEventListener('focus', async () => {
+      await this.validateSession()
+    })
   },
   methods: {
     // setcolor () {
@@ -39,6 +55,15 @@ export default defineComponent({
     //     colorMode: this.$colorMode.preference,
     //   })
     // }
+    async validateSession () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      if (!session) {
+        await this.handlerLogout()
+      } else {
+        this.authAccess = true
+      }
+    },
     async setAuthUser () {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
