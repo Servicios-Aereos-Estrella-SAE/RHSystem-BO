@@ -1,105 +1,141 @@
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
+import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
-import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterface";
-import ShiftService from "~/resources/scripts/services/ShiftService";
 export default defineComponent({
-    name: 'Shifts',
+    name: 'Employees',
     props: {},
     data: () => ({
         search: '' as string,
-        filteredShifts: [] as ShiftInterface[],
-        shift: null as ShiftInterface | null,
+        filteredEmployees: [] as EmployeeInterface[],
+        employee: null as EmployeeInterface | null,
         currentPage: 1,
         totalRecords: 0,
         first: 0,
         last: 0,
-        rowsPerPage: 30,
-        drawerShiftForm: false,
-        drawerShiftDelete: false
+        rowsPerPage: 20,
+        drawerEmployeeForm: false,
+        drawerEmployeePhotoForm: false,
+        drawerEmployeeDelete: false
     }),
     computed: {},
     created () {},
     async mounted() {
-        this.handlerSearchShift();
+        this.handlerSearchEmployee();
     },
     methods: {
-        async handlerSearchShift() {
-            const response = await new ShiftService().getFilteredList(this.search, this.currentPage, this.rowsPerPage);
-            const list = response.status === 200 ? response._data.data.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
-            this.filteredShifts = list;
+        async handlerSearchEmployee() {
+            const response = await new EmployeeService().getFilteredList(this.search, null, null, this.currentPage, this.rowsPerPage);
+            console.log(response._data.data.employees.data, 'response');
+            console.log(response._data.data.employees.meta, 'response');
+            const list = response.status === 200 ? response._data.data.employees.data : [];
+            this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
+            this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
+            this.filteredEmployees = list;
+        },
+        onPhoto(employee: EmployeeInterface) {
+            this.employee = { ...employee };
+            this.drawerEmployeePhotoForm = true;
         },
         onPageChange(event: any) {
             this.currentPage = event.page + 1;
             this.rowsPerPage = event.rows;
-            this.handlerSearchShift();
+            this.handlerSearchEmployee();
         },
         addNew() {
-            const newShift: ShiftInterface = {
-                shiftId: null,
-                shiftName: "",
-                shiftDayStart: 0,
-                shiftTimeStart: "",
-                shiftActiveHours: 0,
-                shiftRestDays: "",
-                shiftCreatedAt: null,
-                shiftUpdatedAt: null,
-                shiftDeletedAt: null
+            const person: PeopleInterface = {
+                personId: null,
+                personFirstname: "",
+                personLastname: "",
+                personSecondLastname: "",
+                personGender: "",
+                personBirthday: null,
+                personCurp: null,
+                personPhone: "",
+                personRfc: null,
+                personImssNss: null,
+                personCreatedAt: new Date(),
+                personUpdatedAt: new Date(),
+                personDeletedAt: null
             }
-            this.shift = newShift
-            this.drawerShiftForm = true
+            const newEmployee: EmployeeInterface = {
+                employeeId: null,
+                employeeFirstName: "",
+                employeeSyncId: "",
+                employeeCode: "",
+                employeeLastName: "",
+                employeePayrollNum: "",
+                departmentSyncId: "",
+                positionSyncId: "",
+                employeeDeletedAt: null,
+                employeeHireDate: new Date(),
+                companyId: 1,
+                departmentId: 0,
+                positionId: 0,
+                employeeWorkSchedule: "Onsite",
+                personId: 0,
+                employeePhoto: null,
+                employeeLastSynchronizationAt: new Date(),
+                employeeCreatedAt: new Date(),
+                employeeUpdatedAt: new Date(),
+                person: person
+            }
+            this.employee = newEmployee
+            this.drawerEmployeeForm = true
         },
-        onEdit(shift: ShiftInterface) {
-            this.shift = { ...shift };
-            this.drawerShiftForm = true;
+        onEdit(employee: EmployeeInterface) {
+            this.employee = { ...employee };
+            this.drawerEmployeeForm = true;
         },
-        onDelete(shift: ShiftInterface) {
-            this.shift = { ...shift };
-            console.log(this.shift)
-            this.drawerShiftDelete = true;
+        onDelete(employee: EmployeeInterface) {
+            this.employee = { ...employee };
+            console.log(this.employee)
+            this.drawerEmployeeDelete = true;
         },
         async confirmDelete() {
-            if (this.shift) {
-                this.drawerShiftDelete = false;
-                const shiftService = new ShiftService();
-                const shiftResponse = await shiftService.delete(this.shift);
-                console.log(shiftResponse);
-                if (shiftResponse.status === 200) {
-                const index = this.filteredShifts.findIndex((shift: ShiftInterface) => shift.shiftId === this.shift?.shiftId);
+            if (this.employee) {
+                this.drawerEmployeeDelete = false;
+                const employeeService = new EmployeeService();
+                const employeeResponse = await employeeService.delete(this.employee);
+                console.log(employeeResponse);
+                if (employeeResponse.status === 201) {
+                const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId);
+                console.log(index, 'index')
                 console.log(index);
                 if (index !== -1) {
-                    this.filteredShifts.splice(index, 1);
+                    this.filteredEmployees.splice(index, 1);
                     this.$forceUpdate();
                 }
                 this.$toast.add({
                     severity: 'success',
-                    summary: 'Delete shift',
-                    detail: shiftResponse._data.message,
+                    summary: 'Delete employee',
+                    detail: employeeResponse._data.message,
                     life: 5000,
                 });
             } else {
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Delete shift',
-                    detail: shiftResponse._data.message,
+                    detail: employeeResponse._data.message,
                     life: 5000,
                 });
             }
-                console.log(shiftResponse._data.message);
+                console.log(employeeResponse._data.message);
             }
         },
-        onSave(shift: ShiftInterface) {
-            this.shift = { ...shift };
-            const index = this.filteredShifts.findIndex((s: ShiftInterface) => s.shiftId === this.shift?.shiftId);
+        onSave(employee: EmployeeInterface) {
+            this.employee = { ...employee };
+            console.log(this.employee, 'this employee updated');
+            const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId);
             if (index !== -1) {
-                this.filteredShifts[index] = shift;
+                console.log(index, 'index update employee');
+                this.filteredEmployees[index] = employee;
                 this.$forceUpdate();
             } else {
-                this.filteredShifts.push(shift);
+                console.log(index, 'index add employee');
+                this.filteredEmployees.push(employee);
                 this.$forceUpdate();
             }
-            this.drawerShiftForm = false;
+            this.drawerEmployeeForm = false;
         }
     }
 });
