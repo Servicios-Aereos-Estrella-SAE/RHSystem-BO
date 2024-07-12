@@ -1,5 +1,6 @@
 import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterface";
 import ShiftService from "~/resources/scripts/services/ShiftService";
+import { useMyGeneralStore } from "~/store/general";
 
 export default defineComponent({
   name: 'Shifts',
@@ -23,12 +24,17 @@ export default defineComponent({
     this.handlerSearchShift();
   },
   methods: {
+    
     async handlerSearchShift() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       const response = await new ShiftService().getFilteredList(this.search, this.currentPage, this.rowsPerPage);
       const list = response.status === 200 ? response._data.data.data : [];
       this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
       this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
       this.filteredShifts = list;
+      myGeneralStore.setFullLoader(false)
+
     },
     onPageChange(event: any) {
       this.currentPage = event.page + 1;
@@ -86,15 +92,20 @@ export default defineComponent({
       }
     },
     onSave(shift: ShiftInterface) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       this.shift = { ...shift };
       const index = this.filteredShifts.findIndex((s: ShiftInterface) => s.shiftId === this.shift?.shiftId);
       if (index !== -1) {
         this.filteredShifts[index] = shift;
         this.$forceUpdate();
+        myGeneralStore.setFullLoader(false)
       } else {
         this.filteredShifts.push(shift);
         this.$forceUpdate();
+        myGeneralStore.setFullLoader(false)
       }
+      myGeneralStore.setFullLoader(false)
       this.drawerShiftForm = false;
     }
   }

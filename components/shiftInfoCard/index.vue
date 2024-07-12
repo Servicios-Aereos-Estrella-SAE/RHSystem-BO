@@ -13,8 +13,8 @@
       {{ `Rest Days: ${shift.shiftRestDays}` }}
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" severity="primary" @click="handlerClickOnEdit()"/>
-      <Button icon="pi pi-trash" severity="danger" @click="handlerClickOnDelete()"/>
+      <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
+      <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>
@@ -33,11 +33,10 @@
   position: relative;
 
   .shift-name {
-    text-align: center;
+    text-align: left;
     font-weight: 500;
-    border-radius: calc($radius / 2);
     box-sizing: border-box;
-    padding: 1rem;
+    padding: 1rem 3px;
   }
 
   .shift-time, .shift-hours, .shift-days {
@@ -45,7 +44,27 @@
     font-weight: 400;
     border-radius: calc($radius / 2);
     box-sizing: border-box;
+    padding: 3px;
+  }
+  .box-btn {
     padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: white;
+    color: #303e67;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e3ebf6;
+    text-decoration: none;
+  }
+  .btn-red{
+    color: red;
   }
 
   .box-tools-footer {

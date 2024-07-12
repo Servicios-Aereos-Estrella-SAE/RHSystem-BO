@@ -10,7 +10,7 @@
       {{ `Active: ${department.departmentActive ? 'Yes' : 'No'}` }}
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" @click="handlerClickOnDetail(department.departmentId)" />
+      <Button class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
     </div>
   </div>
 </template>
@@ -25,19 +25,36 @@ export default Script
 @import 'primeicons/primeicons.css';
 
 .department-info-card {
-  margin-top: 2.25rem;
-  margin-right: 1rem;
+  margin-top: 2px;
+  margin-right: 2px;
   position: relative;
-
+  
+  .box-btn {
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: white;
+    color: #303e67;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e3ebf6;
+    text-decoration: none;
+  }
   .department-name {
-    text-align: center;
+    text-align: left;
     font-weight: 500;
     border-radius: calc($radius / 2);
     box-sizing: border-box;
     padding: 1rem;
   }
   .assist {
-    font-size: 1.25rem;
+    font-size: 14px;
     color: $success;
     margin-bottom: 0.75rem;
     background-color: transparentize($color: $success, $amount: 0.95);
@@ -49,7 +66,7 @@ export default Script
     font-weight: 400;
     border-radius: calc($radius / 2);
     box-sizing: border-box;
-    padding: 1rem;
+    padding: 2%;
   }
 
   .box-tools-footer {

@@ -4,7 +4,7 @@ interface ShiftInterface {
   shiftDayStart: number
   shiftTimeStart: string
   shiftActiveHours: number
-  shiftRestDays: string
+  shiftRestDays: any
   shiftCreatedAt: Date | string | null
   shiftUpdatedAt: Date | string | null
   shiftDeletedAt: Date | string | null
