@@ -22,20 +22,14 @@ export default defineComponent({
   },
   methods: {
     async handlerSearchDepartment() {
-      const response = await new DepartmentService().getAllDepartmentList(this.search, this.currentPage, this.rowsPerPage);
-      const list = response.status === 200 ? response._data.data.departments : [];
+      const response = await new DepartmentService().getSearchDepartmentList(this.search, this.currentPage, this.rowsPerPage);
+      const list = response.status === 200 ? response._data.data.data : [];
     //   this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
     //   this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
       this.filteredDepartments = list;
     },
-    onPageChange(event: any) {
-      this.currentPage = event.page + 1;
-      this.rowsPerPage = event.rows;
-      this.handlerSearchDepartment();
-    },
-    onView(department: DepartmentInterface) {
-      this.department = { ...department };
-      this.drawerDepartmentDetail = true;
-    }
+   
+
+
   }
 });

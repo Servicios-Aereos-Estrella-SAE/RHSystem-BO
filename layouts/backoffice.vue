@@ -2,10 +2,15 @@
   <div>
     <transition name="page">
       <div v-show="statusFullLoader" class="page-loader">
-        <ProgressSpinner aria-label="Loading" strokeWidth="3" style="width: 5rem; height: 5rem;" />
+        <div>
+          <img src="/public/isotipo-v1-loader.png" alt="">
+          <div class="loader-text">
+            Loading content...
+          </div>
+        </div>
       </div>
     </transition>
-    <div>
+    <div v-if="authAccess">
       <dashboardHeader />
       <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
         <div class="aside-menu-wrapper">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="guest" class="guest-layout-wrapper">
+    <div class="guest-layout-wrapper">
       <div class="form-wrapper">
         <slot />
       </div>

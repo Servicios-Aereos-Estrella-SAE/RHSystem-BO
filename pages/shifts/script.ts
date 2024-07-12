@@ -56,7 +56,6 @@ export default defineComponent({
     },
     onDelete(shift: ShiftInterface) {
       this.shift = { ...shift };
-      console.log(this.shift)
       this.drawerShiftDelete = true;
     },
     async confirmDelete() {
@@ -64,10 +63,8 @@ export default defineComponent({
         this.drawerShiftDelete = false;
         const shiftService = new ShiftService();
         const shiftResponse = await shiftService.delete(this.shift);
-        console.log(shiftResponse);
         if (shiftResponse.status === 200) {
           const index = this.filteredShifts.findIndex((shift: ShiftInterface) => shift.shiftId === this.shift?.shiftId);
-          console.log(index);
           if (index !== -1) {
             this.filteredShifts.splice(index, 1);
             this.$forceUpdate();
@@ -86,7 +83,6 @@ export default defineComponent({
             life: 5000,
           });
         }
-        console.log(shiftResponse._data.message);
       }
     },
     onSave(shift: ShiftInterface) {
@@ -101,6 +97,5 @@ export default defineComponent({
       }
       this.drawerShiftForm = false;
     }
-  
   }
 });

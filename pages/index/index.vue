@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isGuest">
     <NuxtLayout name="guest">
       <div class="guest-page">
         <div>
@@ -47,6 +47,7 @@
       </div>
     </NuxtLayout>
   </div>
+  <div v-else></div>
 </template>
 
 <script>
