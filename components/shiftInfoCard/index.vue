@@ -10,7 +10,7 @@
       {{ `Hours active: ${shift.shiftActiveHours}` }}
     </div>
     <div class="shift-days">
-      {{ `Holidays: ${shift.shiftRestDays}` }}
+      {{ `Rest Days: ${shift.shiftRestDays}` }}
     </div>
     <div class="box-tools-footer">
       <Button icon="pi pi-pencil" severity="primary" @click="handlerClickOnEdit()"/>

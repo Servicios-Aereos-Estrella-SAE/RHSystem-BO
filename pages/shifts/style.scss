@@ -15,23 +15,25 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem auto 20rem 18rem 20rem;
+      grid-template-columns: 20rem auto;
       gap: 0.5rem;
+      justify-content: space-between;
 
       .btn-add {
         width: fit-content;
+        align-self: flex-end;
       }
       
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 15rem auto 15rem 18rem 10rem;
+        grid-template-columns: 15rem auto;
       }
 
       @media screen and (max-width: $tablet) {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr auto;
       }
 
       @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr auto;
       }
     }
     .shift-card-wrapper {
@@ -48,8 +50,16 @@
       width: 100%;
     }
   }
-  
+  .shift-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 }
 .side{
   background-color: blue!important;
 }
+
