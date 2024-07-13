@@ -180,10 +180,14 @@ export default class EmployeeService {
   }
   async updatePhoto(employeeId: number, photo: any) {
     let responseRequest: any = null
+    console.log('updatePhoto', employeeId, photo)
+    // send request to send photo like multipart/form-data
+    const formData = new FormData()
+    formData.append('photo', photo)
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/photo`, {
         method: 'PUT',
-        query: { photo },
+        body: formData,
         onResponse ({ response }) { responseRequest = response },
         onRequestError ({ response }) { responseRequest = response }
       })
