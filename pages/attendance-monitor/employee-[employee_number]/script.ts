@@ -288,7 +288,7 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, employeeID)
-      if (assistResponse.status === 200) {
+      if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')

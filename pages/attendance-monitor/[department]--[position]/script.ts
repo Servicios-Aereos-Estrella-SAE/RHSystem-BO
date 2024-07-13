@@ -429,7 +429,7 @@ export default defineComponent({
       
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByPosition(startDay, endDay, departmentId, positionId)
-      if (assistResponse.status === 200) {
+      if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')

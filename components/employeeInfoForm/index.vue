@@ -85,10 +85,18 @@
             @upload="onUpload" @select="onSelect" />
         </div> -->
         <div class="box-tools-footer">
+          <Button label="Excepciones de turnos" severity="primary" @click="getShiftExceptions()" />
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>
+    <div class="card flex justify-content-center">
+      <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right" class="shift-exception-sidebar" :showCloseIcon="true">
+      <employeeShiftException
+          :employee="employee"
+      />
+      </Sidebar>
+  </div>
   </div>
 </template>
 
@@ -100,4 +108,12 @@
 
 <style lang="scss">
   @import './style';
+  .shift-exception-sidebar {
+    width: 100% !important;
+    max-width: 65rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

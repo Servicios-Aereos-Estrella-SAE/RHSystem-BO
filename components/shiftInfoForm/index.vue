@@ -10,7 +10,16 @@
         </div>
         <div class="input-box">
           <label for="shiftDayStart">Start Day</label>
-          <InputNumber id="shiftDayStart" v-model="shift.shiftDayStart" :invalid="submitted && !shift.shiftDayStart" />
+          <select id="shiftDayStart" v-model="shift.shiftDayStart" :class="{ 'p-errors': submitted && !shift.shiftDayStart }">
+            <option value="" disabled>Select Day</option>
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3">Wednesday</option>
+            <option value="4">Thursday</option>
+            <option value="5">Friday</option>
+            <option value="6">Saturday</option>
+            <option value="7">Sunday</option>
+          </select>
           <small class="p-error" v-if="submitted && !shift.shiftDayStart">Start day is required.</small>
         </div>
         <div class="input-box">
@@ -25,8 +34,12 @@
         </div>
         <div class="input-box">
           <label for="shiftRestDays">Rest Days</label>
-          <InputText id="shiftRestDays" v-model="shift.shiftRestDays" :invalid="submitted && !shift.shiftRestDays" />
-          <small class="p-error" v-if="submitted && !shift.shiftRestDays">Rest days are required.</small>
+          <MultiSelect v-model="selectedRestDays" :options="daysOfWeeks" optionLabel="name" filter placeholder="Select Rest Days"
+          :maxSelectedLabels="3" class="w-full md:w-500" />
+          <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">Rest days are required.</small>
+        </div>
+        <div class="card flex justify-center">
+      
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
@@ -43,4 +56,12 @@ export default Script
 
 <style lang="scss">
 @import './style';
+.p-errors{
+  border: 1px solid red;
+}
+select{
+  padding: 0.75rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
 </style>

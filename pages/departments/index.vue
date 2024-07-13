@@ -29,12 +29,12 @@
           </div>
           
           <div></div>
-          <Paginator 
+          <!-- <Paginator 
               class="paginator"
               :first="first" 
               :rows="rowsPerPage" 
               :totalRecords="totalRecords" 
-            />
+            /> -->
           <!-- Detail Department -->
           <!-- <div class="card flex justify-content-center">
             <Sidebar v-model:visible="drawerDepartmentDetail" header="Department Detail" position="right" class="department-detail-sidebar">
