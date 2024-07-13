@@ -21,23 +21,43 @@ export default defineComponent({
     currenEmployee: null as EmployeeInterface | null,
     isNewEmployee: false,
     isReady: false,
+    maxFileSize: 2000000,
+    currentPhotoUrl: ''
   }),
   computed: {
   },
   async mounted() {
     this.isReady = false
     this.isNewEmployee = !this.employee.employeeId ? true : false
-    console.log(this.employee, 'Employee updated')
+    if (!this.isNewEmployee && this.employee.employeePhoto) {
+      this.currentPhotoUrl = this.employee.employeePhoto
+    }
+      
+      
     this.isReady = true
   },
   methods: {
-    onUpload(event: any) {
+    async onUpload(event: any) {
       this.employee.employeePhoto = event.files[0];
-      console.log('Photo uploaded:', this.employee.employeePhoto);
+      const employeeService = new EmployeeService();
+      const employeeResponse = await employeeService.updatePhoto(this.employee.employeeId ?? 0, this.employee.employeePhoto)
+      const employee = employeeResponse._data.employee
+      if(employeeResponse?.status === 200) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Photo saved successfully',
+          life: 5000
+        });
+        this.currentPhotoUrl = employee.employeePhoto
+        this.$emit('save', employee as EmployeeInterface)
+
+      }
+
     },
     onSelect(event: any) {
-      this.employee.employeePhoto = event.files[0];
-      console.log('Photo selected:', this.employee.employeePhoto);
+      console.info(event)
+      // this.employee.employeePhoto = event.files[0];
     },
   },
 })

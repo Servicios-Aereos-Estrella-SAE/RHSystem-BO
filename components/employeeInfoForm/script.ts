@@ -44,7 +44,6 @@ export default defineComponent({
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee.employeeId ? true : false
-    console.log(this.employee, 'Employee updated')
     this.isReady = true
     this.getDepartments()
     if (!this.isNewUser) {
@@ -56,7 +55,6 @@ export default defineComponent({
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
       this.positions = await positionService.getPositionsDepartment(departmentId)
-      console.log('Positions:', this.positions)
     },
     async getDepartments() {
       let response = null
@@ -66,11 +64,9 @@ export default defineComponent({
     },
     onUpload(event: any) {
       this.employee.employeePhoto = event.files[0];
-      console.log('Photo uploaded:', this.employee.employeePhoto);
     },
     onSelect(event: any) {
       this.employee.employeePhoto = event.files[0];
-      console.log('Photo selected:', this.employee.employeePhoto);
     },
     async onSave() {
       this.isEmailInvalid = false
@@ -111,13 +107,11 @@ export default defineComponent({
         personResponse = await employeeService.updatePerson(person)
       }
       if (personResponse.status === 201) {
-        console.log('Person created:', personResponse._data.data.person)
         this.employee.personId = personResponse._data.data.person.personId
         this.employee.person = {
           ...this.employee.person,
           personId: personResponse._data.data.person.personId
         } as PeopleInterface
-        console.log('Employee:', this.employee.personId)
       } else {
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
@@ -177,15 +171,11 @@ export default defineComponent({
   watch: {
     'employee.departmentId': function(newVal) {
       if (newVal) {
-        console.log('Department:', newVal)
         this.getPositions(newVal);
       }
     },
     'activeSwicht': function (newVal) {
-      console.log('Active:', newVal)
-      console.log('Employee:', this.employee.employeeWorkSchedule)
       this.employee.employeeWorkSchedule = newVal ? 'Onsite' : 'Remote'
-      console.log('Employee:', this.employee.employeeWorkSchedule)
     }
   },
 })

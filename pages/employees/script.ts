@@ -25,8 +25,6 @@ export default defineComponent({
     methods: {
         async handlerSearchEmployee() {
             const response = await new EmployeeService().getFilteredList(this.search, null, null, this.currentPage, this.rowsPerPage);
-            console.log(response._data.data.employees.data, 'response');
-            console.log(response._data.data.employees.meta, 'response');
             const list = response.status === 200 ? response._data.data.employees.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
@@ -88,7 +86,6 @@ export default defineComponent({
         },
         onDelete(employee: EmployeeInterface) {
             this.employee = { ...employee };
-            console.log(this.employee)
             this.drawerEmployeeDelete = true;
         },
         async confirmDelete() {
@@ -96,11 +93,8 @@ export default defineComponent({
                 this.drawerEmployeeDelete = false;
                 const employeeService = new EmployeeService();
                 const employeeResponse = await employeeService.delete(this.employee);
-                console.log(employeeResponse);
                 if (employeeResponse.status === 201) {
                 const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId);
-                console.log(index, 'index')
-                console.log(index);
                 if (index !== -1) {
                     this.filteredEmployees.splice(index, 1);
                     this.$forceUpdate();
@@ -119,23 +113,20 @@ export default defineComponent({
                     life: 5000,
                 });
             }
-                console.log(employeeResponse._data.message);
             }
         },
         onSave(employee: EmployeeInterface) {
             this.employee = { ...employee };
-            console.log(this.employee, 'this employee updated');
             const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId);
             if (index !== -1) {
-                console.log(index, 'index update employee');
                 this.filteredEmployees[index] = employee;
                 this.$forceUpdate();
             } else {
-                console.log(index, 'index add employee');
                 this.filteredEmployees.push(employee);
                 this.$forceUpdate();
             }
             this.drawerEmployeeForm = false;
+            this.drawerEmployeePhotoForm = false;
         }
     }
 });

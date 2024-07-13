@@ -73,7 +73,7 @@
         <div class="box-tools-footer">
           <Button v-if="!isNewUser" :label="changePassword ? 'Cancelar Cambio de contraseña' : 'Cambiar contraseña'"
             severity="secondary" @click="onChangePassword()" />
-          <Button label="Guardar" severity="primary" @click="onSave()" />
+          <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>

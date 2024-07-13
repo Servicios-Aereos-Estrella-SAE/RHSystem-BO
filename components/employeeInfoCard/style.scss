@@ -18,12 +18,29 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
+    
     svg {
       width: 1.75rem;
     }
   }
-
+  .avatar-photo {
+    width: 5rem;
+    height: 5rem;
+    cursor: pointer;
+    border-radius: $radius;
+    position: absolute;
+    margin-top: -3rem;
+    border: solid .4px white;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .employee-photo {
+      width: 5rem;
+      height: 5rem;
+      object-fit: contain;
+    }
+  }
   .email {
     text-align: left;
     font-weight: 500;

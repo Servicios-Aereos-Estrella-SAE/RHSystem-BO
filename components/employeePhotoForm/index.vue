@@ -3,13 +3,16 @@
     <Toast />
     <div v-if="isReady" class="user-form">
       <div class="form-container">
+        <div v-if="currentPhotoUrl">
+          <img :src="currentPhotoUrl" alt="Employee Photo" style="max-width: 200px;" />
+        </div>
         <div class="input-box">
           <label for="employeePhoto">Employee Photo</label>
-          <FileUpload name="photo" url="your-upload-url" accept="image/*" maxFileSize="1000000"
+          <FileUpload name="photo" accept="image/*" :maxFileSize="maxFileSize"
             @upload="onUpload" @select="onSelect" />
         </div>
         <!-- <div class="box-tools-footer">
-          <Button label="Guardar" severity="primary" @click="onSave()" />
+          <Button label="Save" severity="primary" @click="onSave()" />
         </div> -->
       </div>
     </div>

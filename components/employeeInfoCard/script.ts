@@ -14,9 +14,7 @@ export default defineComponent({
   }),
   computed: {
   },
-  mounted() {
-    console.log('🚀 ---------------------------------🚀', this.employee)
-  },
+  mounted() {},
   methods: {
     handlerClickOnEdit () {
       if (this.clickOnEdit) {

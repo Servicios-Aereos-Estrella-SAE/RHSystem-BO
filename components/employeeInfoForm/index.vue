@@ -86,7 +86,7 @@
         </div> -->
         <div class="box-tools-footer">
           <Button label="Excepciones de turnos" severity="primary" @click="getShiftExceptions()" />
-          <Button label="Guardar" severity="primary" @click="onSave()" />
+          <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>

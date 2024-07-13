@@ -45,7 +45,6 @@ export default defineComponent({
             detail: 'Shift saved successfully',
             life: 5000
           });
-          console.log(response._data.data);
           const shift = response._data.data
           this.$emit('onShiftSave', shift as ShiftInterface)
           this.$emit('save-success');
