@@ -36,7 +36,8 @@ export default defineComponent({
     changePassword: false,
     isNewUser: false,
     isReady: false,
-    isEmailInvalid: false
+    isEmailInvalid: false,
+    drawerShiftExceptions: false
   }),
   computed: {
   },
@@ -168,6 +169,9 @@ export default defineComponent({
       // Si el cumpleaños es una cadena de texto, intenta convertirla a Date
       const date = new Date(birthday);
       return isNaN(date.getTime()) ? null : date;
+    },
+    getShiftExceptions() {
+      this.drawerShiftExceptions = true
     }
   },
   watch: {
