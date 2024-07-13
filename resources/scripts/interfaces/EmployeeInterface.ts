@@ -15,6 +15,8 @@ interface EmployeeInterface {
   positionId: number,
   departmentSyncId: string,
   positionSyncId: string,
+  employeePhoto: string | null,
+  employeeWorkSchedule: string | null,
   personId: number,
   employeeLastSynchronizationAt: Date | string | null,
   employeeCreatedAt: Date | string | null,

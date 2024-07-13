@@ -1,0 +1,51 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.position-info-card {
+  margin-top: 2%;
+  position: relative;
+  margin-left: 2%;
+  height: auto;
+
+  .position-name {
+    text-align: left;
+    font-weight: 500;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 5px;
+    white-space: nowrap;       /* Evita que el texto se rompa en varias líneas */
+    overflow: hidden;          /* Oculta el desbordamiento del contenido */
+    text-overflow: ellipsis;   /* Agrega puntos suspensivos al final del contenido si se desborda */
+    max-width: 100%; 
+  }
+
+  .position-status {
+    text-align: left;
+    font-weight: 400;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 1rem;
+    font-size: 0.8rem;
+    
+  }
+
+  .assist {
+    font-size: 1.25rem;
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    button {
+      width: 100%;
+    }
+  }
+}

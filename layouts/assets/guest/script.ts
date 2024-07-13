@@ -6,7 +6,6 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    guest: true,
   }),
   computed: {
   },
@@ -22,15 +21,5 @@ export default defineComponent({
     //     colorMode: this.$colorMode.preference,
     //   })
     // },
-    async verifyAuthStatus () {
-      /* const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
-      this.guest = !(!!authUser)
-
-      if (!this.guest) {
-        this.$router.push('/attendance-monitor')
-      } */
-    },
   }
 })
