@@ -11,7 +11,7 @@
         <div class="box head-page">
           <div class="input-box">
             <label for="search">
-              Buscar
+              Search
             </label>
             <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchShift" @keyup.delete="handlerSearchShift"/>
           </div>
@@ -100,4 +100,13 @@
 .graph-label {
   color: red;
 }
+
+.shift-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

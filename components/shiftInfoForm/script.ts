@@ -2,14 +2,36 @@ import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterfa
 import ShiftService from "~/resources/scripts/services/ShiftService";
 
 export default defineComponent({
+  
   name: 'ShiftInfoForm',
   props: {
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
+    
   },
   data: () => ({
-    submitted: false
+    submitted: false,
+    selectedCities: '',
+    daysOfWeeks: [
+      { name: 'Monday', value: 1 },
+      { name: 'Tuesday', value: 2 },
+      { name: 'Wednesday', value: 3 },
+      { name: 'Thursday', value: 4 },
+      { name: 'Friday', value: 5 },
+      { name: 'Saturday', value: 6 },
+      { name: 'Sunday', value: 7 },
+    ],
+    selectedRestDays: [] as number[],
+
   }),
+
+  watch: {
+    
+    selectedRestDays(newValue) {
+      const restDaysString = newValue.map((day: { value: any; }) => day.value).join(',');
+      this.shift.shiftRestDays = restDaysString;
+    },
+  },
   methods: {
     async onSave() {
       this.submitted = true;
@@ -37,6 +59,9 @@ export default defineComponent({
           this.$emit('save-error');
         }
       }
+    },
+    updateRestDays() {
+      this.shift.shiftRestDays = this.selectedRestDays.join(',');
     }
   }
 });
