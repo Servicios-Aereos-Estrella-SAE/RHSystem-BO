@@ -17,7 +17,19 @@
                         {{ position?.positionAlias }}
                     </h3>
                 </div>
-            
+                <div>
+                    <h3>
+                        Shifts per Department
+                    </h3>
+                    <div class="department-card-wrapper">
+                        <div v-for="(shift, index) in dataShifts" :key="`shift-${shift.shiftId}-${index}`">
+                        <ShiftInfoCard :shift="shift" 
+                        :show-edit-button="false" 
+                        :show-delete-button="false" 
+                        />
+                        </div>
+                    </div>
+                </div>
             </div>
         </NuxtLayout>
     </div>
