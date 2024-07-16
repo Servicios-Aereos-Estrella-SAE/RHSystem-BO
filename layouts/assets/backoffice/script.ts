@@ -4,11 +4,6 @@ import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
-  watch: {
-    async '$route.path' () {
-      await this.validateSession()
-    }
-  },
   name: 'backoffice',
   props: {
   },
@@ -39,11 +34,11 @@ export default defineComponent({
     })
   },
   mounted() {
-    document.addEventListener('visibilitychange', async () => {
-      if (document.visibilityState === 'visible') {
-        await this.validateSession()
-      }
-    })
+    // document.addEventListener('visibilitychange', async () => {
+    //   if (document.visibilityState === 'visible') {
+    //     await this.validateSession()
+    //   }
+    // })
 
     window.addEventListener('focus', async () => {
       await this.validateSession()
