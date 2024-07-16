@@ -58,21 +58,22 @@ export default defineComponent({
       return timeCST.toFormat('tt')
     },
     chekOutTime () {
-      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
-        return ''
-      }
+      const now = DateTime.now().setZone('America/Mexico_city')
+      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('America/Mexico_city')
 
-      const now = DateTime.now().toFormat('yyyy-LL-dd')
-      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeDate = time.toFormat('yyyy-LL-dd')
-      const timeCST = time.setZone('UTC-5')
-
-      if (timeDate === now) {
+      if (timeToCheckOut > now) {
         this.checkAssist.assist.checkOutStatus = ''
         return ''
       }
 
-      return timeCST.toFormat('tt')
+      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
+        return ''
+      }
+
+      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
+      const timeCST = time.setZone('America/Mexico_city')
+      const timeFormatted = timeCST.toFormat('tt')
+      return timeFormatted
     }
   },
   mounted() {

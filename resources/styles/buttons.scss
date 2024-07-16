@@ -11,18 +11,23 @@
     background-color: $gray !important;
     border-color: $gray !important;
   }
-
-  .btn-excel {
-    background-color: #12763d !important;
-    border-color: #12763d !important;
-
-    svg {
-      width: 1.25rem;
-    }
-  }
 }
 
 :deep(.p-button-label) {
   font-weight: normal;
   font-size: 0.9rem;
+}
+
+.btn-excel {
+  background-color: #12763d !important;
+  border-color: #12763d !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 1rem;
+
+  svg {
+    width: 1.25rem;
+  }
 }

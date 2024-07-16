@@ -14,6 +14,8 @@ interface AssistDayInterface {
     isRestDay: boolean
     isVacationDate: boolean
     isHoliday: boolean
+    checkInDateTime: Date
+    checkOutDateTime: Date
   }
 }
 
