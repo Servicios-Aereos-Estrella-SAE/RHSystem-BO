@@ -33,6 +33,7 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
       this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
       this.filteredShifts = list;
+      console.log(list);
       myGeneralStore.setFullLoader(false)
 
     },
@@ -51,7 +52,8 @@ export default defineComponent({
         shiftRestDays: "",
         shiftCreatedAt: null,
         shiftUpdatedAt: null,
-        shiftDeletedAt: null
+        shiftDeletedAt: null,
+        employee_count: undefined
       }
       this.shift = newShift
       this.drawerShiftForm = true
