@@ -1,17 +1,15 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService'
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface'
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
-import { DateTime } from 'luxon';
+import { DateTime } from 'luxon'
 
 export default defineComponent({
   components: {
@@ -24,21 +22,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true }
   },
   data: () => ({
-    activeSwicht: true,
-    positions: [] as PositionInterface[],
-    departments: [] as DepartmentInterface[],
-    submitted: false,
-    genders: [
-        { label: 'Male', value: 'Hombre' },
-        { label: 'Female', value: 'Mujer' },
-        { label: 'Other', value: 'Otro' }
-    ],
-    currenEmployee: null as EmployeeInterface | null,
-    passwordConfirm: '',
-    changePassword: false,
-    isNewUser: false,
     isReady: false,
-    isEmailInvalid: false,
     shiftExceptionsList: [] as ShiftExceptionInterface[],
     exceptionTypesList: [] as ExceptionTypeInterface[],
     selectedExceptionTypeId: null as number | null,

@@ -8,7 +8,7 @@ interface EmployeeShiftInterface {
   employeShiftsCreatedAt: string | Date | null
   employeShiftsUpdatedAt: string | Date | null
   employeShiftsDeletedAt: string | Date | null
-  shift: ShiftInterface
+  shift?: ShiftInterface
 }
 
 export type { EmployeeShiftInterface }
