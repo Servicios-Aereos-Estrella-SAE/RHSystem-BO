@@ -11,8 +11,29 @@
             <div class="department-wrapper">
                 <div class="box head-page">
                     <h2>
-                        {{ department?.departmentName }} <br>
+                        {{ department?.departmentName }} <br> 
                     </h2>
+                </div>
+                <div class="box head-page">
+                    <div class="input-box">
+                        <label for="search">
+                        Search
+                        </label>
+                        <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPosition" @keyup.delete="handlerSearchPosition" />
+                    </div>
+                </div>
+                <div>
+                    <h3>
+                        Shifts per Department
+                    </h3>
+                    <div class="department-card-wrapper">
+                        <div v-for="(shift, index) in dataShifts" :key="`shift-${shift.shiftId}-${index}`">
+                        <ShiftInfoCard :shift="shift" 
+                        :show-edit-button="false" 
+                        :show-delete-button="false" 
+                        />
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <h3>

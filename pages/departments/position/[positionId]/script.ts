@@ -3,6 +3,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import { useRuntimeConfig } from '#app';
 import { useMyGeneralStore } from '~/store/general';
+import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
 
 export default defineComponent({
   name: 'PositionDetail',
@@ -12,6 +13,8 @@ export default defineComponent({
     const router = useRouter();
     const config = useRuntimeConfig();
     const position = ref(null);
+    const dataShifts = ref<ShiftInterface[] | null>(null);
+
 
     onMounted(async () => {
       const myGeneralStore = useMyGeneralStore()
@@ -22,7 +25,7 @@ export default defineComponent({
           const positionResponse = await axios.get(`${config.public.BASE_API_PATH}/positions/${positionId}`);
           position.value = positionResponse.data.data.position;
           myGeneralStore.setFullLoader(false)
-
+          fetchShiftDepartment(positionId);
         } catch (error) {
           console.error('Failed to fetch position details:', error);
         }
@@ -31,12 +34,29 @@ export default defineComponent({
       }
     });
 
+    const fetchShiftDepartment = async (departmentId: any) => {
+      const myGeneralStore = useMyGeneralStore();
+      try {
+        const positionsResponse = await axios.get(`${config.public.BASE_API_PATH}/shift/`, {
+          params: {
+            positionId: departmentId
+          }
+        });
+        dataShifts.value = positionsResponse.data.data.data.filter((shift: any) => shift.employee_count > 0);
+      } catch (error) {
+        console.error('Failed to fetch positions:', error);
+      } finally {
+        myGeneralStore.setFullLoader(false);
+      }
+    };
+
     const closeDetail = () => {
       router.push({ path: '/positions' }); 
     };
 
     return {
       position,
+      dataShifts,
       closeDetail
     };
   }

@@ -4,17 +4,25 @@
       {{ `${shift.shiftName}` }}
     </div>
     <div class="shift-time">
+      {{ `Day to Start: ${getRestDaysNames(shift.shiftDayStart)}` }}
+    </div>
+    <div class="shift-time">
       {{ `Start: ${shift.shiftTimeStart}` }}
     </div>
     <div class="shift-hours">
       {{ `Hours active: ${shift.shiftActiveHours}` }}
     </div>
     <div class="shift-days">
-      {{ `Rest Days: ${shift.shiftRestDays}` }}
+      {{ `Rest Days: ${getRestDaysNames(shift.shiftRestDays)}` }}
     </div>
-    <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+
+    <div class="shift-days" v-if="shift.employee_count && !showEditButton">
+      {{ `Total Employees: ${shift.employee_count}` }}
+    </div>
+
+    <div class="box-tools-footer"  v-if="showEditButton">
+      <Button v-if="showEditButton" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
+      <Button v-if="showDeleteButton" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>
