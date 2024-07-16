@@ -18,7 +18,7 @@ export default defineComponent({
         return 0
       }
 
-      const year = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[0]}`)
+      const year = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[0]}`)
       return year
     },
     dateMonth () {
@@ -26,7 +26,7 @@ export default defineComponent({
         return 0
       }
 
-      const month = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[1]}`)
+      const month = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[1]}`)
       return month
     },
     dateDay () {
@@ -34,7 +34,7 @@ export default defineComponent({
         return 0
       }
 
-      const day = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[2]}`)
+      const day = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[2]}`)
       return day
     },
     weekDayName () {
@@ -51,16 +51,15 @@ export default defineComponent({
       if (!this.shiftException.shiftExceptionsDate) {
         return ''
       }
-
-      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt')
+      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString())
+      const timeCST = time.toFormat('HH:mm:ss')
+      return timeCST
     }
   },
   mounted() {
     if (this.shiftException.shiftExceptionsDate) {
-      const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate, { setZone: true }).setZone('America/Mexico_City')
-      this.shiftException.shiftExceptionsDate = newDate ? DateTime.fromISO(newDate.toString()).toFormat('yyyy-MM-dd HH:mm:ss') : ''
+      const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+      this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
     }
   },
   methods: {

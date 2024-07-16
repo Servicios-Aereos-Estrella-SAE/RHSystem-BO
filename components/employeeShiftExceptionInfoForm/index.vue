@@ -18,7 +18,7 @@
           <label for="date">
             Date
           </label>
-          <Calendar v-model="shiftException.shiftExceptionsDate" showTime hourFormat="24"/>
+          <Calendar v-model="shiftException.shiftExceptionsDate" showTime hourFormat="24" @update:model-value="handleDateChange"/>
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDate">Date is required.</small>
         </div>
         <div class="input-box">

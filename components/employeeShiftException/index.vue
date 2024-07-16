@@ -46,9 +46,8 @@
       <Dialog v-model:visible="drawerShiftExceptionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
         <div class="confirmation-content">
           <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="shiftException"> Are you sure you want to delete
-            <b>{{`${shiftException.shiftExceptionsDescription || ''}`}}</b>
-             in <b>{{`${selectedDateTimeDeleted || ''}`}}</b>
+          <span v-if="shiftException"> Are you sure you want to delete exception at
+              <b>{{`${selectedDateTimeDeleted || ''}`}}</b>
             ?</span>
         </div>
         <template #footer>
@@ -68,4 +67,14 @@
 
 <style lang="scss">
   @import './style';
+  @import '/resources/styles/variables.scss';
+
+  .shift-exception-form-sidebar{
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

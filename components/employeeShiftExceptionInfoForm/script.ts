@@ -7,6 +7,7 @@ import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/Exce
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { DateTime } from 'luxon';
+import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
   components: {
@@ -23,11 +24,15 @@ export default defineComponent({
     submitted: false,
     currentShiftException: null as ShiftExceptionInterface | null,
     isNewShiftException: false,
+    currentDate: null as string | null,
+    dateWasChange: false,
     isReady: false,
   }),
   computed: {
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
     this.isReady = false
     this.isNewShiftException = !this.shiftException.shiftExceptionId ? true : false
     if (this.shiftException.shiftExceptionId) {
@@ -37,11 +42,13 @@ export default defineComponent({
         this.currentShiftException = shiftExceptionResponse._data.data.shiftException
       }
       if (this.currentShiftException && this.currentShiftException.shiftExceptionsDate) {
-        const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate, { setZone: true }).setZone('America/Mexico_City')
-        this.shiftException.shiftExceptionsDate = newDate ? DateTime.fromISO(newDate.toString()).toFormat('yyyy-MM-dd HH:mm:ss') : ''
+        this.currentDate = `${this.currentShiftException.shiftExceptionsDate}`
+        const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
+        this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
     }
     await this.getExceptionTypes()
+    myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
   methods: {
@@ -62,11 +69,12 @@ export default defineComponent({
         })
         return
       }
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       let shiftExceptionResponse = null
       const shiftExceptionDateTemp = this.shiftException.shiftExceptionsDate
-      if (this.shiftException.shiftExceptionsDate) {
-        const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate, { setZone: true }).setZone('America/Mexico_City')
-        this.shiftException.shiftExceptionsDate = newDate ? newDate.toFormat('yyyy-MM-dd HH:mm:ss') : ''
+      if (!this.dateWasChange) {
+        this.shiftException.shiftExceptionsDate = this.currentDate
       }
       if (!this.shiftException.shiftExceptionId) {
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)
@@ -80,7 +88,7 @@ export default defineComponent({
           detail: shiftExceptionResponse._data.message,
             life: 5000,
         })
-        shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftExceptionId)
+        shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
         if (shiftExceptionResponse.status === 200) {
           const shiftException = shiftExceptionResponse._data.data.shiftException
           this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
@@ -103,6 +111,12 @@ export default defineComponent({
         })
       }
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
+      myGeneralStore.setFullLoader(false)
+    },
+    handleDateChange() {
+      if (this.isReady) {
+        this.dateWasChange = true
+      }
     }
   }
 })

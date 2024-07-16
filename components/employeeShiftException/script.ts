@@ -93,9 +93,12 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     async getExceptionTypes() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.exceptionTypes.data : []
       this.exceptionTypesList = list
+      myGeneralStore.setFullLoader(false)
     },
     addNew() {
       const newShiftException: ShiftExceptionInterface = {
@@ -112,7 +115,13 @@ export default defineComponent({
       this.drawerShiftExceptionForm = true
     },
     onSave(shiftException: ShiftExceptionInterface) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       this.shiftException = {...shiftException}
+      if (this.shiftException.shiftExceptionsDate) {
+        const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+        this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
+      }
       const index = this.shiftExceptionsList.findIndex((shiftException: ShiftExceptionInterface) => shiftException.shiftExceptionId === this.shiftException?.shiftExceptionId)
       if (index !== -1) {
         this.shiftExceptionsList[index] = shiftException
@@ -122,6 +131,7 @@ export default defineComponent({
         this.$forceUpdate()
       }
       this.drawerShiftExceptionForm = false
+      myGeneralStore.setFullLoader(false)
     },
     onEdit(shiftException: ShiftExceptionInterface) {
       this.shiftException = {...shiftException}
@@ -131,12 +141,14 @@ export default defineComponent({
       this.shiftException = {...shiftException}
       this.selectedDateTimeDeleted = ''
       if (this.shiftException.shiftExceptionsDate) {
-        this.selectedDateTimeDeleted = DateTime.fromISO(this.shiftException.shiftExceptionsDate).toHTTP()
+        this.selectedDateTimeDeleted = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString()).toHTTP()
       }
       this.drawerShiftExceptionDelete = true
     },
     
     async confirmDelete() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       if (this.shiftException) {
         this.drawerShiftExceptionDelete = false
         const shiftExceptionService = new ShiftExceptionService()
@@ -162,6 +174,7 @@ export default defineComponent({
           })
         }
       }
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
