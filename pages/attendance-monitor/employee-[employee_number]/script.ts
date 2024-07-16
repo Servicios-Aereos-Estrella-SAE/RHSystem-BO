@@ -10,6 +10,7 @@ import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/Empl
 import { useMyGeneralStore } from '~/store/general'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 
 export default defineComponent({
   components: {
@@ -108,7 +109,8 @@ export default defineComponent({
     onTimePercentage: 0 as number,
     onTolerancePercentage: 0 as number,
     onDelayPercentage: 0 as number,
-    onFaultPercentage: 0 as number
+    onFaultPercentage: 0 as number,
+    statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
     weeklyStartDay () {
@@ -164,6 +166,15 @@ export default defineComponent({
       const text = this.visualizationMode?.value === 'weekly' ? `Week #${start.weekNumber}` : start.toFormat('LLLL')
 
       return `Check in & Check out on ${text}`
+    },
+    assistSyncStatusDate () {
+      if (this.statusInfo) {
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTimeFormat = dateTime.toFormat('ff')
+        return dateTimeFormat
+      }
+
+      return ''
     }
   },
   created () {
@@ -175,6 +186,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
+    await this.setAssistSyncStatus()
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
     myGeneralStore.setFullLoader(false)
@@ -315,6 +327,13 @@ export default defineComponent({
         })
         myGeneralStore.setFullLoader(false)
       }
+    },
+    async setAssistSyncStatus () {
+      try {
+        const res = await new AssistService().syncStatus()
+        const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
+        this.statusInfo = statusInfo
+      } catch (error) {}
     }
   }
 })

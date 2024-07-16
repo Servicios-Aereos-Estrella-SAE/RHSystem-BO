@@ -18,6 +18,7 @@ import AssistService from '~/resources/scripts/services/AssistService'
 import { useMyGeneralStore } from '~/store/general'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 
 export default defineComponent({
   components: {
@@ -115,7 +116,8 @@ export default defineComponent({
     position: null as PositionInterface | null,
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
-    filteredEmployees: [] as EmployeeInterface[]
+    filteredEmployees: [] as EmployeeInterface[],
+    statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
     weeklyStartDay () {
@@ -184,6 +186,15 @@ export default defineComponent({
         return 'Weekly behavior'
       }
     },
+    assistSyncStatusDate () {
+      if (this.statusInfo) {
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTimeFormat = dateTime.toFormat('ff')
+        return dateTimeFormat
+      }
+
+      return ''
+    }
   },
   created () {
     const minDateString = '2024-05-01T00:00:00'
@@ -196,6 +207,7 @@ export default defineComponent({
     this.periodSelected = new Date()
     this.setDefaultVisualizationMode()
     await Promise.all([
+      this.setAssistSyncStatus(),
       this.setDepartment(),
       this.setPositionDepartment(),
       this.setDepartmentPositionEmployeeList()
@@ -455,6 +467,13 @@ export default defineComponent({
         })
         myGeneralStore.setFullLoader(false)
       }
+    },
+    async setAssistSyncStatus () {
+      try {
+        const res = await new AssistService().syncStatus()
+        const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
+        this.statusInfo = statusInfo
+      } catch (error) {}
     }
   }
 })

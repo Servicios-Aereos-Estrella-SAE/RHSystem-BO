@@ -215,7 +215,7 @@ export default defineComponent({
     this.periodSelected = new Date()
 
     await Promise.all([
-      // this.setAssistSyncStatus(),
+      this.setAssistSyncStatus(),
       this.setDepartmetList(),
       this.setDefaultVisualizationMode()
     ])
@@ -480,8 +480,7 @@ export default defineComponent({
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {
-      }
+      } catch (error) {}
     },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
