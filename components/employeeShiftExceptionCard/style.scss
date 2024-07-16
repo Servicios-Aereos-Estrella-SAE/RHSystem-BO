@@ -10,7 +10,7 @@
     cursor: pointer;
     transition: all 0.4s;
     height: 100%;
-    height: 20rem;
+    height: 23rem;
 
     &:hover {
       transition: all 0.4s;
@@ -158,5 +158,20 @@
         color: $success;
       }
     }
+    .box-tools-footer {
+      box-sizing: border-box;
+      display: flex;
+      grid-auto-flow: dense;
+      justify-content: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .5rem;
+      margin-top: 0.5rem;
+      button {
+        width: 100%;
+      }
+    }
   }
+
+
+  
 }

@@ -6,7 +6,9 @@ import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/Shi
 export default defineComponent({
   name: 'shiftExceptionCard',
   props: {
-    shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true }
+    shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
+    clickOnEdit: { type: Function, default: null },
+    clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
   }),
@@ -56,9 +58,21 @@ export default defineComponent({
     }
   },
   mounted() {
-    console.log(this.shiftException)
-    console.log('sdddds')
+    if (this.shiftException.shiftExceptionsDate) {
+      const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate, { setZone: true }).setZone('America/Mexico_City')
+      this.shiftException.shiftExceptionsDate = newDate ? DateTime.fromISO(newDate.toString()).toFormat('yyyy-MM-dd HH:mm:ss') : ''
+    }
   },
   methods: {
+    handlerClickOnEdit () {
+      if (this.clickOnEdit) {
+        this.clickOnEdit()
+      }
+    },
+    handlerClickOnDelete () {
+      if (this.clickOnDelete) {
+        this.clickOnDelete()
+      }
+    },
   }
 })

@@ -32,7 +32,12 @@
             </div>
           </div>
         </div>
+        <div class="box-tools-footer">
+          <Button icon="pi pi-pencil" severity="info" @click="handlerClickOnEdit()" />
+          <Button icon="pi pi-trash" severity="warning" @click="handlerClickOnDelete()" />
+        </div>
       </div>
+     
     </div>
   </div>
 </template>
