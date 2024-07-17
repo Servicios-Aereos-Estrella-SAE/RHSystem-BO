@@ -84,3 +84,24 @@
     }
   }
 }
+
+.p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.p-panelmenu .p-panelmenu-content {
+  background: transparent;
+  border: none;
+
+  .menu-link {
+    padding-left: 2rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.p-panelmenu .p-panelmenu-content .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content {
+  background: transparent !important;
+  border: none !important;
+}

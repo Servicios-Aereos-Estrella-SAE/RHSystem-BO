@@ -230,7 +230,7 @@ export default defineComponent({
   },
   methods: {
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -239,7 +239,9 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     handlerSetInitialDepartmentList () {
-      this.departmenSelected = this.departmentCollection.length > 0 ? this.departmentCollection[0] : null
+      const departmentID = this.$route.params.department
+      const department = this.departmentCollection.find((department: DepartmentInterface) => department.departmentId === parseInt(departmentID.toString()))
+      this.departmenSelected = department ? department : null
     },
     setGraphsData () {
       this.setPeriodData()
@@ -362,13 +364,7 @@ export default defineComponent({
       this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
     async handlerDeparmentSelect () {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.periodSelected = new Date()
-      await this.setDepartmentPositions()
-      await this.setDepartmentPositionEmployeeList()
-      this.setGraphsData()
-      myGeneralStore.setFullLoader(false)
+      this.$router.push(`/departments-attendance-monitor/${this.departmenSelected?.departmentId}`)
     },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)

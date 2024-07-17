@@ -199,7 +199,7 @@ export default defineComponent({
       this.employee = employee
     },
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]

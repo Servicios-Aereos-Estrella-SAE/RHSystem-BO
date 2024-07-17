@@ -25,7 +25,7 @@ export default defineComponent({
     Toast,
     ToastService,
   },
-  name: 'AttendanceMonitorPosition',
+  name: 'EmployeesMonitorPosition',
   props: {
   },
   data: () => ({
@@ -117,7 +117,8 @@ export default defineComponent({
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
-    statusInfo: null as AssistSyncStatus | null
+    statusInfo: null as AssistSyncStatus | null,
+    departmentList: [] as DepartmentInterface[]
   }),
   computed: {
     weeklyStartDay () {
@@ -208,17 +209,19 @@ export default defineComponent({
     this.setDefaultVisualizationMode()
     await Promise.all([
       this.setAssistSyncStatus(),
-      this.setDepartment(),
-      this.setPositionDepartment(),
+      this.setDepartmetList(),
+      // this.setDepartment(),
+      // this.setPositionDepartment(),
       this.setDepartmentPositionEmployeeList()
     ])
     this.setGeneralData()
     this.setPeriodData()
+    this.getDepartmentPositionAssistStatistics()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
     async setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -334,20 +337,20 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    async setDepartment () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const response = await new DepartmentService().show(departmentId)
-      this.department = response.status === 200 ? response._data.data.department : null
-    },
-    async setPositionDepartment () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
-      const response = await new PositionService().show(departmentId, positionId)
-      this.position = response.status === 200 ? response._data.data.position : null
-    },
+    // async setDepartment () {
+    //   const departmentId = parseInt(`${this.$route.params.department || 0}`)
+    //   const response = await new DepartmentService().show(departmentId)
+    //   this.department = response.status === 200 ? response._data.data.department : null
+    // },
+    // async setPositionDepartment () {
+    //   const departmentId = parseInt(`${this.$route.params.department || 0}`)
+    //   const positionId = parseInt(`${this.$route.params.position || 0}`)
+    //   const response = await new PositionService().show(departmentId, positionId)
+    //   this.position = response.status === 200 ? response._data.data.position : null
+    // },
     async setDepartmentPositionEmployeeList () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
+      const departmentId = null
+      const positionId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 99999999999)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
@@ -368,6 +371,32 @@ export default defineComponent({
         this.setGeneralStatisticsData(employee, employee.calendar)
       } catch (error) {
       }
+    },
+    async setDepartmetList () {
+      const response = await  new DepartmentService().getAllDepartmentList()
+      this.departmentList = response.status === 200 ? response._data.data.departments : []
+    },
+    getDepartmentPositionAssistStatistics () {
+      const departmentListStatistics: any[] = []
+
+      this.departmentList.forEach((department: DepartmentInterface) => {
+        const departmentId = department.departmentId
+        const list = this.employeeDepartmentPositionList.filter(item => item.employee.departmentId === departmentId)
+        const statistics = {
+          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length) || 0,
+          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length) || 0,
+          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length) || 0,
+          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
+        }
+
+        departmentListStatistics.push({
+          department: department,
+          statistics,
+          employees: list
+        })
+      })
+      
+      return departmentListStatistics
     },
     setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
