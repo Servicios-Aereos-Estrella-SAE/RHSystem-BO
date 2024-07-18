@@ -4,7 +4,7 @@ import type { PropType } from 'vue'
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 
 export default defineComponent({
-  name: 'employeeShiftCard',
+  name: 'employeeShiftInfoCard',
   props: {
     employeeShift: { type: Object as PropType<EmployeeShiftInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -37,11 +37,6 @@ export default defineComponent({
       const day = parseInt(`${this.employeeShift.employeShiftsApplySince.toString().split('-')[2]}`)
       return day
     },
-    weekDayName () {
-      const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.toFormat('cccc')
-      return day
-    },
     calendarDay () {
       const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
       const day = date.toFormat('DD')
@@ -72,6 +67,20 @@ export default defineComponent({
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
+    },
+    getRestDaysNames(restDays: string): string {
+      const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      let daysArray: number[];
+      
+      if (typeof restDays === 'string') {
+        daysArray = restDays.split(',').map(Number);
+      } else if (typeof restDays === 'number') {
+        daysArray = [restDays];
+      } else {
+        return '';
+      }
+
+      return daysArray.map(day => dayNames[day - 1]).join(', ');
     },
   }
 })
