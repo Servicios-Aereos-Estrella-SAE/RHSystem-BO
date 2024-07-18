@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import Toast from 'primevue/toast';
