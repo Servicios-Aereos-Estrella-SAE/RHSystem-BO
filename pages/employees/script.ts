@@ -108,7 +108,7 @@ export default defineComponent({
             } else {
                 this.$toast.add({
                     severity: 'error',
-                    summary: 'Delete shift',
+                    summary: 'Delete employee',
                     detail: employeeResponse._data.message,
                     life: 5000,
                 });
