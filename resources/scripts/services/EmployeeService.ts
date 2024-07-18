@@ -180,7 +180,6 @@ export default class EmployeeService {
   }
   async updatePhoto(employeeId: number, photo: any) {
     let responseRequest: any = null
-    console.log('updatePhoto', employeeId, photo)
     // send request to send photo like multipart/form-data
     const formData = new FormData()
     formData.append('photo', photo)

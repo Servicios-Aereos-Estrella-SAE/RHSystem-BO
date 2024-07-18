@@ -21,17 +21,22 @@
     "sass-loader": "^7.2.0"
   },
   "dependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia/nuxt": "^0.5.1",
+    "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@sidebase/nuxt-auth": "^0.7.2",
     "axios": "^1.7.2",
+    "date-fns": "^2.30.0",
     "luxon": "^3.4.4",
     "nuxt": "^3.11.2",
+    "nuxt-calendly": "^0.1.20",
     "nuxt-highcharts": "^3.1.1",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "socket.io-client": "^4.7.5",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "vue-simple-calendar": "^7.1.0"
   }
 }

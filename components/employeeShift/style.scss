@@ -1,11 +1,11 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 
-.employee-shift-exceptions {
+.employee-shifts {
   margin-top: 2.25rem;
   position: relative;
 
-  .shift-exception-wrapper {
+  .employee-shift-wrapper {
     box-sizing: border-box;
     display: grid;
     grid-auto-flow: dense;

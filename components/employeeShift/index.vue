@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isReady" class="box employee-shift-exceptions">
+  <div v-if="isReady" class="box employee-shifts">
     <Toast />
     <h4>
       {{ employee.employeeFirstName }} {{ employee.employeeLastName }}
     </h4>
     <div v-if="isReady" class="employee">
       <div class="form-container">
-        <div class="shift-exception-wrapper">
+        <div class="employee-shift-wrapper">
           <div class="box head-page">
             <div class="input-box">
               <label for="roles">
@@ -16,10 +16,10 @@
             </div>
             <div class="input-box">
               <label for="roles">
-                Exception type
+                Shift
               </label>
-              <Dropdown v-model="selectedExceptionTypeId" :options="exceptionTypesList" optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId"
-                placeholder="" filter class="w-full md:w-14rem" @change="getShiftEmployee" />
+              <Dropdown v-model="selectedShiftId" :options="shiftsList" optionLabel="shiftName" optionValue="shiftId"
+                placeholder="" filter class="w-full md:w-14rem" @change="getEmployeeShift" />
             </div>
             <div class="input-box">
               <br />
@@ -27,31 +27,31 @@
             </div>
           </div>
         </div>
-        <div class="shift-exception-wrapper">
-            <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
-              <employeeShiftExceptionCard
-                :shiftException="shiftException"
-                :click-on-edit="() => { onEdit(shiftException) }"
-                :click-on-delete="() => { onDelete(shiftException) }" 
+        <div class="employee-shift-wrapper">
+            <div v-for="(employeeShift, index) in employeeShiftsList" :key="`shift-${index}`">
+              <employeeShiftCard
+                :employeeShift="employeeShift"
+                :click-on-edit="() => { onEdit(employeeShift) }"
+                :click-on-delete="() => { onDelete(employeeShift) }" 
               />
           </div>
         </div>
-         <!-- ShiftException form -->
+         <!-- EmployeeShift form -->
          <div class="card flex justify-content-center">
-          <Sidebar v-model:visible="drawerShiftExceptionForm" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
-            <employeeShiftExceptionInfoForm :shiftException="shiftException" @onShiftExceptionSave="onSave" />
+          <Sidebar v-model:visible="drawerEmployeeShiftForm" position="right" class="employee-shift-form-sidebar" :showCloseIcon="true">
+            <employeeShiftInfoForm :employeeShift="employeeShift" @onEmployeeShiftSave="onSave" />
           </Sidebar>
         </div>
       </div>
-      <Dialog v-model:visible="drawerShiftExceptionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+      <Dialog v-model:visible="drawerEmployeeShiftDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
         <div class="confirmation-content">
           <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="shiftException"> Are you sure you want to delete exception at
+          <span v-if="employeeShift"> Are you sure you want to delete shift at
               <b>{{`${selectedDateTimeDeleted || ''}`}}</b>
             ?</span>
         </div>
         <template #footer>
-          <Button label="No" icon="pi pi-times" text @click="drawerShiftExceptionDelete = false" />
+          <Button label="No" icon="pi pi-times" text @click="drawerEmployeeShiftDelete = false" />
           <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
         </template>
       </Dialog>
@@ -69,7 +69,7 @@
   @import './style';
   @import '/resources/styles/variables.scss';
 
-  .shift-exception-form-sidebar{
+  .employee-shift-form-sidebar{
     width: 100% !important;
     max-width: 35rem !important;
 

@@ -1,0 +1,46 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.holiday-info-form {
+  margin-top: 2.25rem;
+  position: relative;
+
+  .input-box {
+    .label-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-preview {
+      max-width: 5rem;
+      max-height: 5rem;
+      width: 1rem;
+      height: 1rem;
+      display: flex;
+      margin-left: 0.5rem; /* Ajusta según sea necesario */
+    }
+    .password-box {
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: 1fr 10rem;
+      gap: .5rem;
+      margin-top: 0.5rem;
+      @media screen and (max-width: $sm) {
+        grid-template-columns: 1fr 8rem;
+      }
+    }
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    grid-auto-flow: dense;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
+    margin-top: 0.5rem;
+    button {
+      width: 100%;
+    }
+  }
+}

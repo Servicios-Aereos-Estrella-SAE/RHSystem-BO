@@ -1,12 +1,12 @@
 import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
+import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 
 export default defineComponent({
-  name: 'shiftExceptionCard',
+  name: 'employeeShiftCard',
   props: {
-    shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
+    employeeShift: { type: Object as PropType<EmployeeShiftInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
   },
@@ -14,27 +14,27 @@ export default defineComponent({
   }),
   computed: {
     dateYear () {
-      if (!this.shiftException?.shiftExceptionsDate) {
+      if (!this.employeeShift?.employeShiftsApplySince) {
         return 0
       }
 
-      const year = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[0]}`)
+      const year = parseInt(`${this.employeeShift.employeShiftsApplySince.toString().split('-')[0]}`)
       return year
     },
     dateMonth () {
-      if (!this.shiftException.shiftExceptionsDate) {
+      if (!this.employeeShift.employeShiftsApplySince) {
         return 0
       }
 
-      const month = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[1]}`)
+      const month = parseInt(`${this.employeeShift.employeShiftsApplySince.toString().split('-')[1]}`)
       return month
     },
     dateDay () {
-      if (!this.shiftException.shiftExceptionsDate) {
+      if (!this.employeeShift.employeShiftsApplySince) {
         return 0
       }
 
-      const day = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[2]}`)
+      const day = parseInt(`${this.employeeShift.employeShiftsApplySince.toString().split('-')[2]}`)
       return day
     },
     weekDayName () {
@@ -48,18 +48,18 @@ export default defineComponent({
       return day
     },
     chekInTime () {
-      if (!this.shiftException.shiftExceptionsDate) {
+      if (!this.employeeShift.employeShiftsApplySince) {
         return ''
       }
-      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString())
+      const time = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString())
       const timeCST = time.toFormat('HH:mm:ss')
       return timeCST
     }
   },
   mounted() {
-    if (this.shiftException.shiftExceptionsDate) {
-      const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
-      this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
+    if (this.employeeShift.employeShiftsApplySince) {
+      const newDate = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('America/Mexico_City')
+      this.employeeShift.employeShiftsApplySince = newDate ? newDate.toString() : ''
     }
   },
   methods: {

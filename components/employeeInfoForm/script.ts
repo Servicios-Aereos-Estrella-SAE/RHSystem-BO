@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import Toast from 'primevue/toast';
@@ -37,7 +36,8 @@ export default defineComponent({
     isNewUser: false,
     isReady: false,
     isEmailInvalid: false,
-    drawerShiftExceptions: false
+    drawerShiftExceptions: false,
+    drawerShifts: false
   }),
   computed: {
   },
@@ -166,6 +166,9 @@ export default defineComponent({
     },
     getShiftExceptions() {
       this.drawerShiftExceptions = true
+    },
+    getShifts() {
+      this.drawerShifts = true
     }
   },
   watch: {

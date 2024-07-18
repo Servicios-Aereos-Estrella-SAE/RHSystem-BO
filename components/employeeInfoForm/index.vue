@@ -85,7 +85,8 @@
             @upload="onUpload" @select="onSelect" />
         </div> -->
         <div class="box-tools-footer">
-          <Button label="Excepciones de turnos" severity="primary" @click="getShiftExceptions()" />
+          <Button label="Shifts" severity="primary" @click="getShifts()" />
+          <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" />
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
@@ -96,6 +97,11 @@
           :employee="employee"
       />
       </Sidebar>
+      <Sidebar v-model:visible="drawerShifts" header="Employee shifts" position="right" class="shift-sidebar" :showCloseIcon="true">
+        <employeeShift
+            :employee="employee"
+        />
+        </Sidebar>
   </div>
   </div>
 </template>
@@ -109,6 +115,14 @@
 <style lang="scss">
   @import './style';
   .shift-exception-sidebar {
+    width: 100% !important;
+    max-width: 65rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+  .shift-sidebar {
     width: 100% !important;
     max-width: 65rem !important;
 
