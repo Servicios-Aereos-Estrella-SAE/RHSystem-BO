@@ -29,7 +29,7 @@
         </div>
         <div class="employee-shift-wrapper">
             <div v-for="(employeeShift, index) in employeeShiftsList" :key="`shift-${index}`">
-              <employeeShiftCard
+              <employeeShiftInfoCard
                 :employeeShift="employeeShift"
                 :click-on-edit="() => { onEdit(employeeShift) }"
                 :click-on-delete="() => { onDelete(employeeShift) }" 

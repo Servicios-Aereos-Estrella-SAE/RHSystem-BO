@@ -16,10 +16,10 @@
         </div>
         <div class="input-box">
           <label for="date">
-            Date
+            Apply Since
           </label>
           <Calendar v-model="employeeShift.employeShiftsApplySince" @update:model-value="handleDateChange"/>
-          <small class="p-error" v-if="submitted && !employeeShift.employeShiftsApplySince">Date is required.</small>
+          <small class="p-error" v-if="submitted && !employeeShift.employeShiftsApplySince">Apply since is required.</small>
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
