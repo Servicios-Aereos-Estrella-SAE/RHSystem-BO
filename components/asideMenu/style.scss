@@ -8,7 +8,7 @@
 
   .menu {
     padding-top: 8rem;
-    padding-right: 1rem;
+    // padding-right: 1rem;
     padding-bottom: 1rem;
     box-sizing: border-box;
 
@@ -104,4 +104,9 @@
 .p-panelmenu .p-panelmenu-content .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content {
   background: transparent !important;
   border: none !important;
+}
+
+.p-toggleable-content {
+  background-color: #092c50;
+  padding-left: 1rem;
 }

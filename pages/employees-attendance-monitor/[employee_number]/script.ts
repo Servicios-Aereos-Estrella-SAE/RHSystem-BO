@@ -268,7 +268,7 @@ export default defineComponent({
     },
     onEmployeeSelect () {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
+        this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
     async getEmployeeAssist () {

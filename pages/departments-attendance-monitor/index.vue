@@ -3,7 +3,7 @@
     <Toast/>
     <Head>
       <Title>
-        Department Attendance Monitor
+        All Departments Attendance Monitor
       </Title>
     </Head>
     <NuxtLayout name="backoffice">

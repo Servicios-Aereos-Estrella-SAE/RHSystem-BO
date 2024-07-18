@@ -42,6 +42,13 @@
           svg {
             width: 2rem;
           }
+
+          .employee-photo {
+            width: 100%;
+            object-fit: cover;
+            height: 100%;
+            border-radius: $radius;
+          }
         }
 
         h1 {
@@ -101,6 +108,7 @@
       grid-template-columns: 30rem auto;
       gap: 0.5rem;
       box-sizing: border-box;
+      min-height: 100vh;
 
       @media screen and (max-width: $desktop) {
         grid-template-columns: 20rem auto;
