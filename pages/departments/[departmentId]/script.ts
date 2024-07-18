@@ -16,6 +16,7 @@ export default defineComponent({
     const positions = ref<PositionInterface[] | null>(null);
     const dataShifts = ref<ShiftInterface[] | null>(null);
     const search = ref<string>('');
+    const drawerShiftForm = ref<boolean>(false); 
 
     const fetchPositions = async (departmentId: string, positionName: string | null = null) => {
       const myGeneralStore = useMyGeneralStore();
@@ -36,7 +37,7 @@ export default defineComponent({
     const fetchShiftDepartment = async (departmentId: any) => {
       const myGeneralStore = useMyGeneralStore();
       try {
-        const positionsResponse = await axios.get(`${config.public.BASE_API_PATH}/shift/`, {
+        const positionsResponse = await axios.get(`${config.public.BASE_API_PATH}/shift-department-position/`, {
           params: {
             departmentId
           }
@@ -58,6 +59,12 @@ export default defineComponent({
       }
     };
 
+    const asignShift = () => {
+      drawerShiftForm.value = true; 
+    };
+    const handleSaveSuccess = () => {
+      drawerShiftForm.value = false; 
+    };
     onMounted(async () => {
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
       if (departmentId) {
@@ -83,7 +90,10 @@ export default defineComponent({
       positions,
       dataShifts,
       search,
-      handlerSearchPosition
+      drawerShiftForm,
+      asignShift,
+      handlerSearchPosition,
+      handleSaveSuccess
     };
   }
 });

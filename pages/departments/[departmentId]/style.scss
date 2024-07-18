@@ -15,9 +15,9 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem auto 20rem 18rem 20rem;
+      grid-template-columns: 20rem auto;
       gap: 0.5rem;
-
+      justify-content: space-between;
       .btn-add {
         width: fit-content;
       }

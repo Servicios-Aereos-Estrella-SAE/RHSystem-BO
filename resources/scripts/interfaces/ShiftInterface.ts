@@ -1,4 +1,5 @@
 interface ShiftInterface {
+  employees: any
   shiftId: number | null
   shiftName: string
   shiftDayStart: number

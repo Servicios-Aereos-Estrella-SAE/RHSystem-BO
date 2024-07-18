@@ -14,6 +14,7 @@ export default defineComponent({
     const config = useRuntimeConfig();
     const position = ref(null);
     const dataShifts = ref<ShiftInterface[] | null>(null);
+    const drawerShiftForm = ref<boolean>(false); 
 
 
     onMounted(async () => {
@@ -34,10 +35,18 @@ export default defineComponent({
       }
     });
 
+    const asignShift = () => {
+      drawerShiftForm.value = true; 
+    };
+
+    const handleSaveSuccess = () => {
+      drawerShiftForm.value = false; 
+    };
+
     const fetchShiftDepartment = async (departmentId: any) => {
       const myGeneralStore = useMyGeneralStore();
       try {
-        const positionsResponse = await axios.get(`${config.public.BASE_API_PATH}/shift/`, {
+        const positionsResponse = await axios.get(`${config.public.BASE_API_PATH}/shift-department-position/`, {
           params: {
             positionId: departmentId
           }
@@ -57,7 +66,10 @@ export default defineComponent({
     return {
       position,
       dataShifts,
-      closeDetail
+      drawerShiftForm,
+      closeDetail,
+      asignShift,
+      handleSaveSuccess
     };
   }
 });
