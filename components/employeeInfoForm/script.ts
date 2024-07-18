@@ -37,7 +37,8 @@ export default defineComponent({
     isNewUser: false,
     isReady: false,
     isEmailInvalid: false,
-    drawerShiftExceptions: false
+    drawerShiftExceptions: false,
+    drawerShifts: false
   }),
   computed: {
   },
@@ -166,6 +167,9 @@ export default defineComponent({
     },
     getShiftExceptions() {
       this.drawerShiftExceptions = true
+    },
+    getShifts() {
+      this.drawerShifts = true
     }
   },
   watch: {

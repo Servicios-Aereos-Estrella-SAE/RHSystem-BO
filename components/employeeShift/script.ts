@@ -9,6 +9,7 @@ import { DateTime } from 'luxon';
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
 import ShiftService from '~/resources/scripts/services/ShiftService';
+import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
 
 export default defineComponent({
   components: {
@@ -29,6 +30,7 @@ export default defineComponent({
     selectedDateStart: '' as string | null,
     selectedDateEnd: '' as string | null,
     employeeShift: null as EmployeeShiftInterface | null,
+    employeeShiftActiveId: 0 as number | null,
     drawerEmployeeShiftForm: false,
     drawerEmployeeShiftDelete: false,
     selectedDateTimeDeleted: '' as string | null
@@ -40,6 +42,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     await this.getShifts()
+    await this.getShiftActive()
     await this.getEmployeeShift()
     myGeneralStore.setFullLoader(false)
     this.isReady = true
@@ -66,20 +69,25 @@ export default defineComponent({
       await this.getEmployeeShift()
     },
     async getEmployeeShift() {
-     /*  const myGeneralStore = useMyGeneralStore()
+      const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.employeeShiftsList = []
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const employeeShiftService = new EmployeeShiftService()
       const employeeShiftResponse = await employeeShiftService.getByEmployee(employeeId, this.selectedShiftId, this.selectedDateStart,this.selectedDateEnd)
-      this.employeeShiftsList = employeeShiftResponse
-      myGeneralStore.setFullLoader(false) */
+      this.employeeShiftsList = employeeShiftResponse.employeeShifts
+      const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
+      if (index !== -1) {
+        this.employeeShiftsList[index].isActive = true
+        this.$forceUpdate()
+      }
+      myGeneralStore.setFullLoader(false)
     },
     async getShifts() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const response = await new ShiftService().getFilteredList('', 1, 100)
-      const list = response.status === 200 ? response._data.data.shifts.data : []
+      const list = response.status === 200 ? response._data.data.data : []
       this.shiftsList = list
       myGeneralStore.setFullLoader(false)
     },
@@ -96,7 +104,7 @@ export default defineComponent({
       this.employeeShift = newEmployeeShift
       this.drawerEmployeeShiftForm = true
     },
-    onSave(employeeShift: EmployeeShiftInterface) {
+    async onSave(employeeShift: EmployeeShiftInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.employeeShift = {...employeeShift}
@@ -112,6 +120,7 @@ export default defineComponent({
         this.employeeShiftsList.push(employeeShift)
         this.$forceUpdate()
       }
+      await this.getShiftActive()
       this.drawerEmployeeShiftForm = false
       myGeneralStore.setFullLoader(false)
     },
@@ -127,9 +136,8 @@ export default defineComponent({
       }
       this.drawerEmployeeShiftDelete = true
     },
-    
     async confirmDelete() {
-    /*   const myGeneralStore = useMyGeneralStore()
+      const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       if (this.employeeShift) {
         this.drawerEmployeeShiftDelete = false
@@ -143,20 +151,39 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete shift exception',
+            summary: 'Delete shift employee',
             detail: employeeShiftResponse._data.message,
               life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete shift exception',
+            summary: 'Delete shift employee',
             detail: employeeShiftResponse._data.message,
               life: 5000,
           })
         }
       }
-      myGeneralStore.setFullLoader(false) */
-    }
+      await this.getShiftActive()
+      myGeneralStore.setFullLoader(false)
+    },
+    async getShiftActive() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.employeeShiftActiveId = null
+      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+      const employeeShiftService = new EmployeeShiftService()
+      const employeeShiftResponse = await employeeShiftService.getShiftActiveByEmployee(employeeId)
+      this.employeeShiftActiveId = employeeShiftResponse.employeeShift.employeeShiftId
+      for await (const employeeShift of this.employeeShiftsList) {
+        employeeShift.isActive = false
+      }
+      const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
+      if (index !== -1) {
+        this.employeeShiftsList[index].isActive = true
+        this.$forceUpdate()
+      }
+      myGeneralStore.setFullLoader(false)
+    },
   }
 })

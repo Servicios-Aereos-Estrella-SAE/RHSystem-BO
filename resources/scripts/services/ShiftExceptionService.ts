@@ -1,4 +1,3 @@
-import type { PositionInterface } from "../interfaces/PositionInterface"
 import type { ShiftExceptionInterface } from "../interfaces/ShiftExceptionInterface"
 
 export default class ShiftExceptionService {
