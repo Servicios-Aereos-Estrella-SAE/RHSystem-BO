@@ -1,6 +1,6 @@
 @import '/resources/styles/variables.scss';
 
-.shift-exception-day {
+.employee-shift-day {
 
   .day {
     padding: 1rem;
@@ -171,7 +171,7 @@
       }
     }
   }
-
-
-  
+}
+.active {
+  background-color: red;
 }

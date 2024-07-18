@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="shift-exception-day">
+    <div class="employee-shift-day" :class="{ active: employeeShift.isActive }">
       <div class="day">
         <div class="date">
           {{ calendarDay }}
@@ -11,14 +11,7 @@
         <div class="no-work-day">
           <div class="check">
             <div class="type">
-              {{ shiftException.exceptionType.exceptionTypeTypeName }}
-            </div>
-          </div>
-        </div>
-        <div class="no-work-day">
-          <div class="check">
-            <div class="note">
-              {{ shiftException.shiftExceptionsDescription }}
+              {{ employeeShift.shift.shiftName }}
             </div>
           </div>
         </div>
