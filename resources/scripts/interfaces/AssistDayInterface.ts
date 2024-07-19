@@ -6,6 +6,8 @@ interface AssistDayInterface {
   assist: {
     checkIn: AssistInterface | null
     checkOut: AssistInterface | null
+    checkEatIn: AssistInterface | null
+    checkEatOut: AssistInterface | null
     dateShift: ShiftInterface | null
     checkInStatus: string
     checkOutStatus: string

@@ -10,7 +10,7 @@
     cursor: pointer;
     transition: all 0.4s;
     height: 100%;
-    height: 15rem;
+    height: 19rem;
 
     &:hover {
       transition: all 0.4s;
@@ -145,6 +145,10 @@
         &.fault {
           background-color: transparentize($color: $danger, $amount: 0.95);
           color: $danger;
+        }
+
+        &.eat-time {
+          background-color: transparent;
         }
       }
 
