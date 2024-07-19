@@ -35,7 +35,7 @@
           </div>
           
           <div></div>
-          <Paginator 
+          <Paginator v-if="first > 1"
               class="paginator"
               :first="first" 
               :rows="rowsPerPage" 
