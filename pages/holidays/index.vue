@@ -16,9 +16,6 @@
                     </label>
                     <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchHoliday" @keyup.delete="handlerSearchHoliday"/>
                   </div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
                   <div class="input-box">
                     <label for="holidays">
                       Period
@@ -31,6 +28,13 @@
                       @update:modelValue="handlerPeriodChange"
                     />
                   </div>
+                  <div class="input-box">
+                    <br/>
+                    <Button class="btn-add btn-clear-filter" label="Clear period" icon="pi pi-close" severity="danger" @click="clearPeriod" >
+                    </Button>
+                  </div>
+                  <div></div>
+                  <div></div>
                   <div class="input-box">
                       <br/>
                       <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
@@ -57,10 +61,11 @@
                     :rows="rowsPerPage" 
                     :totalRecords="totalRecords" 
                     @page="onPageChange"
+                    :alwaysShow="false"
                     />
                        <!-- Form Shift -->
                 <div class="card flex justify-content-center">
-                    <Sidebar v-model:visible="drawerHolidayForm" header="Holiday form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                    <Sidebar v-model:visible="drawerHolidayForm" header="Holiday form" position="right" class="holiday-form-sidebar" :showCloseIcon="true">
                     <HolidayInfoForm
                         :holiday="holiday"
                         @save="onSave"
@@ -91,13 +96,17 @@
 </script>
 <style lang="scss" scoped>
 @import './style';
+</style>
+<style lang="scss">
+@import '/resources/styles/variables.scss';
+
 .holiday-card-wrapper {
   display: flex;
   flex-wrap: wrap;
 }
 
 .holiday-form-sidebar {
-  width: 100% !important;
+  width: 22rem !important;
   max-width: 50rem !important;
 
   @media screen and (max-width: $sm) {

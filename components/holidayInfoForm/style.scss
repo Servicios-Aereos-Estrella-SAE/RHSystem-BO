@@ -4,10 +4,39 @@
 .holiday-info-form {
   margin-top: 2.25rem;
   position: relative;
+  .icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100px; /* Fixed width for uniformity */
+    text-align: center;
+  }
+
+  .icon-item.selected {
+    border-color: $primary;
+    border-width: 1.2px;
+  }
 
   .input-box {
     .label-container {
       display: flex;
+      align-items: center;
+    }
+    .icon-preview-box {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
       align-items: center;
     }
 
