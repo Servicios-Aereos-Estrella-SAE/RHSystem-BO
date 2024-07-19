@@ -65,7 +65,7 @@
                     />
                        <!-- Form Shift -->
                 <div class="card flex justify-content-center">
-                    <Sidebar v-model:visible="drawerHolidayForm" header="Holiday form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                    <Sidebar v-model:visible="drawerHolidayForm" header="Holiday form" position="right" class="holiday-form-sidebar" :showCloseIcon="true">
                     <HolidayInfoForm
                         :holiday="holiday"
                         @save="onSave"
@@ -96,13 +96,17 @@
 </script>
 <style lang="scss" scoped>
 @import './style';
+</style>
+<style lang="scss">
+@import '/resources/styles/variables.scss';
+
 .holiday-card-wrapper {
   display: flex;
   flex-wrap: wrap;
 }
 
 .holiday-form-sidebar {
-  width: 100% !important;
+  width: 22rem !important;
   max-width: 50rem !important;
 
   @media screen and (max-width: $sm) {

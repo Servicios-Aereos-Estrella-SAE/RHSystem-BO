@@ -5,10 +5,10 @@
   margin-top: 2.25rem;
   position: relative;
   .icon-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
 
   .icon-item {
     display: flex;
@@ -18,6 +18,8 @@
     border: 1px solid transparent;
     padding: 10px;
     border-radius: 5px;
+    width: 100px; /* Fixed width for uniformity */
+    text-align: center;
   }
 
   .icon-item.selected {

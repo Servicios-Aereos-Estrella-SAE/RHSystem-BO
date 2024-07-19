@@ -1,5 +1,6 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
+
 .holidays-page {
 
     h2 {
@@ -49,12 +50,12 @@
         }
 
         .paginator {
-        margin-top: 0.5rem;
-        width: 100%;
+            margin-top: 0.5rem;
+            width: 100%;
         }
     }
 
     }
     .side{
-    background-color: blue!important;
+        background-color: blue!important;
     }

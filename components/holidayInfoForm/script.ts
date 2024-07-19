@@ -13,6 +13,8 @@ export default defineComponent({
   data: () => ({
     submitted: false,
     selectedCities: '',
+    isVisibleIcons: true as boolean,
+    iconSelected: null as IconInterface | null,
     isUpdate: false,
     icons: [] as IConInterface[],
     holidayService: new HolidayService()
@@ -23,6 +25,8 @@ export default defineComponent({
     const dtDateOnly = new Date(_date.valueOf() + _date.getTimezoneOffset() * 60 * 1000);
     this.holiday.holidayDate = dtDateOnly//new Date(this.holiday.holidayDate).toLocaleString('en-US', { timeZone: 'America/Mexico_city' })
     await this.getListIcons()
+    this.iconSelected = this.isUpdate ? this.icons.find((icon: IconInterface) => icon.iconId === this.holiday.holidayIconId) : null
+    this.isVisibleIcons = this.isUpdate ? false : true
   },
   methods: {
     async getListIcons() {
@@ -32,6 +36,13 @@ export default defineComponent({
     getHolidayIcon(iconId: number) {
       let icon = this.icons.find(icon => icon.iconId === iconId)
       return icon ? icon.iconSvg : ''
+    },
+    onSelectIcon() {
+      this.submitted = true
+      if (this.holiday.holidayIconId) {
+        this.submitted = false
+        this.isVisibleIcons = false
+      }
     },
     async onSave() {
       this.submitted = true;
@@ -67,7 +78,12 @@ export default defineComponent({
     selectIcon(icon: IconInterface) {
       this.holiday.holidayIconId = icon.iconId;
       this.holiday.holidayIcon = icon.iconSvg
+      this.iconSelected = icon
     },
+    goBackToIcons() {
+      this.isVisibleIcons = true
+      this.submitted = false
+    }
   },
   computed: {
     iconsComputed: function () {
