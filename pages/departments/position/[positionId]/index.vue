@@ -10,26 +10,39 @@
         <NuxtLayout name="backoffice">
             <div class="position-detail-wrapper">
                 <div class="box head-page">
-                    <h2>
-                       {{ position?.positionName }}
-                    </h2>
-                    <h3>
-                        {{ position?.positionAlias }}
-                    </h3>
+                    <div>
+                        <h2>
+                            {{ position?.positionName }}
+                        </h2>
+                        <h3>
+                            {{ position?.positionAlias }}
+                        </h3>
+                    </div>
+
+                    <div class="input-box">
+                        <br />
+                        <Button class="btn-add mr-2" label="Assign Shift to Department" icon="pi pi-plus"
+                            severity="primary" @click="asignShift" />
+                    </div>
                 </div>
                 <div>
                     <h3>
-                        Shifts per Department
+                        Shifts per {{ position?.positionName }}
                     </h3>
-                    <div class="department-card-wrapper">
+                    <div class="position-card-wrapper">
                         <div v-for="(shift, index) in dataShifts" :key="`shift-${shift.shiftId}-${index}`">
-                        <ShiftInfoCard :shift="shift" 
-                        :show-edit-button="false" 
-                        :show-delete-button="false" 
-                        />
+                            <ShiftInfoCard :shift="shift" :show-edit-button="false" :show-delete-button="false" />
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Form Shift Apply To Departmente -->
+            <div class="card flex justify-content-center">
+                <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Position" position="right"
+                    class="shift-form-sidebar" :showCloseIcon="true">
+                    <asignShiftInfoForm :positions="dataShifts" :departmentName="position?.positionName" @save-success="handleSaveSuccess"
+                    />
+                </Sidebar>
             </div>
         </NuxtLayout>
     </div>
@@ -46,5 +59,14 @@ export default Script
 .position-detail {
     display: flex;
     justify-content: center;
+}
+
+.shift-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+        width: 100% !important;
+    }
 }
 </style>

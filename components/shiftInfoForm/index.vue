@@ -29,13 +29,13 @@
         </div>
         <div class="input-box">
           <label for="shiftActiveHours">Active Hours</label>
-          <InputNumber id="shiftActiveHours" v-model="shift.shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" />
+          <InputNumber id="shiftActiveHours" v-model="shift.shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" :max="72"/>
           <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
         </div>
         <div class="input-box">
-          <label for="shiftRestDays">Rest Days</label>
+          <label for="shiftRestDays">Rest Days </label>
           <MultiSelect v-model="selectedRestDays" :options="daysOfWeeks" optionLabel="name" filter placeholder="Select Rest Days"
-          :maxSelectedLabels="3" class="w-full md:w-500" />
+          :maxSelectedLabels="7" class="w-full md:w-500" />
           <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">Rest days are required.</small>
         </div>
         <div class="card flex justify-center">

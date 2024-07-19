@@ -21,21 +21,42 @@ export default defineComponent({
       { name: 'Saturday', value: 6 },
       { name: 'Sunday', value: 7 },
     ],
-    selectedRestDays: [] as number[],
+    selectedRestDays: [] as any[],
 
   }),
-
+  computed: {
+    filteredDaysOfWeek() {
+      return this.daysOfWeeks.filter(day => day.value !== this.shift.shiftDayStart);
+    }
+  },
   watch: {
     
     selectedRestDays(newValue) {
       const restDaysString = newValue.map((day: { value: any; }) => day.value).join(',');
       this.shift.shiftRestDays = restDaysString;
+      console.log(this.selectedRestDays)
     },
+  },
+  mounted() {
+    if (this.shift.shiftRestDays) {
+      const restDayValues = this.shift.shiftRestDays.split(',').map(Number);
+      this.selectedRestDays = this.daysOfWeeks.filter(day => restDayValues.includes(day.value));
+    }
+    console.log(this.selectedRestDays);
   },
   methods: {
     async onSave() {
       this.submitted = true;
       if (this.shift && this.shift.shiftName && this.shift.shiftDayStart && this.shift.shiftTimeStart && this.shift.shiftActiveHours && this.shift.shiftRestDays) {
+        if (this.shift.shiftRestDays.includes(this.shift.shiftDayStart)) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Start day cannot be a rest day',
+            life: 5000
+          });
+          return;
+        }
         const shiftService = new ShiftService();
         const response = this.shift.shiftId ? await shiftService.update(this.shift) : await shiftService.create(this.shift);
         if (response.status === 200 || response.status === 201) {
@@ -60,6 +81,7 @@ export default defineComponent({
       }
     },
     updateRestDays() {
+      console.log(this.selectedRestDays)
       this.shift.shiftRestDays = this.selectedRestDays.join(',');
     }
   }
