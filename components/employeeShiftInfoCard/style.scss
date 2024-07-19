@@ -1,6 +1,6 @@
 @import '/resources/styles/variables.scss';
 
-.shift-exception-info-card {
+.employee-shift-info-card {
   border: $border;
   margin-top: 2.25rem;
   position: relative;
@@ -51,4 +51,7 @@
       width: 100%;
     }
   }
+}
+.active {
+  background-color: transparentize($color: $success, $amount: 0.9)!important;
 }

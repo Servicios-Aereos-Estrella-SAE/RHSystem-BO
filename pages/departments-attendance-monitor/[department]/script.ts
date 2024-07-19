@@ -6,16 +6,15 @@ import AttendanceMonitorController from '~/resources/scripts/controllers/Attenda
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/interfaces/EmployeeAssistStatisticInterface'
-
-import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
-import PositionService from '~/resources/scripts/services/PositionService'
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
+import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/interfaces/EmployeeAssistStatisticInterface'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
-import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import AssistService from '~/resources/scripts/services/AssistService'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
+import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 
@@ -24,7 +23,7 @@ export default defineComponent({
     Toast,
     ToastService,
   },
-  name: 'AttendanceMonitorPosition',
+  name: 'AttendanceMonitorByDepartment',
   props: {
   },
   data: () => ({
@@ -101,21 +100,22 @@ export default defineComponent({
       },
       series: [] as Array<Object>
     },
+    departmentList: [] as DepartmentInterface[],
+    departmenSelected: null as DepartmentInterface | null,
     visualizationModeOptions: [
-      // { name: 'Annual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
-    maxDate: new Date() as Date,
     minDate: new Date() as Date,
-    employeeDepartmentPositionList: [] as EmployeeAssistStatisticInterface[],
-    department: null as DepartmentInterface | null,
-    position: null as PositionInterface | null,
+    maxDate: new Date() as Date,
+    departmentPositionList: [] as PositionInterface[],
     employeeList: [] as EmployeeInterface[],
     selectedEmployee: null as EmployeeInterface | null,
-    filteredEmployees: [] as EmployeeInterface[]
+    filteredEmployees: [] as EmployeeInterface[],
+    employeeDepartmentList: [] as EmployeeAssistStatisticInterface[],
+    statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
     weeklyStartDay () {
@@ -184,6 +184,25 @@ export default defineComponent({
         return 'Weekly behavior'
       }
     },
+    departmentCollection (): DepartmentInterface[] {
+      const list: DepartmentInterface[] = JSON.parse(JSON.stringify(this.departmentList)) as DepartmentInterface[]
+      const collection = list.map((item: DepartmentInterface) => ({ ...item, label: item.departmentAlias || item.departmentName }))
+      return collection
+    },
+    departmentPositionCollection (): PositionInterface[] {
+      const list: PositionInterface[] = JSON.parse(JSON.stringify(this.departmentPositionList)) as PositionInterface[]
+      const collection = list.map((item: PositionInterface) => item)
+      return collection
+    },
+    assistSyncStatusDate () {
+      if (this.statusInfo) {
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTimeFormat = dateTime.toFormat('ff')
+        return dateTimeFormat
+      }
+
+      return ''
+    }
   },
   created () {
     const minDateString = '2024-05-01T00:00:00'
@@ -194,31 +213,48 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
-    this.setDefaultVisualizationMode()
+
     await Promise.all([
-      this.setDepartment(),
-      this.setPositionDepartment(),
-      this.setDepartmentPositionEmployeeList()
+      this.setAssistSyncStatus(),
+      this.setDepartmetList(),
+      this.setDefaultVisualizationMode()
     ])
-    this.setGeneralData()
-    this.setPeriodData()
+
+    this.handlerSetInitialDepartmentList()
+
+    await this.setDepartmentPositions()
+    await this.setDepartmentPositionEmployeeList()
+
+    this.setGraphsData()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+    setDefaultVisualizationMode () {
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
       }
 
-      await this.handlerVisualizationModeChange()
+      this.handlerVisualizationModeChange()
+    },
+    handlerSetInitialDepartmentList () {
+      const departmentID = this.$route.params.department
+      const department = this.departmentCollection.find((department: DepartmentInterface) => department.departmentId === parseInt(departmentID.toString()))
+      this.departmenSelected = department ? department : null
+    },
+    setGraphsData () {
+      this.setPeriodData()
+      this.setGeneralData()
+    },
+    setPeriodCategories () {
+      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     setGeneralData () {
-      const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
-      const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
-      const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
-      const faults = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
+      const assists = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
+      const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
+      const delays = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
+      const faults = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
@@ -271,7 +307,7 @@ export default defineComponent({
           const evalDate = `${year}-${`${month}`.padStart(2, '0')}-${`${day}`.padStart(2, '0')}`
           let dayCalendar: any[] = []
   
-          this.employeeDepartmentPositionList.forEach(item => {
+          this.employeeDepartmentList.forEach(item => {
             const currentCalendar: AssistDayInterface[] = item.calendar.filter(calendar => calendar.day === evalDate)
             if (currentCalendar.length > 0) {
               dayCalendar.push(currentCalendar[0].assist)
@@ -319,28 +355,60 @@ export default defineComponent({
         this.setPeriodCategories()
       }
     },
-    setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+    async setDepartmetList () {
+      const response = await  new DepartmentService().getAllDepartmentList()
+      this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
-    async setDepartment () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const response = await new DepartmentService().show(departmentId)
-      this.department = response.status === 200 ? response._data.data.department : null
+    async setDepartmentPositions () {
+      const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
+      this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
-    async setPositionDepartment () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
-      const response = await new PositionService().show(departmentId, positionId)
-      this.position = response.status === 200 ? response._data.data.position : null
+    async handlerDeparmentSelect () {
+      this.$router.push(`/departments-attendance-monitor/${this.departmenSelected?.departmentId}`)
+    },
+    async handlerVisualizationModeChange () {
+      const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
+      this.visualizationModeOptions.forEach(mode => mode.selected = false)
+
+      if (idx >= 0) {
+        this.visualizationModeOptions[idx].selected =  true
+      }
+
+      this.periodSelected = new Date()
+    },
+    async handlerPeriodChange () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      this.setGraphsData()
+      myGeneralStore.setFullLoader(false)
+    },
+    async onInputVisualizationModeChange () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.handlerVisualizationModeChange()
+      await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      this.setGraphsData()
+      myGeneralStore.setFullLoader(false)
+    },
+    async handlerSearchEmployee(event: any) {
+      if (event.query.trim().length) {
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 30)
+        const list = response.status === 200 ? response._data.data.employees.data : []
+        this.filteredEmployees = list
+      }
     },
     async setDepartmentPositionEmployeeList () {
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
+      if (!this.departmenSelected) {
+        return false
+      }
+      const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
+      const positionId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 99999999999)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
-      this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
+      this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
     async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -356,6 +424,26 @@ export default defineComponent({
         this.setGeneralStatisticsData(employee, employee.calendar)
       } catch (error) {
       }
+    },
+    getDepartmentPositionAssistStatistics () {
+      const positionListStatistics: any[] = []
+
+      this.departmentPositionCollection.forEach((position: any) => {
+        const positionId = position.position.positionId
+        const list = this.employeeDepartmentList.filter(item => item.employee.positionId === positionId)
+        const statistics = {
+          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length),
+          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length),
+          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length),
+          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length),
+        }
+        positionListStatistics.push({
+          position: position.position,
+          statistics
+        })
+      })
+      
+      return positionListStatistics
     },
     setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
@@ -378,63 +466,35 @@ export default defineComponent({
 
       employee.assistStatistics = assistStatistics
     },
-    async handlerVisualizationModeChange () {
-      const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
-      this.visualizationModeOptions.forEach(mode => mode.selected = false)
-
-      if (idx >= 0) {
-        this.visualizationModeOptions[idx].selected =  true
-      }
-
-      this.periodSelected = new Date()
-    },
-    async onInputVisualizationModeChange () {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.handlerVisualizationModeChange()
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
-      this.setGeneralData()
-      this.setPeriodData()
-      myGeneralStore.setFullLoader(false)
-    },
-    async handlerPeriodChange () {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
-      this.setGeneralData()
-      this.setPeriodData()
-      myGeneralStore.setFullLoader(false)
-    },
-    async handlerSearchEmployee(event: any) {
-      if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 30)
-        const list = response.status === 200 ? response._data.data.employees.data : []
-        this.filteredEmployees = list
-      }
-    },
     onEmployeeSelect () {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
+        this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
+    },
+    async setAssistSyncStatus () {
+      try {
+        const res = await new AssistService().syncStatus()
+        const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
+        this.statusInfo = statusInfo
+      } catch (error) {}
     },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
+      const departmentId = this.departmenSelected?.departmentId || 0
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByPosition(startDay, endDay, departmentId, positionId)
+      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'Report Position Assist.xlsx')
+        link.setAttribute('download', 'Report Department Assist.xlsx')
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

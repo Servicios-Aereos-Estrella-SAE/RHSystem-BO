@@ -23,7 +23,7 @@ export default defineComponent({
     Toast,
     ToastService,
   },
-  name: 'AttendanceMonitorByDepartment',
+  name: 'DepartmentsAttendanceMonitor',
   props: {
   },
   data: () => ({
@@ -214,15 +214,13 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
 
+    this.setDefaultVisualizationMode()
+
     await Promise.all([
-      // this.setAssistSyncStatus(),
+      this.setAssistSyncStatus(),
       this.setDepartmetList(),
-      this.setDefaultVisualizationMode()
     ])
 
-    this.handlerSetInitialDepartmentList()
-
-    await this.setDepartmentPositions()
     await this.setDepartmentPositionEmployeeList()
 
     this.setGraphsData()
@@ -230,7 +228,7 @@ export default defineComponent({
   },
   methods: {
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -357,19 +355,6 @@ export default defineComponent({
       const response = await  new DepartmentService().getAllDepartmentList()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
-    async setDepartmentPositions () {
-      const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
-      this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
-    },
-    async handlerDeparmentSelect () {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.periodSelected = new Date()
-      await this.setDepartmentPositions()
-      await this.setDepartmentPositionEmployeeList()
-      this.setGraphsData()
-      myGeneralStore.setFullLoader(false)
-    },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
@@ -403,12 +388,9 @@ export default defineComponent({
       }
     },
     async setDepartmentPositionEmployeeList () {
-      if (!this.departmenSelected) {
-        return false
-      }
-      const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 99999999999)
+      const departmentId = null
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, 1, 999999999)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
@@ -430,24 +412,25 @@ export default defineComponent({
       }
     },
     getDepartmentPositionAssistStatistics () {
-      const positionListStatistics: any[] = []
+      const departmentListStatistics: any[] = []
 
-      this.departmentPositionCollection.forEach((position: any) => {
-        const positionId = position.position.positionId
-        const list = this.employeeDepartmentList.filter(item => item.employee.positionId === positionId)
+      this.departmentCollection.forEach((department: DepartmentInterface) => {
+        const departmentId = department.departmentId
+        const list = this.employeeDepartmentList.filter(item => item.employee.departmentId === departmentId)
         const statistics = {
-          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length),
-          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length),
-          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length),
-          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length),
+          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length) || 0,
+          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length) || 0,
+          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length) || 0,
+          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
         }
-        positionListStatistics.push({
-          position: position.position,
+
+        departmentListStatistics.push({
+          department: department,
           statistics
         })
       })
       
-      return positionListStatistics
+      return departmentListStatistics
     },
     setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
@@ -472,7 +455,7 @@ export default defineComponent({
     },
     onEmployeeSelect () {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
-        this.$router.push(`/attendance-monitor/employee-${this.selectedEmployee.employeeCode}`)
+        this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
     async setAssistSyncStatus () {
@@ -480,8 +463,7 @@ export default defineComponent({
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {
-      }
+      } catch (error) {}
     },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
