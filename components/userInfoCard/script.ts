@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import PersonService from '~/resources/scripts/services/PersonService'
 
 export default defineComponent({
   name: 'userInfoCard',
@@ -10,10 +11,22 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
+    photo: null as string | null
   }),
   computed: {
   },
-  mounted() {
+  async mounted() {
+    if (this.user.personId) {
+      const personService = new PersonService()
+      const personResponse = await personService.getEmployee(this.user.personId)
+      if (personResponse) {
+        if (personResponse._data.data.employee) {
+          if (personResponse._data.data.employee.employeePhoto) {
+            this.photo = personResponse._data.data.employee.employeePhoto
+          }
+        }
+      }
+    }
   },
   methods: {
     handlerClickOnEdit () {

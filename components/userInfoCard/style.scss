@@ -1,7 +1,7 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 
-.user-info-card {
+/* .user-info-card {
   margin-top: 2.25rem;
   position: relative;
 
@@ -71,6 +71,102 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
     margin-top: 0.5rem;
+    button {
+      width: 100%;
+    }
+  }
+} */
+
+.user-info-card {
+  margin-top: 2.25rem;
+  position: relative;
+
+  .avatar {
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+    background-color: $gray;
+    border-radius: $radius;
+    position: absolute;
+    margin-top: -3rem;
+    border: solid 0.2rem white;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    svg {
+      width: 1.75rem;
+    }
+
+    .employee-photo {
+      width: 100%;
+      object-fit: cover;
+      height: 100%;
+      border-radius: $radius;
+    }
+  }
+
+  .email {
+    text-align: center;
+    font-weight: 500;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 1rem;
+  }
+
+  .name {
+    text-align: left;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+    text-wrap: pretty;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    padding-top: 2rem;
+
+    @media screen and (max-width: $ipad) {
+      font-size: 0.7rem;
+    }
+  }
+
+  .shift-time, .shift-hours, .shift-days {
+    text-align: left;
+    font-weight: 400;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 3px;
+  }
+  .box-btn {
+    padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: white;
+    color: #303e67;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e3ebf6;
+    text-decoration: none;
+  }
+  .btn-red{
+    color: red;
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
     button {
       width: 100%;
     }
