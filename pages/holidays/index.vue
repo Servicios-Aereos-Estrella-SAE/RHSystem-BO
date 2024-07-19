@@ -16,9 +16,6 @@
                     </label>
                     <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchHoliday" @keyup.delete="handlerSearchHoliday"/>
                   </div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
                   <div class="input-box">
                     <label for="holidays">
                       Period
@@ -31,6 +28,13 @@
                       @update:modelValue="handlerPeriodChange"
                     />
                   </div>
+                  <div class="input-box">
+                    <br/>
+                    <Button class="btn-add btn-clear-filter" label="Clear period" icon="pi pi-close" severity="danger" @click="clearPeriod" >
+                    </Button>
+                  </div>
+                  <div></div>
+                  <div></div>
                   <div class="input-box">
                       <br/>
                       <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
@@ -57,6 +61,7 @@
                     :rows="rowsPerPage" 
                     :totalRecords="totalRecords" 
                     @page="onPageChange"
+                    :alwaysShow="false"
                     />
                        <!-- Form Shift -->
                 <div class="card flex justify-content-center">

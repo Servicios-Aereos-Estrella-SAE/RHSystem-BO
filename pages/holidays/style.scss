@@ -21,9 +21,13 @@
             .btn-add {
                 width: fit-content;
             }
+            .btn-clear-filter {
+                width: fit-content;
+                margin-top: 0.5rem;
+            }
 
             @media screen and (max-width: $desktop) {
-                grid-template-columns: 18rem auto auto 12rem 12rem 6rem;
+                grid-template-columns: 18rem auto auto 12rem 12rem 8rem;
             }
 
             @media screen and (max-width: $tablet) {

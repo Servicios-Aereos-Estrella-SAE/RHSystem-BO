@@ -1,6 +1,22 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
-
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 .user-info-card {
   margin-top: 2.25rem;
   position: relative;
@@ -15,6 +31,7 @@
     margin-top: -3rem;
     border: solid 0.2rem white;
     box-sizing: border-box;
+    animation: heartbeat 1.4s ease-in-out;
     display: flex;
     justify-content: center;
     align-items: center;

@@ -1,6 +1,7 @@
 import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterface";
 import HolidayService from "~/resources/scripts/services/HolidayService"
 import IConInterface from '~/resources/scripts/interfaces/IconInterface'
+import IconInterface from '~/resources/scripts/interfaces/IconInterface';
 export default defineComponent({
   
   name: 'HolidayInfoForm',
@@ -18,6 +19,9 @@ export default defineComponent({
   }),
   async mounted() {
     this.isUpdate = this.holiday.holidayId ? true : false
+    const _date = new Date(this.holiday.holidayDate)
+    const dtDateOnly = new Date(_date.valueOf() + _date.getTimezoneOffset() * 60 * 1000);
+    this.holiday.holidayDate = dtDateOnly//new Date(this.holiday.holidayDate).toLocaleString('en-US', { timeZone: 'America/Mexico_city' })
     await this.getListIcons()
   },
   methods: {
@@ -60,6 +64,18 @@ export default defineComponent({
     validForm() {
       return this.holiday && this.holiday.holidayName && this.holiday.holidayDate && this.holiday.holidayIcon && (this.holiday.holidayFrequency > 0 && this.holiday.holidayFrequency <= 100)
     },
+    selectIcon(icon: IconInterface) {
+      this.holiday.holidayIconId = icon.iconId;
+      this.holiday.holidayIcon = icon.iconSvg
+    },
+  },
+  computed: {
+    iconsComputed: function () {
+      return this.icons.map((_icon: IconInterface) => ({
+          ..._icon,
+          iconLabel: _icon.iconName + ' ' + _icon.iconSvg
+      }));
+    }
   },
   watch: {
     'holiday.holidayIconId': function (val: string) {

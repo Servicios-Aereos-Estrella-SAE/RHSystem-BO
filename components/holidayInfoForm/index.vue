@@ -8,12 +8,7 @@
           <InputText id="holidayName" v-model="holiday.holidayName" :invalid="submitted && !holiday.holidayName" />
           <small class="p-error" v-if="submitted && !holiday.holidayName">holiday name is required.</small>
         </div>
-        <div class="input-box">
-          <label for="holidayIcon" class="label-container">Holiday Icon <span class="icon-preview" v-html="holiday.holidayIcon"></span></label>
-          <Dropdown v-model="holiday.holidayIconId" :options="icons" optionLabel="iconName" optionValue="iconId"
-            placeholder="Select Icon" class="w-full md:w-14rem" />
-          <small class="p-error" v-if="submitted && !holiday.holidayIconId">Icon is required.</small>
-        </div>
+
         <div class="input-box">
           <label for="holidayDate">Holiday Date</label>
           <Calendar v-model="holiday.holidayDate" dateFormat="yy-mm-dd" placeholder="Select Holiday" />
@@ -23,6 +18,25 @@
           <InputNumber id="holidayFrequency" v-model="holiday.holidayFrequency" :invalid="submitted && !holiday.holidayFrequency" />
           <small class="p-error" v-if="submitted && !holiday.holidayFrequency">Holiday Frequency is required.</small>
         </div>
+        <div class="input-box mt-2">
+            <label for="holidayIcon" class="label-container mt-2">
+              Select Holiday Icon 
+              <span class="icon-preview" v-html="holiday.holidayIcon"></span>
+            </label>
+            <div class="icon-grid">
+              <div 
+                v-for="(icon, index) in icons" 
+                :key="index" 
+                class="icon-item" 
+                :class="{ selected: icon.iconId === holiday.holidayIconId }" 
+                @click="selectIcon(icon)"
+              >
+                <span class="icon-preview-box" v-html="icon.iconSvg"></span>
+                <span>{{ icon.iconName }}</span>
+              </div>
+            </div>
+            <small class="p-error" v-if="submitted && !holiday.holidayIconId">Icon is required.</small>
+          </div>
         <div class="card flex justify-center">
         </div>
         <div class="box-tools-footer">

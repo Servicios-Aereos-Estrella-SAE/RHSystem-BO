@@ -16,7 +16,7 @@ export default defineComponent({
         first: 0,
         last: 0,
         rowsPerPage: 20,
-        periodSelected: new Date(),
+        periodSelected: null as Date | null,
         minDate: new Date() as Date,
         maxDate: new Date() as Date,
         holidayService: new HolidayService(),
@@ -24,9 +24,6 @@ export default defineComponent({
         drawerHolidayDelete: false
     }),
     async mounted() {
-        const { firstDay, lastDayFormatted } = this.getDateRange(this.date);
-        this.firstDate = firstDay;
-        this.lastDate = lastDayFormatted
         await this.handlerSearchHoliday()
     },
     methods: {
@@ -49,6 +46,11 @@ export default defineComponent({
             this.date = date
         },
         async handlerSearchHoliday() {
+            if (this.search !== '' && this.search !== null) {
+                this.periodSelected = null
+                this.firstDate = null
+                this.lastDate = null
+            }
             const response = await this.holidayService.getFilteredList(this.search,this.firstDate, this.lastDate, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.holidays.data : [];
             this.totalRecords = response.status === 200 ? response._data.holidays.meta.total : 0;
@@ -56,6 +58,7 @@ export default defineComponent({
             this.filterHolidays = list;
         },
         getDateRange(date: Date) {
+            console.log(date, 'date selected');
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
 
@@ -68,10 +71,18 @@ export default defineComponent({
 
             return { firstDay, lastDayFormatted };
         },
+        clearPeriod() {
+            this.periodSelected = null;
+            this.firstDate = null;
+            this.lastDate = null;
+            this.handlerSearchHoliday();
+        },
         handlerPeriodChange() {
-            const { firstDay, lastDayFormatted } = this.getDateRange(this.periodSelected);
-            this.firstDate = firstDay;
-            this.lastDate = lastDayFormatted;
+            if (this.periodSelected) {
+                const { firstDay, lastDayFormatted } = this.getDateRange(this.periodSelected);
+                this.firstDate = firstDay;
+                this.lastDate = lastDayFormatted;
+            }
             this.handlerSearchHoliday();
         },
         onPageChange(event: any) {
