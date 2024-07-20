@@ -105,7 +105,7 @@
           </div>
         </div>
         <h2>
-          Department positions
+          All Departments
         </h2>
         <div class="department-positions-wrapper">
           <div v-for="(item, index) in getDepartmentPositionAssistStatistics()" :key="`position-${item.department.departmentId}-${index}`">
