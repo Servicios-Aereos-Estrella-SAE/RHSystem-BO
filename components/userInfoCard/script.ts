@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
 
@@ -11,22 +12,42 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
-    photo: null as string | null
+    employeeNumber: null as string | null,
+    photo: null as string | null,
+    department: null as string | null,
+    position: null as string | null,
   }),
   computed: {
-  },
-  async mounted() {
-    if (this.user.personId) {
-      const personService = new PersonService()
-      const personResponse = await personService.getEmployee(this.user.personId)
-      if (personResponse) {
-        if (personResponse._data.data.employee) {
-          if (personResponse._data.data.employee.employeePhoto) {
-            this.photo = personResponse._data.data.employee.employeePhoto
-          }
-        }
+    getPhoto() {
+      if (this.user.employee && this.user.employee.employeePhoto) {
+        return this.user.employee.employeePhoto
+      } else {
+        return null
+      }
+    },
+    getDepartment() {
+      if (this.user.employee && this.user.employee.department) {
+        return this.user.employee.department.departmentName
+      } else {
+        return null
+      }
+    },
+    getPosition() {
+      if (this.user.employee && this.user.employee.position) {
+        return this.user.employee.position.positionName
+      } else {
+        return null
+      }
+    },
+    getEmployeeNumber() {
+      if (this.user.employee && this.user.employee.position) {
+        return this.user.employee.employeeCode
+      } else {
+        return null
       }
     }
+  },
+  async mounted() {
   },
   methods: {
     handlerClickOnEdit () {
