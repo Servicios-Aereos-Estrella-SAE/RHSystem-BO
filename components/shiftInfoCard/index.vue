@@ -37,7 +37,6 @@
 @import 'primeicons/primeicons.css';
 
 .shift-info-card {
-  margin-top: 2.25rem;
   position: relative;
 
   .shift-name {
