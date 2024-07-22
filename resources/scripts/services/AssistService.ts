@@ -116,6 +116,29 @@ export default class AssistService {
     return responseRequest
   }
 
+
+  async getExcelAll (
+    date: string | Date,
+    dateEnd: string | Date
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { date, 'date-end': dateEnd }
+      await $fetch(`${this.API_PATH}/v1/assists/get-excel-all`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   async syncStatus () {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
