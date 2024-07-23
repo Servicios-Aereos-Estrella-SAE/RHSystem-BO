@@ -21,7 +21,7 @@
 
                     <div class="input-box">
                         <br />
-                        <Button class="btn-add mr-2" label="Assign Shift to Department" icon="pi pi-plus"
+                        <Button class="btn-add mr-2" label="Assign Shift to Position" icon="pi pi-plus"
                             severity="primary" @click="asignShift" />
                     </div>
                 </div>
@@ -36,12 +36,11 @@
                     </div>
                 </div>
             </div>
-            <!-- Form Shift Apply To Departmente -->
+            <!-- Form Shift Apply To Position -->
             <div class="card flex justify-content-center">
-                <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Position" position="right"
-                    class="shift-form-sidebar" :showCloseIcon="true">
-                    <assignShiftToPositionInfoForm :department="department" :position="position" @save="onSave"
-                    />
+                <Sidebar v-model:visible="drawerShiftForm" class="shift-form-sidebar" header="Assign Shift to Position"
+                    position="right" :showCloseIcon="true">
+                    <assignShiftToPositionInfoForm :department="department" :position="position" @save="onSave" />
                 </Sidebar>
             </div>
         </NuxtLayout>
@@ -49,24 +48,24 @@
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+    import Script from './script.ts'
+    export default Script
 </script>
 
-<style lang="scss" scoped>
-@import './style';
+<style lang="scss">
+    @import './style';
 
-.position-detail {
-    display: flex;
-    justify-content: center;
-}
-
-.shift-form-sidebar {
-    width: 100% !important;
-    max-width: 35rem !important;
-
-    @media screen and (max-width: $sm) {
-        width: 100% !important;
+    .position-detail {
+        display: flex;
+        justify-content: center;
     }
-}
+
+    .shift-form-sidebar {
+        width: 100% !important;
+        max-width: 40rem !important;
+
+        @media screen and (max-width: $sm) {
+            width: 100% !important;
+        }
+    }
 </style>

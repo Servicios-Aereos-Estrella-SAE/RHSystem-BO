@@ -13,7 +13,6 @@ export default defineComponent({
   methods: {
     
     handlerClickOnDetail(ids: any) {
-      console.log(this.department)
       this.router.push({ path: this.department.departmentId + '/position/' + ids , })
     }
   }

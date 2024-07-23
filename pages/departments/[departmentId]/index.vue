@@ -47,11 +47,11 @@
                             <positionInfoCard :department="department" :position="position" />
                         </div>
                     </div>
-                       <!-- Form Shift Apply To Departmente -->
+                       <!-- Form Shift Apply To Department -->
                 <div class="card flex justify-content-center">
                     <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
                         class="shift-form-sidebar" :showCloseIcon="true">
-                        <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName" @save-success="handleSaveSuccess"
+                        <assignShiftToDepartmentInfoForm :department="department"  @save="onSave"
                         />
                     </Sidebar>
                 </div>

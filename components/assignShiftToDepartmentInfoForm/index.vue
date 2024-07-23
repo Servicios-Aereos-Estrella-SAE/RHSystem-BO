@@ -26,7 +26,7 @@
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span> Are you sure you want to assign the shift: {{selectedShift.shiftName }}, to all employees in the
-                Position: {{position.positionName}}
+                Department: {{department.departmentName}}
             </span>
         </div>
         <template #footer>

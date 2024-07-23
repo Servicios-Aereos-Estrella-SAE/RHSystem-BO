@@ -41,11 +41,11 @@ export default class PositionService {
     }
   }
 
-  async assignShift (departmentId: number, positionId: number, shiftId: number, employeShiftsApplySince: string) {
+  async assignShift (departmentId: number, positionId: number, shiftId: number, applySince: string) {
     let responseRequest: any = null
-    const query = { 'departmentId': departmentId, 'shiftId': shiftId,  'employeShiftsApplySince': employeShiftsApplySince }
+    const query = { 'departmentId': departmentId, 'shiftId': shiftId,  'applySince': applySince }
     try {
-      await $fetch(`${this.API_PATH}/positions-assign-shift/${positionId}`, {
+      await $fetch(`${this.API_PATH}/position/assign-shift/${positionId}`, {
         method: 'POST',
         query: { ...query },
         onResponse ({ response }) { responseRequest = response },

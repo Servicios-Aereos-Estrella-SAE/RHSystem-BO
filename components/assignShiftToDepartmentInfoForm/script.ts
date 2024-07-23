@@ -1,17 +1,15 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import type { DepartmentShiftEmployeeWarningInterface } from '~/resources/scripts/interfaces/DepartmentShiftEmployeeWarningInterface'
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
-import type { PositionShiftEmployeeWarningInterface } from '~/resources/scripts/interfaces/PositionShiftEmployeeWarningInterface'
-import PositionService from '~/resources/scripts/services/PositionService'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import ShiftService from '~/resources/scripts/services/ShiftService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
-  name: 'AssignShiftToPositionInfoForm',
+  name: 'AssignShiftToDepartmentInfoForm',
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: true },
-    position: { type: Object as PropType<PositionInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
@@ -20,7 +18,7 @@ export default defineComponent({
     submitted: false,
     shiftsList: [] as ShiftInterface[],
     selectedShift: null as ShiftInterface | null,
-    warnings: [] as Array<PositionShiftEmployeeWarningInterface>
+    warnings: [] as Array<DepartmentShiftEmployeeWarningInterface>
   }),
   computed: {
   },
@@ -47,23 +45,23 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       if (this.selectedShift && this.selectedShift.shiftId) {
-        const positionService = new PositionService()
-        const positionResponse = await positionService.assignShift(this.department.departmentId, this.position.positionId, this.selectedShift.shiftId, this.applySince)
-        if (positionResponse.status === 201) {
-          this.warnings = positionResponse._data.data.position.data.warnings
+        const departmentService = new DepartmentService()
+        const departmentResponse = await departmentService.assignShift(this.department.departmentId, this.selectedShift.shiftId, this.applySince)
+        if (departmentResponse.status === 201) {
+          this.warnings = departmentResponse._data.data.department.data.warnings
           this.$toast.add({
             severity: 'success',
-            summary: 'Assign shift to position',
-            detail: positionResponse._data.message,
+            summary: 'Assign shift to department',
+            detail: departmentResponse._data.message,
               life: 5000,
           })
           this.$emit('save')
         } else {
-          const severityType = positionResponse.status === 500 ? 'error' : 'warn'
-          const msgError = positionResponse._data.error ? positionResponse._data.error : positionResponse._data.message
+          const severityType = departmentResponse.status === 500 ? 'error' : 'warn'
+          const msgError = departmentResponse._data.error ? departmentResponse._data.error : departmentResponse._data.message
           this.$toast.add({
             severity: severityType,
-            summary: 'Assign shift to position',
+            summary: 'Assign shift to department',
             detail: msgError,
               life: 5000,
           })

@@ -42,10 +42,8 @@ export default defineComponent({
             departmentId
           }
         });
-        // console.log('aquisssss')
         dataShifts.value = positionsResponse.data.data.data.filter((shift: any) => shift.employee_count > 0);
       } catch (error) {
-        console.log(error)
         console.error('Failed to fetch positions:', error);
       } finally {
         myGeneralStore.setFullLoader(false);
@@ -67,6 +65,12 @@ export default defineComponent({
     const handleSaveSuccess = () => {
       drawerShiftForm.value = false; 
     };
+    const onSave = () => {
+      const departmentId = route.params.departmentId
+      if (departmentId) {
+        fetchShiftDepartment(departmentId);
+      }
+    }
     onMounted(async () => {
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
       if (departmentId) {
@@ -76,7 +80,6 @@ export default defineComponent({
           fetchPositions(departmentId);
           fetchShiftDepartment(departmentId);
         } catch (error) {
-          console.log(error)
           console.error('Failed to fetch department details or positions:', error);
         }
       } else {
@@ -96,7 +99,8 @@ export default defineComponent({
       drawerShiftForm,
       asignShift,
       handlerSearchPosition,
-      handleSaveSuccess
+      handleSaveSuccess,
+      onSave
     };
   }
 });

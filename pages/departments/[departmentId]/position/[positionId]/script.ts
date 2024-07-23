@@ -25,7 +25,10 @@ export default defineComponent({
       const departmentId = route.params.departmentId;
       if (departmentId) {
         const departmentService = new DepartmentService()
-        // const departmentResponse = await departmentService.show(parseInt(departmentId))
+        const departmentResponse = await departmentService.show(parseInt(`${departmentId}`))
+        if (departmentResponse.status === 200) {
+          department.value = departmentResponse._data.data.department
+        }
       }
       const positionId = route.params.positionId;
       if (positionId) {
@@ -51,7 +54,10 @@ export default defineComponent({
     };
 
     const onSave = () => {
-      drawerShiftForm.value = false; 
+      const positionId = route.params.positionId
+      if (positionId) {
+        fetchShiftDepartment(positionId)
+      }
     }
 
     const fetchShiftDepartment = async (departmentId: any) => {
@@ -76,6 +82,7 @@ export default defineComponent({
 
     return {
       position,
+      department,
       dataShifts,
       drawerShiftForm,
       closeDetail,
