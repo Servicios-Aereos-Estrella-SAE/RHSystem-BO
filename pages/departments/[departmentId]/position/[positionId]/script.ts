@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRuntimeConfig } from '#app';
 import { useMyGeneralStore } from '~/store/general';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
+import DepartmentService from '~/resources/scripts/services/DepartmentService';
 
 export default defineComponent({
   name: 'PositionDetail',
@@ -12,6 +13,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const config = useRuntimeConfig();
+    const department = ref(null);
     const position = ref(null);
     const dataShifts = ref<ShiftInterface[] | null>(null);
     const drawerShiftForm = ref<boolean>(false); 
@@ -20,6 +22,11 @@ export default defineComponent({
     onMounted(async () => {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      const departmentId = route.params.departmentId;
+      if (departmentId) {
+        const departmentService = new DepartmentService()
+        // const departmentResponse = await departmentService.show(parseInt(departmentId))
+      }
       const positionId = route.params.positionId;
       if (positionId) {
         try {

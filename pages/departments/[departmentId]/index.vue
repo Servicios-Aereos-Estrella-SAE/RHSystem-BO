@@ -44,7 +44,7 @@
                     </h3>
                     <div class="department-card-wrapper">
                         <div v-for="(position, index) in positions" :key="`position-${position.positionId}-${index}`">
-                            <positionInfoCard :position="position" />
+                            <positionInfoCard :department="department" :position="position" />
                         </div>
                     </div>
                        <!-- Form Shift Apply To Departmente -->

@@ -42,8 +42,10 @@ export default defineComponent({
             departmentId
           }
         });
+        // console.log('aquisssss')
         dataShifts.value = positionsResponse.data.data.data.filter((shift: any) => shift.employee_count > 0);
       } catch (error) {
+        console.log(error)
         console.error('Failed to fetch positions:', error);
       } finally {
         myGeneralStore.setFullLoader(false);
@@ -74,6 +76,7 @@ export default defineComponent({
           fetchPositions(departmentId);
           fetchShiftDepartment(departmentId);
         } catch (error) {
+          console.log(error)
           console.error('Failed to fetch department details or positions:', error);
         }
       } else {
