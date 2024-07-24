@@ -22,10 +22,18 @@
                         <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPosition"
                             @keyup.delete="handlerSearchPosition" />
                     </div>
+
                     <div class="input-box">
                         <br />
-                        <Button class="btn-add mr-2" label="Assign Shift to Department" icon="pi pi-plus"
-                            severity="primary" @click="asignShift" />
+                        <Button class="btn-add mr-2" label="Assign Shift to Department" icon="pi pi-plus" severity="primary" @click="asignShift" />
+                        <Button class="btn-add mr-2" @click="syncPositions" style="width: 55px !important;">
+                        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
+                            <path
+                            d="M41.115 20.33C40.213 9.822 31.79 1.478 21.248.681c6.77 3.647 11.373 10.798 11.373 19.026 0 .211-.026.414-.032.623h-7.793l11.563 13.779L47.923 20.33h-6.808zM15.155 28.293c0-.234.026-.461.034-.692h8.015L11.642 13.822.077 27.601h6.579c.872 10.54 9.307 18.921 19.87 19.719-6.769-3.649-11.371-10.799-11.371-19.027z"
+                            fill="white"
+                            ></path>
+                        </svg>
+                        </Button>
                     </div>
                 </div>
                 <div>
@@ -47,16 +55,16 @@
                             <positionInfoCard :position="position" />
                         </div>
                     </div>
-                       <!-- Form Shift Apply To Departmente -->
-                <div class="card flex justify-content-center">
-                    <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
-                        class="shift-form-sidebar" :showCloseIcon="true">
-                        <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName" @save-success="handleSaveSuccess"
-                        />
-                    </Sidebar>
+                    <!-- Form Shift Apply To Departmente -->
+                    <div class="card flex justify-content-center">
+                        <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
+                            class="shift-form-sidebar" :showCloseIcon="true">
+                            <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName"
+                                @save-success="handleSaveSuccess" />
+                        </Sidebar>
+                    </div>
                 </div>
-                </div>
-             
+
             </div>
         </NuxtLayout>
     </div>
@@ -74,12 +82,13 @@ export default Script
     display: flex;
     flex-wrap: wrap;
 }
+
 .shift-form-sidebar {
     width: 100% !important;
     max-width: 35rem !important;
 
     @media screen and (max-width: $sm) {
-      width: 100% !important;
+        width: 100% !important;
     }
-  }
+}
 </style>

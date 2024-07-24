@@ -1,7 +1,7 @@
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import { useRuntimeConfig } from '#app';
+import { useRuntimeConfig, useNuxtApp } from '#app'; // Importar useNuxtApp para acceder a $toast
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface';
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface';
 import { useMyGeneralStore } from '~/store/general';
@@ -17,7 +17,9 @@ export default defineComponent({
     const dataShifts = ref<ShiftInterface[] | null>(null);
     const search = ref<string>('');
     const drawerShiftForm = ref<boolean>(false); 
-
+    const nuxtApp = useNuxtApp(); 
+    const $toast = nuxtApp.$toast as { add: (arg0: { severity: string; summary: string; detail: string; life: number }) => void };
+    
     const fetchPositions = async (departmentId: string, positionName: string | null = null) => {
       const myGeneralStore = useMyGeneralStore();
       try {
@@ -65,6 +67,50 @@ export default defineComponent({
     const handleSaveSuccess = () => {
       drawerShiftForm.value = false; 
     };
+
+    const syncPositions = async () => {
+      const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
+      if (!departmentId) {
+        console.error('Department ID is undefined');
+        return;
+      }
+
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      try {
+        const syncResponse1 = await fetch(`${config.public.BASE_API_PATH}`+'/synchronization/positions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (syncResponse1.ok) {
+          const syncResponse2 = await fetch(`${config.public.BASE_API_PATH}`+'/departments/sync-positions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ departmentId: Number(departmentId) }),
+          });
+
+          if (!syncResponse2.ok) {
+            throw new Error(`Failed to sync department positions: ${syncResponse2.statusText}`);
+          }
+        } else {
+          throw new Error(`Failed to sync positions: ${syncResponse1.statusText}`);
+        }
+     
+      } catch (error) {
+        console.error("error.message");
+      } finally {
+        myGeneralStore.setFullLoader(false);
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      }
+    };
+
     onMounted(async () => {
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
       if (departmentId) {
@@ -93,7 +139,8 @@ export default defineComponent({
       drawerShiftForm,
       asignShift,
       handlerSearchPosition,
-      handleSaveSuccess
+      handleSaveSuccess,
+      syncPositions,
     };
   }
 });
