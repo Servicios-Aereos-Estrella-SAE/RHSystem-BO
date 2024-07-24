@@ -8,6 +8,7 @@ import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'AssignShiftToDepartmentInfoForm',
+  emits: ['save'],
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: true },
     clickOnSave: { type: Function, default: null },

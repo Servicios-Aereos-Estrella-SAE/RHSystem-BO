@@ -9,6 +9,7 @@ import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'AssignShiftToPositionInfoForm',
+  emits: ['save'],
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: true },
     position: { type: Object as PropType<PositionInterface>, required: true },
