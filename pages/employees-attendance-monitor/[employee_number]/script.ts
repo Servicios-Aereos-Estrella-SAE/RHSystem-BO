@@ -6,7 +6,6 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
 import { useMyGeneralStore } from '~/store/general'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -198,14 +197,14 @@ export default defineComponent({
       const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
       this.employee = employee
     },
-    setDefaultVisualizationMode () {
+    async setDefaultVisualizationMode () {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
       }
 
-      this.handlerVisualizationModeChange()
+      await this.handlerVisualizationModeChange()
     },
     setGeneralData () {
       const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length

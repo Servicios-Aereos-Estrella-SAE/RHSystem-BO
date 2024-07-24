@@ -18,6 +18,7 @@ interface AssistDayInterface {
     isHoliday: boolean
     checkInDateTime: Date
     checkOutDateTime: Date
+    holiday: HolidayInterface | null
   }
 }
 

@@ -2,12 +2,13 @@ import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-import type { DailyEmployeeShiftsInterface } from '~/resources/scripts/interfaces/DailyEmployeeShiftsInterface'
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
-import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
+import Tooltip from 'primevue/tooltip';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
+  directives: {
+    tooltip: Tooltip
+  },
   props: {
     checkAssist: { type: Object as PropType<AssistDayInterface>, required: true }
   },
