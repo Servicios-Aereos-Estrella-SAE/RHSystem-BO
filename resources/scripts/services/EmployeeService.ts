@@ -9,7 +9,7 @@ export default class EmployeeService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
-  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/employees`, {
@@ -17,6 +17,7 @@ export default class EmployeeService {
         search: searchText,
         departmentId,
         positionId,
+        employeeWorkSchedule: employeeWorkSchedule,
         page,
         limit
       },
@@ -192,6 +193,31 @@ export default class EmployeeService {
       })
     } catch (error) {
     }
+    return responseRequest
+  }
+
+  async synchronization() {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/synchronization/employees`, {
+        method: 'POST',
+        query: { },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getWorkSchedules () {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/employees/get-work-schedules`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
     return responseRequest
   }
 }
