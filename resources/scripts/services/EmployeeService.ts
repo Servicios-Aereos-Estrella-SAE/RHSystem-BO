@@ -11,7 +11,6 @@ export default class EmployeeService {
 
   async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
-
     await $fetch(`${this.API_PATH}/employees`, {
       query: {
         search: searchText,

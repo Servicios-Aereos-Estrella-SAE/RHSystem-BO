@@ -95,12 +95,11 @@ d="M41.115 20.33C40.213 9.822 31.79 1.478 21.248.681c6.77 3.647 11.373 10.798 11
 
 <style lang="scss" scoped>
   @import './style';
+</style>
 
-  .shift-card-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+ 
   .shift-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
@@ -111,14 +110,3 @@ d="M41.115 20.33C40.213 9.822 31.79 1.478 21.248.681c6.77 3.647 11.373 10.798 11
   }
 </style>
 
-<style lang="scss">
-  @import '/resources/styles/variables.scss';
-
-  :deep(.graph-label) {
-    color: red;
-  }
-
-  .graph-label {
-    color: red;
-  }
-</style>

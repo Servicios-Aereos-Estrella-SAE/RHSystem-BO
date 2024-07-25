@@ -194,7 +194,7 @@ export default defineComponent({
   methods: {
     async getEmployee () {
       const employeCode = this.$route.params.employee_number
-      const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, 1, 1)
+      const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, null ,1, 1)
       const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
       this.employee = employee
     },
@@ -261,7 +261,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, 1, 30)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
