@@ -26,7 +26,7 @@ export default class ShiftExceptionService {
     try {
       await $fetch(`${this.API_PATH}/shift-exception`, {
         method: 'POST',
-        query: { ...shiftException },
+        body: { ...shiftException },
         onResponse ({ response }) { responseRequest = response },
         onRequestError ({ response }) { responseRequest = response }
       })
@@ -40,7 +40,7 @@ export default class ShiftExceptionService {
     try {
       await $fetch(`${this.API_PATH}/shift-exception/${shiftException.shiftExceptionId}`, {
         method: 'PUT',
-        query: { ...shiftException },
+        body: { ...shiftException },
         onResponse ({ response }) { responseRequest = response },
         onRequestError ({ response }) { responseRequest = response }
       })

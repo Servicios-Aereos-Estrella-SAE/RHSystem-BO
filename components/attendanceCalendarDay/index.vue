@@ -1,17 +1,27 @@
 <template>
-  <div v-if="checkAssist">
+  <div class="attendance-calendar-day-wrapper" v-if="checkAssist">
     <div class="attendance-calendar-day">
       <div class="day" :class="{ future: checkAssist.assist.isFutureDay, rest: checkAssist.assist.isRestDay && !chekInTime }">
         <div class="date">
-          {{ calendarDay }}
-          <small class="week-day">
-            {{ weekDayName }}
-          </small>
-          <div v-if="checkAssist.assist.isHoliday && chekInTime" class="is-holiday">
-            <span v-if="checkAssist.assist.holiday" v-html="checkAssist.assist.holiday.holidayIcon" v-tooltip.top="checkAssist.assist.holiday.holidayName"></span>
+          <div>
+            {{ calendarDay }}
+            <small class="week-day">
+              {{ weekDayName }}
+            </small>
           </div>
-          <div v-else-if="checkAssist.assist.isRestDay && chekInTime" class="is-holiday">
-            <svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.1c.1 35.5-28.6 64.3-64 64.3H128.1c-35.35 0-64.01-28.7-64.01-64V287.6H32.05C14.02 287.6 0 273.5 0 255.5c0-9 3.004-17 10.01-24L266.4 8.016c7-7.014 15-8.016 22-8.016s15 2.004 21.1 7.014L564.8 231.5c8 7 12.1 15 11 24zM288 160c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-32 160c-44.2 0-80 35.8-80 80 0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16 0-44.2-35.8-80-80-80h-64z" fill="#87a4bf" class="fill-000000"></path></svg>
+          <div class="icons">
+            <div v-if="checkAssist.assist.hasExceptions && !checkAssist.assist.isVacationDate" class="calendar-icon-info">
+              <svg style="width: 1.3rem;" viewBox="0 0 48 48" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><g fill="#33D4AD" class="fill-241f20"><path d="M25.916 8v15.359l7.076 7.075-2.828 2.828L21.9 25l.016-.017V8zM2.216 34.138H0v4.747h2.216a9.432 9.432 0 0 0 1.306 2.934l-1.521 1.522 2.693 2.691 1.544-1.543a9.443 9.443 0 0 0 2.808 1.231v2.216h4.761V45.72a9.461 9.461 0 0 0 2.867-1.269l1.486 1.484 2.692-2.691-1.485-1.484c.572-.864 1-1.831 1.268-2.862h2.218v-4.776h-2.218a9.51 9.51 0 0 0-1.23-2.8l1.448-1.449-2.692-2.692-1.426 1.425a9.487 9.487 0 0 0-2.918-1.302v-2.22h-4.78v2.22a9.477 9.477 0 0 0-2.858 1.267l-1.483-1.486-2.693 2.694 1.484 1.484a9.376 9.376 0 0 0-1.271 2.875zm5.294 2.373a3.917 3.917 0 1 1 7.834 0 3.917 3.917 0 0 1-7.834 0zM.025 22.997v2.007C.012 24.67 0 24.336 0 24s.012-.67.025-1.003z"></path><path d="M30.083 9.958 31.041 9H31l2.555-2.555A19.857 19.857 0 0 0 24 4C13.322 4 4.624 12.375 4.055 22.911H.027C.598 10.162 11.11 0 24 0c4.576 0 8.845 1.293 12.483 3.517L39 1v.042L40.041 0v9.715l-.243.243h-9.715zM44 24a19.81 19.81 0 0 0-1.709-8.048l2.998-2.998A23.804 23.804 0 0 1 48 24c0 13.255-10.745 24-24 24v-4c11.046 0 20-8.954 20-20z"></path></g></svg>
+            </div>
+            <div v-if="checkAssist.assist.isHoliday && chekInTime" class="calendar-icon-info">
+              <span v-if="checkAssist.assist.holiday" v-html="checkAssist.assist.holiday.holidayIcon" v-tooltip.top="checkAssist.assist.holiday.holidayName"></span>
+            </div>
+            <div v-else-if="checkAssist.assist.isRestDay && chekInTime" class="calendar-icon-info">
+              <svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.1c.1 35.5-28.6 64.3-64 64.3H128.1c-35.35 0-64.01-28.7-64.01-64V287.6H32.05C14.02 287.6 0 273.5 0 255.5c0-9 3.004-17 10.01-24L266.4 8.016c7-7.014 15-8.016 22-8.016s15 2.004 21.1 7.014L564.8 231.5c8 7 12.1 15 11 24zM288 160c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-32 160c-44.2 0-80 35.8-80 80 0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16 0-44.2-35.8-80-80-80h-64z" fill="#87a4bf" class="fill-000000"></path></svg>
+            </div>
+            <div v-else-if="checkAssist.assist.isVacationDate && chekInTime" class="calendar-icon-info">
+              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 512 512"><path d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z" fill="#87a4bf" class="fill-333333"></path><path d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z" fill="#87a4bf" class="fill-333333"></path><path d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z" fill="#87a4bf" class="fill-333333"></path></svg>
+            </div>
           </div>
         </div>
         <div v-if="checkAssist.assist.isFutureDay && !checkAssist.assist.isHoliday" class="no-work-day">
@@ -34,13 +44,13 @@
             </div>
           </div>
         </div>
-        <div v-else-if="checkAssist.assist.isVacationDay" class="no-work-day">
+        <div v-else-if="checkAssist.assist.isVacationDate && !chekInTime" class="no-work-day">
           <div>
             <div class="icon">
               <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 512 512"><path d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z" fill="#87a4bf" class="fill-333333"></path><path d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z" fill="#87a4bf" class="fill-333333"></path><path d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z" fill="#87a4bf" class="fill-333333"></path></svg>
             </div>
             <div class="text">
-              Vacations
+              Vacation Day
             </div>
           </div>
         </div>
@@ -87,15 +97,15 @@
               {{ chekOutTime || '---' }}
             </div>
           </div>
-          <div class="check info check-notes">
+          <div class="check info check-notes" :class="{ inactive: !checkAssist.assist.hasExceptions }" @click="displayExceptionComments(checkAssist)">
             <div class="icon">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 3A9.51 9.51 0 0 0 3 12.5a9.39 9.39 0 0 0 2.44 6.35l-2.29 2.3a.47.47 0 0 0-.11.54.5.5 0 0 0 .46.31h9a9.5 9.5 0 0 0 0-19Zm-4 11.5a1 1 0 1 1 1-1 1 1 0 0 1-1 1Zm4 0a1 1 0 1 1 1-1 1 1 0 0 1-1 1Zm4 0a1 1 0 1 1 1-1 1 1 0 0 1-1 1Z" fill="#33D4AD" class="fill-464646"></path></svg>
             </div>
             <div class="note">
-              Without notes
+              {{ checkAssist.assist.hasExceptions ? 'Exception Notes' : 'Without notes' }}
             </div>
           </div>
-          <div class="check info">
+          <div class="check info inactive">
             <div class="icon">
               <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h256v256H0z"></path><path d="m235.7 136.9-42.7 64a15.9 15.9 0 0 1-13.3 7.1H24a7.8 7.8 0 0 1-7-4.2 8 8 0 0 1 .3-8.2L62.4 128 17.3 60.4a8 8 0 0 1-.3-8.2 7.8 7.8 0 0 1 7-4.2h155.7a15.9 15.9 0 0 1 13.3 7.1l42.7 64a16 16 0 0 1 0 17.8Z" fill="#33D4AD" class="fill-000000"></path></svg>
             </div>
@@ -106,6 +116,26 @@
         </div>
       </div>
     </div>
+
+    <Sidebar v-model:visible="commentsSidebar" header="Exception Notes" position="right" class="exception-day-sidebar">
+      <div v-for="(item, index) in dayExceptions" :key="`dayExceptions-${index}-${item.shiftExceptionId}`" class="exception-date">
+        <div class="day">
+          {{ calendarDay }}
+          <small class="week-day">
+            {{ weekDayName }}
+          </small>
+        </div>
+        <div class="exception-type">
+          <div class="dot">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="8" fill="#093057" class="fill-000000"></circle><path data-name="<Transparent Rectangle>" d="M0 0h32v32H0z" fill="none"></path></svg>
+          </div>
+          {{ item.exceptionType.exceptionTypeTypeName }}
+        </div>
+        <div class="exception-description">
+          {{ item.shiftExceptionsDescription }}
+        </div>
+      </div>
+    </Sidebar>
   </div>
 </template>
 
@@ -114,6 +144,19 @@
   export default Script
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import './style';
+</style>
+
+<style lang="scss">
+@import '/resources/styles/variables.scss';
+
+.p-sidebar.exception-day-sidebar {
+  width: 100% !important;
+  max-width: 30rem !important;
+
+  @media screen and (max-width: $sm) {
+    width: 100% !important;
+  }
+}
 </style>
