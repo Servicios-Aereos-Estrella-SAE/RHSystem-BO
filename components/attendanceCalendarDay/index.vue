@@ -151,6 +151,22 @@
 <style lang="scss">
 @import '/resources/styles/variables.scss';
 
+.attendance-calendar-day {
+  .no-work-day {
+    .icon {
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      svg {
+        width: 4rem;
+      }
+    }
+  }
+}
+
 .p-sidebar.exception-day-sidebar {
   width: 100% !important;
   max-width: 30rem !important;
