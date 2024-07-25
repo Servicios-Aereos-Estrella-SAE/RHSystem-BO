@@ -165,6 +165,15 @@
       }
     }
   }
+
+  .calendar-icon-info {
+    width: 2rem;
+    text-align: center;
+
+    svg {
+      width: 1.5rem;
+    }
+  }
 }
 
 .p-sidebar.exception-day-sidebar {
