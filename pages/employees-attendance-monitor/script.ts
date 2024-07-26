@@ -458,7 +458,7 @@ export default defineComponent({
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-    async getExcel() {
+   /*  async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
@@ -476,6 +476,43 @@ export default defineComponent({
         const link = document.createElement('a')
         link.href = url
         link.setAttribute('download', 'Report Position Assist.xlsx')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel assist',
+          detail: 'Excel was created successfully',
+            life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel assist',
+          detail: msgError,
+            life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      }
+    }, */
+    async getExcel() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      
+      const assistService = new AssistService()
+      const assistResponse = await assistService.getExcelAll(startDay, endDay)
+      if (assistResponse.status === 201) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'All Department Assistance Report.xlsx')
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
