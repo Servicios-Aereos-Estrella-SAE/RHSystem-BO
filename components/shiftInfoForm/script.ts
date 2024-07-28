@@ -22,7 +22,8 @@ export default defineComponent({
       { name: 'Sunday', value: 7 },
     ],
     selectedRestDays: [] as any[],
-
+    temporalActiveMinutes: 0 as number,
+    shiftActiveHours: 0 as number
   }),
   computed: {
     filteredDaysOfWeek() {
@@ -30,11 +31,9 @@ export default defineComponent({
     }
   },
   watch: {
-    
     selectedRestDays(newValue) {
       const restDaysString = newValue.map((day: { value: any; }) => day.value).join(',');
       this.shift.shiftRestDays = restDaysString;
-      console.log(this.selectedRestDays)
     },
   },
   mounted() {
@@ -42,7 +41,10 @@ export default defineComponent({
       const restDayValues = this.shift.shiftRestDays.split(',').map(Number);
       this.selectedRestDays = this.daysOfWeeks.filter(day => restDayValues.includes(day.value));
     }
-    console.log(this.selectedRestDays);
+
+    const completeTime = this.shift.shiftActiveHours
+    this.shiftActiveHours = Math.floor(completeTime)
+    this.temporalActiveMinutes = (completeTime - this.shiftActiveHours) * 60
   },
   methods: {
     async onSave() {
@@ -58,6 +60,9 @@ export default defineComponent({
           return;
         }
         const shiftService = new ShiftService();
+
+        this.shift.shiftActiveHours = this.shiftActiveHours + (this.temporalActiveMinutes / 60)
+
         const response = this.shift.shiftId ? await shiftService.update(this.shift) : await shiftService.create(this.shift);
         if (response.status === 200 || response.status === 201) {
           this.$toast.add({
@@ -81,7 +86,6 @@ export default defineComponent({
       }
     },
     updateRestDays() {
-      console.log(this.selectedRestDays)
       this.shift.shiftRestDays = this.selectedRestDays.join(',');
     }
   }

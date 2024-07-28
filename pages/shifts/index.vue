@@ -25,7 +25,7 @@
             Shifts
           </h2>
           <div class="shift-card-wrapper">
-            <div v-for="(shift, index) in filteredShifts" :key="`shift-${shift.shiftId}-${index}`">
+            <div v-for="(shift, index) in filteredShifts" :key="`shift-${shift.shiftId || Math.random()}-${index}`">
               <ShiftInfoCard
                 :shift="shift"
                 :click-on-edit="() => { onEdit(shift) }"
@@ -93,13 +93,6 @@
 
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-:deep(.graph-label) {
-  color: red;
-}
-
-.graph-label {
-  color: red;
-}
 
 .shift-form-sidebar {
     width: 100% !important;

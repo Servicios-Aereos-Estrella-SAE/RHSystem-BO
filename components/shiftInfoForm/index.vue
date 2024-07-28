@@ -29,20 +29,32 @@
         </div>
         <div class="input-box">
           <label for="shiftActiveHours">Active Hours</label>
-          <InputNumber id="shiftActiveHours" v-model="shift.shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" :max="72"/>
+          <InputNumber id="shiftActiveHours" v-model="shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" :min="0" :max="72"/>
+          <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
+        </div>
+        <div class="input-box">
+          <label for="shiftActiveHours">Active Minutes on last hour</label>
+          <InputNumber id="shiftActiveHours" v-model="temporalActiveMinutes" :invalid="submitted && !shift.shiftActiveHours" :min="0" :max="60"/>
           <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
         </div>
         <div class="input-box">
           <label for="shiftRestDays">Rest Days </label>
-          <MultiSelect v-model="selectedRestDays" :options="daysOfWeeks" optionLabel="name" filter placeholder="Select Rest Days"
-          :maxSelectedLabels="7" class="w-full md:w-500" />
+          <MultiSelect
+            v-model="selectedRestDays"
+            :options="daysOfWeeks"
+            :optionLabel="'name'"
+            :placeholder="'Select Rest Days'"
+            :maxSelectedLabels="7"
+            class="w-full md:w-500"
+            filter
+          />
           <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">Rest days are required.</small>
         </div>
-        <div class="card flex justify-center">
-      
-        </div>
+        
+        <div class="card flex justify-center"></div>
+
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
+          <Button label="Save" severity="primary" @click="onSave" />
         </div>
       </div>
     </div>

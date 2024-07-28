@@ -2,16 +2,20 @@ import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-import type { DailyEmployeeShiftsInterface } from '~/resources/scripts/interfaces/DailyEmployeeShiftsInterface'
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
-import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
+import Tooltip from 'primevue/tooltip';
+import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
+  directives: {
+    tooltip: Tooltip
+  },
   props: {
     checkAssist: { type: Object as PropType<AssistDayInterface>, required: true }
   },
   data: () => ({
+    commentsSidebar: false as boolean,
+    dayExceptions: [] as ShiftExceptionInterface[]
   }),
   computed: {
     dateYear () {
@@ -97,5 +101,11 @@ export default defineComponent({
   mounted() {
   },
   methods: {
+    displayExceptionComments (checkAssist: AssistDayInterface) {
+      if (checkAssist.assist.hasExceptions) {
+        this.commentsSidebar = true
+        this.dayExceptions = checkAssist.assist.exceptions.length > 0 ? checkAssist.assist.exceptions : []
+      }
+    }
   }
 })

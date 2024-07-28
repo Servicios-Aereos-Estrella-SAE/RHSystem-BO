@@ -1,4 +1,5 @@
 import type { DateTime } from "luxon"
+import type { ExceptionTypeInterface } from "./ExceptionTypeInterface"
 
 interface ShiftExceptionInterface {
   shiftExceptionId: number | null
@@ -9,6 +10,7 @@ interface ShiftExceptionInterface {
   shiftExceptionsCreatedAt: Date | string | null
   shiftExceptionsUpdatedAt: Date | string | null
   shiftExceptionsDeletedAt: Date | string | null
+  exceptionType?: ExceptionTypeInterface
 }
 
 export type { ShiftExceptionInterface }
