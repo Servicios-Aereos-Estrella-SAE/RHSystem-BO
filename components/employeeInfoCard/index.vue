@@ -8,19 +8,26 @@
           fill="#87a4bf" fill-rule="evenodd" class="fill-010101"></path>
       </svg>
     </div>
-    <div class="email">
-      {{ `${employee.position.positionName}` }}
-    </div>
     <div class="name">
       {{ `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName ||
       ''}`  }}
     </div>
-    <div class="role assist capitalize">
+    <div class="info">
+      {{ `${employee.position.positionName}` }}
+    </div>
+    
+    <div class="info capitalize">
       {{ `${employee.department.departmentName || ''}`}}
     </div>
+    <div class="info capitalize">
+      {{ `${employee.employeeWorkSchedule || ''}`}}
+    </div>
+    <div class="number">
+      {{ `No. Emp: ${employee.employeeCode}` }}
+    </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" severity="info" @click="handlerClickOnEdit()" />
-      <Button icon="pi pi-trash" severity="warning" @click="handlerClickOnDelete()" />
+      <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
+      <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>
@@ -30,6 +37,6 @@
   export default Script
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './style';
 </style>
