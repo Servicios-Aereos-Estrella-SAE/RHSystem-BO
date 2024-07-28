@@ -52,17 +52,19 @@
                     </h3>
                     <div class="department-card-wrapper">
                         <div v-for="(position, index) in positions" :key="`position-${position.positionId}-${index}`">
-                            <positionInfoCard :position="position" />
+                            <positionInfoCard :department="department" :position="position" />
                         </div>
                     </div>
-                    <!-- Form Shift Apply To Departmente -->
-                    <div class="card flex justify-content-center">
-                        <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
-                            class="shift-form-sidebar" :showCloseIcon="true">
-                            <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName"
+                       <!-- Form Shift Apply To Department -->
+                <div class="card flex justify-content-center">
+                    <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
+                        class="shift-form-sidebar" :showCloseIcon="true">
+                        <assignShiftToDepartmentInfoForm :department="department"  @save="onSave"
+                        />
+                        <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName"
                                 @save-success="handleSaveSuccess" />
-                        </Sidebar>
-                    </div>
+                    </Sidebar>
+                </div>
                 </div>
 
             </div>

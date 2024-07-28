@@ -446,7 +446,7 @@ export default defineComponent({
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'Report Position Assist.xlsx')
+        link.setAttribute('download', 'Position Assistance Report.xlsx')
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

@@ -96,4 +96,19 @@ export default class DepartmentService {
       }
     }
   }
+
+  async assignShift (departmentId: number, shiftId: number, applySince: string) {
+    let responseRequest: any = null
+    const query = { 'shiftId': shiftId,  'applySince': applySince }
+    try {
+      await $fetch(`${this.API_PATH}/department/assign-shift/${departmentId}`, {
+        method: 'POST',
+        query: { ...query },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 }

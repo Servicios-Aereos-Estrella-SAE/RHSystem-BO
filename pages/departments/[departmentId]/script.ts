@@ -67,6 +67,12 @@ export default defineComponent({
     const handleSaveSuccess = () => {
       drawerShiftForm.value = false; 
     };
+    const onSave = () => {
+      const departmentId = route.params.departmentId
+      if (departmentId) {
+        fetchShiftDepartment(departmentId);
+      }
+    }
 
     const syncPositions = async () => {
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
@@ -140,6 +146,7 @@ export default defineComponent({
       asignShift,
       handlerSearchPosition,
       handleSaveSuccess,
+      onSave,
       syncPositions,
     };
   }
