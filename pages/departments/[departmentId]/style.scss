@@ -15,11 +15,20 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem auto;
+      grid-template-columns: 20rem auto ;
       gap: 0.5rem;
       justify-content: space-between;
+
+      .input-box {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
       .btn-add {
         width: fit-content;
+        width: auto;
+        height: 50px;
       }
 
       @media screen and (max-width: $desktop) {

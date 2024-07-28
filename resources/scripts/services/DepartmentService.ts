@@ -9,6 +9,26 @@ export default class DepartmentService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
+  async syncDepartments() {
+    let responseRequest: { status: number; _data?: any; error?: any } = { status: 500 };
+
+    try {
+      const response = await fetch(`${this.API_PATH}/synchronization/departments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({  }),
+      });
+
+      const data = await response.json();
+      responseRequest = { status: response.status, _data: data };
+    } catch (error) {
+      responseRequest = { status: 500, error };
+    }
+
+    return responseRequest;
+  }
   async getAllDepartmentList () {
     let responseRequest: any = null
 
