@@ -32,8 +32,23 @@ export default defineComponent({
       this.filteredDepartments = list;
       myGeneralStore.setFullLoader(false)
     },
-   
-
-
+    async syncDepartments() {
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+      try {
+        const response = await new DepartmentService().syncDepartments();
+        if (response.status === 200) {
+          console.log('Synchronization successful:', response._data);
+          // Actualiza los departamentos o maneja la respuesta según sea necesario
+          this.handlerSearchDepartment(); // Actualiza la lista de departamentos
+        } else {
+          console.error('Synchronization failed:', response._data);
+        }
+      } catch (error) {
+        console.error('Error synchronizing departments:', error);
+      } finally {
+        myGeneralStore.setFullLoader(false);
+      }
+    },
   }
 });
