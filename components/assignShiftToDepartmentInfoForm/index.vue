@@ -22,7 +22,7 @@
             </div>
         </div>
     </div>
-    <Dialog v-model:visible="drawerShiftConfirm" :style="{width: '450px'}" header="Confirm" :modal="true">
+    <Dialog v-model:visible="drawerShiftConfirm" :style="{width: '600px'}" header="Confirm" :modal="true">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span> Are you sure you want to assign the shift: {{selectedShift.shiftName }}, to all employees in the
