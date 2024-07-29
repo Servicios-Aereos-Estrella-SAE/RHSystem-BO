@@ -61,8 +61,6 @@
                         class="shift-form-sidebar" :showCloseIcon="true">
                         <assignShiftToDepartmentInfoForm :department="department"  @save="onSave"
                         />
-                        <asignShiftInfoForm :positions="dataShifts" :departmentName="department?.departmentName"
-                                @save-success="handleSaveSuccess" />
                     </Sidebar>
                 </div>
                 </div>
