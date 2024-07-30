@@ -33,7 +33,6 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
       this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
       this.filteredShifts = list;
-      console.log(list);
       myGeneralStore.setFullLoader(false)
 
     },
