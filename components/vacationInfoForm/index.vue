@@ -5,16 +5,16 @@
             <div class="form-container">
                 <div class="input-box">
                     <label for="yearsOfService">Years of Service</label>
-                    <InputNumber id="yearsOfService" v-model="vacation.yearsOfService"
-                        :invalid="submitted && !vacation.yearsOfService" />
-                    <small class="p-error" v-if="submitted && !vacation.yearsOfService">Years of service is
+                    <InputNumber id="yearsOfService" v-model="vacation.vacationSettingYearsOfService"
+                        :invalid="submitted && !vacation.vacationSettingYearsOfService" />
+                    <small class="p-error" v-if="submitted && !vacation.vacationSettingYearsOfService">Years of service is
                         required.</small>
                 </div>
                 <div class="input-box">
                     <label for="vacationDays">Vacation Days</label>
-                    <InputNumber id="vacationDays" v-model="vacation.vacationDays"
-                        :invalid="submitted && !vacation.vacationDays" />
-                    <small class="p-error" v-if="submitted && !vacation.vacationDays">Vacation days are
+                    <InputNumber id="vacationDays" v-model="vacation.vacationSettingVacationDays"
+                        :invalid="submitted && !vacation.vacationSettingVacationDays" />
+                    <small class="p-error" v-if="submitted && !vacation.vacationSettingVacationDays">Vacation days are
                         required.</small>
                 </div>
                 <div class="box-tools-footer">

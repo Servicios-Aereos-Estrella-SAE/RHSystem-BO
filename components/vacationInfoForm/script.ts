@@ -18,10 +18,10 @@ export default defineComponent({
   methods: {
     async onSave() {
       this.submitted = true;
-      if (this.vacation && this.vacation.yearsOfService && this.vacation.vacationDays) {
+      if (this.vacation && this.vacation.vacationSettingYearsOfService && this.vacation.vacationSettingVacationDays) {
         try {
           const vacationService = new VacationService();
-          const response = this.vacation.id ? await vacationService.update(this.vacation) : await vacationService.create(this.vacation);
+          const response = this.vacation.vacationSettingId ? await vacationService.update(this.vacation) : await vacationService.create(this.vacation);
           if (response.status === 200 || response.status === 201) {
             this.$toast.add({
               severity: 'success',

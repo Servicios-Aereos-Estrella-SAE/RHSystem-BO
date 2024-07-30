@@ -40,9 +40,9 @@ export default defineComponent({
     },
     addNew() {
       const newVacation: VacationInterface = {
-        id: null,
-        yearsOfService: 0,
-        vacationDays: 0,
+        vacationSettingId: null,
+        vacationSettingYearsOfService: 0,
+        vacationSettingVacationDays: 0,
         createdAt: null,
         updatedAt: null,
         deletedAt: null
@@ -64,7 +64,7 @@ export default defineComponent({
         const vacationService = new VacationService();
         const vacationResponse = await vacationService.delete(this.vacation);
         if (vacationResponse.status === 200) {
-          const index = this.filteredVacations.findIndex((vac: VacationInterface) => vac.id === this.vacation?.id);
+          const index = this.filteredVacations.findIndex((vac: VacationInterface) => vac.vacationSettingId === this.vacation?.vacationSettingId);
           if (index !== -1) {
             this.filteredVacations.splice(index, 1);
             this.$forceUpdate();
@@ -89,7 +89,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.vacation = { ...vacation };
-      const index = this.filteredVacations.findIndex((v: VacationInterface) => v.id === this.vacation?.id);
+      const index = this.filteredVacations.findIndex((v: VacationInterface) => v.vacationSettingId === this.vacation?.vacationSettingId);
       if (index !== -1) {
         this.filteredVacations[index] = vacation;
         this.$forceUpdate();

@@ -1,10 +1,10 @@
 <template>
     <div class="box vacation-info-card">
         <div class="vacation-years">
-            {{ `Years of Service: ${vacation.yearsOfService}` }}
+            {{ `Years of Service: ${vacation.vacationSettingYearsOfService}` }}
         </div>
         <div class="vacation-days">
-            {{ `Vacation Days: ${vacation.vacationDays}` }}
+            {{ `Vacation Days: ${vacation.vacationSettingVacationDays}` }}
         </div>
 
         <div class="box-tools-footer" v-if="showEditButton">

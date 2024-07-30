@@ -38,7 +38,7 @@ export default class VacationService {
   async delete(vacation: VacationInterface) {
     let responseRequest: any = null
 
-    await $fetch(`${this.API_PATH}/vacations/${vacation.id}`, {
+    await $fetch(`${this.API_PATH}/vacations/${vacation.vacationSettingId}`, {
       method: 'DELETE',
       onResponse({ response }) { responseRequest = response },
       onRequestError({ response }) { responseRequest = response }
@@ -60,7 +60,7 @@ export default class VacationService {
 
   async update(vacation: VacationInterface) {
     let responseRequest: any = null
-    await $fetch(`${this.API_PATH}/vacations/${vacation.id}`, {
+    await $fetch(`${this.API_PATH}/vacations/${vacation.vacationSettingId}`, {
       method: 'PUT',
       body: vacation,
       onResponse({ response }) { responseRequest = response },
