@@ -1,0 +1,68 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.vacation-page {
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .vacation-wrapper {
+    min-height: 100dvh;
+    box-sizing: border-box;
+
+    .head-page {
+      display: grid;
+      grid-template-columns: 20rem auto;
+      gap: 0.5rem;
+      justify-content: space-between;
+
+      .btn-add {
+        width: fit-content;
+        align-self: flex-end;
+      }
+      
+      @media screen and (max-width: $desktop) {
+        grid-template-columns: 15rem auto;
+      }
+
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: 1fr auto;
+      }
+
+      @media screen and (max-width: $phone) {
+        grid-template-columns: 1fr auto;
+      }
+    }
+
+    .vacation-card-wrapper {
+      box-sizing: border-box;
+      display: grid;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      gap: .5rem;
+      margin-top: 0.5rem;
+    }
+
+    .paginator {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  .vacation-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+}
+
+.side {
+  background-color: blue !important;
+}
