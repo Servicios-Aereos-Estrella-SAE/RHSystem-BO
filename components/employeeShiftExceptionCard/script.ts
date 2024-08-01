@@ -6,7 +6,9 @@ import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/Shi
 export default defineComponent({
   name: 'shiftExceptionCard',
   props: {
-    shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true }
+    shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
+    clickOnEdit: { type: Function, default: null },
+    clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
   }),
@@ -16,7 +18,7 @@ export default defineComponent({
         return 0
       }
 
-      const year = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[0]}`)
+      const year = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[0]}`)
       return year
     },
     dateMonth () {
@@ -24,7 +26,7 @@ export default defineComponent({
         return 0
       }
 
-      const month = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[1]}`)
+      const month = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[1]}`)
       return month
     },
     dateDay () {
@@ -32,7 +34,7 @@ export default defineComponent({
         return 0
       }
 
-      const day = parseInt(`${this.shiftException.shiftExceptionsDate.split('-')[2]}`)
+      const day = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[2]}`)
       return day
     },
     weekDayName () {
@@ -49,16 +51,27 @@ export default defineComponent({
       if (!this.shiftException.shiftExceptionsDate) {
         return ''
       }
-
-      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt')
+      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString())
+      const timeCST = time.toFormat('HH:mm:ss')
+      return timeCST
     }
   },
   mounted() {
-    console.log(this.shiftException)
-    console.log('sdddds')
+    if (this.shiftException.shiftExceptionsDate) {
+      const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+      this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
+    }
   },
   methods: {
+    handlerClickOnEdit () {
+      if (this.clickOnEdit) {
+        this.clickOnEdit()
+      }
+    },
+    handlerClickOnDelete () {
+      if (this.clickOnDelete) {
+        this.clickOnDelete()
+      }
+    },
   }
 })

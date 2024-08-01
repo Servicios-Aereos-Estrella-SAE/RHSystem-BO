@@ -1,16 +1,18 @@
 <template>
   <div class="aside-menu">
     <div class="menu">
-      <nuxt-link
-        v-for="(item, index) in menu"
-        :key="`menu-link-${index}`"
-        :to="item.path"
-        :class="{ 'active': setLinkActive(item) }"
-        class="menu-link"
-      >
-        <div class="icon" v-html="item.icon"></div>
-        {{ item.label }}
-      </nuxt-link>
+      <PanelMenu :model="menu">
+        <template #item="{ item }">
+            <nuxt-link v-if="item.path" :to="item.path" class="menu-link" :class="{ 'active': setLinkActive(item) }">
+              <div class="icon" v-html="item.icon"></div>
+              {{ item.label }}
+            </nuxt-link>
+            <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }">
+              <div class="icon" v-html="item.icon"></div>
+              {{ item.label }}
+            </div>
+        </template>
+      </PanelMenu>
     </div>
     <div class="footer">
       <button class="btn-block" @click="handlerLogout">

@@ -51,7 +51,7 @@ export default Script
     font-weight: 500;
     border-radius: calc($radius / 2);
     box-sizing: border-box;
-    padding: 1rem;
+    padding: 1rem 2%;
   }
   .assist {
     font-size: 14px;

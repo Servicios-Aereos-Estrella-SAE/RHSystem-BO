@@ -1,34 +1,48 @@
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
+import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
+import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
     name: 'Employees',
     props: {},
     data: () => ({
         search: '' as string,
+        workSchedules: [] as EmployeWorkScheduleInterface[],
         filteredEmployees: [] as EmployeeInterface[],
         employee: null as EmployeeInterface | null,
+        selectedWorkSchedule: null as EmployeWorkScheduleInterface | null,
         currentPage: 1,
         totalRecords: 0,
         first: 0,
         last: 0,
-        rowsPerPage: 20,
+        rowsPerPage: 50,
         drawerEmployeeForm: false,
         drawerEmployeePhotoForm: false,
-        drawerEmployeeDelete: false
+        drawerEmployeeDelete: false,
+        drawerEmployeeSync: false
     }),
     computed: {},
     created () {},
     async mounted() {
+        await this.getWorkSchedules()
         this.handlerSearchEmployee();
     },
     methods: {
         async handlerSearchEmployee() {
-            const response = await new EmployeeService().getFilteredList(this.search, null, null, this.currentPage, this.rowsPerPage);
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
+            const response = await new EmployeeService().getFilteredList(this.search, null, null, workSchedule, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.employees.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
             this.filteredEmployees = list;
+            myGeneralStore.setFullLoader(false)
+        },
+        async getWorkSchedules() {
+            const response = await new EmployeeService().getWorkSchedules()
+            this.workSchedules = response.status === 200 ? response._data.data.employeeWorkSchedules : []
         },
         onPhoto(employee: EmployeeInterface) {
             this.employee = { ...employee };
@@ -108,7 +122,7 @@ export default defineComponent({
             } else {
                 this.$toast.add({
                     severity: 'error',
-                    summary: 'Delete shift',
+                    summary: 'Delete employee',
                     detail: employeeResponse._data.message,
                     life: 5000,
                 });
@@ -127,6 +141,33 @@ export default defineComponent({
             }
             this.drawerEmployeeForm = false;
             this.drawerEmployeePhotoForm = false;
+        },
+        async syncEmployees() {
+          this.drawerEmployeeSync = true
+        },
+        async confirmSync() {
+          this.drawerEmployeeSync = false
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const employeeService = new EmployeeService()
+            const employeeResponse = await employeeService.synchronization()
+            if (employeeResponse.status === 201) {
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'Synchronization employees',
+                  detail: employeeResponse._data.message,
+                  life: 5000,
+                })
+                await this.handlerSearchEmployee();
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: 'Synchronization employees',
+                detail: employeeResponse._data.message,
+                life: 5000,
+              })
+            }
+            myGeneralStore.setFullLoader(false)
         }
     }
 });

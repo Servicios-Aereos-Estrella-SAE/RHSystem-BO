@@ -25,7 +25,7 @@
           </label>
           <Dropdown v-model="user.personId" :options="employees" optionLabel="label" optionValue="personId"
             placeholder="Select a Employee" filter class="w-full md:w-14rem" :invalid="submitted && !user.personId"
-            :disabled="!isNewUser">
+            :disabled="!isNewUser && hasEmployee">
             <template #value="slotProps">
               <div v-if="slotProps.value && slotProps.value.employeeFirstName">
                 {{ slotProps.employeeFirstName }}s

@@ -1,10 +1,12 @@
 interface ShiftInterface {
+  employees: any
   shiftId: number | null
   shiftName: string
   shiftDayStart: number
   shiftTimeStart: string
   shiftActiveHours: number
   shiftRestDays: any
+  employee_count: any
   shiftCreatedAt: Date | string | null
   shiftUpdatedAt: Date | string | null
   shiftDeletedAt: Date | string | null

@@ -9,6 +9,26 @@ export default class DepartmentService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
+  async syncDepartments() {
+    let responseRequest: { status: number; _data?: any; error?: any } = { status: 500 };
+
+    try {
+      const response = await fetch(`${this.API_PATH}/synchronization/departments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({  }),
+      });
+
+      const data = await response.json();
+      responseRequest = { status: response.status, _data: data };
+    } catch (error) {
+      responseRequest = { status: 500, error };
+    }
+
+    return responseRequest;
+  }
   async getAllDepartmentList () {
     let responseRequest: any = null
 
@@ -75,5 +95,20 @@ export default class DepartmentService {
         }
       }
     }
+  }
+
+  async assignShift (departmentId: number, shiftId: number, applySince: string) {
+    let responseRequest: any = null
+    const query = { 'shiftId': shiftId,  'applySince': applySince }
+    try {
+      await $fetch(`${this.API_PATH}/department/assign-shift/${departmentId}`, {
+        method: 'POST',
+        query: { ...query },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
   }
 }

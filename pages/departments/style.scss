@@ -15,15 +15,18 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem auto 20rem 18rem 20rem;
+      grid-template-columns: 20rem auto;
       gap: 0.5rem;
+      justify-content: space-between;
 
       .btn-add {
         width: fit-content;
+        width: 55px;
+        fill: currentColor;
       }
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 15rem auto 15rem 18rem 10rem;
+        grid-template-columns: 20rem auto;
       }
 
       @media screen and (max-width: $tablet) {

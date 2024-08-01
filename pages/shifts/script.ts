@@ -43,6 +43,7 @@ export default defineComponent({
     },
     addNew() {
       const newShift: ShiftInterface = {
+        employees: [],
         shiftId: null,
         shiftName: "",
         shiftDayStart: 0,
@@ -51,7 +52,8 @@ export default defineComponent({
         shiftRestDays: "",
         shiftCreatedAt: null,
         shiftUpdatedAt: null,
-        shiftDeletedAt: null
+        shiftDeletedAt: null,
+        employee_count: undefined
       }
       this.shift = newShift
       this.drawerShiftForm = true

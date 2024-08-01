@@ -8,6 +8,7 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import UserService from '~/resources/scripts/services/UserService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import PersonService from '~/resources/scripts/services/PersonService'
 
 export default defineComponent({
   components: {
@@ -27,6 +28,7 @@ export default defineComponent({
     currenUser: null as UserInterface | null,
     passwordConfirm: '',
     changePassword: false,
+    hasEmployee: false,
     isNewUser: false,
     isReady: false,
     isEmailInvalid: false
@@ -40,6 +42,15 @@ export default defineComponent({
     this.activeSwicht = isActive === 1 ? true : false
     this.isNewUser = !this.user.userId ? true : false
     await this.getRoles()
+    if (this.user.personId) {
+      const personService = new PersonService()
+      const personResponse = await personService.getEmployee(this.user.personId)
+      if (personResponse) {
+        if (personResponse._data.data.employee) {
+         this.hasEmployee = true
+        }
+      }
+    }
     await this.getEmployees()
     this.isReady = true
   },
@@ -51,10 +62,10 @@ export default defineComponent({
     },
     async getEmployees() {
       let response = null
-      if (this.isNewUser) {
+      if (this.isNewUser || !this.hasEmployee) {
         response = await new EmployeeService().getOnlyWithOutUser('',null,null)
       } else {
-        response = await new EmployeeService().getFilteredList('', null, null)
+        response = await new EmployeeService().getFilteredList('',null, null, null)
       }
       const list = response.status === 200 ? response._data.data.employees.data : []
       for await (const employee of list) {

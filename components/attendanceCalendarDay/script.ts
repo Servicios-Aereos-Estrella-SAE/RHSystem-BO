@@ -2,16 +2,20 @@ import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-import type { DailyEmployeeShiftsInterface } from '~/resources/scripts/interfaces/DailyEmployeeShiftsInterface'
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface'
-import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
+import Tooltip from 'primevue/tooltip';
+import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
+  directives: {
+    tooltip: Tooltip
+  },
   props: {
     checkAssist: { type: Object as PropType<AssistDayInterface>, required: true }
   },
   data: () => ({
+    commentsSidebar: false as boolean,
+    dayExceptions: [] as ShiftExceptionInterface[]
   }),
   computed: {
     dateYear () {
@@ -57,26 +61,51 @@ export default defineComponent({
       const timeCST = time.setZone('UTC-5')
       return timeCST.toFormat('tt')
     },
-    chekOutTime () {
-      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
+    chekEatInTime () {
+      if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeOrigin) {
         return ''
       }
 
-      const now = DateTime.now().toFormat('yyyy-LL-dd')
-      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeDate = time.toFormat('yyyy-LL-dd')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
+      return timeCST.toFormat('tt')
+    },
+    chekEatOutTime () {
+      if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeOrigin) {
+        return ''
+      }
 
-      if (timeDate === now) {
+      const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeOrigin.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-5')
+      return timeCST.toFormat('tt')
+    },
+    chekOutTime () {
+      const now = DateTime.now().setZone('UTC-5')
+      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('UTC-5')
+
+      if (timeToCheckOut > now) {
         this.checkAssist.assist.checkOutStatus = ''
         return ''
       }
 
-      return timeCST.toFormat('tt')
+      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
+        return ''
+      }
+
+      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-5')
+      const timeFormatted = timeCST.toFormat('tt')
+      return timeFormatted
     }
   },
   mounted() {
   },
   methods: {
+    displayExceptionComments (checkAssist: AssistDayInterface) {
+      if (checkAssist.assist.hasExceptions) {
+        this.commentsSidebar = true
+        this.dayExceptions = checkAssist.assist.exceptions.length > 0 ? checkAssist.assist.exceptions : []
+      }
+    }
   }
 })

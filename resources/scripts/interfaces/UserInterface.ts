@@ -1,3 +1,4 @@
+import type { EmployeeInterface } from "./EmployeeInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 
 interface UserInterface {
@@ -12,7 +13,8 @@ interface UserInterface {
   userToken?: string | null,
   userUpdatedAt?: string,
 
-  person?: PeopleInterface
+  person?: PeopleInterface,
+  employee?: EmployeeInterface
 }
 
 export type { UserInterface }
