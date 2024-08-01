@@ -7,14 +7,19 @@ export default defineComponent({
   },
   data: () => ({
     credentials: {
-      userEmail: 'developer@sae.com.mx',
-      userPassword: 'adminSystemSAE123.'
+      userEmail: '',
+      userPassword: ''
     } as UserCredentialsInterface,
     invalidCredentials: false,
     isGuest: false
   }),
   created () {
     this.validateSession()
+
+    if (this.$config.public.ENVIRONMENT !== 'production') {
+      this.credentials.userEmail = 'developer@sae.com.mx'
+      this.credentials.userPassword = 'adminSystemSAE123.'
+    }
   },
   mounted() {
   },
