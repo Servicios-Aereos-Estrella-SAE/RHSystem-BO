@@ -39,7 +39,7 @@
          <!-- ShiftException form -->
          <div class="card flex justify-content-center">
           <Sidebar v-model:visible="drawerShiftExceptionForm" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
-            <employeeShiftExceptionInfoForm :shiftException="shiftException" @onShiftExceptionSave="onSave" />
+            <employeeShiftExceptionInfoForm :shiftException="shiftException" :employee="employee" @onShiftExceptionSave="onSave" />
           </Sidebar>
         </div>
       </div>

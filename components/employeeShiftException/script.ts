@@ -32,7 +32,7 @@ export default defineComponent({
     shiftException: null as ShiftExceptionInterface | null,
     drawerShiftExceptionForm: false,
     drawerShiftExceptionDelete: false,
-    selectedDateTimeDeleted: '' as string | null
+    selectedDateTimeDeleted: '' as string | null,
   }),
   computed: {
   },
