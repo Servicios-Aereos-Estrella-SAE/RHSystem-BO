@@ -25,6 +25,9 @@
     <div class="number">
       {{ `No. Emp: ${employee.employeeCode}` }}
     </div>
+    <div v-if="!canHaveVacations" class="number">
+      {{ `Puede tener vacaciones hasta ${dateFirstYear}`}}
+    </div>
     <div class="box-tools-footer">
       <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
       <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
