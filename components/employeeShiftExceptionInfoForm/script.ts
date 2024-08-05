@@ -8,6 +8,7 @@ import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeServ
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { DateTime } from 'luxon';
 import { useMyGeneralStore } from '~/store/general';
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -16,6 +17,7 @@ export default defineComponent({
   },
   name: 'shiftExceptionForm',
   props: {
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
@@ -27,6 +29,8 @@ export default defineComponent({
     currentDate: null as string | null,
     dateWasChange: false,
     isReady: false,
+    hasCompletedYear: false,
+    minDate:  DateTime.fromISO('2000-10-10').toJSDate()
   }),
   computed: {
   },
@@ -48,6 +52,14 @@ export default defineComponent({
       }
     }
     await this.getExceptionTypes()
+    let isVacation = false
+    const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
+    if (index >= 0) {
+      if (this.exceptionTypeList[index].exceptionTypeSlug === 'vacation') {
+        isVacation = true
+      }
+    }
+    this.setMinDate(isVacation)
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -116,6 +128,46 @@ export default defineComponent({
     handleDateChange() {
       if (this.isReady) {
         this.dateWasChange = true
+      }
+    },
+    handleTypeChange() {
+      if (this.isReady) {
+        let isVacation = false
+        const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
+        if (index >= 0) {
+          if (this.exceptionTypeList[index].exceptionTypeSlug === 'vacation') {
+            isVacation = true
+            if (this.employee.employeeHireDate && this.shiftException.shiftExceptionsDate) {
+              const dateFirstYear = DateTime.fromISO(this.employee.employeeHireDate.toString()).plus({ years: 1 })
+              const dateOrigin = new Date(this.shiftException.shiftExceptionsDate.toString())
+              const dateNew = DateTime.fromJSDate(dateOrigin)
+              const dateFormated = dateNew.toFormat('yyyy-MM-dd')
+              const dateSelected = DateTime.fromISO(dateFormated)
+              if (dateSelected < dateFirstYear) {
+                this.shiftException.shiftExceptionsDate = null
+                this.$toast.add({
+                  severity: 'warn',
+                  summary: 'Date invalid',
+                  detail: `When on vacation, the selected date cannot be earlier than ${dateNew.toFormat('DD')}` ,
+                    life: 5000,
+                })
+              }
+            }
+          }
+        }
+        this.setMinDate(isVacation)
+      }
+    },
+    setMinDate(isVacation: boolean) {
+      this.minDate = DateTime.fromISO('2000-10-10').toJSDate()
+      if (this.employee.employeeHireDate && isVacation) {
+        const now = DateTime.now();
+        this.hasCompletedYear = now.diff(DateTime.fromISO(this.employee.employeeHireDate.toString()), 'years').years >= 1
+          const dateFirstYear = DateTime.fromISO(this.employee.employeeHireDate.toString()).plus({ years: 1 })
+          if (dateFirstYear) {
+            const dateMin = dateFirstYear.toISODate() ? dateFirstYear.toISODate() : ''
+            this.minDate = DateTime.fromISO(dateMin ? dateMin : '').toJSDate()
+          }
       }
     }
   }
