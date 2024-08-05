@@ -15,7 +15,6 @@
     <div class="info">
       {{ `${employee.position.positionName}` }}
     </div>
-    
     <div class="info capitalize">
       {{ `${employee.department.departmentName || ''}`}}
     </div>
@@ -27,6 +26,12 @@
     </div>
     <div v-if="!canHaveVacations" class="number">
       {{ `Puede tener vacaciones hasta ${dateFirstYear}`}}
+    </div>
+    <div class="number">
+      {{ `Vacaciones tomadas (${daysVacationsUsed.toString().padStart(2, '0')} / ${daysVacationsCorresponding.toString().padStart(2, '0')})`}}
+    </div>
+    <div v-if="dateRenovation" class="number">
+      {{ `Las vacaciones se renuevan hasta ${dateRenovation}` }}
     </div>
     <div class="box-tools-footer">
       <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
