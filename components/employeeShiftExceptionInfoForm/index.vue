@@ -11,14 +11,14 @@
             Exception type
           </label>
           <Dropdown v-model="shiftException.exceptionTypeId" :options="exceptionTypeList" optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId"
-          placeholder="" filter class="w-full md:w-14rem"/>
+          placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange"/>
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
         </div>
         <div class="input-box">
           <label for="date">
             Date
           </label>
-          <Calendar v-model="shiftException.shiftExceptionsDate" showTime hourFormat="24" @update:model-value="handleDateChange"/>
+          <Calendar v-model="shiftException.shiftExceptionsDate" :minDate="minDate" showTime hourFormat="24" @update:model-value="handleDateChange"/>
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDate">Date is required.</small>
         </div>
         <div class="input-box">
