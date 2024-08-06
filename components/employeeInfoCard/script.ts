@@ -17,7 +17,9 @@ export default defineComponent({
     canHaveVacations: false,
     daysVacationsUsed: 0,
     daysVacationsCorresponding: 0,
-    dateRenovation: ''
+    daysVacationsRest: 0,
+    dateRenovation: '',
+    dateLimit: ''
   }),
   computed: {
   },
@@ -28,13 +30,19 @@ export default defineComponent({
       const dateFirstYear = DateTime.fromISO(this.employee.employeeHireDate.toString()).plus({ years: 1 })
       this.dateFirstYear = dateFirstYear.toFormat('DD')
       const employeeVacationsInfo = await this.getCurrentVacationPeriod(this.employee.employeeHireDate.toString())
-      if (employeeVacationsInfo && employeeVacationsInfo.vacationPeriodEnd) {
-        this.dateRenovation = DateTime.fromISO(employeeVacationsInfo.vacationPeriodEnd).toFormat('DD')
-      }
       if (hasCompletedYear) {
         this.canHaveVacations = true
         await this.getVacationsUsed()
         await this.getVacationsCorresponding()
+        if (this.daysVacationsCorresponding === 0) {
+          this.daysVacationsRest = 0
+        } else {
+          this.daysVacationsRest = this.daysVacationsCorresponding - this.daysVacationsUsed
+        }
+        if (employeeVacationsInfo && employeeVacationsInfo.vacationPeriodEnd) {
+          this.dateRenovation = DateTime.fromISO(employeeVacationsInfo.vacationPeriodEnd).toFormat('DD')
+          this.dateLimit = DateTime.fromISO(employeeVacationsInfo.vacationPeriodEnd).minus({ days: this.daysVacationsRest }).toFormat('DD')
+        }
       }
     }
   },
@@ -67,29 +75,22 @@ export default defineComponent({
         const employeeResponse = await employeeService.getVacationsCorresponding(this.employee.employeeId)
         if (employeeResponse.status === 200) {
           this.daysVacationsCorresponding = employeeResponse._data.data.vacations
+        } else {
+          this.daysVacationsCorresponding = 0
         }
       }
     },
     getCurrentVacationPeriod(employeeHireDate:  string) {
-      // Fecha actual
       const currentDate = DateTime.now()
-      // Fecha de inicio del empleo
       const startDate = DateTime.fromISO(employeeHireDate)
-      // Verificar si la fecha de inicio es válida
       if (!startDate.isValid) {
-        // console.log('Fecha de inicio del empleo no es válida')
         return null
       }
-      // Calcular los años trabajados
       const yearsWorked = currentDate.diff(startDate, 'years').years
-      // Verificar si el empleado ha cumplido al menos un año
       if (yearsWorked < 1) {
-        // console.log('El empleado aún no ha cumplido un año de servicio')
         return null
       }
-      // Calcular el año de vacaciones actual
       const vacationYear = Math.floor(yearsWorked)
-      // Determinar las fechas de inicio y fin del período de vacaciones actual
       const vacationPeriodStart = startDate.plus({ years: vacationYear }).startOf('day')
       const vacationPeriodEnd = vacationPeriodStart.plus({ years: 1 }).minus({ days: 1 }).endOf('day')
       return {

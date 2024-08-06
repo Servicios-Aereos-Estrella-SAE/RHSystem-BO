@@ -227,10 +227,9 @@ export default class EmployeeService {
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
-
-      return responseRequest
     } catch (error) {
     }
+    return responseRequest
   }
 
   async getVacationsCorresponding(employeeId: number) {
@@ -240,9 +239,8 @@ export default class EmployeeService {
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
-
-      return responseRequest
     } catch (error) {
     }
+    return responseRequest
   }
 }
