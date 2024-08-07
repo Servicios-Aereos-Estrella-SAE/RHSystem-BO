@@ -37,7 +37,8 @@ export default defineComponent({
     isReady: false,
     isEmailInvalid: false,
     drawerShiftExceptions: false,
-    drawerShifts: false
+    drawerShifts: false,
+    drawerProceedingFiles: false
   }),
   computed: {
   },
@@ -169,6 +170,9 @@ export default defineComponent({
     },
     getShifts() {
       this.drawerShifts = true
+    },
+    getProceedingFiles() {
+      this.drawerProceedingFiles = true
     }
   },
   watch: {

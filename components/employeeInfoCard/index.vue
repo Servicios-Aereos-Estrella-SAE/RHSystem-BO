@@ -28,16 +28,16 @@
     </div>
     <div class="vacation-info">
       <div v-if="!canHaveVacations" class="vacation">
-        {{ `Puede tener vacaciones hasta ${dateFirstYear}`}}
+        {{ `Vacations will be available at ${dateFirstYear}`}}
       </div>
-      <div class="number">
-        {{ `Vacaciones utilizadas (${daysVacationsUsed.toString().padStart(2, '0')} / ${daysVacationsCorresponding.toString().padStart(2, '0')})`}}
+      <div class="vacation">
+        {{ `Used vacation days (${daysVacationsUsed.toString().padStart(2, '0')} / ${daysVacationsCorresponding.toString().padStart(2, '0')})`}}
       </div>
       <div v-if="dateRenovation" class="vacation">
-        {{ `Fecha de renovación el ${dateRenovation}` }}
+        {{ `Renovation date ${dateRenovation}` }}
       </div>
       <div v-if="dateLimit" class="vacation">
-        {{ `Fecha límite para solicitar ${daysVacationsRest} días el ${dateLimit}` }}
+        {{ `Deadline to apply ${daysVacationsRest} days at ${dateLimit}` }}
       </div>
     </div>
     <div class="box-tools-footer">
