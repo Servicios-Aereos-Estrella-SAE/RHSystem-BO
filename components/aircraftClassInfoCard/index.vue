@@ -1,20 +1,23 @@
 <template>
-    <div class="box vacation-info-card">
+    <div class="box aircraft-class-info-card">
         <div class="image-aircraft">
-            <img alt="aircraft header" src="https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcRSL-ne1x_FTmiVWllIQsOWHkX3e7gvZUA44ls51TFg-Bnccakwq3mAbNkqGuXABPuUzmJl8WThAxatzD81K6U" />
+            <img alt="aircraft header" :src="aircraftClass.aircraftClassBanner"  />
         </div>
-        <div class="vacation-years">
-            {{ `Years of Service: ${vacation.vacationSettingYearsOfService}` }}
+        <div class="aircraft-class-name">
+            {{ `Aircraft Class: ${aircraftClass.aircraftClassName}` }}
         </div>
-        <div class="vacation-days">
-            {{ `Vacation Days: ${vacation.vacationSettingVacationDays}` }}
+        <div class="aircraft-class-short-description">
+            {{truncateText(`Description: ${aircraftClass.aircraftClassShortDescription}`, 182)}}
         </div>
 
         <div class="box-tools-footer" v-if="showEditButton">
             <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
-            <Button  icon="pi pi-trash" class="box-btn btn-red"
-                @click="handlerClickOnDelete()" />
-        </div>
+            <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()" />
+        </div> 
+        <!-- <div class="box-tools-footer" >
+            <Button class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
+
+        </div> -->
     </div>
 </template>
 
@@ -27,17 +30,32 @@ export default Script
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 
-.vacation-info-card {
+.aircraft-class-info-card {
     position: relative;
+    
 
-    .vacation-years {
+    .aircraft-class-name {
         text-align: left;
         font-weight: 500;
         box-sizing: border-box;
         padding: 1rem 3px;
     }
+    .image-aircraft{
+        width: 100%;
+    height: 150px; /* Ajusta la altura según sea necesario */
+    overflow: hidden;
+    border-radius: 0.5rem; /* Añade un borde redondeado */
+    margin-bottom: 1rem; /* Espacio inferior para separar la imagen del contenido */
 
-    .vacation-days {
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Asegura que la imagen cubra todo el contenedor sin deformarse */
+        border-radius: 0.5rem; /* Mantén el borde redondeado para la imagen también */
+    }
+    }
+
+    .aircraft-class-short-description {
         text-align: left;
         font-weight: 400;
         border-radius: calc($radius / 2);
