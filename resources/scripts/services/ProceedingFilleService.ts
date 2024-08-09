@@ -47,22 +47,44 @@ export default class ProceedingFileService {
       return responseRequest;
     }
 
-    async create(proceedingFiles: ProceedingFileInterface) {
+    async store(proceedingFile: ProceedingFileInterface, file: any) {
+      const formData = new FormData()
+      formData.append('file', file)
+      for (const key in proceedingFile) {
+        if (proceedingFile.hasOwnProperty(key)) {
+          if (proceedingFile[key] === undefined) {
+            proceedingFile[key] = ''
+          }
+          formData.append(key, proceedingFile[key])
+        }
+      }
       let responseRequest: any = null
       await $fetch(`${this.API_PATH}/proceeding-files`, {
         method: 'POST',
-        body: proceedingFiles,
+        body: formData,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       return responseRequest
     }
   
-    async update(proceedingFiles: ProceedingFileInterface) {
+    async update(proceedingFile: ProceedingFileInterface, file: any | null) {
+      const formData = new FormData()
+      if (file) {
+        formData.append('file', file)
+      }
+      for (const key in proceedingFile) {
+        if (proceedingFile.hasOwnProperty(key)) {
+          if (proceedingFile[key] === undefined || proceedingFile[key] === 'null') {
+            proceedingFile[key] = ''
+          }
+          formData.append(key, proceedingFile[key])
+        }
+      }
       let responseRequest: any = null
-      await $fetch(`${this.API_PATH}/proceeding-files/${proceedingFiles.proceedingFileId}`, {
+      await $fetch(`${this.API_PATH}/proceeding-files/${proceedingFile.proceedingFileId}`, {
         method: 'PUT',
-        body: proceedingFiles,
+        body: formData,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

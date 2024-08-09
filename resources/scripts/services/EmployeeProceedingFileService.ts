@@ -81,14 +81,14 @@ export default class EmployeeProceedingFileService {
   }
 
   validateInfo(employeeProceedingFile: EmployeeProceedingFileInterface): boolean {
- /*    if (!employeeProceedingFile.) {
-      console.error('Wrong date');
+    if (!employeeProceedingFile.proceedingFileId) {
+      console.error('Wrong proceeding file id');
       return false;
     }
-    if (!employeeProceedingFile.shiftId) {
-      console.error('Wrong shift id');
+    if (!employeeProceedingFile.employeeId) {
+      console.error('Wrong employee id');
       return false;
-    } */
+    }
     return true;
   }
 }

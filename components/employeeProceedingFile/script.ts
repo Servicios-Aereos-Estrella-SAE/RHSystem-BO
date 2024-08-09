@@ -69,6 +69,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.employeeProceedingFile = {...employeeProceedingFile}
+      
       const index = this.employeeProceedingFilesList.findIndex((employeeProceedingFile: EmployeeProceedingFileInterface) => employeeProceedingFile.employeeProceedingFileId === this.employeeProceedingFile?.employeeProceedingFileId)
       if (index !== -1) {
         this.employeeProceedingFilesList[index] = employeeProceedingFile
