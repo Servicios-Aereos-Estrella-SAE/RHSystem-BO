@@ -1,24 +1,27 @@
 <template>
   <div class="box employee-proceeding-file-info-card">
     <div class="flex align-items-end justify-content-center" :style="{ position: 'relative', height: '60px' }">
-      <SpeedDial class="icon" :style="{ left: 0, bottom: 0 }" :model="items" direction="up-left" :transitionDelay="80" showIcon="pi pi-bars" hideIcon="pi pi-times" buttonClass="p-button-outlined"  type="quarter-circle"/>
+      <Button type="button" icon="pi pi-ellipsis-v" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
+        class="menu-top-right" />
+      <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
     </div>
-    <div class="proceeding-file-name">
+    <div class="proceeding-file-type-name">
       {{ `${employeeProceedingFile.proceedingFile.proceedingFileType.proceedingFileTypeName}` }}
     </div>
     <div class="proceeding-file-name">
       {{ `${employeeProceedingFile.proceedingFile.proceedingFileName}` }}
     </div>
-    <div v-if="employeeProceedingFile.proceedingFile.proceedingFileIdentify" class="proceeding-file-name">
-      {{ `${employeeProceedingFile.proceedingFile.proceedingFileIdentify}` }}
+    <div v-if="employeeProceedingFile.proceedingFile.proceedingFileExpirationAt" class="proceeding-file-date">
+      {{ `${calendarDay}` }}
     </div>
-    <div v-else class="proceeding-file-name">
+    <div v-else class="proceeding-file-date">
       ---
     </div>
-
-    <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+    <div v-if="employeeProceedingFile.proceedingFile.proceedingFileIdentify" class="proceeding-file-identify">
+      {{ `${employeeProceedingFile.proceedingFile.proceedingFileIdentify}` }}
+    </div>
+    <div v-else class="proceeding-file-identify">
+      ---
     </div>
   </div>
 </template>
@@ -29,8 +32,7 @@
 </script>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
-@import './style';
-
+  @import '/resources/styles/variables.scss';
+  @import 'primeicons/primeicons.css';
+  @import './style';
 </style>

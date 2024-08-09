@@ -8,7 +8,6 @@ import { useMyGeneralStore } from '~/store/general'
 import type { EmployeeProceedingFileInterface } from '~/resources/scripts/interfaces/EmployeeProceedingFileInterface';
 import type { ProceedingFileInterface } from '~/resources/scripts/interfaces/ProceedingFileInterface';
 import EmployeeProceedingFileService from '~/resources/scripts/services/EmployeeProceedingFileService';
-import ProceedingFileService from '~/resources/scripts/services/ProceedingFilleService';
 
 export default defineComponent({
   components: {

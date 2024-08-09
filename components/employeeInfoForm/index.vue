@@ -135,7 +135,7 @@
   }
   .proceeding-file-sidebar {
     width: 100% !important;
-    max-width: 70rem !important;
+    max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
