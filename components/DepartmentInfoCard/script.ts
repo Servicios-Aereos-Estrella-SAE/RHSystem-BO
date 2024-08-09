@@ -11,6 +11,7 @@ export default defineComponent({
       type: Object as PropType<DepartmentInterface>,
       required: true
     },
+    clickOnEdit: { type: Function, default: null, required: true },
   },
   setup() {
     const router = useRouter()
@@ -20,6 +21,11 @@ export default defineComponent({
     
     handlerClickOnDetail(ids: any) {
       this.router.push({ path: '/departments/' + ids, })
+    },
+    handlerClickOnEdit() {
+      if (this.clickOnEdit) {
+        this.clickOnEdit()
+      }
     }
   }
 });

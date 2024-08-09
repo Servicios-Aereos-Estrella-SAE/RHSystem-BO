@@ -11,6 +11,7 @@
     </div>
     <div class="box-tools-footer">
       <Button class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
+      <Button class="box-btn" @click="handlerClickOnEdit(department.departmentId)" label="Edit" icon="pi pi-pencil" iconPos="right"  /> 
     </div>
   </div>
 </template>
