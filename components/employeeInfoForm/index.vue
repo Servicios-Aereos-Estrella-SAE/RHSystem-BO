@@ -85,6 +85,7 @@
             @upload="onUpload" @select="onSelect" />
         </div> -->
         <div class="box-tools-footer">
+          <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
           <Button label="Shifts" severity="primary" @click="getShifts()" />
           <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" />
           <Button label="Save" severity="primary" @click="onSave()" />
@@ -92,17 +93,19 @@
       </div>
     </div>
     <div class="card flex justify-content-center">
-      <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right" class="shift-exception-sidebar" :showCloseIcon="true">
-      <employeeShiftException
-          :employee="employee"
-      />
+      <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right"
+        class="shift-exception-sidebar" :showCloseIcon="true">
+        <employeeShiftException :employee="employee" />
       </Sidebar>
-      <Sidebar v-model:visible="drawerShifts" header="Employee shifts" position="right" class="shift-sidebar" :showCloseIcon="true">
-        <employeeShift
-            :employee="employee"
-        />
-        </Sidebar>
-  </div>
+      <Sidebar v-model:visible="drawerShifts" header="Employee shifts" position="right" class="shift-sidebar"
+        :showCloseIcon="true">
+        <employeeShift :employee="employee" />
+      </Sidebar>
+      <Sidebar v-model:visible="drawerProceedingFiles" header="Employee proceeding files" position="right" class="proceeding-file-sidebar"
+        :showCloseIcon="true">
+        <employeeProceedingFile :employee="employee" />
+      </Sidebar>
+    </div>
   </div>
 </template>
 
@@ -125,6 +128,14 @@
   .shift-sidebar {
     width: 100% !important;
     max-width: 70rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+  .proceeding-file-sidebar {
+    width: 100% !important;
+    max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
