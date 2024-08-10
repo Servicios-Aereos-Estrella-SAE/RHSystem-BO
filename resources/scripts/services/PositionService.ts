@@ -55,4 +55,15 @@ export default class PositionService {
     }
     return responseRequest
   }
+
+  async getPositions (): Promise<PositionInterface[]> {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/positions`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest.status === 200 ? responseRequest._data.data.positions : []
+  }
 }

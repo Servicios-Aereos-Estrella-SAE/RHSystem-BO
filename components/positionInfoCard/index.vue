@@ -5,7 +5,8 @@
         </div>
 
         <div class="box-tools-footer">
-            <Button icon="pi pi-pencil" @click="handlerClickOnDetail(position.position.positionId)" />
+            <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+            <Button icon="pi pi-eye" class="box-btn" @click="handlerClickOnDetail(position.position.positionId)"/>
         </div>
     </div>
 </template>

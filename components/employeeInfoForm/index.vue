@@ -73,17 +73,6 @@
           <label for="employeeLastName">Employee NSS</label>
           <InputText v-model="employee.person.personImssNss" placeholder="Enter employee NSS" />
         </div>
-        <!-- <div class="input-box">
-          <label for="companyId">Company</label>
-          <Dropdown v-model="employee.companyId" :options="companies" optionLabel="companyName" optionValue="companyId"
-            placeholder="Select a Company" filter class="w-full md:w-14rem" :invalid="submitted && !employee.companyId" />
-          <small class="p-error" v-if="submitted && !employee.companyId">Company is required.</small>
-        </div> -->
-        <!-- <div class="input-box">
-          <label for="employeePhoto">Employee Photo</label>
-          <FileUpload name="photo" url="your-upload-url" accept="image/*" maxFileSize="1000000"
-            @upload="onUpload" @select="onSelect" />
-        </div> -->
         <div class="box-tools-footer">
           <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
           <Button label="Shifts" severity="primary" @click="getShifts()" />
