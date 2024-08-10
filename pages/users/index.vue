@@ -12,7 +12,7 @@
         <div class="box head-page">
           <div class="input-box">
             <label for="search">
-              Buscar
+              Search
             </label>
             <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchUser"
               @keyup.delete="handlerSearchUser" />
