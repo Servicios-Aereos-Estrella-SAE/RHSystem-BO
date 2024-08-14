@@ -15,7 +15,8 @@ export default defineComponent({
   computed: {
     hireDate() {
       if (this.pilot && this.pilot.pilotHireDate) {
-        return DateTime.fromISO(this.pilot.pilotHireDate.toString()).toFormat('DD')
+        // return DateTime.fromISO(this.pilot.pilotHireDate.toString()).toFormat('DD')
+        return DateTime.fromISO(this.pilot.pilotHireDate.toString()).toFormat('LLL dd, yyyy')
       }
       return ''
     }

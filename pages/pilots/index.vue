@@ -12,6 +12,13 @@
         <div class="shift-wrapper">
           <div class="box head-page">
             <div class="input-box">
+              <label for="search">
+                Search
+              </label>
+              <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPilot"
+                @keyup.delete="handlerSearchPilot" />
+            </div>
+            <div class="input-box">
               <br />
               <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
             </div>

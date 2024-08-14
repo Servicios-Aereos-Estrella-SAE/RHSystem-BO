@@ -9,6 +9,7 @@ import PositionService from '~/resources/scripts/services/PositionService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PeopleInterface } from '~/resources/scripts/interfaces/PeopleInterface'
+import PersonService from '~/resources/scripts/services/PersonService';
 
 export default defineComponent({
   components: {
@@ -38,7 +39,9 @@ export default defineComponent({
     isEmailInvalid: false,
     drawerShiftExceptions: false,
     drawerShifts: false,
-    drawerProceedingFiles: false
+    drawerProceedingFiles: false,
+    isValidCURP: true,
+    isValidRFC: true,
   }),
   computed: {
   },
@@ -72,12 +75,35 @@ export default defineComponent({
     async onSave() {
       this.isEmailInvalid = false
       this.submitted = true
+      this.isValidCURP = true
+      this.isValidRFC = true
       const employeeService = new EmployeeService()
+      const personService = new PersonService()
       if (!employeeService.validateEmployeeInfo(this.employee)) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
+            life: 5000,
+        })
+        return
+      }
+      if (this.employee.person?.personCurp && !personService.isValidCURP(this.employee.person?.personCurp)) {
+        this.isValidCURP = false
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Personal identification is not valid',
+            life: 5000,
+        })
+        return
+      }
+      if (this.employee.person?.personRfc && !personService.isValidRFC(this.employee.person?.personRfc)) {
+        this.isValidRFC = false
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'RFC is not valid',
             life: 5000,
         })
         return

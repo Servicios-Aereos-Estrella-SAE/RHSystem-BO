@@ -15,6 +15,9 @@
     </div>
     <div class="line">
     </div>
+    <div class="hire-date">
+      Hire Date
+    </div>
     <div class="date">
      {{ hireDate }}
     </div>

@@ -6,8 +6,8 @@
     </h4>
     <div v-if="isReady" class="user-form">
       <div class="form-container">
-        <div v-if="pilot && pilot.pilotPhoto" class="input-box">
-          <div class="p-d-flex p-ai-center p-mb-2 image-pilot">
+        <div class="input-box">
+          <div v-if="pilot && pilot.pilotPhoto" class="p-d-flex p-ai-center p-mb-2 image-pilot">
             <img role="presentation"
               class="p-fileupload-file-thumbnail" width="50" :src="pilot.pilotPhoto" />
           </div>

@@ -1,5 +1,4 @@
 import type { PilotInterface } from "../interfaces/PilotInterface"
-import type { PeopleInterface } from "../interfaces/PeopleInterface"
 
 export default class PilotService {
   protected API_PATH: string
@@ -9,10 +8,11 @@ export default class PilotService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
-  async getFilteredList (page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/pilots`, {
       query: {
+        search: searchText,
         page,
         limit
       },

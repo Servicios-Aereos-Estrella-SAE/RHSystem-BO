@@ -149,12 +149,6 @@ export default defineComponent({
           personResponse = await personService.update(this.pilot.person)
         }
         if (personResponse.status === 201) {
-          this.$toast.add({
-            severity: 'success',
-            summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
-            detail: personResponse._data.message,
-              life: 5000,
-          })
           this.pilot.personId = personResponse._data.data.person.personId
           this.pilot.person = {
             ...this.pilot.person,

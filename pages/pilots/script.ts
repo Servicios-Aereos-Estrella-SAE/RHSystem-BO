@@ -28,7 +28,7 @@ export default defineComponent({
         async handlerSearchPilot() {
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
-            const response = await new PilotService().getFilteredList(this.currentPage, this.rowsPerPage);
+            const response = await new PilotService().getFilteredList(this.search, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.pilots.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
@@ -63,6 +63,7 @@ export default defineComponent({
             const newPilot: PilotInterface = {
                 pilotId: null,
                 pilotPhoto: null,
+                pilotHireDate: null,
                 personId: 0,
                 person: person,
                 pilotCreatedAt: new Date(),

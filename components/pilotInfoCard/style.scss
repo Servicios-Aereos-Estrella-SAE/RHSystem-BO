@@ -51,6 +51,21 @@
       font-size: 0.7rem;
     }
   }
+  .hire-date {
+    text-align: left;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-wrap: pretty;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    padding-top: 0.1rem;
+
+    @media screen and (max-width: $ipad) {
+      font-size: 0.7rem;
+    }
+  }
   .date {
     text-align: left;
     font-weight: 500;
@@ -60,7 +75,7 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-    padding-top: 2rem;
+    padding-top: .3rem;
 
     @media screen and (max-width: $ipad) {
       font-size: 0.7rem;
