@@ -25,17 +25,12 @@
                     <small class="p-error" v-if="submitted && !aircraftClass.aircraftClassLongDescription">Long
                         description is required.</small>
                 </div>
-              
-                    <!-- <InputText id="aircraftClassBanner" v-model="aircraftClass.aircraftClassBanner"
-                        :invalid="submitted && !aircraftClass.aircraftClassBanner" /> -->
-           <!-- Banner Image Upload -->
-           <div class="input-box">
+                <div class="input-box">
                     <label for="aircraftClassBanner">Banner</label>
                     <input type="file" id="aircraftClassBanner" @change="onFileChange" />
                     <small class="p-error" v-if="submitted && !aircraftClass.aircraftClassBanner">Banner is required.</small>
                 </div>
-
-                <!-- Display banner if already uploaded -->
+                
                 <div v-if="photoForm" class="input-box">
                     <img :src="photoForm" alt="Banner Preview" class="banner-preview" />
                 </div>
@@ -68,12 +63,12 @@ select {
 }
 
 .banner-preview {
-  max-width: 100%; /* Se asegura de que la imagen no sea más ancha que su contenedor */
-  max-height: 200px; /* Ajusta la altura máxima a 200px */
-  height: auto; /* Mantiene la proporción de la imagen */
-  width: auto; /* Mantiene la proporción de la imagen */
-  display: block; /* Hace que la imagen se comporte como un bloque, evitando problemas con la alineación */
-  margin: 0 auto; /* Centra la imagen horizontalmente dentro del contenedor */
+  max-width: 100%; 
+  max-height: 200px; 
+  height: auto; 
+  width: auto; 
+  display: block;
+  margin: 0 auto; 
 }
 
 </style>

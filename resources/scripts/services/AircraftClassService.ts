@@ -97,5 +97,4 @@ async update(aircraftClass: AircraftClassInterface) {
 
   return responseRequest;
 }
-
 }
