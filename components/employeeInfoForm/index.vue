@@ -64,10 +64,12 @@
         <div class="input-box">
           <label for="employeeLastName">Personal identification code</label>
           <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP" />
+          <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal identification is not valid.</small>
         </div>
         <div class="input-box">
           <label for="employeeLastName">Employee RFC</label>
           <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC" />
+          <small class="p-error" v-if="submitted && employee.person.personRfc && !isValidRFC">RFC is not valid.</small>
         </div>
         <div class="input-box">
           <label for="employeeLastName">Employee NSS</label>
