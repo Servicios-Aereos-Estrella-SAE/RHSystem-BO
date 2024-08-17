@@ -1,0 +1,29 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.flight-attendant-info-form {
+  margin-top: 2.25rem;
+  position: relative;
+
+  .image-flight-attendant {
+    height: 10rem;
+    width: 12rem;
+    padding: 1rem;
+    img{
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    grid-auto-flow: dense;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
+    margin-top: 0.5rem;
+    button {
+      width: 100%;
+    }
+  }
+}

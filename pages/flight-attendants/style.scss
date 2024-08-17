@@ -1,6 +1,6 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
-.pilots-page {
+.flight-attendants-page {
 
     h2 {
         font-size: 1rem;
@@ -9,7 +9,7 @@
         margin-bottom: 2rem;
     }
 
-    .pilot-wrapper {
+    .flight-attendant-wrapper {
         min-height: 100dvh;
         box-sizing: border-box;
 
@@ -49,7 +49,7 @@
             }
         }
         
-        .pilot-card-wrapper {
+        .flight-attendant-card-wrapper {
         box-sizing: border-box;
         display: grid;
         grid-auto-flow: dense;

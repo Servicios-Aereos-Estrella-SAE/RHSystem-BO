@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface'
-import PilotService from '~/resources/scripts/services/PilotService'
+import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface'
+import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
@@ -15,9 +15,9 @@ export default defineComponent({
     Toast,
     ToastService,
   },
-  name: 'pilotInfoForm',
+  name: 'flightAttendantInfoForm',
   props: {
-    pilot: { type: Object as PropType<PilotInterface>, required: true },
+    flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
@@ -30,10 +30,10 @@ export default defineComponent({
         { label: 'Female', value: 'Mujer' },
         { label: 'Other', value: 'Otro' }
     ],
-    currenPilot: null as PilotInterface | null,
+    currenFlightAttendant: null as FlightAttendantInterface | null,
     passwordConfirm: '',
     changePassword: false,
-    isNewPilot: false,
+    isNewFlightAttendant: false,
     isReady: false,
     drawerShiftExceptions: false,
     drawerShifts: false,
@@ -49,8 +49,8 @@ export default defineComponent({
   },
   async mounted() {
     this.isReady = false
-    this.isNewPilot = !this.pilot.pilotId ? true : false
-    this.currentDate = `${this.pilot.pilotHireDate}`
+    this.isNewFlightAttendant = !this.flightAttendant.flightAttendantId ? true : false
+    this.currentDate = `${this.flightAttendant.flightAttendantHireDate}`
     await this.formatDate('hireDate')
     await this.formatDate('birthday')
     this.dateWasChange = false
@@ -58,19 +58,19 @@ export default defineComponent({
   },
   methods: {
     onUpload(event: any) {
-      this.pilot.pilotPhoto = event.files[0];
+      this.flightAttendant.flightAttendantPhoto = event.files[0];
     },
     onSelect(event: any) {
-      this.pilot.pilotPhoto = event.files[0];
+      this.flightAttendant.flightAttendantPhoto = event.files[0];
     },
     async onSave() {
       this.submitted = true
       this.isValidPhone = true
       this.isValidCURP = true
       this.isValidRFC = true
-      const pilotService = new PilotService()
+      const flightAttendantService = new FlightAttendantService()
       const personService = new PersonService()
-      if (!pilotService.validatePilotInfo(this.pilot)) {
+      if (!flightAttendantService.validateFlightAttendantInfo(this.flightAttendant)) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -79,7 +79,7 @@ export default defineComponent({
         })
         return
       }
-      if (this.pilot.person?.personPhone && !/^\d{10}$/.test(this.pilot.person.personPhone)) {
+      if (this.flightAttendant.person?.personPhone && !/^\d{10}$/.test(this.flightAttendant.person.personPhone)) {
         this.isValidPhone = false
         this.$toast.add({
           severity: 'warn',
@@ -89,7 +89,7 @@ export default defineComponent({
         })
         return
       }
-      if (this.pilot.person?.personCurp && !personService.isValidCURP(this.pilot.person?.personCurp)) {
+      if (this.flightAttendant.person?.personCurp && !personService.isValidCURP(this.flightAttendant.person?.personCurp)) {
         this.isValidCURP = false
         this.$toast.add({
           severity: 'warn',
@@ -99,7 +99,7 @@ export default defineComponent({
         })
         return
       }
-      if (this.pilot.person?.personRfc && !personService.isValidRFC(this.pilot.person?.personRfc)) {
+      if (this.flightAttendant.person?.personRfc && !personService.isValidRFC(this.flightAttendant.person?.personRfc)) {
         this.isValidRFC = false
         this.$toast.add({
           severity: 'warn',
@@ -134,61 +134,61 @@ export default defineComponent({
           }
         }
       }
-      const pilotHireDateTemp = this.pilot.pilotHireDate
+      const flightAttendantHireDateTemp = this.flightAttendant.flightAttendantHireDate
       if (!this.dateWasChange) {
-        this.pilot.pilotHireDate = this.currentDate
+        this.flightAttendant.flightAttendantHireDate = this.currentDate
       } else {
-        if (this.pilot.pilotHireDate) {
-          this.pilot.pilotHireDate = this.getDate(this.pilot.pilotHireDate.toString())
+        if (this.flightAttendant.flightAttendantHireDate) {
+          this.flightAttendant.flightAttendantHireDate = this.getDate(this.flightAttendant.flightAttendantHireDate.toString())
         }
       }
       let personResponse = null
-      if (this.pilot && this.pilot.person) {
-        if (!this.pilot.person.personId) {
-          personResponse = await personService.store(this.pilot.person)
+      if (this.flightAttendant && this.flightAttendant.person) {
+        if (!this.flightAttendant.person.personId) {
+          personResponse = await personService.store(this.flightAttendant.person)
         } else {
-          personResponse = await personService.update(this.pilot.person)
+          personResponse = await personService.update(this.flightAttendant.person)
         }
         if (personResponse.status === 201) {
-          this.pilot.personId = personResponse._data.data.person.personId
-          this.pilot.person = {
-            ...this.pilot.person,
+          this.flightAttendant.personId = personResponse._data.data.person.personId
+          this.flightAttendant.person = {
+            ...this.flightAttendant.person,
             personId: personResponse._data.data.person.personId
           } as PeopleInterface
         } else {
           const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+            summary: `Flight attendant ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
             detail: msgError,
               life: 5000,
           })
           return
         }
-        let pilotResponse = null
+        let flightAttendantResponse = null
         const image = this.files.length > 0 ? this.files[0] : null
-        if (!this.pilot.pilotId) {
-          pilotResponse = await pilotService.store(this.pilot, image)
+        if (!this.flightAttendant.flightAttendantId) {
+          flightAttendantResponse = await flightAttendantService.store(this.flightAttendant, image)
         } else {
-          pilotResponse = await pilotService.update(this.pilot, image)
+          flightAttendantResponse = await flightAttendantService.update(this.flightAttendant, image)
         }
-        if (pilotResponse.status === 201 || pilotResponse.status === 200) {
+        if (flightAttendantResponse.status === 201 || flightAttendantResponse.status === 200) {
           this.$toast.add({
             severity: 'success',
-            summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
-            detail: pilotResponse._data.message,
+            summary: `Flight attendant ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+            detail: flightAttendantResponse._data.message,
               life: 5000,
           })
-          pilotResponse = await pilotService.show(pilotResponse._data.data.pilot.pilotId)
-          if (pilotResponse?.status === 200) {
-            const pilot = pilotResponse._data.data.pilot
-            this.$emit('save', pilot as PilotInterface)
+          flightAttendantResponse = await flightAttendantService.show(flightAttendantResponse._data.data.flightAttendant.flightAttendantId)
+          if (flightAttendantResponse?.status === 200) {
+            const flightAttendant = flightAttendantResponse._data.data.flightAttendant
+            this.$emit('save', flightAttendant as FlightAttendantInterface)
           }
         } else {
-          const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
+          const msgError = flightAttendantResponse._data.error ? flightAttendantResponse._data.error : flightAttendantResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+            summary: `Flight attendant ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
             detail: msgError,
               life: 5000,
           })
@@ -196,12 +196,12 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+          summary: `Flight attendant ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
           detail: 'Person not found',
             life: 5000,
         })
       }
-      this.pilot.pilotHireDate = pilotHireDateTemp
+      this.flightAttendant.flightAttendantHireDate = flightAttendantHireDateTemp
     },
     convertToDateTime(birthday: string | Date | null): Date | null {
       if (birthday === '' || birthday === null || birthday === undefined) {
@@ -257,10 +257,11 @@ export default defineComponent({
       return day
     },
     formatDate(propertyName: string) {
-      let currentDate = propertyName === 'birthday' ? this.pilot.person?.personBirthday : this.pilot.pilotHireDate
-      if (this.pilot && currentDate) {
+      let currentDate = propertyName === 'birthday' ? this.flightAttendant.person?.personBirthday : this.flightAttendant.flightAttendantHireDate
+      if (this.flightAttendant && currentDate) {
         let newDate = null
         currentDate = currentDate.toString()
+        // const currentDate = this.flightAttendant.flightAttendantHireDate.toString()
         const date = DateTime.local(this.dateYear(currentDate), this.dateMonth(currentDate), this.dateDay(currentDate), 0)
         const day = date.toFormat('yyyy-MM-dd')
         if (date.isValid) {
@@ -274,10 +275,10 @@ export default defineComponent({
         }
         if (newDate) {
           if (propertyName === 'hireDate') {
-            this.pilot.pilotHireDate = newDate
+            this.flightAttendant.flightAttendantHireDate = newDate
           } else {
-            if (this.pilot.person) {
-              this.pilot.person.personBirthday = newDate
+            if (this.flightAttendant.person) {
+              this.flightAttendant.person.personBirthday = newDate
             }
           }
         }

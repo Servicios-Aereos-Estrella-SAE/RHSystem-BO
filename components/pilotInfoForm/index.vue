@@ -46,7 +46,7 @@
         </div>
         <div class="input-box">
           <label for="pilotHireDate">Birthday</label>
-          <Calendar v-model="pilot.person.personBirthday" dateFormat="yy-mm-dd" placeholder="Select birthday" />
+          <Calendar v-model="pilot.person.personBirthday" dateFormat="yy-mm-dd" placeholder="Select birthday" @update:model-value="formatDate('birthday')"/>
         </div>
         <div class="input-box">
           <label for="pilotLastName">Phone</label>
@@ -74,7 +74,7 @@
         </div>
         <div class="input-box">
           <label for="pilotHireDate">Hire Date</label>
-          <Calendar v-model="pilot.pilotHireDate" dateFormat="yy-mm-dd" placeholder="Select Hire Date" @update:model-value="formatDate"/>
+          <Calendar v-model="pilot.pilotHireDate" dateFormat="yy-mm-dd" placeholder="Select Hire Date" @update:model-value="formatDate('hireDate')"/>
           <small class="p-error" v-if="submitted && !pilot.pilotHireDate">Hire Date is required.</small>
         </div>
         <div class="box-tools-footer">

@@ -1,22 +1,22 @@
 <template>
   <div>
     <Toast />
-    <div class="pilots-page">
+    <div class="flight-attendants-page">
 
       <Head>
         <Title>
-          Pilots
+          Flight Attendants
         </Title>
       </Head>
       <NuxtLayout name="backoffice">
-        <div class="pilot-wrapper">
+        <div class="flight-attendant-wrapper">
           <div class="box head-page">
             <div class="input-box">
               <label for="search">
                 Search
               </label>
-              <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPilot"
-                @keyup.delete="handlerSearchPilot" />
+              <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchFlightAttendant"
+                @keyup.delete="handlerSearchFlightAttendant" />
             </div>
             <div class="input-box">
               <br />
@@ -25,12 +25,12 @@
           </div>
           <div>
             <h2>
-              Pilots
+              Flight Attendants
             </h2>
-            <div class="pilot-card-wrapper">
-              <div v-for="(pilot, index) in filteredPilots" :key="`pilot-${pilot.pilotId}-${index}`">
-                <PilotInfoCard :click-on-photo="() => { onPhoto(pilot) }" :pilot="pilot"
-                  :click-on-edit="() => { onEdit(pilot) }" :click-on-delete="() => { onDelete(pilot) }" />
+            <div class="flight-attendant-card-wrapper">
+              <div v-for="(flightAttendant, index) in filteredFlightAttendants" :key="`flight-attendant-${flightAttendant.flightAttendantId}-${index}`">
+                <FlightAttendantInfoCard :click-on-photo="() => { onPhoto(flightAttendant) }" :flightAttendant="flightAttendant"
+                  :click-on-edit="() => { onEdit(flightAttendant) }" :click-on-delete="() => { onDelete(flightAttendant) }" />
               </div>
             </div>
             <div></div>
@@ -38,21 +38,21 @@
               @page="onPageChange" />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
-              <Sidebar v-model:visible="drawerPilotForm" header="Pilot form" position="right"
-                class="pilot-form-sidebar" :showCloseIcon="true">
-                <pilotInfoForm :pilot="pilot" @save="onSave" />
+              <Sidebar v-model:visible="drawerFlightAttendantForm" header="Flight attendant form" position="right"
+                class="flight-attendant-form-sidebar" :showCloseIcon="true">
+                <flightAttendantInfoForm :flightAttendant="flightAttendant" @save="onSave" />
               </Sidebar>
             </div>
           </div>
         </div>
-        <Dialog v-model:visible="drawerPilotDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog v-model:visible="drawerFlightAttendantDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="pilot"> Are you sure you want to delete
+            <span v-if="flightAttendant"> Are you sure you want to delete
               ?</span>
           </div>
           <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="drawerPilotDelete = false" />
+            <Button label="No" icon="pi pi-times" text @click="drawerFlightAttendantDelete = false" />
             <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
           </template>
         </Dialog>
@@ -72,7 +72,7 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
  
-  .pilot-form-sidebar {
+  .flight-attendant-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
 
