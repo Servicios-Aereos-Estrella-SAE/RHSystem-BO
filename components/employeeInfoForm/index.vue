@@ -64,27 +64,19 @@
         <div class="input-box">
           <label for="employeeLastName">Personal identification code</label>
           <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP" />
+          <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal identification is not valid.</small>
         </div>
         <div class="input-box">
           <label for="employeeLastName">Employee RFC</label>
           <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC" />
+          <small class="p-error" v-if="submitted && employee.person.personRfc && !isValidRFC">RFC is not valid.</small>
         </div>
         <div class="input-box">
           <label for="employeeLastName">Employee NSS</label>
           <InputText v-model="employee.person.personImssNss" placeholder="Enter employee NSS" />
         </div>
-        <!-- <div class="input-box">
-          <label for="companyId">Company</label>
-          <Dropdown v-model="employee.companyId" :options="companies" optionLabel="companyName" optionValue="companyId"
-            placeholder="Select a Company" filter class="w-full md:w-14rem" :invalid="submitted && !employee.companyId" />
-          <small class="p-error" v-if="submitted && !employee.companyId">Company is required.</small>
-        </div> -->
-        <!-- <div class="input-box">
-          <label for="employeePhoto">Employee Photo</label>
-          <FileUpload name="photo" url="your-upload-url" accept="image/*" maxFileSize="1000000"
-            @upload="onUpload" @select="onSelect" />
-        </div> -->
         <div class="box-tools-footer">
+          <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
           <Button label="Shifts" severity="primary" @click="getShifts()" />
           <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" />
           <Button label="Save" severity="primary" @click="onSave()" />
@@ -92,17 +84,19 @@
       </div>
     </div>
     <div class="card flex justify-content-center">
-      <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right" class="shift-exception-sidebar" :showCloseIcon="true">
-      <employeeShiftException
-          :employee="employee"
-      />
+      <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right"
+        class="shift-exception-sidebar" :showCloseIcon="true">
+        <employeeShiftException :employee="employee" />
       </Sidebar>
-      <Sidebar v-model:visible="drawerShifts" header="Employee shifts" position="right" class="shift-sidebar" :showCloseIcon="true">
-        <employeeShift
-            :employee="employee"
-        />
-        </Sidebar>
-  </div>
+      <Sidebar v-model:visible="drawerShifts" header="Employee shifts" position="right" class="shift-sidebar"
+        :showCloseIcon="true">
+        <employeeShift :employee="employee" />
+      </Sidebar>
+      <Sidebar v-model:visible="drawerProceedingFiles" header="Employee proceeding files" position="right" class="proceeding-file-sidebar"
+        :showCloseIcon="true">
+        <employeeProceedingFile :employee="employee" />
+      </Sidebar>
+    </div>
   </div>
 </template>
 
@@ -125,6 +119,14 @@
   .shift-sidebar {
     width: 100% !important;
     max-width: 70rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+  .proceeding-file-sidebar {
+    width: 100% !important;
+    max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

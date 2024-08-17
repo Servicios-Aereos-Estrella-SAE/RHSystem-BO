@@ -1,5 +1,8 @@
 <template>
     <div class="box vacation-info-card">
+        <div class="image-aircraft">
+            <img alt="aircraft header" src="https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcRSL-ne1x_FTmiVWllIQsOWHkX3e7gvZUA44ls51TFg-Bnccakwq3mAbNkqGuXABPuUzmJl8WThAxatzD81K6U" />
+        </div>
         <div class="vacation-years">
             {{ `Years of Service: ${vacation.vacationSettingYearsOfService}` }}
         </div>

@@ -1,6 +1,6 @@
 interface DepartmentInterface {
-  departmentId: number,
-  departmentSyncId: string,
+  departmentId: number | null,
+  departmentSyncId: string | null,
   departmentCode: string,
   departmentName: string,
   departmentAlias: string | null,

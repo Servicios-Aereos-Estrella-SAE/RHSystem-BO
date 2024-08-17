@@ -1,3 +1,4 @@
+import { tr } from "date-fns/locale";
 import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
 
 export default class DepartmentService {
@@ -108,6 +109,95 @@ export default class DepartmentService {
         onRequestError ({ response }) { responseRequest = response }
       })
     } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async update(data: DepartmentInterface) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments/${data.departmentId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+  async store(data: DepartmentInterface) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+  validate(data: DepartmentInterface) {
+    return data.departmentName && data.departmentCode
+  }
+
+  async showOnSave (departmentId: number) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+    console.log('responseRequest', responseRequest)
+    const department = responseRequest.status === 200 ? responseRequest._data.data.department : {}
+
+    return {
+      status: responseRequest.status,
+      _data: {
+        data: {
+          department: department
+        }
+      }
+    }
+  }
+
+  async assignDepartment(positionId: number, departmentId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/departments-positions`, {
+        method: 'POST',
+        body: JSON.stringify({ positionId, departmentId }),
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) {
+          console.log('response error', response)
+          responseRequest = response
+        }
+      })
+      console.log('responseRequest', responseRequest) 
+      return responseRequest
+    } catch (error: any) {
+      responseRequest = error.data
+    }
+    return responseRequest
+  }
+
+  async unAssignDepartment(positionId: number, departmentId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/departments-positions/${departmentId}/${positionId}`, {
+        method: 'DELETE',
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) {
+          console.log('response error', response)
+          responseRequest = response
+        }
+      })
+      console.log('responseRequest', responseRequest) 
+      return responseRequest
+    } catch (error: any) {
+      responseRequest = error.data
     }
     return responseRequest
   }
