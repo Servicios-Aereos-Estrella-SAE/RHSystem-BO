@@ -22,10 +22,14 @@
                         <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPosition"
                             @keyup.delete="handlerSearchPosition" />
                     </div>
-
+                    <div></div>
                     <div class="input-box">
-                        <br />
+                        <Button class="btn-add mr-2" label="Assign department position" icon="pi pi-plus" severity="primary" @click="assignPositionDepartment" />
+                    </div>
+                    <div class="input-box">
                         <Button class="btn-add mr-2" label="Assign Shift to Department" icon="pi pi-plus" severity="primary" @click="asignShift" />
+                    </div>
+                    <div class="input-box">
                         <Button class="btn-add mr-2" @click="syncPositions" style="width: 55px !important;">
                         <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
                             <path
@@ -52,19 +56,45 @@
                     </h3>
                     <div class="department-card-wrapper">
                         <div v-for="(position, index) in positions" :key="`position-${position.positionId}-${index}`">
-                            <positionInfoCard :department="department" :position="position" />
+                            <positionInfoCard :department="department" :position="position" :click-on-delete="() => { onDeletePosition(position)}" />
                         </div>
                     </div>
                        <!-- Form Shift Apply To Department -->
-                <div class="card flex justify-content-center">
-                    <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
-                        class="shift-form-sidebar" :showCloseIcon="true">
-                        <assignShiftToDepartmentInfoForm :department="department"  @save="onSave"
-                        />
-                    </Sidebar>
+                    <div class="card flex justify-content-center">
+                        <Sidebar v-model:visible="drawerShiftForm" header="Assign Shift to Department" position="right"
+                            class="shift-form-sidebar" :showCloseIcon="true">
+                            <assignShiftToDepartmentInfoForm :department="department"  @save="onSave"
+                            />
+                        </Sidebar>
+                    </div>
+                    <div class="card flex justify-content-center">
+                        <Sidebar v-model:visible="drawerPositionForm" header="Assign Shift to Department" position="right"
+                            class="shift-form-sidebar" :showCloseIcon="true">
+                            <DepartmentPositionInfoForm :department="department"  @save="onSavePosition"
+                            />
+                        </Sidebar>
+                    </div>
+                    <Dialog v-model:visible="drawerPositionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+                        <div class="confirmation-content">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                            <span v-if="position"> Are you sure you want to delete
+                            ?</span>
+                        </div>
+                        <template #footer>
+                            <Button label="No" icon="pi pi-times" text @click="drawerPositionDelete = false" />
+                            <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+                        </template>
+                    </Dialog>
+                    <Dialog v-model:visible="alertDeletePosition" :style="{width: '450px'}" header="Delete Department Position" :modal="true">
+                        <div class="confirmation-content">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                            <span class="ml-4"> {{ messagePosition }}</span>
+                        </div>
+                        <template #footer>
+                            <Button label="OK" text @click="alertDeletePosition = false" />
+                        </template>
+                    </Dialog>
                 </div>
-                </div>
-
             </div>
         </NuxtLayout>
     </div>

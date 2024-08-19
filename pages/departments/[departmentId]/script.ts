@@ -6,6 +6,7 @@ import type { DepartmentInterface } from '~/resources/scripts/interfaces/Departm
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface';
 import { useMyGeneralStore } from '~/store/general';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
+import DepartmentService from '~/resources/scripts/services/DepartmentService';
 
 export default defineComponent({
   name: 'DepartmentDetail',
@@ -14,11 +15,14 @@ export default defineComponent({
     const config = useRuntimeConfig();
     const department = ref<DepartmentInterface | null>(null);
     const positions = ref<PositionInterface[] | null>(null);
+    const position = ref<PositionInterface | null>(null);
     const dataShifts = ref<ShiftInterface[] | null>(null);
+    const drawerPositionDelete = ref<boolean>(false);
     const search = ref<string>('');
     const drawerShiftForm = ref<boolean>(false); 
-    const nuxtApp = useNuxtApp(); 
-    const $toast = nuxtApp.$toast as { add: (arg0: { severity: string; summary: string; detail: string; life: number }) => void };
+    const drawerPositionForm = ref<boolean>(false);
+    const alertDeletePosition = ref<boolean>(false);
+    const messagePosition = ref<string>('');
     
     const fetchPositions = async (departmentId: string, positionName: string | null = null) => {
       const myGeneralStore = useMyGeneralStore();
@@ -67,12 +71,48 @@ export default defineComponent({
     const handleSaveSuccess = () => {
       drawerShiftForm.value = false; 
     };
+    const assignPositionDepartment = () => {
+      drawerPositionForm.value = true;
+    };
     const onSave = () => {
       const departmentId = route.params.departmentId
       if (departmentId) {
         fetchShiftDepartment(departmentId);
       }
     }
+
+    const onSavePosition = async (positionId: number) => {
+      const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
+      if (departmentId) {
+        fetchPositions(departmentId, search.value);
+        drawerPositionForm.value = false;
+      }
+    }
+
+    const onDeletePosition = (_position: PositionInterface) => {
+      console.log('onDeletePosition', position);
+      position.value = { ..._position };
+      drawerPositionDelete.value = true;
+    }
+
+    const confirmDelete = async () => {
+       if (position.value) {
+        drawerPositionDelete.value = false;
+        const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
+        const departmentService = new DepartmentService();
+        const departmentPositionResponse = await departmentService.unAssignDepartment(position.value.positionId, parseInt(departmentId ?? '0'));
+        if (departmentPositionResponse.status === 201) {
+          const index = positions.value?.findIndex((_position: PositionInterface) => _position.positionId === position.value?.positionId);
+          if (index !== -1) {
+            await fetchPositions(departmentId ?? '', search.value);
+          }
+        } else {
+          console.error('Failed to delete position:', departmentPositionResponse);
+          alertDeletePosition.value = true;
+          messagePosition.value = departmentPositionResponse.message;
+        }
+      }
+    };
 
     const syncPositions = async () => {
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
@@ -106,7 +146,6 @@ export default defineComponent({
         } else {
           throw new Error(`Failed to sync positions: ${syncResponse1.statusText}`);
         }
-     
       } catch (error) {
         console.error("error.message");
       } finally {
@@ -142,12 +181,21 @@ export default defineComponent({
       positions,
       dataShifts,
       search,
+      position,
       drawerShiftForm,
+      drawerPositionForm,
       asignShift,
+      assignPositionDepartment,
       handlerSearchPosition,
+      onDeletePosition,
       handleSaveSuccess,
+      drawerPositionDelete,
       onSave,
       syncPositions,
+      onSavePosition,
+      confirmDelete,
+      alertDeletePosition,
+      messagePosition,
     };
   }
 });

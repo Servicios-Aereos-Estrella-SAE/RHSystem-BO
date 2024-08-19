@@ -1,9 +1,9 @@
 export interface AircraftPropertyInterface {
-    aircraftPropertiesHourlyRate: number;
-    aircraftPropertiesLandingCostBase: number;
-    aircraftPropertiesLandingCostInternational: number;
-    aircraftPropertiesOvernightStayLocal: number;
-    aircraftPropertiesFuelSurcharge: number;
+    aircraftPropertiesHourlyRate: any;
+    aircraftPropertiesLandingCostBase: any;
+    aircraftPropertiesLandingCostInternational: any;
+    aircraftPropertiesOvernightStayLocal: any;
+    aircraftPropertiesFuelSurcharge: any;
     aircraftPropertiesDescription: string;
     aircraftPropertyBanner: any;
     aircraftPropertiesId: number | null;

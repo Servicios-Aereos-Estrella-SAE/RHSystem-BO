@@ -36,16 +36,37 @@
     background-color: transparentize($color: $success, $amount: 0.95);
   }
 
+  .box-btn {
+    padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: white;
+    color: #303e67;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e3ebf6;
+    text-decoration: none;
+  }
+  .btn-red{
+    color: red;
+  }
+
   .box-tools-footer {
     box-sizing: border-box;
     display: flex;
     justify-content: center;
-    grid-template-columns: repeat(2, 1fr);
     gap: 0.5rem;
     margin-top: 0.5rem;
 
     button {
       width: 100%;
     }
+  
   }
 }

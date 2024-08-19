@@ -6,6 +6,7 @@ export default defineComponent({
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: true },
     position: { type: Object as PropType<PositionInterface>, required: true },
+    clickOnDelete: { type: Function, default: null, required: true },
   },setup() {
     const router = useRouter()
     return { router }
@@ -14,6 +15,11 @@ export default defineComponent({
     
     handlerClickOnDetail(ids: any) {
       this.router.push({ path: this.department.departmentId + '/position/' + ids , })
+    },
+    handlerClickOnDelete() {
+      if(this.clickOnDelete) {
+        this.clickOnDelete()
+      }
     }
   }
 

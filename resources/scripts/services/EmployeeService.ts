@@ -219,4 +219,28 @@ export default class EmployeeService {
 
     return responseRequest
   }
+
+  async getVacationsUsed(employeeId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-used`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationsCorresponding(employeeId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-corresponding`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 }

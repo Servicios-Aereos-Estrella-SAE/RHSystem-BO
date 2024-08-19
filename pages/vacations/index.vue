@@ -27,7 +27,7 @@
                         Vacations
                     </h2>
                     <div class="vacation-card-wrapper">
-                        <div v-for="(vacation, index) in filteredVacations" :key="`vacation-${vacation.id}-${index}`">
+                        <div v-for="(vacation, index) in filteredVacations" :key="`vacation-${vacation.vacationSettingId}-${index}`">
                             <vacationInfoCard :vacation="vacation" :click-on-edit="() => { onEdit(vacation) }"
                                 :click-on-delete="() => { onDelete(vacation) }" />
                         </div>
