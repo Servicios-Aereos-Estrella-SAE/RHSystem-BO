@@ -49,6 +49,8 @@ export default defineComponent({
   methods: {
     async onSave() {
       this.submitted = true;
+      this.shift.shiftActiveHours = this.shiftActiveHours + ((this.temporalActiveMinutes || 0) / 60)
+
       if (this.shift && this.shift.shiftName && this.shift.shiftDayStart && this.shift.shiftTimeStart && this.shift.shiftActiveHours && this.shift.shiftRestDays) {
         if (this.shift.shiftRestDays.includes(this.shift.shiftDayStart)) {
           this.$toast.add({
@@ -60,8 +62,6 @@ export default defineComponent({
           return;
         }
         const shiftService = new ShiftService();
-
-        this.shift.shiftActiveHours = this.shiftActiveHours + (this.temporalActiveMinutes / 60)
 
         const response = this.shift.shiftId ? await shiftService.update(this.shift) : await shiftService.create(this.shift);
         if (response.status === 200 || response.status === 201) {
