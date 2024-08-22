@@ -54,13 +54,28 @@ export default defineComponent({
         createdAt: null,
         updatedAt: null,
         deletedAt: null,
-        aircraftPropertyBanner: undefined
+        aircraftPropertyBanner: undefined,
+        aircraftPropertiesHourlyRate: 0,
+        aircraftPropertiesLandingCostBase: 0,
+        aircraftPropertiesLandingCostInternational: 0,
+        aircraftPropertiesOvernightStayLocal: 0,
+        aircraftPropertiesFuelSurcharge: 0,
+        aircraftPropertiesDescription: ""
       }
       this.aircraftProperty = newAircraftProperty
       this.drawerAircraftPropertyForm = true
     },
     onEdit(aircraftProperty: AircraftPropertyInterface) {
-      this.aircraftProperty = { ...aircraftProperty };
+      this.aircraftProperty = { ...aircraftProperty,
+        aircraftPropertiesHourlyRate: Number(aircraftProperty.aircraftPropertiesHourlyRate),
+        aircraftPropertiesLandingCostBase: Number(aircraftProperty.aircraftPropertiesLandingCostBase),
+        aircraftPropertiesLandingCostNational: Number(aircraftProperty.aircraftPropertiesLandingCostNational),
+        aircraftPropertiesLandingCostInternational: Number(aircraftProperty.aircraftPropertiesLandingCostInternational),
+        aircraftPropertiesOvernightStayLocal: Number(aircraftProperty.aircraftPropertiesOvernightStayLocal),
+        aircraftPropertiesOvernightStayInternational: Number(aircraftProperty.aircraftPropertiesOvernightStayInternational),
+        aircraftPropertiesFuelSurcharge: Number(aircraftProperty.aircraftPropertiesFuelSurcharge),
+
+       };
       this.drawerAircraftPropertyForm = true;
     },
     onDelete(aircraftProperty: AircraftPropertyInterface) {
@@ -94,7 +109,6 @@ export default defineComponent({
         }
       }
     },
-    
     onSave(aircraftProperty: AircraftPropertyInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

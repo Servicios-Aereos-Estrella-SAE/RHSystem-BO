@@ -98,24 +98,54 @@ export default class AircraftPropertyService {
   async update(aircraftProperty: AircraftPropertyInterface) {
     let responseRequest: any = null;
     const formData = new FormData();
-    console.log("ebntre aqui");
-    formData.append('aircraftPropertiesName', aircraftProperty.aircraftPropertiesName);
-    formData.append('aircraftClassId', aircraftProperty.aircraftClassId?.toString() || '');
-    formData.append('aircraftPropertiesPax', aircraftProperty.aircraftPropertiesPax.toString());
-    formData.append('aircraftPropertiesSpeed', aircraftProperty.aircraftPropertiesSpeed.toString());
-    formData.append('aircraftPropertiesMaxKg', aircraftProperty.aircraftPropertiesMaxKg.toString());
-    formData.append('aircraftPropertiesAutonomy', aircraftProperty.aircraftPropertiesAutonomy.toString());
-    formData.append('aircraftPropertiesAutonomyHours', aircraftProperty.aircraftPropertiesAutonomyHours.toString());
-    formData.append('aircraftPropertiesHourlyRate', aircraftProperty.aircraftPropertiesHourlyRate.toString());
-    formData.append('aircraftPropertiesLandingCostBase', aircraftProperty.aircraftPropertiesLandingCostBase.toString());
-    formData.append('aircraftPropertiesLandingCostNational', aircraftProperty.aircraftPropertiesLandingCostNational.toString());
-    formData.append('aircraftPropertiesLandingCostInternational', aircraftProperty.aircraftPropertiesLandingCostInternational.toString());
-    formData.append('aircraftPropertiesOvernightStayLocal', aircraftProperty.aircraftPropertiesOvernightStayLocal.toString());
-    formData.append('aircraftPropertiesOvernightStayInternational', aircraftProperty.aircraftPropertiesOvernightStayInternational.toString());
-    formData.append('aircraftPropertiesFuelSurcharge', aircraftProperty.aircraftPropertiesFuelSurcharge.toString());
-    formData.append('aircraftPropertiesDescription', aircraftProperty.aircraftPropertiesDescription.toString());
-    
-    formData.append('aircraftPropertyBanner', aircraftProperty.aircraftPropertyBanner);
+    if (aircraftProperty.aircraftPropertiesName) {
+      formData.append('aircraftPropertiesName', aircraftProperty.aircraftPropertiesName);
+    }
+    if (aircraftProperty.aircraftClassId) {
+      formData.append('aircraftClassId', aircraftProperty.aircraftClassId.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesPax !== undefined && aircraftProperty.aircraftPropertiesPax !== null) {
+      formData.append('aircraftPropertiesPax', aircraftProperty.aircraftPropertiesPax.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesSpeed !== undefined && aircraftProperty.aircraftPropertiesSpeed !== null) {
+      formData.append('aircraftPropertiesSpeed', aircraftProperty.aircraftPropertiesSpeed.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesMaxKg !== undefined && aircraftProperty.aircraftPropertiesMaxKg !== null) {
+      formData.append('aircraftPropertiesMaxKg', aircraftProperty.aircraftPropertiesMaxKg.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesAutonomy !== undefined && aircraftProperty.aircraftPropertiesAutonomy !== null) {
+      formData.append('aircraftPropertiesAutonomy', aircraftProperty.aircraftPropertiesAutonomy.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesAutonomyHours !== undefined && aircraftProperty.aircraftPropertiesAutonomyHours !== null) {
+      formData.append('aircraftPropertiesAutonomyHours', aircraftProperty.aircraftPropertiesAutonomyHours.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesHourlyRate !== undefined && aircraftProperty.aircraftPropertiesHourlyRate !== null) {
+      formData.append('aircraftPropertiesHourlyRate', aircraftProperty.aircraftPropertiesHourlyRate.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesLandingCostBase !== undefined && aircraftProperty.aircraftPropertiesLandingCostBase !== null) {
+      formData.append('aircraftPropertiesLandingCostBase', aircraftProperty.aircraftPropertiesLandingCostBase.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesLandingCostNational !== undefined && aircraftProperty.aircraftPropertiesLandingCostNational !== null) {
+      formData.append('aircraftPropertiesLandingCostNational', aircraftProperty.aircraftPropertiesLandingCostNational.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesLandingCostInternational !== undefined && aircraftProperty.aircraftPropertiesLandingCostInternational !== null) {
+      formData.append('aircraftPropertiesLandingCostInternational', aircraftProperty.aircraftPropertiesLandingCostInternational.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesOvernightStayLocal !== undefined && aircraftProperty.aircraftPropertiesOvernightStayLocal !== null) {
+      formData.append('aircraftPropertiesOvernightStayLocal', aircraftProperty.aircraftPropertiesOvernightStayLocal.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesOvernightStayInternational !== undefined && aircraftProperty.aircraftPropertiesOvernightStayInternational !== null) {
+      formData.append('aircraftPropertiesOvernightStayInternational', aircraftProperty.aircraftPropertiesOvernightStayInternational.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesFuelSurcharge !== undefined && aircraftProperty.aircraftPropertiesFuelSurcharge !== null) {
+      formData.append('aircraftPropertiesFuelSurcharge', aircraftProperty.aircraftPropertiesFuelSurcharge.toString());
+    }
+    if (aircraftProperty.aircraftPropertiesDescription) {
+      formData.append('aircraftPropertiesDescription', aircraftProperty.aircraftPropertiesDescription);
+    }
+    if (aircraftProperty.aircraftPropertyBanner) {
+      formData.append('aircraftPropertyBanner', aircraftProperty.aircraftPropertyBanner);
+    }
 
     await $fetch(`${this.API_PATH}/aircraft-properties/${aircraftProperty.aircraftPropertiesId}`, {
       method: 'PUT',
