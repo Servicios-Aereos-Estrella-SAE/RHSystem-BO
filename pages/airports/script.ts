@@ -19,7 +19,6 @@ export default defineComponent({
     }),
     async mounted() {
         await this.handlerSearchAirport()
-        
     },
     methods: {
         addNew() {
