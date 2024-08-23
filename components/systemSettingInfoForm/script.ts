@@ -28,7 +28,9 @@ export default defineComponent({
   async mounted() {
     this.isReady = false
     this.isNewSystemSetting = !this.systemSetting.systemSettingId ? true : false
-   
+    let isActive: number = 1
+    isActive = this.systemSetting.systemSettingActive ? this.systemSetting.systemSettingActive : 0
+    this.activeSwicht = isActive === 1 ? true : false
     this.isReady = true
   },
   methods: {
@@ -64,18 +66,21 @@ export default defineComponent({
         if (file) {
           const mimeType = file.type;
           const isImage = mimeType.startsWith('image/');
-          if (!isImage) {
+          const allowedFormats = ['image/png', 'image/webp', 'image/svg+xml'];
+      
+          if (!isImage || !allowedFormats.includes(mimeType)) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'Image invalid',
-              detail: 'Only select image.',
+              summary: 'Invalid Image',
+              detail: 'Only .png, .webp, and .svg images are allowed.',
               life: 5000,
-            })
-            return
+            });
+            return;
           }
         }
       }
       if (this.systemSetting) {
+        this.systemSetting.systemSettingActive = this.activeSwicht ? 1 : 0
         let systemSettingResponse = null
         const image = this.files.length > 0 ? this.files[0] : null
         if (!this.systemSetting.systemSettingId) {
@@ -98,7 +103,7 @@ export default defineComponent({
         } else {
           const msgError = systemSettingResponse._data.error ? systemSettingResponse._data.error : systemSettingResponse._data.message
           this.$toast.add({
-            severity: 'error',
+            severity: 'warn',
             summary: `System setting ${this.systemSetting.systemSettingId ? 'updated' : 'created'}`,
             detail: msgError,
               life: 5000,

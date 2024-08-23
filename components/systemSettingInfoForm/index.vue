@@ -7,9 +7,14 @@
     <div v-if="isReady" class="system-setting-form">
       <div class="form-container">
         <div class="input-box">
-          <div v-if="systemSetting && systemSetting.systemSettingPhoto" class="p-d-flex p-ai-center p-mb-2 image-system-setting">
+          <label for="userActive">
+            {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
+          <InputSwitch v-model="activeSwicht" />
+        </div>
+        <div class="input-box">
+          <div v-if="systemSetting && systemSetting.systemSettingLogo" class="p-d-flex p-ai-center p-mb-2 image-system-setting">
             <img role="presentation"
-              class="p-fileupload-file-thumbnail" width="50" :src="systemSetting.systemSettingPhoto" />
+              class="p-fileupload-file-thumbnail" width="50" :src="systemSetting.systemSettingLogo" />
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
           :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
@@ -33,6 +38,11 @@
           <label for="firstName">Trade Name</label>
           <InputText v-model="systemSetting.systemSettingTradeName" placeholder="Enter Trade Name" />
           <small class="p-error" v-if="submitted && !systemSetting.systemSettingTradeName">Trade name is required.</small>
+        </div>
+        <div class="input-box">
+          <label for="firstName">Sidebar Color</label>
+          <ColorPicker v-model="systemSetting.systemSettingSidebarColor" inputId="cp-hex" format="hex" class="mb-3 color" />
+          <small class="p-error" v-if="submitted && !systemSetting.systemSettingSidebarColor">Sidebar color is required.</small>
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />

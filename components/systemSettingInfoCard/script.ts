@@ -1,24 +1,17 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface'
+import type { SystemSettingInterface } from '~/resources/scripts/interfaces/SystemSettingInterface'
 
 export default defineComponent({
-  name: 'PilotInfoCard',
+  name: 'SystemSettingInfoCard',
   props: {
-    pilot: { type: Object as PropType<PilotInterface>, required: true },
+    systemSetting: { type: Object as PropType<SystemSettingInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null }
   },
   data: () => ({
   }),
   computed: {
-    hireDate() {
-      if (this.pilot && this.pilot.pilotHireDate) {
-        return DateTime.fromISO(this.pilot.pilotHireDate.toString()).toFormat('LLL dd, yyyy')
-      }
-      return ''
-    }
   },
   async mounted() {
   },

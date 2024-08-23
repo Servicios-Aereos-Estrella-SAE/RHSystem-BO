@@ -38,7 +38,7 @@
               @page="onPageChange" />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
-              <Sidebar v-model:visible="drawerSystemSettingForm" header="SystemSetting form" position="right"
+              <Sidebar v-model:visible="drawerSystemSettingForm" header="System Setting form" position="right"
                 class="system-setting-form-sidebar" :showCloseIcon="true">
                 <systemSettingInfoForm :systemSetting="systemSetting" @save="onSave" />
               </Sidebar>
@@ -72,7 +72,7 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
  
-  .systemSetting-form-sidebar {
+  .system-setting-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
 
