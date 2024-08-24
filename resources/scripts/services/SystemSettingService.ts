@@ -108,6 +108,20 @@ export default class SystemSettingService {
     return responseRequest
   }
 
+  async getActive() {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/system-settings/get-active`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const systemSetting = responseRequest.status === 200 ? responseRequest._data.data.systemSetting : null
+
+      return systemSetting
+    } catch (error) {
+    }
+  }
+
   validateSystemSettingInfo(systemSetting: SystemSettingInterface): boolean {
     if (!systemSetting.systemSettingTradeName) {
       console.error('Wrong trade name');

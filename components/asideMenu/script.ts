@@ -1,10 +1,14 @@
 import { defineComponent } from 'vue'
+import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export default defineComponent({
   name: 'asideMenu',
   props: {
   },
   data: () => ({
+    backgroundColor: '#093057',
+    backgroundColorLight: '#0d3a68',
+    backgroundColorDark: '#092c50',
     menu: [
       {
         label: 'Attendance Monitor Reporter',
@@ -141,8 +145,51 @@ export default defineComponent({
   computed: {
   },
   mounted() {
+   this.getSystemSettings()
   },
   methods: {
+    async getSystemSettings() {
+      const systemSettingService = new SystemSettingService()
+      const systemSettingResponse = await systemSettingService.getActive()
+      if (systemSettingResponse) {
+        if (systemSettingResponse.systemSettingSidebarColor) {
+          this.backgroundColor = `#${systemSettingResponse.systemSettingSidebarColor}`
+          const shades = this.generateColorShades(this.backgroundColor)
+          this.backgroundColorLight = shades.lighter
+          this.backgroundColorDark = shades.darker
+        }
+      }
+    },
+    adjustColorBrightness(color: string, amount: number) {
+      let usePound = false;
+
+      if (color[0] === "#") {
+        color = color.slice(1);
+        usePound = true;
+      }
+
+      let num = parseInt(color, 16);
+
+      let r = (num >> 16) + amount;
+      r = r > 255 ? 255 : r < 0 ? 0 : r;
+
+      let g = ((num >> 8) & 0x00FF) + amount;
+      g = g > 255 ? 255 : g < 0 ? 0 : g;
+
+      let b = (num & 0x0000FF) + amount;
+      b = b > 255 ? 255 : b < 0 ? 0 : b;
+
+      return (usePound ? "#" : "") + (r.toString(16).padStart(2, '0')) + (g.toString(16).padStart(2, '0')) + (b.toString(16).padStart(2, '0'));
+    },
+    generateColorShades(hexColor: string) {
+      const lighterShade = this.adjustColorBrightness(hexColor, 30); // Ajusta este valor para obtener el tono claro deseado
+      const darkerShade = this.adjustColorBrightness(hexColor, -30); // Ajusta este valor para obtener el tono oscuro deseado
+
+      return {
+        lighter: lighterShade,
+        darker: darkerShade
+      };
+    },
     async handlerLogout () {
       try {
         const { signOut } = useAuth()

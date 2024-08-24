@@ -1,6 +1,6 @@
 <template>
   <div class="box system-setting-info-card">
-    <div class="avatar" @click="onClickPhoto">
+    <div class="avatar">
       <img v-if="systemSetting.systemSettingLogo" :src="systemSetting.systemSettingLogo" alt="System Setting Logo"
         class="system-setting-logo" />
       <svg v-else class="bi bi-image-alt" fill="#87a4bf" viewBox="0 0 16 16" xmlns="

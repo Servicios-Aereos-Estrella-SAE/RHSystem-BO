@@ -1,5 +1,6 @@
 import { defineComponent } from 'vue'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -7,7 +8,8 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    authUser: null as UserInterface | null
+    authUser: null as UserInterface | null,
+    backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
   }),
   computed: {
     displayBackButton () {
@@ -23,9 +25,19 @@ export default defineComponent({
   created () {
   },
   mounted() {
+    this.getSystemSettings()
     this.setAuthUser()
   },
   methods: {
+    async getSystemSettings() {
+      const systemSettingService = new SystemSettingService()
+      const systemSettingResponse = await systemSettingService.getActive()
+      if (systemSettingResponse) {
+        if (systemSettingResponse.systemSettingLogo) {
+          this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
+        }
+      }
+    },
     async setAuthUser () {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
