@@ -41,7 +41,7 @@ export default defineComponent({
     drawerShifts: false,
     drawerProceedingFiles: false,
     isValidCURP: true,
-    isValidRFC: true,
+    isValidRFC: true
   }),
   computed: {
   },
