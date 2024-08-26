@@ -1,6 +1,6 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
-.employees-page {
+.documents-page {
 
     h2 {
         font-size: 1rem;
@@ -9,14 +9,14 @@
         margin-bottom: 2rem;
     }
 
-    .shift-wrapper {
+    .document-wrapper {
         min-height: 100dvh;
         box-sizing: border-box;
-
         .head-page {
-            display: grid;
-            grid-template-columns: 30rem 20rem auto 5rem;
-            gap: 0.5rem;
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
 
             .btn-add {
                 width: fit-content;
@@ -48,11 +48,74 @@
                 grid-template-columns: 1fr;
             }
         }
-      /*   .shift-card-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-          } */
+        .document-body-wrapper {
+            background-color: $white; /* Fondo blanco */
+            border-radius: $radius; /* Bordes redondeados */
+            padding: 1.1rem; /* Espacio interior */
+            box-shadow: $shadow; /* Sombra */
+            min-height: 45vh;
+            margin: 20px 0; /* Margen superior e inferior */
+            width: 100%; /* Ocupar toda la pantalla */
+            max-width: 100vw; /* Asegurarse de que ocupe todo el ancho de la vista */
+            box-sizing: border-box; /* Incluir padding y border en el width */
+            // margin-left: 1rem;
+        }
+        .document-head-title {
+            margin-bottom: 20px; /* Espacio inferior para separar del contenido */
+        }
+        .document-body-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Tres columnas de igual tamaño */
+            gap: calc(0.4vw + 1.5px); /* Espacio entre las tarjetas */
+            width: 100%;
+            padding: 2px;
+            box-sizing: border-box;
+        }
+
+        @media screen and (max-width: $tablet) {
+            .document-body-content {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* Dos columnas de igual tamaño */
+                gap: calc(.4vw + 8px); /* Espacio entre las tarjetas */
+                margin: 0;
+                padding: 0; /* Eliminar padding adicional */
+            }
+        }
+
+        @media screen and (max-width: $phone) {
+            .document-body-wrapper {
+                display: flex;
+                flex-direction: column;
+                border-radius: $radius;
+                padding: 1.1rem;
+                box-shadow: $shadow;
+                margin: 20px 0;
+                width: 100%; /* Ocupar todo el ancho disponible */
+                max-width: 100vw;
+                box-sizing: border-box;
+                justify-content: flex-start;
+            }
         
+            .document-body-content {
+                display: flex;
+                align-items: start;
+                justify-content: flex-start; /* Alinear tarjetas al principio */
+                flex-direction: row;
+                flex-wrap: wrap; /* Permitir que las tarjetas se envuelvan a la siguiente línea */
+                gap: calc(.4vw + 8px); /* Ajustar espacio entre tarjetas */
+                margin: 0;
+                padding: 0; /* Eliminar padding adicional */
+            }
+        
+            .document-body-content > div {
+                flex: 1 1 calc(40% - calc(.4vw + 1px)); /* Cada tarjeta ocupa el 50% del ancho menos el gap */
+                margin-bottom: calc(.4vw + 1px); /* Espacio entre las filas */
+                box-sizing: border-box;
+            }
+        }
+        
+
+
         .shift-card-wrapper {
         box-sizing: border-box;
         display: grid;
@@ -63,12 +126,40 @@
         }
 
         .paginator {
-        margin-top: 0.5rem;
-        width: 100%;
+            margin-top: 0.5rem;
+            width: 100%;
         }
+        .wrapper-without-documents {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 305%;
+            min-height: 35vh;
+            justify-content: center;
+            background-color: #f8f9fa; // Fondo similar al mostrado en la imagen.
+            padding: 20px;
+            border-radius: 8px; // Bordes redondeados.
+            svg {
+                width: 40px; // Ajusta el tamaño del ícono.
+                height: 40px;
+                fill: #a6b1c0; // Color gris del ícono.
+                margin-bottom: 10px; // Espaciado entre el ícono y el texto.
+            }
+            span {
+                font-size: 1.2rem; // Ajusta el tamaño del texto.
+                color: #a6b1c0; // Color gris del texto.
+                font-weight: 700;
+            }
+            @media screen and (max-width: $tablet) {
+                width: 203.5%;
+            }
+        }
+
     }
 
     }
     .side{
-    background-color: blue!important;
+        background-color: blue!important;
     }
+
+
