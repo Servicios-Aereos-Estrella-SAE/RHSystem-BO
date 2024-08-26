@@ -83,6 +83,8 @@ export default defineComponent({
                         detail: systemSettingResponse._data.message,
                         life: 5000,
                     });
+                    const myGeneralStore = useMyGeneralStore()
+                    myGeneralStore.getSystemSettings()
                 } else {
                     this.$toast.add({
                         severity: 'error',
@@ -105,6 +107,8 @@ export default defineComponent({
             }
             this.drawerSystemSettingForm = false;
             this.drawerSystemSettingPhotoForm = false;
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.getSystemSettings()
         },
     }
 });
