@@ -86,7 +86,7 @@ export default defineComponent({
                 this.drawerPilotDelete = false;
                 const pilotService = new PilotService();
                 const pilotResponse = await pilotService.delete(this.pilot);
-                if (pilotResponse.status === 201) {
+                if (pilotResponse.status === 200) {
                     const index = this.filteredPilots.findIndex((pilot: PilotInterface) => pilot.pilotId === this.pilot?.pilotId);
                     if (index !== -1) {
                         this.filteredPilots.splice(index, 1);

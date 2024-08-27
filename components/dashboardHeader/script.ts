@@ -7,9 +7,14 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    authUser: null as UserInterface | null
+    authUser: null as UserInterface | null,
   }),
   computed: {
+    getBackgroundImage(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImage = myGeneralStore.backgroundImage
+      return backgroundImage
+    },
     displayBackButton () {
       const path = this.$route.fullPath
       const isRoot = path.split('/').length > 2
@@ -23,6 +28,8 @@ export default defineComponent({
   created () {
   },
   mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
     this.setAuthUser()
   },
   methods: {

@@ -1,10 +1,12 @@
 import { defineComponent } from 'vue'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'asideMenu',
   props: {
   },
   data: () => ({
+    isReady: false,
     menu: [
       {
         label: 'Attendance Monitor Reporter',
@@ -55,7 +57,13 @@ export default defineComponent({
             name: 'Sobrecargos',
             path: '/flight-attendants',
             icon: `<svg viewBox="0 0 16 16" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 16 16"><path d="M7.516 11.094C7.688 10.609 9 8.938 9 6a3 3 0 1 0-6 0c0 2.938 1.313 4.609 1.484 5.094C2.953 11.234 0 12.211 0 14c0 .422.336 1 1 1h10c.664 0 1-.578 1-1 0-1.789-2.953-2.766-4.484-2.906zm5.132-3.055C12.889 7.311 14 5.273 14 4a3 3 0 0 0-5.143-2.098A5 5 0 0 1 11 6c0 1.521-.297 2.779-.645 3.748.775.307 1.527.723 2.146 1.252H15c.578 0 1-.453 1-1 0-1.258-2.422-1.789-3.352-1.961z" fill="#ffffff" class="fill-000000"></path></svg>`
-          }
+          },
+          {
+            label: 'Customers',
+            name: 'Clientes',
+            path: '/customers',
+            icon: `<svg viewBox="0 0 16 16" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 16 16"><path d="M7.516 11.094C7.688 10.609 9 8.938 9 6a3 3 0 1 0-6 0c0 2.938 1.313 4.609 1.484 5.094C2.953 11.234 0 12.211 0 14c0 .422.336 1 1 1h10c.664 0 1-.578 1-1 0-1.789-2.953-2.766-4.484-2.906zm5.132-3.055C12.889 7.311 14 5.273 14 4a3 3 0 0 0-5.143-2.098A5 5 0 0 1 11 6c0 1.521-.297 2.779-.645 3.748.775.307 1.527.723 2.146 1.252H15c.578 0 1-.453 1-1 0-1.258-2.422-1.789-3.352-1.961z" fill="#ffffff" class="fill-000000"></path></svg>`
+          },
         ]
       },
       {
@@ -96,6 +104,12 @@ export default defineComponent({
             path: '/vacations',
             icon: `<svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 10c.714 0 1.34.374 1.694.936-.125.33-.194.69-.194 1.064v.063A2 2 0 0 0 11 14v2.317c-.904.436-2.089.683-3.5.683C4.088 17 2 15.554 2 13.5V12a2 2 0 0 1 2-2h7Zm1 4a1 1 0 0 1 1-1h.5v-1a1.998 1.998 0 0 1 3.543-1.272c.286.345.457.789.457 1.272v1h.5a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-4Zm4.07 1.512a.753.753 0 0 0-.57-.262.75.75 0 1 0 .57.262ZM15.5 11a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Zm-2.25-.984.015-.017h-.03l.014.017ZM7.5 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm7 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="#ffffff" class="fill-212121"></path></svg>`
           },
+          {
+            label: 'System Settings',
+            name: 'SystemSettings',
+            path: '/system-settings',
+            icon: `<svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 10c.714 0 1.34.374 1.694.936-.125.33-.194.69-.194 1.064v.063A2 2 0 0 0 11 14v2.317c-.904.436-2.089.683-3.5.683C4.088 17 2 15.554 2 13.5V12a2 2 0 0 1 2-2h7Zm1 4a1 1 0 0 1 1-1h.5v-1a1.998 1.998 0 0 1 3.543-1.272c.286.345.457.789.457 1.272v1h.5a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-4Zm4.07 1.512a.753.753 0 0 0-.57-.262.75.75 0 1 0 .57.262ZM15.5 11a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Zm-2.25-.984.015-.017h-.03l.014.017ZM7.5 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm7 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="#ffffff" class="fill-212121"></path></svg>`
+          },
         ]
       },
       {
@@ -127,8 +141,22 @@ export default defineComponent({
     ]
   }),
   computed: {
+    getBackgroundColor(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundColor = myGeneralStore.backgroundColor
+      return backgroundColor
+    },
+    getBackgroundColorDark(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundColorDark = myGeneralStore.backgroundColorDark
+      return backgroundColorDark
+    }
   },
   mounted() {
+    this.isReady = false
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
+    this.isReady = true
   },
   methods: {
     async handlerLogout () {

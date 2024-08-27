@@ -1,6 +1,6 @@
-import type { PilotInterface } from "../interfaces/PilotInterface"
+import type { CustomerInterface } from "../interfaces/CustomerInterface"
 
-export default class PilotService {
+export default class CustomerService {
   protected API_PATH: string
 
   constructor () {
@@ -10,7 +10,7 @@ export default class PilotService {
 
   async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
-    await $fetch(`${this.API_PATH}/pilots`, {
+    await $fetch(`${this.API_PATH}/customers`, {
       query: {
         search: searchText,
         page,
@@ -23,22 +23,19 @@ export default class PilotService {
     return responseRequest
   }
 
-  async store(pilot: PilotInterface, photo: any) {
+  async store(customer: CustomerInterface) {
     const formData = new FormData()
-    if (photo) {
-      formData.append('photo', photo)
-    }
-    for (const key in pilot) {
-      if (pilot.hasOwnProperty(key)) {
-        if (pilot[key] === undefined || pilot[key] === 'null') {
-          pilot[key] = ''
+    for (const key in customer) {
+      if (customer.hasOwnProperty(key)) {
+        if (customer[key] === undefined || customer[key] === 'null') {
+          customer[key] = ''
         }
-        formData.append(key, pilot[key])
+        formData.append(key, customer[key])
       }
     }
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/pilots`, {
+      await $fetch(`${this.API_PATH}/customers`, {
         method: 'POST',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -49,22 +46,19 @@ export default class PilotService {
     return responseRequest
   }
 
-  async update(pilot: PilotInterface, photo: any) {
+  async update(customer: CustomerInterface) {
     const formData = new FormData()
-    if (photo) {
-      formData.append('photo', photo)
-    }
-    for (const key in pilot) {
-      if (pilot.hasOwnProperty(key)) {
-        if (pilot[key] === undefined || pilot[key] === 'null') {
-          pilot[key] = ''
+    for (const key in customer) {
+      if (customer.hasOwnProperty(key)) {
+        if (customer[key] === undefined || customer[key] === 'null') {
+          customer[key] = ''
         }
-        formData.append(key, pilot[key])
+        formData.append(key, customer[key])
       }
     }
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/pilots/${pilot.pilotId}`, {
+      await $fetch(`${this.API_PATH}/customers/${customer.customerId}`, {
         method: 'PUT',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -78,17 +72,17 @@ export default class PilotService {
   async show(id: number) {
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/pilots/${id}`, {
+      await $fetch(`${this.API_PATH}/customers/${id}`, {
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
-      const pilot = responseRequest.status === 200 ? responseRequest._data.data.pilot : null
+      const customer = responseRequest.status === 200 ? responseRequest._data.data.customer : null
 
       return {
           status: responseRequest.status,
           _data: {
             data: {
-              pilot: pilot
+              customer: customer
             }
           }
         }
@@ -96,32 +90,27 @@ export default class PilotService {
     }
   }
 
-  validatePilotInfo(pilot: PilotInterface): boolean {
-    // validate pilot.person.personPhone is a valid phone number with 10 digits and dont have letters
-    if (!pilot.person?.personFirstname) {
+  validateCustomerInfo(customer: CustomerInterface): boolean {
+    if (!customer.person?.personFirstname) {
       console.error('Wrong first name');
       return false;
     }
-    if (!pilot.person?.personLastname) {
+    if (!customer.person?.personLastname) {
       console.error('Wrong last name');
       return false;
     }
-    if (!pilot.person?.personSecondLastname) {
+    if (!customer.person?.personSecondLastname) {
       console.error('Wrong second lastname');
-      return false;
-    }
-    if (!pilot.pilotHireDate) {
-      console.error('Wrong hire date');
       return false;
     }
 
     return true;
   }
 
-  async delete(pilot: PilotInterface) {
+  async delete(customer: CustomerInterface) {
     let responseRequest: any = null
 
-    await $fetch(`${this.API_PATH}/pilots/${pilot.pilotId}`, {
+    await $fetch(`${this.API_PATH}/customers/${customer.customerId}`, {
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
