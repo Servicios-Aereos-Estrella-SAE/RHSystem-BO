@@ -1,0 +1,101 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.card-container {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  background-color: $white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: $shadow;
+  width: 100%; // Ajusta según sea necesario
+  &.active {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-icon {
+  background-color: #d2f0e7;
+  border-radius: 50%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  &.expired {
+    background-color: #fbcfcf;
+  }
+  &.next-expire {
+    background-color: #ffe4d1;
+  }
+}
+
+.icon-placeholder {
+  display: inline-block;
+  width: 4rem;
+  height: 4rem;
+  background-color: #4ac19d;
+  border-radius: 50%;
+  padding: 1rem;
+  &.expired {
+    background-color: #ff4b4b;
+  }
+  &.next-expire {
+    background-color: #ff9e44;
+  }
+  svg {
+    font-size: 2rem;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+.card-content {
+  flex: 1;
+}
+
+.percentage {
+  font-size: 1.8rem;
+  font-weight: 400;
+  text-align: left;
+  color: #4ac19d;
+}
+
+.description {
+  font-size: .8rem;
+  text-align: left;
+  color: $black;
+  margin: 8px 0;
+  font-weight: 300;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  font-size: .8rem;
+  margin-top: 1rem;
+  font-weight: 300;
+  align-items: flex-start;
+  color: $black;
+}
+
+.details span {
+  margin-bottom: 4px; /* Espacio entre filas */
+}
+
+.expired {
+  color: #ff4b4b;
+  font-weight: 600;
+}
+
+.next-expire {
+  color: #ff9e44;
+  font-weight: 600;
+}
+.active {
+  color: #4ac19d;
+  font-weight: 600;
+}
