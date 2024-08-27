@@ -1,0 +1,27 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+.roles-and-permissions-page {
+
+    h2 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .pilot-wrapper {
+        min-height: 100dvh;
+        box-sizing: border-box;
+
+        
+        .roles-and-permissions-card-wrapper {
+        box-sizing: border-box;
+        display: grid;
+        grid-auto-flow: dense;
+        grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+        gap: .5rem;
+        margin-top: 0.5rem;
+        }
+    }
+
+    }
