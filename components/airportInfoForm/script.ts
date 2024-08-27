@@ -11,6 +11,7 @@ export default defineComponent({
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
+    
     submitted: false,
     cities: [
       { name: 'Heliport', value: 'heliport' },
@@ -19,9 +20,18 @@ export default defineComponent({
       { name: 'Ballonport', value: 'balloonport' },
       { name: 'Medium Airport', value: 'medium_airport' },
       { name: 'Large Airport', value: 'large_airport' },
-      
-    ] 
+    ],
   }),
+  computed: {
+    isAirportActive: {
+      get() {
+        return this.airport.airportActive === 1;
+      },
+      set(newValue: boolean) {
+        this.airport.airportActive = newValue ? 1 : 0;
+      }
+    }
+  },
   methods: {
     async onSave() {
       this.submitted = true;

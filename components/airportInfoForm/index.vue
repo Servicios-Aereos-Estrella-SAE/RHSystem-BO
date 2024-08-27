@@ -84,6 +84,12 @@
                             required.</small>
                     </div>
 
+                    <div class="input-box">
+                        <label for="airportActive">Active {{isAirportActive}}</label>
+                        <ToggleButton v-model="isAirportActive" onLabel="Active" offLabel="Inactive" />
+
+                    </div>
+
                 </div>
 
                 <div class="card flex justify-center"></div>
@@ -99,6 +105,7 @@
 <script>
 import Script from './script.ts'
 export default Script
+
 </script>
 
 <style lang="scss">

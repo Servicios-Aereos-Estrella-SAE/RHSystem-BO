@@ -2,41 +2,41 @@
 @import 'primeicons/primeicons.css';
 @import '/resources/styles/colors.scss';
 .airports-page {
-  padding: 1rem;
+ 
 
   h2 {
     font-size: 1.25rem;
     font-weight: 500;
     margin-top: 2rem;
     margin-bottom: 1rem;
-    color: #093057; 
   }
 
   .airport-wrapper {
+    min-height: 100dvh;
     box-sizing: border-box;
 
     .box.head-page {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 20rem auto;
       gap: 0.5rem;
-      margin-bottom: 1rem;
+      justify-content: space-between;
 
-      .input-box {
-        display: flex;
-        align-items: center;
+      // .input-box {
+      //   display: flex;
+      //   align-items: center;
 
-        label {
-          margin-right: 0.5rem;
-          font-weight: 500;
-          color: black; // Usa el color del texto definido en variables.scss
-        }
+      //   label {
+      //     margin-right: 0.5rem;
+      //     font-weight: 500;
+      //     color: black; // Usa el color del texto definido en variables.scss
+      //   }
         Button {
           margin-left: 0.5rem;
         }
-      }
+      
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 15rem auto;
       }
 
       @media screen and (max-width: $tablet) {
@@ -44,16 +44,17 @@
       }
 
       @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr auto;
       }
     }
 
     .airport-card-wrapper {
+      box-sizing: border-box;
       display: grid;
       grid-auto-flow: dense;
       grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: .5rem;
+      margin-top: 0.5rem;
 
       // Ajuste en la visualización de tarjetas
       @media screen and (max-width: $tablet) {
@@ -66,32 +67,17 @@
     }
 
     .paginator {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       width: 100%;
     }
 
     .airport-form-sidebar {
-      width: 22rem !important;
-      max-width: 50rem !important;
+      width: 100% !important;
+      max-width: 35rem !important;
 
       @media screen and (max-width: $sm) {
         width: 100% !important;
       }
-    }
-  }
-
-  .confirmation-content {
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    color: black; // Usa el color del texto definido en variables.scss
-
-    i {
-      color: red; // Usa el color de advertencia definido en variables.scss
-    }
-
-    span {
-      margin-left: 0.5rem;
     }
   }
 
