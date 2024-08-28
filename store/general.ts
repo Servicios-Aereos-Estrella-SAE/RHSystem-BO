@@ -25,7 +25,7 @@ export const useMyGeneralStore = defineStore({
     },
 
     async getSystemSettings() {
-      this.fullLoader = true
+      // this.fullLoader = true
       this.backgroundColor = '#093057'
       this.backgroundColorDark = '#092c50'
       this.backgroundImage = 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
@@ -41,7 +41,7 @@ export const useMyGeneralStore = defineStore({
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
         }
       }
-      this.fullLoader = false
+      // this.fullLoader = false
     },
 
     adjustColorBrightness(color: string, amount: number) {

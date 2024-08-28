@@ -51,7 +51,6 @@ export default defineComponent({
         greatestDepartmentCode = this.departments.reduce((prev, current) =>
           ((prev.departmentId ?? 0) > (current.departmentId ?? 0)) ? prev : current
         ).departmentId;
-        console.log('greatestDepartmentCode', this.departments, greatestDepartmentCode)
         // Convertir greatestDepartmentCode a número y sumarle 1
         this.department.departmentCode = ((greatestDepartmentCode ?? 0) + 1).toString();
       }
@@ -85,7 +84,6 @@ export default defineComponent({
         })
         await this.getDepartments()
         departmentResponse = await departmentService.showOnSave(departmentResponse._data.data.department.departmentId)
-        console.log('departmentResponse', departmentResponse)
         if (departmentResponse?.status === 200) {
           const department = departmentResponse._data.data.department
           this.$emit('save', department as DepartmentInterface)

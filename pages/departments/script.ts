@@ -75,7 +75,6 @@ export default defineComponent({
       try {
         const response = await new DepartmentService().syncDepartments();
         if (response.status === 200) {
-          console.log('Synchronization successful:', response._data);
           // Actualiza los departamentos o maneja la respuesta según sea necesario
           this.handlerSearchDepartment(); // Actualiza la lista de departamentos
         } else {

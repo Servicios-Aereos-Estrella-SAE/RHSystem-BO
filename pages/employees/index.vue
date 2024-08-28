@@ -15,7 +15,7 @@
               <label for="search">
                 Search
               </label>
-              <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchEmployee"
+              <InputText v-model="search" aria-describedby="search" @keypress.enter="handlerSearchEmployee"
                 @keyup.delete="handlerSearchEmployee" />
             </div>
             <div class="input-box">

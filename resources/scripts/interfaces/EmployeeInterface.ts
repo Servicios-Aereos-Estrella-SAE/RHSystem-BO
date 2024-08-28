@@ -18,6 +18,8 @@ interface EmployeeInterface {
   employeePhoto: string | null,
   employeeWorkSchedule: string | null,
   personId: number,
+  businessUnitId: number,
+  employeeAssistDiscriminator: number,
   employeeLastSynchronizationAt: Date | string | null,
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
