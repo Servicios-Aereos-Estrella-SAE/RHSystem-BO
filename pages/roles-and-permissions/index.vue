@@ -9,25 +9,27 @@
         </Title>
       </Head>
       <NuxtLayout name="backoffice">
-        <div class="pilot-wrapper">
+        <div class="roles-and-permissions-wrapper">
           <div>
             <h2>
               Roles and permissions
             </h2>
             <div class="roles-and-permissions-card-wrapper">
-              <Accordion>
+              <Accordion v-model:activeIndex="roleSelected">
                 <AccordionTab :header="role.roleName" v-for="(role, index) in roleList" :key="`role-${role.roleId}-${index}`">
                   <DataTable :value="systemModulesList" tableStyle="min-width: 50rem">
                     <Column field="systemModuleName" header="Module">
+                        <template #body="slotProps">
+                          <strong>{{ slotProps.data.systemModuleName }}</strong>
+                        </template>
                     </Column>
                     <Column header="Permissions">
-                      <template #body="slotProps">
-                        <div class="tw-flex">
-                          <el-checkbox-group v-model="permissions[index]" class="tw-flex">
-                            <el-checkbox v-for="(permission, indexp) in permissions" :key="`permission-${indexp}`" :label="permission.systemPermissionId" class="tw-capitalize">
-                              {{ permission.systemPermissionName }}
-                            </el-checkbox>
-                          </el-checkbox-group>
+                      <template #body="slotProps" >
+                        <div class="permissions">
+                          <div v-for="(permission, indexP) in slotProps.data.systemPermissions" :key="`permission-${index}-${indexP}`" class="permission">
+                            <Checkbox v-model="permissions[index]" name="permission" :value="permission.systemPermissionId"/>
+                            <label> {{ permission.systemPermissionName }}</label>
+                          </div>
                         </div>
                       </template>
                     </Column>
@@ -36,6 +38,9 @@
               </Accordion>
             </div>
           </div>
+        </div>
+        <div class="box-tools-footer">
+          <Button label="Save" severity="primary" @click="onSave()" :disabled="roleSelected === null"/>
         </div>
       </NuxtLayout>
     </div>

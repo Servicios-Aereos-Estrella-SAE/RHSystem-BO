@@ -22,4 +22,22 @@ export default class RoleService {
 
     return responseRequest
   }
+
+  async assign(roleId: number, permissions: Array<any>) {
+    let responseRequest: any = null
+    const formData = new FormData()
+    permissions.forEach((systemPermissionId) => {
+      formData.append('permissions[]', systemPermissionId);
+    })
+    try {
+      await $fetch(`${this.API_PATH}/roles/assign/${roleId}`, {
+        method: 'POST',
+        body: formData,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 }
