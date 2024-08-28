@@ -8,7 +8,7 @@
       <div class="form-container">
         <div class="input-box">
           <label for="userActive">
-            {{ activeSwicht ? 'Onsite' : 'Remote' }}</label>
+            Work {{ activeSwicht ? 'Onsite' : 'Home Office' }}</label>
           <InputSwitch v-model="activeSwicht" />
         </div>
         <div class="input-box">
@@ -28,7 +28,7 @@
         </div>
         <div class="input-box">
           <label for="role">
-            Departamento
+            Department
           </label>
           <Dropdown v-model="employee.departmentId" :options="departments" optionLabel="departmentName" optionValue="departmentId"
             placeholder="Select a Department" filter class="w-full md:w-14rem" :invalid="submitted && !employee.departmentId" />
@@ -40,10 +40,10 @@
             placeholder="Select a Position" filter class="w-full md:w-14rem" :invalid="submitted && !employee.positionId" />
           <small class="p-error" v-if="submitted && !employee.positionId">Position is required.</small>
         </div>
-        <div class="input-box">
+        <!-- <div class="input-box">
           <label for="employeePayrollNum">Payroll Number</label>
           <InputText v-model="employee.employeePayrollNum" placeholder="Enter Payroll Number" />
-        </div>
+        </div> -->
         <div class="input-box">
           <label for="employeeHireDate">Hire Date</label>
           <Calendar v-model="employee.employeeHireDate" dateFormat="yy-mm-dd" placeholder="Select Hire Date" />
@@ -62,18 +62,25 @@
             placeholder="Select Gender" class="w-full md:w-14rem" />
         </div>
         <div class="input-box">
-          <label for="employeeLastName">Personal identification code</label>
+          <label for="employeeLastName">CURP</label>
           <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP" />
           <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal identification is not valid.</small>
         </div>
         <div class="input-box">
-          <label for="employeeLastName">Employee RFC</label>
+          <label for="employeeLastName">RFC</label>
           <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC" />
           <small class="p-error" v-if="submitted && employee.person.personRfc && !isValidRFC">RFC is not valid.</small>
         </div>
         <div class="input-box">
           <label for="employeeLastName">Employee NSS</label>
           <InputText v-model="employee.person.personImssNss" placeholder="Enter employee NSS" />
+        </div>
+        <div class="input-box">
+          <label for="employeeLastName">
+            Discriminate assistance
+          </label>
+          <Dropdown v-model="employee.employeeAssistDiscriminator" :options="assistDiscriminatorOptions" optionLabel="label" optionValue="value"
+            placeholder="Select" class="w-full md:w-14rem" />
         </div>
         <div class="box-tools-footer">
           <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />

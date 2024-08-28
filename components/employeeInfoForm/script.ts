@@ -29,7 +29,11 @@ export default defineComponent({
     genders: [
         { label: 'Male', value: 'Hombre' },
         { label: 'Female', value: 'Mujer' },
-        { label: 'Other', value: 'Otro' }
+        { label: 'Not specified', value: 'Otro' }
+    ],
+    assistDiscriminatorOptions: [
+      { label: 'Do not discriminate in assistance', value: 0 },
+      { label: 'Yes, discriminate in assistance', value: 1 }
     ],
     currenEmployee: null as EmployeeInterface | null,
     passwordConfirm: '',
@@ -53,6 +57,8 @@ export default defineComponent({
     if (!this.isNewUser) {
       this.activeSwicht = this.employee.employeeWorkSchedule === 'Onsite' ? true : false
       this.getPositions(this.employee.departmentId)
+    } else {
+      this.employee.employeeAssistDiscriminator = 0
     }
   },
   methods: {
