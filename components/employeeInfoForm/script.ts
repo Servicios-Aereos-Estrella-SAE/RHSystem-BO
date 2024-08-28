@@ -10,6 +10,8 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PeopleInterface } from '~/resources/scripts/interfaces/PeopleInterface'
 import PersonService from '~/resources/scripts/services/PersonService';
+import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
+import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
 
 export default defineComponent({
   components: {
@@ -45,7 +47,8 @@ export default defineComponent({
     drawerShifts: false,
     drawerProceedingFiles: false,
     isValidCURP: true,
-    isValidRFC: true
+    isValidRFC: true,
+    businessUnits: [] as BusinessUnitInterface[]
   }),
   computed: {
   },
@@ -53,12 +56,21 @@ export default defineComponent({
     this.isReady = false
     this.isNewUser = !this.employee.employeeId ? true : false
     this.isReady = true
-    this.getDepartments()
+
+    await Promise.all([
+      this.getBusinessUnits(),
+      this.getDepartments()
+    ])
+
     if (!this.isNewUser) {
       this.activeSwicht = this.employee.employeeWorkSchedule === 'Onsite' ? true : false
-      this.getPositions(this.employee.departmentId)
+      await this.getPositions(this.employee.departmentId)
     } else {
       this.employee.employeeAssistDiscriminator = 0
+
+      if (this.businessUnits.length > 0) {
+        this.employee.businessUnitId = this.businessUnits[0].businessUnitId
+      }
     }
   },
   methods: {
@@ -205,6 +217,10 @@ export default defineComponent({
     },
     getProceedingFiles() {
       this.drawerProceedingFiles = true
+    },
+    async getBusinessUnits () {
+      const body = await new BusinessUnitService().index()
+      this.businessUnits =  body.status === 200 ? body._data.data.data || [] : []
     }
   },
   watch: {

@@ -12,6 +12,11 @@
           <InputSwitch v-model="activeSwicht" />
         </div>
         <div class="input-box">
+          <label for="personGender">Business Unit</label>
+          <Dropdown v-model="employee.businessUnitId" :options="businessUnits" optionLabel="businessUnitName" optionValue="businessUnitId"
+            placeholder="Select" class="w-full md:w-14rem" />
+        </div>
+        <div class="input-box">
           <label for="employeeCode">Employee Code</label>
           <InputText v-model="employee.employeeCode" placeholder="Enter Employee Code" />
           <small class="p-error" v-if="submitted && !employee.employeeCode">Employee Code is required.</small>
