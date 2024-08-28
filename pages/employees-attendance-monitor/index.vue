@@ -116,12 +116,15 @@
             Employees into
             {{ item.department.departmentAlias || item.department.departmentName }}
           </h2>
-          <div class="department-positions-wrapper">
+          <div v-if="item.employees.length > 0" class="department-positions-wrapper">
             <div v-for="(employeeAssist, index) in item.employees" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
               <attendanceEmployeeInfoCard
                 :employee="employeeAssist"
               />
             </div>
+          </div>
+          <div class="jumbotron">
+            No data to display
           </div>
         </div>
       </div>

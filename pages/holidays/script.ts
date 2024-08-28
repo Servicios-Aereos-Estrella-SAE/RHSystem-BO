@@ -58,7 +58,6 @@ export default defineComponent({
             this.filterHolidays = list;
         },
         getDateRange(date: Date) {
-            console.log(date, 'date selected');
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
 

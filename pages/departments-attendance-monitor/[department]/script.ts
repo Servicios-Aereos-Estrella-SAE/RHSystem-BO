@@ -402,11 +402,14 @@ export default defineComponent({
       if (!this.departmenSelected) {
         return false
       }
+      
       const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
+
+      this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },

@@ -90,7 +90,6 @@ export default defineComponent({
     }
 
     const onDeletePosition = (_position: PositionInterface) => {
-      console.log('onDeletePosition', position);
       position.value = { ..._position };
       drawerPositionDelete.value = true;
     }

@@ -34,7 +34,6 @@ export default defineComponent({
             const selectedClass = this.aircraftClasses.find(
               (ac) => ac.aircraftClassId === this.aircraftProperty.aircraftClassId
             );
-            console.log(selectedClass)
 
             if (selectedClass) {
                 this.selectedAircraftClassId = selectedClass.aircraftClassId;
@@ -70,7 +69,6 @@ export default defineComponent({
     },
     async onSave() {
       this.submitted = true;
-      console.log(this.aircraftProperty)
       if (
         this.aircraftProperty &&
         this.aircraftProperty.aircraftPropertiesName &&
@@ -89,7 +87,6 @@ export default defineComponent({
           const response = this.aircraftProperty.aircraftPropertiesId
             ? await aircraftPropertyService.update(this.aircraftProperty) 
             : await aircraftPropertyService.create(this.aircraftProperty);
-            console.log(response)
           if (response.status === 200 || response.status === 201) {
             this.$toast.add({
               severity: 'success',
