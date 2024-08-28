@@ -150,7 +150,6 @@ export default class DepartmentService {
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
-    console.log('responseRequest', responseRequest)
     const department = responseRequest.status === 200 ? responseRequest._data.data.department : {}
 
     return {
@@ -171,11 +170,10 @@ export default class DepartmentService {
         body: JSON.stringify({ positionId, departmentId }),
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) {
-          console.log('response error', response)
+          console.error('response error', response)
           responseRequest = response
         }
       })
-      console.log('responseRequest', responseRequest) 
       return responseRequest
     } catch (error: any) {
       responseRequest = error.data
@@ -190,11 +188,10 @@ export default class DepartmentService {
         method: 'DELETE',
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) {
-          console.log('response error', response)
+          console.error('response error', response)
           responseRequest = response
         }
       })
-      console.log('responseRequest', responseRequest) 
       return responseRequest
     } catch (error: any) {
       responseRequest = error.data

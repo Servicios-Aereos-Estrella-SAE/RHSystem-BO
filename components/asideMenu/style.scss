@@ -97,7 +97,7 @@
 
   .menu-link {
     padding-left: 2rem;
-    margin-bottom: 0.25rem;
+   // margin-bottom: 0.25rem;
   }
 }
 
@@ -107,6 +107,32 @@
 }
 
 .p-toggleable-content {
-  background-color: #092c50;
+  //background-color: #092c50;
+  // opacity: 1;
   padding-left: 1rem;
+}
+.p-panelmenu-content {
+  margin-left: -1rem;
+}
+.p-panelmenu-panel{
+  /* &:hover {
+    opacity: 1;
+    background-color: transparent!important;
+  } */
+ /*  &:hover {
+    background-color: #0d3a68;
+    opacity: 1;
+  }
+
+  &.active {
+    background-color: #0d3a68;
+    opacity: 1;
+  } */
+}
+.p-panelmenu .p-panelmenu-panel {
+  //background-color: transparent!important;
+  /* &:hover {
+    opacity: 5;
+    background-color: red!important;
+  } */
 }

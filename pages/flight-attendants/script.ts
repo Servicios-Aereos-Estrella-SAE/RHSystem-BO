@@ -86,7 +86,7 @@ export default defineComponent({
                 this.drawerFlightAttendantDelete = false;
                 const flightAttendantService = new FlightAttendantService();
                 const flightAttendantResponse = await flightAttendantService.delete(this.flightAttendant);
-                if (flightAttendantResponse.status === 201) {
+                if (flightAttendantResponse.status === 200) {
                     const index = this.filteredFlightAttendants.findIndex((flightAttendant: FlightAttendantInterface) => flightAttendant.flightAttendantId === this.flightAttendant?.flightAttendantId);
                     if (index !== -1) {
                         this.filteredFlightAttendants.splice(index, 1);

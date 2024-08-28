@@ -32,7 +32,7 @@ export default defineComponent({
       const session: unknown = await getSession()
       
       if (session) {
-        return this.$router.push({ path: '/documents-expiration-matrix' })
+        return this.$router.push({ path: '/departments-attendance-monitor' })
       }
 
       this.isGuest = true
@@ -46,7 +46,7 @@ export default defineComponent({
 
       try {
         const { signIn } = useAuth()
-        await signIn(this.credentials, { callbackUrl: '/documents-expiration-matrix' })
+        await signIn(this.credentials, { callbackUrl: '/departments-attendance-monitor' })
       } catch (error) {
         this.credentials.userPassword = ''
         this.invalidCredentials = true
