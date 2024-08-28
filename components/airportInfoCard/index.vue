@@ -15,6 +15,12 @@
                 <span>IATA</span>
                 <span class="detail-value">{{ airport.airportIataCode }}</span>
             </div>
+            
+            <div class="detail-row">
+                <div class="airport-status assist">
+                    {{ `Active: ${airport.airportActive === 1 ? 'Yes' : 'No'}` }}
+                </div>
+            </div>
         </div>
 
         <div class="box-tools-footer">
@@ -97,7 +103,21 @@ export default Script
         border: 1px solid #e3ebf6;
         text-decoration: none;
     }
-
+    .assist {
+    font-size: 14px;
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
+  .department-code,
+  .department-alias,
+  .airport-status {
+    text-align: left;
+    font-weight: 400;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 2%;
+  }
     .btn-red {
         color: red;
     }

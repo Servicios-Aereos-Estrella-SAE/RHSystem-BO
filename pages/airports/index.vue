@@ -1,7 +1,6 @@
 <template>
-    <div>
+    <div class="airports-page">
         <Toast />
-        <div class="airports-page">
 
             <Head>
                 <Title>
@@ -57,7 +56,6 @@
                     </template>
                 </Dialog>
             </NuxtLayout>
-        </div>
     </div>
 </template>
 
@@ -79,11 +77,27 @@ export default Script
 }
 
 .airport-form-sidebar {
-    width: 22rem !important;
+    width: 100% !important;
     max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
         width: 100% !important;
     }
+}
+</style>
+<style lang="scss">
+@import '/resources/styles/variables.scss';
+
+:deep(.graph-label) {
+    color: red;
+}
+
+.graph-label {
+    color: red;
+}
+
+.airport-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
 }
 </style>
