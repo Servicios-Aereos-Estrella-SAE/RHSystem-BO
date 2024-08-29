@@ -107,10 +107,10 @@ export default class EmployeeService {
     //   return false
     // }
 
-    if (!employee.employeePayrollNum) {
-      console.error('Wrong payroll number');
-      return false;
-    }
+    // if (!employee.employeePayrollNum) {
+    //   console.error('Wrong payroll number');
+    //   return false;
+    // }
 
     // validate employee.person.personPhone is a valid phone number with 10 digits and dont have letters
     if (employee.person?.personPhone && !/^\d{10}$/.test(employee.person.personPhone)) {

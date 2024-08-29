@@ -45,7 +45,6 @@ export default defineComponent({
         async handlerSearchAirport() {
             const response = await this.airportService.getFilteredList(this.search, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.data : [];
-            console.log(list)
             this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
             this.filterAirports = list;

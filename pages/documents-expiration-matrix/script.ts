@@ -251,7 +251,6 @@ export default defineComponent({
     computed: {
         documentsSelected() {
             let documents = this[this.tabActive].documents;
-            console.log(documents, 'here documents selected');
             return documents;
         }
     },

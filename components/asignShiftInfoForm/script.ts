@@ -56,7 +56,6 @@ export default defineComponent({
               };
 
               await axios.post(`${config.public.BASE_API_PATH}/employee_shifts`, requestBody);
-              // console.log(`Successfully assigned shift ${selectedShift.value.shiftName} to employee ${employee.employeeFirstName} ${employee.employeeLastName}`);
             } catch (error) {
               console.error(`Failed to assign shift to employee ${employee.employeeFirstName} ${employee.employeeLastName}:`, error);
             }

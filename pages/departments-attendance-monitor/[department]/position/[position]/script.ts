@@ -352,6 +352,8 @@ export default defineComponent({
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
+      this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
+
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
     async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
