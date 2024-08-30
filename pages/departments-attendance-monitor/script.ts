@@ -221,7 +221,9 @@ export default defineComponent({
       this.setDepartmetList(),
     ])
 
-    await this.setDepartmentPositionEmployeeList()
+    if (this.$config.public.ENVIRONMENT === 'production') {
+      await this.setDepartmentPositionEmployeeList()
+    }
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
@@ -247,10 +249,10 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     setGeneralData () {
-      const assists = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
-      const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
-      const delays = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
-      const faults = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
+      const assists = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
+      const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0)
+      const delays = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0)
+      const faults = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onFaultPercentage || 0), 0)
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
