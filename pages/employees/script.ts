@@ -3,6 +3,7 @@ import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interface
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
 import { useMyGeneralStore } from "~/store/general";
+
 export default defineComponent({
     name: 'Employees',
     props: {},
@@ -89,7 +90,9 @@ export default defineComponent({
                 employeeLastSynchronizationAt: new Date(),
                 employeeCreatedAt: new Date(),
                 employeeUpdatedAt: new Date(),
-                person: person
+                person: person,
+                businessUnitId: 1,
+                employeeAssistDiscriminator: 0,
             }
             this.employee = newEmployee
             this.drawerEmployeeForm = true

@@ -1,3 +1,4 @@
+import type { BusinessUnitInterface } from "./BusinessUnitInterface"
 import type { DepartmentInterface } from "./DepartmentInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 import type { PositionInterface } from "./PositionInterface"
@@ -27,7 +28,8 @@ interface EmployeeInterface {
 
   person?: PeopleInterface,
   department?: DepartmentInterface,
-  position?: PositionInterface
+  position?: PositionInterface,
+  businessUnit?: BusinessUnitInterface
 }
 
 export type { EmployeeInterface }

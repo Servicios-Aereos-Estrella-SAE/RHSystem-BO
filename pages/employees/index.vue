@@ -34,6 +34,7 @@ d="M41.115 20.33C40.213 9.822 31.79 1.478 21.248.681c6.77 3.647 11.373 10.798 11
               </Button>
             </div>
           </div>
+
           <div>
             <h2>
               Employees
@@ -61,6 +62,7 @@ d="M41.115 20.33C40.213 9.822 31.79 1.478 21.248.681c6.77 3.647 11.373 10.798 11
             </div>
           </div>
         </div>
+
         <Dialog v-model:visible="drawerEmployeeDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
