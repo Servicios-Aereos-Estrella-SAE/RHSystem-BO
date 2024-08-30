@@ -2,6 +2,7 @@ import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import RoleService from "~/resources/scripts/services/RoleService";
 import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
+import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
   name: 'RolesAndPermissions',
   props: {},
@@ -15,8 +16,11 @@ export default defineComponent({
   computed: {},
   created() { },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
     this.getSystemModules()
     this.getRoles()
+    myGeneralStore.setFullLoader(false)
   },
   methods: {
     async getSystemModules() {
@@ -65,6 +69,8 @@ export default defineComponent({
       this.permissions = permissions
     },
     async onSave() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       const role = this.roleList[this.roleSelected]
       const permissions = []
       for await (const permissionId of this.permissions[this.roleSelected]) {
@@ -86,6 +92,7 @@ export default defineComponent({
           life: 5000,
         });
       }
+      myGeneralStore.setFullLoader(false)
     }
   }
 });

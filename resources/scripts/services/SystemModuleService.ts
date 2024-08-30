@@ -22,4 +22,25 @@ export default class SystemModuleService {
 
     return responseRequest
   }
+
+  async show(systemModuleSlug: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/system-modules/${systemModuleSlug}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const systemModule = responseRequest.status === 200 ? responseRequest._data.data.systemModule : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              systemModule: systemModule
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
 }

@@ -2,6 +2,7 @@ import type { DepartmentInterface } from "~/resources/scripts/interfaces/Departm
 import DepartmentService from "~/resources/scripts/services/DepartmentService";
 import { useMyGeneralStore } from "~/store/general";
 import Department from '../../../API-SAE/app/models/department';
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 
 export default defineComponent({
   name: 'Departments',
@@ -16,10 +17,28 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 30,
     drawerDepartmentDetail: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
   }),
   computed: {},
-  created () {},
+  async created () {
+    
+  },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+/*     this.canCreate = await myGeneralStore.hasAccess(systemModuleSlug, 'create')
+    this.canUpdate = await myGeneralStore.hasAccess(systemModuleSlug, 'update')
+    this.canDelete = await myGeneralStore.hasAccess(systemModuleSlug, 'delete') */
+
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+
+    this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    myGeneralStore.setFullLoader(false)
     this.handlerSearchDepartment();
   },
   methods: {

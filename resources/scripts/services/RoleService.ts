@@ -40,4 +40,68 @@ export default class RoleService {
     }
     return responseRequest
   }
+
+
+  async show(roleId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/${roleId}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const role = responseRequest.status === 200 ? responseRequest._data.data.role : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              role: role
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
+  async hasAccess(roleId: number, systemModuleSlug: string, systemPermissionSlug: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/has-access/${roleId}/${systemModuleSlug}/${systemPermissionSlug}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              roleHasAccess: roleHasAccess
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
+  async getAccess(roleId: number, systemModuleSlug: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/get-access/${roleId}/${systemModuleSlug}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const permissions = responseRequest.status === 200 ? responseRequest._data.data.permissions : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              permissions: permissions
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
 }

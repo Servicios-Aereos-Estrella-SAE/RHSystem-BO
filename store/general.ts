@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia'
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export const useMyGeneralStore = defineStore({
@@ -73,5 +76,38 @@ export const useMyGeneralStore = defineStore({
         darker: darkerShade
       };
     },
+
+    async hasAccess(systemModuleSlug: string, systemPermissionSlug: string) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let hasAccess = false
+      if (authUser && authUser.roleId) {
+        const roleService = new RoleService()
+        const roleResponse = await roleService.hasAccess(authUser.roleId, systemModuleSlug, systemPermissionSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          hasAccess = roleResponse._data.data.roleHasAccess
+        }
+      }
+     return hasAccess
+    },
+
+    async getAccess(systemModuleSlug: string) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let systemPermissions = [] as Array<RoleSystemPermissionInterface>
+      if (authUser && authUser.roleId) {
+        const roleService = new RoleService()
+        const roleResponse = await roleService.getAccess(authUser.roleId, systemModuleSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          systemPermissions = roleResponse._data.data.permissions
+        /*   permissions.forEach((permission: RoleSystemPermissionInterface) => {
+            systemPermissions.push(permission)
+          }) */
+        }
+      }
+     return systemPermissions
+    }
   }
 })

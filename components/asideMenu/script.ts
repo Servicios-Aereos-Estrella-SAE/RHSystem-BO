@@ -147,35 +147,51 @@ export default defineComponent({
     ]
   }),
   computed: {
-    getBackgroundColor(){
+    getBackgroundColor() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundColor = myGeneralStore.backgroundColor
       return backgroundColor
     },
-    getBackgroundColorDark(){
+    getBackgroundColorDark() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundColorDark = myGeneralStore.backgroundColorDark
       return backgroundColorDark
     }
   },
-  mounted() {
+  async mounted() {
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
     this.isReady = true
   },
+  async created() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
+    let hasAccess = false
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
+    if (!hasAccess) {
+      this.$toast.add({
+        severity: 'warn',
+        summary: 'Not access',
+        detail: 'you don´t have access',
+        life: 5000,
+      });
+      //this.handlerLogout()
+    }
+  },
   methods: {
-    async handlerLogout () {
+    async handlerLogout() {
       try {
         const { signOut } = useAuth()
-        await signOut({callbackUrl: '/'})
+        await signOut({ callbackUrl: '/' })
       } catch (error) {
         console.error('🚀 ---------------------------------🚀')
         console.error('🚀 ~ handlerLogout ~ error:', error)
         console.error('🚀 ---------------------------------🚀')
       }
     },
-    setLinkActive (link: any) {
+    setLinkActive(link: any) {
       const path = this.$route.path
       // return !!path.includes(link.path)
       return false
