@@ -9,8 +9,9 @@
       </svg>
     </div>
     <div class="name">
-      {{ `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName ||
-      ''}`  }}
+      {{ 
+        `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
+      }}
     </div>
     <div class="info">
       {{ `${employee.position.positionName}` }}
@@ -23,6 +24,9 @@
     </div>
     <div class="number">
       {{ `No. Emp: ${employee.employeeCode}` }}
+    </div>
+    <div class="number">
+      {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'UNSIGNED'}` }}
     </div>
     <div class="line">
     </div>

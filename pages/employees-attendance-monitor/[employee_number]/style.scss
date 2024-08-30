@@ -138,6 +138,30 @@
         padding-top: 1rem;
         margin-top: 1rem;
       }
+
+      .jumbotron {
+        background-color: white;
+        color: $text;
+
+        .icon {
+          height: 5rem;
+          display: flex;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 1rem;
+
+          svg {
+            width: 5rem;
+          }
+        }
+
+        span {
+          display: block;
+          width: 100%;
+          text-align: center;
+        }
+      }
     }
 
     .report-wrapper {

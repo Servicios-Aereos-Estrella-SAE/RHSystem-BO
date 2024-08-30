@@ -103,7 +103,6 @@ export default defineComponent({
       series: [] as Array<Object>
     },
     visualizationModeOptions: [
-      // { name: 'Annual', value: 'yearly', calendar_format: { mode: 'year', format: 'yy' }, selected: true },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
     ] as VisualizationModeOptionInterface[],
@@ -210,8 +209,6 @@ export default defineComponent({
     await Promise.all([
       this.setAssistSyncStatus(),
       this.setDepartmetList(),
-      // this.setDepartment(),
-      // this.setPositionDepartment(),
       this.setDepartmentPositionEmployeeList()
     ])
     this.setGeneralData()
@@ -230,10 +227,10 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     setGeneralData () {
-      const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
-      const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
-      const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
-      const faults = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
+      const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
+      const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0)
+      const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0)
+      const faults = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onFaultPercentage || 0), 0)
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
@@ -337,17 +334,6 @@ export default defineComponent({
     setPeriodCategories () {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    // async setDepartment () {
-    //   const departmentId = parseInt(`${this.$route.params.department || 0}`)
-    //   const response = await new DepartmentService().show(departmentId)
-    //   this.department = response.status === 200 ? response._data.data.department : null
-    // },
-    // async setPositionDepartment () {
-    //   const departmentId = parseInt(`${this.$route.params.department || 0}`)
-    //   const positionId = parseInt(`${this.$route.params.position || 0}`)
-    //   const response = await new PositionService().show(departmentId, positionId)
-    //   this.position = response.status === 200 ? response._data.data.position : null
-    // },
     async setDepartmentPositionEmployeeList () {
       const departmentId = null
       const positionId = null
@@ -460,45 +446,6 @@ export default defineComponent({
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-   /*  async getExcel() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const departmentId = parseInt(`${this.$route.params.department || 0}`)
-      const positionId = parseInt(`${this.$route.params.position || 0}`)
-      const firstDay = this.weeklyStartDay[0]
-      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
-      
-      const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByPosition(startDay, endDay, departmentId, positionId)
-      if (assistResponse.status === 201) {
-        const blob = await assistResponse._data
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', 'Report Position Assist.xlsx')
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Excel assist',
-          detail: 'Excel was created successfully',
-            life: 5000,
-        })
-        myGeneralStore.setFullLoader(false)
-      } else {
-        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Excel assist',
-          detail: msgError,
-            life: 5000,
-        })
-        myGeneralStore.setFullLoader(false)
-      }
-    }, */
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
