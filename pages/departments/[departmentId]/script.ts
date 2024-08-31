@@ -7,6 +7,7 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 import { useMyGeneralStore } from '~/store/general';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
 import DepartmentService from '~/resources/scripts/services/DepartmentService';
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
 
 export default defineComponent({
   name: 'DepartmentDetail',
@@ -19,11 +20,14 @@ export default defineComponent({
     const dataShifts = ref<ShiftInterface[] | null>(null);
     const drawerPositionDelete = ref<boolean>(false);
     const search = ref<string>('');
-    const drawerShiftForm = ref<boolean>(false); 
+    const drawerShiftForm = ref<boolean>(false);
     const drawerPositionForm = ref<boolean>(false);
     const alertDeletePosition = ref<boolean>(false);
     const messagePosition = ref<string>('');
-    
+    let canRead = ref<boolean>(false);
+    let canCreate = ref<boolean>(false);
+    let canDelete = ref<boolean>(false);
+
     const fetchPositions = async (departmentId: string, positionName: string | null = null) => {
       const myGeneralStore = useMyGeneralStore();
       try {
@@ -66,10 +70,10 @@ export default defineComponent({
     };
 
     const asignShift = () => {
-      drawerShiftForm.value = true; 
+      drawerShiftForm.value = true;
     };
     const handleSaveSuccess = () => {
-      drawerShiftForm.value = false; 
+      drawerShiftForm.value = false;
     };
     const assignPositionDepartment = () => {
       drawerPositionForm.value = true;
@@ -95,7 +99,7 @@ export default defineComponent({
     }
 
     const confirmDelete = async () => {
-       if (position.value) {
+      if (position.value) {
         drawerPositionDelete.value = false;
         const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
         const departmentService = new DepartmentService();
@@ -124,14 +128,14 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true);
 
       try {
-        const syncResponse1 = await fetch(`${config.public.BASE_API_PATH}`+'/synchronization/positions', {
+        const syncResponse1 = await fetch(`${config.public.BASE_API_PATH}` + '/synchronization/positions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
         });
         if (syncResponse1.ok) {
-          const syncResponse2 = await fetch(`${config.public.BASE_API_PATH}`+'/departments/sync-positions', {
+          const syncResponse2 = await fetch(`${config.public.BASE_API_PATH}` + '/departments/sync-positions', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -156,6 +160,13 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const permissions = await myGeneralStore.getAccess('positions')
+      canRead.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      canCreate.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+      canDelete.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+      myGeneralStore.setFullLoader(false)
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
       if (departmentId) {
         try {
@@ -195,6 +206,9 @@ export default defineComponent({
       confirmDelete,
       alertDeletePosition,
       messagePosition,
+      canRead,
+      canCreate,
+      canDelete,
     };
   }
 });

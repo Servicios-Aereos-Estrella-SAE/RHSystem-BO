@@ -13,7 +13,7 @@ export default defineComponent({
     invalidCredentials: false,
     isGuest: false
   }),
-  created () {
+  created() {
     this.validateSession()
 
     if (this.$config.public.ENVIRONMENT !== 'production') {
@@ -24,20 +24,20 @@ export default defineComponent({
   mounted() {
   },
   methods: {
-    resetInvalidCredentials () {
+    resetInvalidCredentials() {
       this.invalidCredentials = false
     },
-    async validateSession () {
+    async validateSession() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
-      
+
       if (session) {
         return this.$router.push({ path: '/departments-attendance-monitor' })
       }
 
       this.isGuest = true
     },
-    async handlerLogin () {
+    async handlerLogin() {
       if (!this.credentials.userEmail || !this.credentials.userPassword) {
         this.credentials.userPassword = ''
         this.invalidCredentials = true

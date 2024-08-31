@@ -1,3 +1,4 @@
+import type { SystemPermissionInterface } from "./SystemPermissionInterface"
 
 interface SystemModuleInterface {
   systemModuleId: number,
@@ -12,6 +13,7 @@ interface SystemModuleInterface {
   systemModuleCreatedAt: string,
   systemModuleUpdatedAt: string,
   systemModuleDeletedAt: string | null
+  permissions: Array<SystemPermissionInterface>
 }
 
 export type { SystemModuleInterface }

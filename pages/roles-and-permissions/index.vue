@@ -27,7 +27,7 @@
                       <template #body="slotProps" >
                         <div class="permissions">
                           <div v-for="(permission, indexP) in slotProps.data.systemPermissions" :key="`permission-${index}-${indexP}`" class="permission">
-                            <Checkbox v-model="permissions[index]" name="permission" :value="permission.systemPermissionId"/>
+                            <Checkbox v-model="permissions[index]" name="permission" :disabled="!canUpdate" :value="permission.systemPermissionId"/>
                             <label> {{ permission.systemPermissionName }}</label>
                           </div>
                         </div>
@@ -40,7 +40,7 @@
           </div>
         </div>
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" :disabled="roleSelected === null"/>
+          <Button v-if="canUpdate" label="Save" severity="primary" @click="onSave()" />
         </div>
       </NuxtLayout>
     </div>

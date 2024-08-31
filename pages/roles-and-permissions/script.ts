@@ -1,4 +1,5 @@
 import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface";
+import type { RoleModuleInterface } from "~/resources/scripts/interfaces/RoleModuleInterface";
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import RoleService from "~/resources/scripts/services/RoleService";
 import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
@@ -10,14 +11,19 @@ export default defineComponent({
     search: '' as string,
     roleList: [] as RoleInterface[],
     systemModulesList: [] as SystemModuleInterface[],
-    permissions: [] as Array<any>,
-    roleSelected: 0
+    permissions: []  as number[][],
+    roleSelected: 0,
+    canUpdate: false,
   }),
   computed: {},
   created() { },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+  
     this.getSystemModules()
     this.getRoles()
     myGeneralStore.setFullLoader(false)
@@ -32,9 +38,9 @@ export default defineComponent({
       const response = await new RoleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.roles.data : []
       this.roleList = list
-      const roleModules = [] as any
+      const roleModules = [] as Array<RoleModuleInterface>
       for await (const role of this.roleList) {
-        const roleModule = { role, modules: [] as any } as any
+        const roleModule = { role, modules: [] as Array<SystemModuleInterface> }
         if (role.roleSystemPermissions) {
           for await (const rolePermission of role.roleSystemPermissions) {
             if (rolePermission.systemPermissions) {
@@ -56,13 +62,13 @@ export default defineComponent({
 
         roleModules.push(roleModule)
       }
-      const permissions = [] as any
+      const permissions = [] as number[][]
       for await (const [i, r] of roleModules.entries()) {
         permissions[i] = [];
 
         for (const m of r.modules) {
-          m.permissions.forEach((element: any) => {
-            permissions[i].push(parseInt(element.systemPermissionId))
+          m.permissions.forEach((element) => {
+            permissions[i].push(element.systemPermissionId)
           });
         }
       }
@@ -71,24 +77,35 @@ export default defineComponent({
     async onSave() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      const role = this.roleList[this.roleSelected]
-      const permissions = []
-      for await (const permissionId of this.permissions[this.roleSelected]) {
-        permissions.push(permissionId)
-      }
-      const response = await new RoleService().assign(role.roleId, permissions)
-      if (response.status === 201) {
+      try {
+        const promises = this.roleList.map(async (role, index) => {
+          const permissions = [];
+    
+          for (const permissionId of this.permissions[index]) {
+            permissions.push(permissionId);
+          }
+    
+          const response = await new RoleService().assign(role.roleId, permissions);
+    
+          if (response.status !== 201) {
+            throw new Error(response._data.message || 'Failed to assign role');
+          }
+        });
+    
+        await Promise.all(promises);
+    
         this.$toast.add({
           severity: 'success',
-          summary: 'Role assign',
-          detail: response._data.message,
+          summary: 'Roles assigned',
+          detail: 'All roles were assigned successfully.',
           life: 5000,
         });
-      } else {
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'There was an error assigning roles.';
         this.$toast.add({
           severity: 'warn',
-          summary: 'Role assign',
-          detail: response._data.message,
+          summary: 'Roles assigned',
+          detail: errorMessage,
           life: 5000,
         });
       }
