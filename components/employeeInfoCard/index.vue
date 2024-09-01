@@ -25,11 +25,11 @@
     <div class="number">
       {{ `No. Emp: ${employee.employeeCode}` }}
     </div>
+    <div class="line"></div>
     <div class="number">
       {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'UNSIGNED'}` }}
     </div>
-    <div class="line">
-    </div>
+    <div class="line"></div>
     <div class="vacation-info">
       <div v-if="!canHaveVacations" class="vacation">
         {{ `Vacations will be available at ${dateFirstYear}`}}

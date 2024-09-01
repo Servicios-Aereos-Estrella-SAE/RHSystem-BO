@@ -3,7 +3,7 @@
 .user-info-card {
   margin-top: 2.25rem;
   position: relative;
-  height: 23.5rem;
+  min-height: 23.5rem;
 
   .avatar {
     width: 4rem;
@@ -39,6 +39,7 @@
     box-sizing: border-box;
     padding: 0.3rem;
   }
+
   .position,.number {
     text-align: left;
     font-weight: 500;
@@ -47,6 +48,7 @@
     box-sizing: border-box;
     padding: 0.3rem;
   }
+
   .vacation-info {
     height: 4.5rem;
     .vacation {

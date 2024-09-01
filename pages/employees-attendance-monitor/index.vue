@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-page">
+  <div class="dashboard-page-employee-attendance">
     <Toast/>
     <Head>
       <Title>
@@ -60,6 +60,7 @@
               Period
             </label>
             <Calendar
+              v-if="visualizationMode && visualizationMode?.calendar_format"
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
@@ -105,20 +106,22 @@
           </div>
         </div>
         <div v-for="(item, index) in getDepartmentPositionAssistStatistics()" :key="`position-${item.department.departmentId}-${index}`">
-          <h2>
-            Employees into
-            {{ item.department.departmentAlias || item.department.departmentName }}
-          </h2>
-          <div v-if="item.employees.length > 0" class="department-positions-wrapper">
-            <div v-for="(employeeAssist, index) in item.employees" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
-              <attendanceEmployeeInfoCard
-                v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
-                :employee="employeeAssist"
-              />
+          <div v-if="!!(item.department)">
+            <h2>
+              Employees into
+              {{ item.department.departmentAlias || item.department.departmentName }}
+            </h2>
+            <div v-if="!!(item.employees) && item.employees.length > 0" class="department-positions-wrapper">
+              <div v-for="(employeeAssist, index) in item.employees" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
+                <attendanceEmployeeInfoCard
+                  v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
+                  :employee="employeeAssist"
+                />
+              </div>
             </div>
-          </div>
-          <div class="jumbotron">
-            No data to display
+            <div v-else class="jumbotron">
+              No employees data list to display
+            </div>
           </div>
         </div>
       </div>

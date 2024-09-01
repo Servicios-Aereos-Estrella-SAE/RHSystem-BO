@@ -1,7 +1,7 @@
 <template>
   <div class="attendance-calendar-day-wrapper" v-if="checkAssist">
-    <div class="attendance-calendar-day">
-      <div class="day" :class="{ future: checkAssist.assist.isFutureDay, rest: checkAssist.assist.isRestDay && !chekInTime }">
+    <div v-if="checkAssist && checkAssist.assist.dateShift" class="attendance-calendar-day">
+      <div class="day" :class="{ future: checkAssist.assist.isFutureDay, rest: checkAssist.assist.isRestDay && !chekInTime && checkAssist.assist.checkInStatus !== 'working' }">
         <div class="date">
           <div>
             {{ calendarDay }}
@@ -16,7 +16,7 @@
             <div v-if="checkAssist.assist.isHoliday && chekInTime" class="calendar-icon-info">
               <span v-if="checkAssist.assist.holiday" v-html="checkAssist.assist.holiday.holidayIcon" v-tooltip.top="checkAssist.assist.holiday.holidayName"></span>
             </div>
-            <div v-else-if="checkAssist.assist.isRestDay && chekInTime" class="calendar-icon-info">
+            <div v-else-if="(checkAssist.assist.isRestDay && chekInTime) || (checkAssist.assist.isRestDay && checkAssist.assist.checkInStatus === 'working')" class="calendar-icon-info">
               <svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.1c.1 35.5-28.6 64.3-64 64.3H128.1c-35.35 0-64.01-28.7-64.01-64V287.6H32.05C14.02 287.6 0 273.5 0 255.5c0-9 3.004-17 10.01-24L266.4 8.016c7-7.014 15-8.016 22-8.016s15 2.004 21.1 7.014L564.8 231.5c8 7 12.1 15 11 24zM288 160c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-32 160c-44.2 0-80 35.8-80 80 0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16 0-44.2-35.8-80-80-80h-64z" fill="#87a4bf" class="fill-000000"></path></svg>
             </div>
             <div v-else-if="checkAssist.assist.isVacationDate && chekInTime" class="calendar-icon-info">
@@ -34,7 +34,7 @@
             </div>
           </div>
         </div>
-        <div v-else-if="checkAssist.assist.isRestDay && !chekInTime" class="no-work-day">
+        <div v-else-if="checkAssist.assist.isRestDay && !chekInTime && checkAssist.assist.checkInStatus !== 'working'" class="no-work-day">
           <div>
             <div class="icon">
               <svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.1c.1 35.5-28.6 64.3-64 64.3H128.1c-35.35 0-64.01-28.7-64.01-64V287.6H32.05C14.02 287.6 0 273.5 0 255.5c0-9 3.004-17 10.01-24L266.4 8.016c7-7.014 15-8.016 22-8.016s15 2.004 21.1 7.014L564.8 231.5c8 7 12.1 15 11 24zM288 160c-35.3 0-64 28.7-64 64s28.7 64 64 64 64-28.7 64-64-28.7-64-64-64zm-32 160c-44.2 0-80 35.8-80 80 0 8.8 7.2 16 16 16h192c8.8 0 16-7.2 16-16 0-44.2-35.8-80-80-80h-64z" fill="#87a4bf" class="fill-000000"></path></svg>
@@ -70,7 +70,7 @@
               <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h256v256H0z"></path><path d="M136 80v43.4l37.6 21.7a8 8 0 0 1-4 14.9 7.1 7.1 0 0 1-4-1.1l-41.6-24h-.2l-.4-.2-.3-.3-.3-.2-.3-.3-.2-.2c-.2-.1-.3-.3-.4-.4l-.2-.2-.2-.4-.2-.3-.2-.3a.5.5 0 0 1-.2-.4l-.2-.3c0-.1-.1-.2-.1-.4a.4.4 0 0 1-.1-.3l-.2-.4a.4.4 0 0 0-.1-.3c0-.2 0-.3-.1-.4v-.4c0-.2-.1-.3-.1-.4V80a8 8 0 0 1 16 0Zm59.9-19.9a96.2 96.2 0 0 0-135.8 0l-8.3 8.3-14.3-14.3a8 8 0 0 0-8.7-1.8 8.2 8.2 0 0 0-5 7.4v40a8 8 0 0 0 8 8h40a8 8 0 0 0 5.7-13.6L63.1 79.7l8.3-8.3a80 80 0 1 1 0 113.2 7.9 7.9 0 0 0-11.3 0 8 8 0 0 0 0 11.3A96 96 0 0 0 195.9 60.1Z" fill="#303e67" class="fill-000000"></path></svg>
             </div>
             <div class="time" :class="checkAssist.assist.checkInStatus">
-              {{ chekInTime || ((checkAssist.assist.checkInStatus === 'fault') ? 'Fault' : '---') }}
+              {{ chekInTime || ((checkAssist.assist.checkInStatus === 'fault') ? 'Fault' : checkAssist.assist.checkInStatus === 'working' ? 'Working' : '---') }}
             </div>
           </div>
           <div class="check">
@@ -94,7 +94,7 @@
               <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h256v256H0z"></path><path d="M136 80v43.4l37.6 21.7a8 8 0 0 1-4 14.9 7.1 7.1 0 0 1-4-1.1l-41.6-24h-.2l-.4-.2-.3-.3-.3-.2-.3-.3-.2-.2c-.2-.1-.3-.3-.4-.4l-.2-.2-.2-.4-.2-.3-.2-.3a.5.5 0 0 1-.2-.4l-.2-.3c0-.1-.1-.2-.1-.4a.4.4 0 0 1-.1-.3l-.2-.4a.4.4 0 0 0-.1-.3c0-.2 0-.3-.1-.4v-.4c0-.2-.1-.3-.1-.4V80a8 8 0 0 1 16 0Zm91.2-27.7a8 8 0 0 0-8.7 1.8l-14.3 14.3-8.3-8.3a96 96 0 1 0 0 135.8 8 8 0 0 0 0-11.3 7.9 7.9 0 0 0-11.3 0 80 80 0 1 1 0-113.2l8.3 8.3-14.4 14.4a8 8 0 0 0 5.7 13.6h40a8 8 0 0 0 8-8v-40a8.2 8.2 0 0 0-5-7.4Z" fill="#303e67" class="fill-000000"></path></svg>
             </div>
             <div class="time" :class="checkAssist.assist.checkOutStatus">
-              {{ chekOutTime || '---' }}
+              {{ chekOutTime || (checkAssist.assist.checkOutStatus === 'working' ? 'Working' : '---')}}
             </div>
           </div>
           <div class="check info check-notes" :class="{ inactive: !checkAssist.assist.hasExceptions }" @click="displayExceptionComments(checkAssist)">
@@ -113,6 +113,20 @@
               Sunday bonus
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="attendance-calendar-day no-shift-calendar">
+      <div class="day">
+        <div>
+          <div class="icon">
+            <svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17 14.5V7H3v2.468a4.5 4.5 0 0 1 6.061 5.972l1.56 1.56H14.5a2.5 2.5 0 0 0 2.5-2.5Zm0-9A2.5 2.5 0 0 0 14.5 3h-9A2.5 2.5 0 0 0 3 5.5V6h14v-.5ZM7.096 16.303a3.5 3.5 0 1 1 .707-.707l2.55 2.55a.5.5 0 0 1-.707.708l-2.55-2.55ZM7.5 13.5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z" fill="#87a4bf" class="fill-212121"></path></svg>
+          </div>
+          <span>
+            This day has not
+            <br>
+            assigned shift
+          </span>
         </div>
       </div>
     </div>
