@@ -13,7 +13,7 @@ export default defineComponent({
     totalRecords: 0,
     first: 0,
     last: 0,
-    rowsPerPage: 30,
+    rowsPerPage: 9999,
     drawerShiftForm: false,
     drawerShiftDelete: false
 

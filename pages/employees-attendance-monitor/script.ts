@@ -1,24 +1,24 @@
 import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
+import { useMyGeneralStore } from '~/store/general'
 
-import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
 import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/interfaces/EmployeeAssistStatisticInterface'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
+import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 
+import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
-import PositionService from '~/resources/scripts/services/PositionService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
-import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import AssistService from '~/resources/scripts/services/AssistService'
-import { useMyGeneralStore } from '~/store/general'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
-import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
+
 
 export default defineComponent({
   components: {
@@ -200,20 +200,24 @@ export default defineComponent({
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
+    this.periodSelected = new Date()
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    this.periodSelected = new Date()
-    this.setDefaultVisualizationMode()
+
+    await this.setDefaultVisualizationMode()
+    
     await Promise.all([
       this.setAssistSyncStatus(),
       this.setDepartmetList(),
       this.setDepartmentPositionEmployeeList()
     ])
+
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
+
     myGeneralStore.setFullLoader(false)
   },
   methods: {
