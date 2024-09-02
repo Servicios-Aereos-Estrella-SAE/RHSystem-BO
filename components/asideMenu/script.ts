@@ -119,6 +119,12 @@ export default defineComponent({
         icon: `<svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7 14.204a1 1 0 0 0 1.628.778l4.723-3.815a1.5 1.5 0 0 0 0-2.334L8.628 5.02A1 1 0 0 0 7 5.797v8.407Z" fill="#ffffff" class="fill-212121"></path></svg>`,
         items: [
           {
+            label: 'Aircraft',
+            name: 'Aeronave',
+            path: '/aircraft',
+            icon: `<svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M11 10c.714 0 1.34.374 1.694.936-.125.33-.194.69-.194 1.064v.063A2 2 0 0 0 11 14v2.317c-.904.436-2.089.683-3.5.683C4.088 17 2 15.554 2 13.5V12a2 2 0 0 1 2-2h7Zm1 4a1 1 0 0 1 1-1h.5v-1a1.998 1.998 0 0 1 3.543-1.272c.286.345.457.789.457 1.272v1h.5a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-4Zm4.07 1.512a.753.753 0 0 0-.57-.262.75.75 0 1 0 .57.262ZM15.5 11a1 1 0 0 0-1 1v1h2v-1a1 1 0 0 0-1-1Zm-2.25-.984.015-.017h-.03l.014.017ZM7.5 2a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7Zm7 2a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="#ffffff" class="fill-212121"></path></svg>`
+          },
+          {
             label: 'Aircraft Class',
             name: 'Clase Aeronaves',
             path: '/aircraft-class',

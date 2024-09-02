@@ -1,9 +1,8 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 @import '/resources/styles/colors.scss';
-.airports-page {
- 
 
+.aircrafts-page {
   h2 {
     font-size: 1.25rem;
     font-weight: 500;
@@ -11,23 +10,30 @@
     margin-bottom: 1rem;
   }
 
-  .airport-wrapper {
+  .aircraft-wrapper {
     min-height: 100dvh;
     box-sizing: border-box;
 
-    .box.head-page {
+    .head-page {
       display: grid;
-      grid-template-columns: 20rem auto;
+      grid-template-columns: 1fr auto;
       gap: 0.5rem;
       justify-content: space-between;
 
-        Button {
-          margin-left: 0.5rem;
+      .input-box {
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
         }
-      
+
+        .btn-add {
+          margin-top: 0.5rem;
+        }
+      }
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 15rem auto;
+        grid-template-columns: 1fr auto;
       }
 
       @media screen and (max-width: $tablet) {
@@ -35,16 +41,16 @@
       }
 
       @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 1fr;
       }
     }
 
-    .airport-card-wrapper {
+    .aircraft-card-wrapper {
       box-sizing: border-box;
       display: grid;
       grid-auto-flow: dense;
       grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-      gap: .5rem;
+      gap: 0.5rem;
       margin-top: 0.5rem;
 
       // Ajuste en la visualización de tarjetas
@@ -62,12 +68,25 @@
       width: 100%;
     }
 
-    .airport-form-sidebar {
+    .aircraft-form-sidebar {
       width: 100% !important;
-      max-width: 35rem !important;
+      max-width: 50rem !important;
 
       @media screen and (max-width: $sm) {
         width: 100% !important;
+      }
+    }
+
+    .card.flex.justify-content-center {
+      margin-top: 1rem;
+    }
+
+    .confirmation-content {
+      display: flex;
+      align-items: center;
+
+      i {
+        color: #f39c12;
       }
     }
   }
