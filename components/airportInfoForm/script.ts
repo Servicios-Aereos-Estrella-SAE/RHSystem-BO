@@ -11,7 +11,6 @@ export default defineComponent({
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
-    
     submitted: false,
     cities: [
       { name: 'Heliport', value: 'heliport' },
@@ -20,6 +19,7 @@ export default defineComponent({
       { name: 'Ballonport', value: 'balloonport' },
       { name: 'Medium Airport', value: 'medium_airport' },
       { name: 'Large Airport', value: 'large_airport' },
+      
     ],
   }),
   computed: {

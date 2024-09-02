@@ -2,6 +2,25 @@
 
 .attendance-calendar-day {
 
+  &.no-shift-calendar {
+    opacity: 0.25;
+    
+    .day {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+
+      .icon {
+        margin-bottom: 1rem;
+
+        svg {
+          width: 3rem;
+        }
+      }
+    }
+  }
+
   .day {
     padding: 1rem;
     border-radius: $radius;
@@ -131,6 +150,11 @@
         font-weight: 450;
 
         &.ontime {
+          background-color: transparentize($color: $success, $amount: 0.95);
+          color: $success;
+        }
+
+        &.working {
           background-color: transparentize($color: $success, $amount: 0.95);
           color: $success;
         }
