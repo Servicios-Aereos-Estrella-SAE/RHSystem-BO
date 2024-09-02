@@ -1,5 +1,6 @@
 import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface";
 import type { RoleModuleInterface } from "~/resources/scripts/interfaces/RoleModuleInterface";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import RoleService from "~/resources/scripts/services/RoleService";
 import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
@@ -22,7 +23,11 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
-    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    if (myGeneralStore.isRoot) {
+      this.canUpdate = true
+    } else {
+      this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    }
   
     this.getSystemModules()
     this.getRoles()
@@ -37,7 +42,7 @@ export default defineComponent({
     async getRoles() {
       const response = await new RoleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.roles.data : []
-      this.roleList = list
+      this.roleList = list.filter((a: RoleInterface) => a.roleSlug !== 'root')
       const roleModules = [] as Array<RoleModuleInterface>
       for await (const role of this.roleList) {
         const roleModule = { role, modules: [] as Array<SystemModuleInterface> }

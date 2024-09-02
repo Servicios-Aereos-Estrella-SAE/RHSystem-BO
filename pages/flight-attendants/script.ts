@@ -1,5 +1,6 @@
 import type { FlightAttendantInterface } from "~/resources/scripts/interfaces/FlightAttendantInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import FlightAttendantService from "~/resources/scripts/services/FlightAttendantService";
 import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
@@ -17,11 +18,28 @@ export default defineComponent({
         drawerFlightAttendantForm: false,
         drawerFlightAttendantPhotoForm: false,
         drawerFlightAttendantDelete: false,
-        drawerFlightAttendantSync: false
+        drawerFlightAttendantSync: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     computed: {},
     created() { },
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+          this.canCreate = true
+          this.canUpdate = true
+          this.canDelete = true
+        } else {
+          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         this.handlerSearchFlightAttendant();
     },
     methods: {

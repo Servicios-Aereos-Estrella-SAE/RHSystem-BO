@@ -197,19 +197,23 @@ export default defineComponent({
   },
   methods: {
     async assignItemsMenu(systemModules: Array<SystemModuleInterface>, group: string) {
+      const myGeneralStore = useMyGeneralStore()
       const existGroupMenu = this.menu.find(a => a.label === group)
       if (existGroupMenu) {
         const items = systemModules.filter((a: SystemModuleInterface) => a.systemModuleGroup === group)
         for await (const item of items) {
           if (!item.systemModulePath.toString().includes('#')) {
-            existGroupMenu.items.push(
-              {
-                label: item.systemModuleName,
-                name: item.systemModuleName,
-                path: item.systemModulePath,
-                icon: item.systemModuleIcon
-              }
-            )
+            const hasAccess = await myGeneralStore.hasAccess(item.systemModuleSlug, 'read')
+            if (hasAccess) {
+              existGroupMenu.items.push(
+                {
+                  label: item.systemModuleName,
+                  name: item.systemModuleName,
+                  path: item.systemModulePath,
+                  icon: item.systemModuleIcon
+                }
+              )
+            }
           }
         }
       }

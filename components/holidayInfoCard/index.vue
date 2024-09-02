@@ -12,8 +12,8 @@
       {{ `${holiday.holidayName}` }}
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" severity="info" @click="handlerClickOnEdit()" />
-      <Button icon="pi pi-trash" severity="warning" @click="handlerClickOnDelete()" />
+      <Button v-if="canUpdate" icon="pi pi-pencil" severity="info" @click="handlerClickOnEdit()" />
+      <Button v-if="canDelete" icon="pi pi-trash" severity="warning" @click="handlerClickOnDelete()" />
     </div>
   </div>
 </template>

@@ -2,6 +2,7 @@ import type { SystemSettingInterface } from "~/resources/scripts/interfaces/Syst
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import SystemSettingService from "~/resources/scripts/services/SystemSettingService";
 import { useMyGeneralStore } from "~/store/general";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 export default defineComponent({
     name: 'SystemSettings',
     props: {},
@@ -17,11 +18,28 @@ export default defineComponent({
         drawerSystemSettingForm: false,
         drawerSystemSettingPhotoForm: false,
         drawerSystemSettingDelete: false,
-        drawerSystemSettingSync: false
+        drawerSystemSettingSync: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     computed: {},
     created() { },
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+        this.canCreate = true
+        this.canUpdate = true
+        this.canDelete = true
+        } else {
+        this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+        this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+        this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         this.handlerSearchSystemSetting();
     },
     methods: {

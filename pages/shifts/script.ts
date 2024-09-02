@@ -1,3 +1,4 @@
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterface";
 import ShiftService from "~/resources/scripts/services/ShiftService";
 import { useMyGeneralStore } from "~/store/general";
@@ -15,12 +16,29 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 9999,
     drawerShiftForm: false,
-    drawerShiftDelete: false
+    drawerShiftDelete: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
 
   }),
   computed: {},
   created () {},
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    if (myGeneralStore.isRoot) {
+      this.canCreate = true
+      this.canUpdate = true
+      this.canDelete = true
+    } else {
+      this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+      this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+      this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    }
+    myGeneralStore.setFullLoader(false)
     this.handlerSearchShift();
   },
   methods: {

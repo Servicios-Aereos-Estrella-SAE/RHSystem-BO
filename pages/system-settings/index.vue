@@ -20,7 +20,7 @@
             </div>
             <div class="input-box">
               <br />
-              <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
             </div>
           </div>
           <div>
@@ -30,6 +30,7 @@
             <div class="system-setting-card-wrapper">
               <div v-for="(systemSetting, index) in filteredSystemSettings" :key="`system-setting-${systemSetting.systemSettingId}-${index}`">
                 <SystemSettingInfoCard :click-on-photo="() => { onPhoto(systemSetting) }" :systemSetting="systemSetting"
+                  :can-update="canUpdate" :can-delete="canDelete" 
                   :click-on-edit="() => { onEdit(systemSetting) }" :click-on-delete="() => { onDelete(systemSetting) }" />
               </div>
             </div>
