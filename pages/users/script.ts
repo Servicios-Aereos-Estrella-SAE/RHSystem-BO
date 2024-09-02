@@ -4,6 +4,8 @@ import RoleService from "~/resources/scripts/services/RoleService";
 import UserService from "~/resources/scripts/services/UserService";
 import Toast from 'primevue/toast';
 import PersonService from "~/resources/scripts/services/PersonService";
+import { useMyGeneralStore } from "~/store/general";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 
 export default defineComponent({
   components: {
@@ -25,13 +27,24 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 50,
     drawerUserForm: false,
-    drawerUserDelete: false
+    drawerUserDelete: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
   }),
   computed: {
   },
   created () {
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    myGeneralStore.setFullLoader(false)
     await this.handlerSearchUser()
     await this.handlerSearchRole()
   },

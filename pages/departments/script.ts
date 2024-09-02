@@ -2,6 +2,8 @@ import type { DepartmentInterface } from "~/resources/scripts/interfaces/Departm
 import DepartmentService from "~/resources/scripts/services/DepartmentService";
 import { useMyGeneralStore } from "~/store/general";
 import Department from '../../../API-SAE/app/models/department';
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
+import { useMyRoleStore } from "~/store/role";
 
 export default defineComponent({
   name: 'Departments',
@@ -16,10 +18,34 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 30,
     drawerDepartmentDetail: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
   }),
   computed: {},
-  created () {},
+  async created() {
+
+  },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    //const myRoleStore = useMyRoleStore()
+    // console.log('isRoot: ' + myRoleStore.isRoot)
+    /* if (myRoleStore.isRoot) {
+      this.canCreate = true
+      this.canUpdate = true
+      this.canDelete = true
+      console.log('es root ok')
+    } else { */
+    //console.log('NO es root ok')
+    this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    /*    }
+       console.log('isRoot: ' + myRoleStore.isRoot) */
+    myGeneralStore.setFullLoader(false)
     this.handlerSearchDepartment();
   },
   methods: {
@@ -28,8 +54,6 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       const response = await new DepartmentService().getSearchDepartmentList(this.search, this.currentPage, this.rowsPerPage);
       const list = response.status === 200 ? response._data.data.data : [];
-    //   this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
-    //   this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
       this.filteredDepartments = list;
       myGeneralStore.setFullLoader(false)
     },
@@ -61,11 +85,11 @@ export default defineComponent({
       this.department = { ...department };
       const index = this.filteredDepartments.findIndex((s: DepartmentInterface) => s.departmentId === this.department?.departmentId);
       if (index !== -1) {
-          this.filteredDepartments[index] = department;
-          this.$forceUpdate();
+        this.filteredDepartments[index] = department;
+        this.$forceUpdate();
       } else {
-          this.filteredDepartments.push(department);
-          this.$forceUpdate();
+        this.filteredDepartments.push(department);
+        this.$forceUpdate();
       }
       this.drawerDepartmentDetail = false;
     },

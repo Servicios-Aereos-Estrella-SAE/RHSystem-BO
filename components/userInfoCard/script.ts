@@ -10,6 +10,8 @@ export default defineComponent({
     user: { type: Object as PropType<UserInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     employeeNumber: null as string | null,

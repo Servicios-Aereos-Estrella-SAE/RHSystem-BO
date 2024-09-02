@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import { useMyRoleStore } from '~/store/role'
 
 export const useMyGeneralStore = defineStore({
   id: 'myGeneralStore',
@@ -8,19 +12,21 @@ export const useMyGeneralStore = defineStore({
     fullLoader: false as boolean,
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
-    backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
+    backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
+    /*  isRoot: false,
+     roleWasVerified: false */
   }),
   actions: {
-    setDisplayAside (status: boolean) {
+    setDisplayAside(status: boolean) {
       this.displayAside = status
     },
 
-    toggleDisplayAside () {
+    toggleDisplayAside() {
       const currentStatus = this.displayAside
       this.displayAside = !currentStatus
     },
 
-    setFullLoader (status: boolean) {
+    setFullLoader(status: boolean) {
       this.fullLoader = status
     },
 
@@ -73,5 +79,78 @@ export const useMyGeneralStore = defineStore({
         darker: darkerShade
       };
     },
+
+    async hasAccess(systemModuleSlug: string, systemPermissionSlug: string) {
+
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let hasAccess = false
+
+      if (authUser && authUser.roleId) {
+        const myRoleStore = useMyRoleStore()
+        if (!myRoleStore.roleWasVerified) {
+          await myRoleStore.verifyRoleRoot()
+        }
+        if (myRoleStore.isRoot) {
+          return true
+        }
+        const roleService = new RoleService()
+        const roleResponse = await roleService.hasAccess(authUser.roleId, systemModuleSlug, systemPermissionSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          hasAccess = roleResponse._data.data.roleHasAccess
+        }
+      }
+      return hasAccess
+    },
+
+    async getAccess(systemModuleSlug: string) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let systemPermissions = [] as Array<RoleSystemPermissionInterface>
+      if (authUser && authUser.roleId) {
+        /*  const myRoleStore = useMyRoleStore()
+         if (!myRoleStore.roleWasVerified) {
+           await myRoleStore.verifyRoleRoot()
+         } */
+        //await this.verifyRoleRoot()
+        /*   console.log('get ok')
+          console.log(this.isRoot) */
+        const roleService = new RoleService()
+        const roleResponse = await roleService.getAccess(authUser.roleId, systemModuleSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          systemPermissions = roleResponse._data.data.permissions
+          /*   permissions.forEach((permission: RoleSystemPermissionInterface) => {
+              systemPermissions.push(permission)
+            }) */
+        }
+      }
+      return systemPermissions
+    },
+
+    /*  async verifyRoleRoot() {
+       console.log('verificando')
+       if (!this.isRoot) {
+         const { getSession } = useAuth()
+         const session: unknown = await getSession()
+         const authUser = session as UserInterface
+         this.isRoot = false
+         if (authUser && authUser.roleId) {
+           const roleService = new RoleService()
+           const roleResponse = await roleService.show(authUser.roleId)
+           if (roleResponse && roleResponse.status === 200) {
+             if (roleResponse._data.data.role) {
+               if (roleResponse._data.data.role.roleSlug === 'root') {
+                 this.isRoot = true
+               }
+             }
+           }
+           console.log(roleResponse)
+         }
+         this.roleWasVerified = true
+         console.log('isRoot: ' + this.isRoot)
+      }
+     } */
   }
 })

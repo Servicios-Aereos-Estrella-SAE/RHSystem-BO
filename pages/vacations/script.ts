@@ -1,3 +1,4 @@
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import type { VacationInterface } from "~/resources/scripts/interfaces/VacationInterface";
 import VacationService from "~/resources/scripts/services/VacationService";
 import { useMyGeneralStore } from "~/store/general";
@@ -15,11 +16,22 @@ export default defineComponent({
     last: 0,
     rowsPerPage: 30,
     drawerVacationForm: false,
-    drawerVacationDelete: false
+    drawerVacationDelete: false,
+    canCreate: false,
+    canUpdate: false,
+    canDelete: false
   }),
   computed: {},
   created() {},
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+    this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    myGeneralStore.setFullLoader(false)
     this.handlerSearchVacation();
   },
   methods: {

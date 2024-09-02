@@ -26,7 +26,7 @@
           </div>
           <div class="input-box">
             <br />
-            <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+            <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
           </div>
         </div>
         <div>
@@ -36,6 +36,7 @@
           <div class="user-card-wrapper">
             <div v-for="(user, index) in filteredUsers" :key="`user-${user.user_id}-${index}`">
               <userInfoCard :user="user" :click-on-edit="() => { onEdit(user) }"
+                :can-update="canUpdate" :can-delete="canDelete"
                 :click-on-delete="() => { onDelete(user) }" />
             </div>
           </div>
