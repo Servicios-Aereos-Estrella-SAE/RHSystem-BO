@@ -77,6 +77,7 @@
               Period
             </label>
             <Calendar
+              v-if="visualizationMode && visualizationMode.calendar_format"
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"

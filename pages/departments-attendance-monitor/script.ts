@@ -221,9 +221,9 @@ export default defineComponent({
       this.setDepartmetList(),
     ])
 
-    if (this.$config.public.ENVIRONMENT === 'production') {
+    // if (this.$config.public.ENVIRONMENT === 'production') {
       await this.setDepartmentPositionEmployeeList()
-    }
+    // }
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)

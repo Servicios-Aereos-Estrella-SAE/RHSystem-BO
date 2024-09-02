@@ -174,15 +174,19 @@ export default defineComponent({
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const employeeShiftService = new EmployeeShiftService()
       const employeeShiftResponse = await employeeShiftService.getShiftActiveByEmployee(employeeId)
-      this.employeeShiftActiveId = employeeShiftResponse.employeeShift.employeeShiftId
-      for await (const employeeShift of this.employeeShiftsList) {
-        employeeShift.isActive = false
+      
+      if (employeeShiftResponse.employeeShift) {
+        this.employeeShiftActiveId = employeeShiftResponse.employeeShift.employeeShiftId || null
+        for await (const employeeShift of this.employeeShiftsList) {
+          employeeShift.isActive = false
+        }
+        const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
+        if (index !== -1) {
+          this.employeeShiftsList[index].isActive = true
+          this.$forceUpdate()
+        }
       }
-      const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
-      if (index !== -1) {
-        this.employeeShiftsList[index].isActive = true
-        this.$forceUpdate()
-      }
+
       myGeneralStore.setFullLoader(false)
     },
   }
