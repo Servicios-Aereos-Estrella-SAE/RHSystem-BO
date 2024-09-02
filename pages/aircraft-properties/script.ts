@@ -141,6 +141,7 @@ export default defineComponent({
         this.$forceUpdate();
         myGeneralStore.setFullLoader(false)
       }
+      
       myGeneralStore.setFullLoader(false)
       this.drawerAircraftPropertyForm = false;
     }

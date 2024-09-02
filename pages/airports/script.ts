@@ -57,6 +57,7 @@ export default defineComponent({
                 airportCreatedAt: new Date(),
                 airportUpdatedAt: new Date(),
                 airportDeletedAt: null
+                
             }
             this.airport = newAirport
             this.drawerAirportForm = true
@@ -113,6 +114,7 @@ export default defineComponent({
                         detail: airportResponse._data.message,
                         life: 5000,
                     });
+                    
                 } else {
                     this.$toast.add({
                         severity: 'error',
