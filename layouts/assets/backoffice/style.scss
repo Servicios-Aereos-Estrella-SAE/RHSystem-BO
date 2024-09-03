@@ -87,6 +87,12 @@ body, html {
       padding-top: 6.5rem;
       border-bottom: solid 3rem white;
     }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
   }
 }
 

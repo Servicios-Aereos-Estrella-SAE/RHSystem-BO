@@ -12,7 +12,8 @@ export const useMyGeneralStore = defineStore({
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
-    isRoot: false
+    isRoot: false,
+    displayContent: false
   }),
   actions: {
     setDisplayAside(status: boolean) {
@@ -115,7 +116,7 @@ export const useMyGeneralStore = defineStore({
           }
         }
         const roleService = new RoleService()
-        const roleResponse = await roleService.getAccess(authUser.roleId, systemModuleSlug)
+        const roleResponse = await roleService.getAccessByModule(authUser.roleId, systemModuleSlug)
         if (roleResponse && roleResponse.status === 200) {
           systemPermissions = roleResponse._data.data.permissions
         }

@@ -19,7 +19,7 @@
                     </div>
                     <div class="input-box">
                         <br />
-                        <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
+                        <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
                             @click="addNew" />
                     </div>
                 </div>
@@ -30,7 +30,8 @@
                     <div class="aircraft-card-wrapper">
                         <div v-for="(aircraft, index) in filterAircrafts"
                             :key="`aircraft-${aircraft.aircraftId}-${index}`">
-                            <aircraftInfoCard :aircraft="aircraft" :click-on-edit="() => { onEdit(aircraft) }"
+                            <aircraftInfoCard :aircraft="aircraft" :can-update="canUpdate" :can-delete="canDelete"
+                                :click-on-edit="() => { onEdit(aircraft) }"
                                 :click-on-delete="() => { onDelete(aircraft) }" />
                         </div>
                     </div>
@@ -60,28 +61,28 @@
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+    import Script from './script.ts'
+    export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+    @import './style';
 </style>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
+    @import '/resources/styles/variables.scss';
 
-.aircraft-card-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.aircraft-form-sidebar {
-    width: 100% !important;
-    max-width: 50rem !important;
-
-    @media screen and (max-width: $sm) {
-        width: 100% !important;
+    .aircraft-card-wrapper {
+        display: flex;
+        flex-wrap: wrap;
     }
-}
+
+    .aircraft-form-sidebar {
+        width: 100% !important;
+        max-width: 50rem !important;
+
+        @media screen and (max-width: $sm) {
+            width: 100% !important;
+        }
+    }
 </style>
