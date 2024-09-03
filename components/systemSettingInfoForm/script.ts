@@ -4,6 +4,7 @@ import type { SystemSettingInterface } from '~/resources/scripts/interfaces/Syst
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
   components: {
@@ -79,6 +80,8 @@ export default defineComponent({
           }
         }
       }
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       if (this.systemSetting) {
         this.systemSetting.systemSettingActive = this.activeSwicht ? 1 : 0
         let systemSettingResponse = null
@@ -117,6 +120,7 @@ export default defineComponent({
             life: 5000,
         })
       }
+      myGeneralStore.setFullLoader(false)
     },
     validateFiles(event: any) {
       let validFiles = event.files;
