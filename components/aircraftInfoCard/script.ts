@@ -7,6 +7,7 @@ export default defineComponent({
   props: {
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
+    clickOnGallery: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null }
   },
   data: () => ({}),
@@ -28,6 +29,11 @@ export default defineComponent({
       if (this.clickOnEdit) {
         this.clickOnEdit(this.aircraft)
       }
+    },
+    handlerClickOnGallery(){
+      if (this.clickOnGallery) {
+        this.clickOnGallery(this.aircraft)
+      } 
     },
     handlerClickOnDelete() {
       if (this.clickOnDelete) {
