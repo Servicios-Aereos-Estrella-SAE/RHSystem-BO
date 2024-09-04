@@ -2,7 +2,7 @@
     <div class="gallery-container">
         <div v-if="gallery.length" class="gallery-grid">
             <div v-for="image in gallery" :key="image.id" class="gallery-card">
-                <img :src="image.galeryPath" :alt="image.galeryCategory" class="gallery-image" />
+                <Image :src="image.galeryPath" :alt="image.galeryCategory" class="gallery-image" width="250" preview />
                 <div class="gallery-category">{{ image.galeryCategory }} </div>
                 <Button icon="pi pi-trash" class="box-btn btn-red" @click="clickOnDeleteImage(image.id)" />
             </div>
