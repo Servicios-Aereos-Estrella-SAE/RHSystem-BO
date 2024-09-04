@@ -32,14 +32,13 @@ export default defineComponent({
   async mounted() {
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
-    myGeneralStore.getSystemSettings()
+    //myGeneralStore.getSystemSettings()
     this.isReady = true
   },
   async created() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.displayContent = false
     await this.getGroupMenu()
-    myGeneralStore.getSystemSettings()
     let hasAccess = false
     const fullPath = this.$route.path;
     const firstSegment = fullPath.split('/')[1];
