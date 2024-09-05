@@ -6,11 +6,8 @@
     <div class="shift-hours">
       {{ `${shiftException.shiftExceptionsDescription}` }}
     </div>
-    <div class="shift-time">
-      {{ `${weekDayName}` }}
-    </div>
     <div class="shift-days">
-      {{ `Date: ${calendarDay} at ${chekInTime}` }}
+      {{ `${calendarDay}` }}
     </div>
 
     <div class="box-tools-footer">
