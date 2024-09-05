@@ -19,7 +19,7 @@
                         </div>
                         <div class="input-box">
                             <br />
-                            <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
+                            <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
                                 @click="addNew" />
                         </div>
                     </div>
@@ -30,7 +30,9 @@
                         <div class="airport-card-wrapper">
                             <div v-for="(airport, index) in filterAirports"
                                 :key="`airport-${airport.airportId}-${index}`">
-                                <airportInfoCard :airport="airport" :click-on-edit="() => { onEdit(airport) }"
+                                <airportInfoCard :airport="airport" 
+                                :can-update="canUpdate" :can-delete="canDelete" 
+                                :click-on-edit="() => { onEdit(airport) }"
                                     :click-on-delete="() => { onDelete(airport) }" />
                             </div>
                         </div>

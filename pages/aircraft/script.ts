@@ -1,5 +1,7 @@
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
 import AircraftService from '../../resources/scripts/services/AircraftService';
 import type { AircraftInterface } from '~/resources/scripts/interfaces/AircraftInterface';
+import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
     name: 'Aircrafts',
@@ -15,9 +17,26 @@ export default defineComponent({
         rowsPerPage: 20,
         aircraftService: new AircraftService(),
         drawerAircraftForm: false,
-        drawerAircraftDelete: false
+        drawerAircraftDelete: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+          this.canCreate = true
+          this.canUpdate = true
+          this.canDelete = true
+        } else {
+          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         await this.handlerSearchAircraft()
     },
     

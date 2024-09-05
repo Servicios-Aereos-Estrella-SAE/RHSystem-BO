@@ -3,7 +3,6 @@ import DepartmentService from "~/resources/scripts/services/DepartmentService";
 import { useMyGeneralStore } from "~/store/general";
 import Department from '../../../API-SAE/app/models/department';
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
-import { useMyRoleStore } from "~/store/role";
 
 export default defineComponent({
   name: 'Departments',
@@ -31,20 +30,15 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
-    //const myRoleStore = useMyRoleStore()
-    // console.log('isRoot: ' + myRoleStore.isRoot)
-    /* if (myRoleStore.isRoot) {
+    if (myGeneralStore.isRoot) {
       this.canCreate = true
       this.canUpdate = true
       this.canDelete = true
-      console.log('es root ok')
-    } else { */
-    //console.log('NO es root ok')
-    this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
-    this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
-    this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
-    /*    }
-       console.log('isRoot: ' + myRoleStore.isRoot) */
+    } else {
+      this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+      this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+      this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+    }
     myGeneralStore.setFullLoader(false)
     this.handlerSearchDepartment();
   },

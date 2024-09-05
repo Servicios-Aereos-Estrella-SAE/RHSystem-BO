@@ -20,7 +20,7 @@
             </div>
             <div class="input-box">
               <br />
-              <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
             </div>
           </div>
           <div>
@@ -30,7 +30,8 @@
             <div class="customer-card-wrapper">
               <div v-for="(customer, index) in filteredCustomers" :key="`customer-${customer.customerId}-${index}`">
                 <CustomerInfoCard :click-on-photo="() => { onPhoto(customer) }" :customer="customer"
-                  :click-on-edit="() => { onEdit(customer) }" :click-on-delete="() => { onDelete(customer) }" />
+                  :click-on-edit="() => { onEdit(customer) }" :click-on-delete="() => { onDelete(customer) }"
+                  :can-update="canUpdate" :can-delete="canDelete" />
               </div>
             </div>
             <div></div>

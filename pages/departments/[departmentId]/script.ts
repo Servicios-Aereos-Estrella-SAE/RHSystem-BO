@@ -163,9 +163,15 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const permissions = await myGeneralStore.getAccess('positions')
-      canRead.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
-      canCreate.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
-      canDelete.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+      if (myGeneralStore.isRoot) {
+        canRead.value = true
+        canCreate.value = true
+        canDelete.value = true
+      } else {
+        canRead.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+        canCreate.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+        canDelete.value = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+      }
       myGeneralStore.setFullLoader(false)
       const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
       if (departmentId) {
