@@ -10,7 +10,9 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
-    clickOnPhoto: { type: Function, default: null }
+    clickOnPhoto: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     dateFirstYear: '',

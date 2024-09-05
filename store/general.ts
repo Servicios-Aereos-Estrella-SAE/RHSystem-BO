@@ -1,4 +1,7 @@
 import { defineStore } from 'pinia'
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export const useMyGeneralStore = defineStore({
@@ -8,24 +11,25 @@ export const useMyGeneralStore = defineStore({
     fullLoader: false as boolean,
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
-    backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
+    backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
+    isRoot: false,
+    displayContent: false
   }),
   actions: {
-    setDisplayAside (status: boolean) {
+    setDisplayAside(status: boolean) {
       this.displayAside = status
     },
 
-    toggleDisplayAside () {
+    toggleDisplayAside() {
       const currentStatus = this.displayAside
       this.displayAside = !currentStatus
     },
 
-    setFullLoader (status: boolean) {
+    setFullLoader(status: boolean) {
       this.fullLoader = status
     },
 
     async getSystemSettings() {
-      // this.fullLoader = true
       this.backgroundColor = '#093057'
       this.backgroundColorDark = '#092c50'
       this.backgroundImage = 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
@@ -41,7 +45,6 @@ export const useMyGeneralStore = defineStore({
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
         }
       }
-      // this.fullLoader = false
     },
 
     adjustColorBrightness(color: string, amount: number) {
@@ -72,6 +75,55 @@ export const useMyGeneralStore = defineStore({
       return {
         darker: darkerShade
       };
+    },
+
+    async hasAccess(systemModuleSlug: string, systemPermissionSlug: string) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let hasAccess = false
+      if (authUser && authUser.roleId) {
+        if (authUser.role) {
+          if (authUser.role.roleSlug === 'root') {
+            this.isRoot = true
+            return true
+          } else {
+            this.isRoot = false
+          }
+        }
+        const roleService = new RoleService()
+        const roleResponse = await roleService.hasAccess(authUser.roleId, systemModuleSlug, systemPermissionSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          hasAccess = roleResponse._data.data.roleHasAccess
+        }
+      } else {
+        this.isRoot = false
+      }
+      return hasAccess
+    },
+
+    async getAccess(systemModuleSlug: string) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let systemPermissions = [] as Array<RoleSystemPermissionInterface>
+      if (authUser && authUser.roleId) {
+        if (authUser.role) {
+          if (authUser.role.roleSlug === 'root') {
+            this.isRoot = true
+          } else {
+            this.isRoot = false
+          }
+        }
+        const roleService = new RoleService()
+        const roleResponse = await roleService.getAccessByModule(authUser.roleId, systemModuleSlug)
+        if (roleResponse && roleResponse.status === 200) {
+          systemPermissions = roleResponse._data.data.permissions
+        }
+      } else {
+        this.isRoot = false
+      }
+      return systemPermissions
     },
   }
 })

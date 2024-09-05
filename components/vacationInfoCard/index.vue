@@ -8,8 +8,8 @@
         </div>
 
         <div class="box-tools-footer" v-if="showEditButton">
-            <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
-            <Button  icon="pi pi-trash" class="box-btn btn-red"
+            <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
+            <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red"
                 @click="handlerClickOnDelete()" />
         </div>
     </div>

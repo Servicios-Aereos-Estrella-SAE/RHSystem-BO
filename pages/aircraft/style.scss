@@ -1,0 +1,115 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+@import '/resources/styles/colors.scss';
+
+.aircrafts-page {
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .aircraft-wrapper {
+    min-height: 100dvh;
+    box-sizing: border-box;
+
+    .head-page {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      justify-content: space-between;
+
+      .input-box {
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+
+        .btn-add {
+          margin-top: 0.5rem;
+        }
+      }
+
+      @media screen and (max-width: $desktop) {
+        grid-template-columns: 1fr auto;
+      }
+
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: 1fr auto;
+      }
+
+      @media screen and (max-width: $phone) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .aircraft-card-wrapper {
+      box-sizing: border-box;
+      display: grid;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+
+      // Ajuste en la visualización de tarjetas
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+      }
+
+      @media screen and (max-width: $phone) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .paginator {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+
+    .aircraft-form-sidebar {
+      width: 100% !important;
+      max-width: 50rem !important;
+
+      @media screen and (max-width: $sm) {
+        width: 100% !important;
+      }
+    }
+
+    .card.flex.justify-content-center {
+      margin-top: 1rem;
+    }
+
+    .confirmation-content {
+      display: flex;
+      align-items: center;
+
+      i {
+        color: #f39c12;
+      }
+    }
+  }
+
+  .box-btn {
+    padding: 1rem;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
+    border: none;
+    background-color: white;
+    color: #303e67;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.4s;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e3ebf6;
+    text-decoration: none;
+  }
+
+  .btn-red {
+    color: red;
+  }
+}

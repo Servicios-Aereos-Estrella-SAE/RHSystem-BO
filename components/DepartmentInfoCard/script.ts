@@ -12,6 +12,8 @@ export default defineComponent({
       required: true
     },
     clickOnEdit: { type: Function, default: null, required: true },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   setup() {
     const router = useRouter()
