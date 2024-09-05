@@ -13,6 +13,11 @@ export default defineComponent({
     authAccess: false
   }),
   computed: {
+    displayContent() {
+      const myGeneralStore = useMyGeneralStore()
+      const displayContent = myGeneralStore.displayContent
+      return displayContent
+    },
     asideVisibilityStatus () {
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.displayAside

@@ -10,6 +10,8 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
     showEditButton: { type: Boolean, default: true },
     showDeleteButton: { type: Boolean, default: true },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({
   }),

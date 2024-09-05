@@ -17,7 +17,7 @@
           </div>
           <div class="input-box">
             <br/>
-            <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+            <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
           </div>
         </div>
         <div>
@@ -28,6 +28,7 @@
             <div v-for="(shift, index) in filteredShifts" :key="`shift-${shift.shiftId || Math.random()}-${index}`">
               <ShiftInfoCard
                 :shift="shift"
+                :can-update="canUpdate" :can-delete="canDelete" 
                 :click-on-edit="() => { onEdit(shift) }"
                 :click-on-delete="() => { onDelete(shift) }"
               />

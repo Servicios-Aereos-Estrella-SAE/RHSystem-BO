@@ -7,7 +7,9 @@ export default defineComponent({
   props: {
     customer: { type: Object as PropType<CustomerInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
-    clickOnDelete: { type: Function, default: null }
+    clickOnDelete: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({
   }),

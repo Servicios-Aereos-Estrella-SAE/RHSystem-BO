@@ -39,9 +39,14 @@
           <InputText v-model="systemSetting.systemSettingTradeName" placeholder="Enter Trade Name" />
           <small class="p-error" v-if="submitted && !systemSetting.systemSettingTradeName">Trade name is required.</small>
         </div>
-        <div class="input-box">
+        <div class="iput-box">
           <label for="firstName">Sidebar Color</label>
-          <ColorPicker v-model="systemSetting.systemSettingSidebarColor" inputId="cp-hex" format="hex" class="mb-3 color" />
+          <div class="color-container">
+              <InputText v-model="systemSetting.systemSettingSidebarColor" placeholder="Enter Color" @input="addHash" class="color-text"/>
+            <div class="color-input">
+              <ColorPicker v-model="systemSetting.systemSettingSidebarColor" inputId="cp-hex" format="hex"class="mb-3 color " @change="updateColor"/>
+            </div>
+          </div>
           <small class="p-error" v-if="submitted && !systemSetting.systemSettingSidebarColor">Sidebar color is required.</small>
         </div>
         <div class="box-tools-footer">

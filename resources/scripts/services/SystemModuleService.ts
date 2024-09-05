@@ -23,6 +23,17 @@ export default class SystemModuleService {
     return responseRequest
   }
 
+  async getGroups () {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/system-modules/get-groups`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
   async show(systemModuleSlug: string) {
     let responseRequest: any = null
     try {

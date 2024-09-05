@@ -4,6 +4,7 @@ import type { SystemSettingInterface } from '~/resources/scripts/interfaces/Syst
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
   components: {
@@ -30,6 +31,7 @@ export default defineComponent({
     this.isNewSystemSetting = !this.systemSetting.systemSettingId ? true : false
     let isActive: number = 1
     isActive = this.systemSetting.systemSettingActive ? this.systemSetting.systemSettingActive : 0
+    this.systemSetting.systemSettingSidebarColor = '#' + this.systemSetting.systemSettingSidebarColor
     this.activeSwicht = isActive === 1 ? true : false
     this.isReady = true
   },
@@ -79,6 +81,11 @@ export default defineComponent({
           }
         }
       }
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.systemSetting.systemSettingSidebarColor) {
+        this.systemSetting.systemSettingSidebarColor = this.systemSetting.systemSettingSidebarColor?.toString().replaceAll('#', '')
+      }
       if (this.systemSetting) {
         this.systemSetting.systemSettingActive = this.activeSwicht ? 1 : 0
         let systemSettingResponse = null
@@ -117,6 +124,7 @@ export default defineComponent({
             life: 5000,
         })
       }
+      myGeneralStore.setFullLoader(false)
     },
     validateFiles(event: any) {
       let validFiles = event.files;
@@ -126,5 +134,13 @@ export default defineComponent({
     getObjectURL(file: any) {
       return URL.createObjectURL(file);
     },
+    addHash() {
+      if (!this.systemSetting.systemSettingSidebarColor?.toString().startsWith('#')) {
+        this.systemSetting.systemSettingSidebarColor = '#' + this.systemSetting.systemSettingSidebarColor;
+      }
+    },
+    updateColor(event: any) {
+      this.systemSetting.systemSettingSidebarColor = '#' + event.value;
+    }
   },
 })

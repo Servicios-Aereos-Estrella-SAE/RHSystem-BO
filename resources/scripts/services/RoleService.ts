@@ -84,10 +84,31 @@ export default class RoleService {
     }
   }
 
-  async getAccess(roleId: number, systemModuleSlug: string) {
+  async getAccessByModule(roleId: number, systemModuleSlug: string) {
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/roles/get-access/${roleId}/${systemModuleSlug}`, {
+      await $fetch(`${this.API_PATH}/roles/get-access-by-module/${roleId}/${systemModuleSlug}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const permissions = responseRequest.status === 200 ? responseRequest._data.data.permissions : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              permissions: permissions
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
+  async getAccess(roleId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/get-access/${roleId}`, {
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

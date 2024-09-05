@@ -37,7 +37,7 @@
                   <div></div>
                   <div class="input-box">
                       <br/>
-                      <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+                      <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
                   </div>
                 </div>
               <div>
@@ -49,6 +49,7 @@
                     <HolidayInfoCard
                         :click-on-photo="() => { onPhoto(holiday) }"
                         :holiday="holiday"
+                        :can-update="canUpdate" :can-delete="canDelete" 
                         :click-on-edit="() => { onEdit(holiday) }"
                         :click-on-delete="() => { onDelete(holiday) }"
                     />

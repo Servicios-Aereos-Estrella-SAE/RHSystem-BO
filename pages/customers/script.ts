@@ -1,5 +1,6 @@
 import type { CustomerInterface } from "~/resources/scripts/interfaces/CustomerInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import CustomerService from "~/resources/scripts/services/CustomerService";
 import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
@@ -17,11 +18,28 @@ export default defineComponent({
         drawerCustomerForm: false,
         drawerCustomerPhotoForm: false,
         drawerCustomerDelete: false,
-        drawerCustomerSync: false
+        drawerCustomerSync: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     computed: {},
     created() { },
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+          this.canCreate = true
+          this.canUpdate = true
+          this.canDelete = true
+        } else {
+          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         this.handlerSearchCustomer();
     },
     methods: {

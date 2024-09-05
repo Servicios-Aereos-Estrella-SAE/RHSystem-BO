@@ -1,5 +1,6 @@
 import type { EmployeeInterface } from "./EmployeeInterface"
 import type { PeopleInterface } from "./PeopleInterface"
+import type { RoleInterface } from "./RoleInterface"
 
 interface UserInterface {
   deletedAt?: string | null,
@@ -15,6 +16,7 @@ interface UserInterface {
 
   person?: PeopleInterface,
   employee?: EmployeeInterface
+  role?: RoleInterface,
 }
 
 export type { UserInterface }
