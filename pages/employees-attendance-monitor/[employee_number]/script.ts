@@ -160,15 +160,22 @@ export default defineComponent({
       return daysList
     },
     calendarTitle () {
-      const date = DateTime.fromJSDate(this.periodSelected)
-      const start = date.startOf('week')
-      const text = this.visualizationMode?.value === 'weekly' ? `Week #${start.weekNumber}` : start.toFormat('LLLL')
+      if (this.visualizationMode?.value === 'weekly') {
+        const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
+        const start = date.startOf('week')
+        const text = `Week #${start.weekNumber}`
+        return `Check in & Check out on ${text}`
+      }
+
+      const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
+      const start = date.startOf('month')
+      const text = start.toFormat('LLLL')
 
       return `Check in & Check out on ${text}`
     },
     assistSyncStatusDate () {
       if (this.statusInfo) {
-        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
         const dateTimeFormat = dateTime.toFormat('ff')
         return dateTimeFormat
       }

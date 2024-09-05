@@ -361,6 +361,11 @@ export default defineComponent({
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
         this.setGeneralStatisticsData(employee, employee.calendar)
+
+        if (assistReq.status === 400) {
+          console.log('NO shift', employeeID)
+        }
+
       } catch (error) {
       }
     },

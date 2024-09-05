@@ -13,47 +13,11 @@ export default defineComponent({
   data: () => ({
   }),
   computed: {
-    dateYear () {
-      if (!this.shiftException?.shiftExceptionsDate) {
-        return 0
-      }
-
-      const year = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[0]}`)
-      return year
-    },
-    dateMonth () {
-      if (!this.shiftException.shiftExceptionsDate) {
-        return 0
-      }
-
-      const month = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[1]}`)
-      return month
-    },
-    dateDay () {
-      if (!this.shiftException.shiftExceptionsDate) {
-        return 0
-      }
-
-      const day = parseInt(`${this.shiftException.shiftExceptionsDate.toString().split('-')[2]}`)
-      return day
-    },
-    weekDayName () {
-      const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.toFormat('cccc')
-      return day
-    },
     calendarDay () {
-      const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.toFormat('DD')
-      return day
-    },
-    chekInTime () {
-      if (!this.shiftException.shiftExceptionsDate) {
-        return ''
-      }
-      const time = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString())
-      const timeCST = time.toFormat('HH:mm:ss')
-      return timeCST
+      const dateToException = DateTime.fromISO(`${this.shiftException.shiftExceptionsDate}`, { setZone: true }).setZone(
+        'America/Mexico_City'
+      )
+      return dateToException.setLocale('en').toFormat('DDDD')
     }
   },
   mounted() {
