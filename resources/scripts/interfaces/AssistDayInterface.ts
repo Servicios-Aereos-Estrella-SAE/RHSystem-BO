@@ -10,6 +10,8 @@ interface AssistDayInterface {
     checkEatIn: AssistInterface | null
     checkEatOut: AssistInterface | null
     dateShift: ShiftInterface | null
+    dateShiftApplySince: string | Date | null
+    shiftCalculateFlag: string
     checkInStatus: string
     checkOutStatus: string
     isFutureDay: boolean

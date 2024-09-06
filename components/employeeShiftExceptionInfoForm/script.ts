@@ -72,6 +72,7 @@ export default defineComponent({
     async onSave() {
       this.submitted = true
       const shiftExceptionService = new ShiftExceptionService()
+
       if (!shiftExceptionService.validateInfo(this.shiftException)) {
         this.$toast.add({
           severity: 'warn',
@@ -81,18 +82,29 @@ export default defineComponent({
         })
         return
       }
+
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+
       let shiftExceptionResponse = null
       const shiftExceptionDateTemp = this.shiftException.shiftExceptionsDate
+
       if (!this.dateWasChange) {
         this.shiftException.shiftExceptionsDate = this.currentDate
       }
+
+      const dateToException = DateTime.fromJSDate(new Date(`${this.shiftException.shiftExceptionsDate}`)).setZone(
+        'America/Mexico_City'
+      )
+
+      this.shiftException.shiftExceptionsDate = dateToException.toFormat('yyyy-LL-dd')
+
       if (!this.shiftException.shiftExceptionId) {
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)
       } else {
         shiftExceptionResponse = await shiftExceptionService.update(this.shiftException)
       }
+
       if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
@@ -122,6 +134,7 @@ export default defineComponent({
             life: 5000,
         })
       }
+
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
       myGeneralStore.setFullLoader(false)
     },

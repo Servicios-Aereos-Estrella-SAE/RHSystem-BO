@@ -44,12 +44,12 @@ export default defineComponent({
     },
     weekDayName () {
       const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.toFormat('cccc')
+      const day = date.setLocale('en').toFormat('cccc')
       return day
     },
     calendarDay () {
       const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.toFormat('DD')
+      const day = date.setLocale('en').toFormat('DD')
       return day
     },
     chekInTime () {
@@ -59,7 +59,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt')
+      return timeCST.setLocale('en').toFormat('tt')
     },
     chekEatInTime () {
       if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeOrigin) {
@@ -68,7 +68,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt')
+      return timeCST.setLocale('en').toFormat('tt')
     },
     chekEatOutTime () {
       if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeOrigin) {
@@ -77,13 +77,13 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      return timeCST.toFormat('tt')
+      return timeCST.setLocale('en').toFormat('tt')
     },
     chekOutTime () {
       const now = DateTime.now().setZone('UTC-5')
       const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('UTC-5')
 
-      if (timeToCheckOut > now) {
+      if (timeToCheckOut > now && this.checkAssist.assist.shiftCalculateFlag !== 'doble-12x48') {
         this.checkAssist.assist.checkOutStatus = ''
         return ''
       }
@@ -94,7 +94,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-5')
-      const timeFormatted = timeCST.toFormat('tt')
+      const timeFormatted = timeCST.setLocale('en').toFormat('tt')
       return timeFormatted
     }
   },
