@@ -18,6 +18,7 @@ export default defineComponent({
         aircraftService: new AircraftService(),
         drawerAircraftForm: false,
         drawerAircraftDelete: false,
+        drawerAircraftFormGallery: false,
         canCreate: false,
         canUpdate: false,
         canDelete: false
@@ -85,6 +86,9 @@ export default defineComponent({
             }
             this.drawerAircraftForm = false;
         },
+        onSaveGallery(){
+            console.log("page Aircraft");
+        },
         onDelete(aircraft: AircraftInterface) {
             this.aircraft = { ...aircraft };
             this.drawerAircraftDelete = true;
@@ -92,6 +96,11 @@ export default defineComponent({
         onEdit(aircraft: AircraftInterface) {
             this.aircraft = { ...aircraft };
             this.drawerAircraftForm = true;
+        },
+        onGallery(aircraft: AircraftInterface) {
+            this.aircraft = { ...aircraft };
+            this.drawerAircraftFormGallery = true;
+            
         },
         async confirmDelete() {
             if (this.aircraft) {
