@@ -134,6 +134,7 @@
         <div class="department-positions-wrapper">
           <div v-for="(employeeAssist, index) in employeeDepartmentList" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
             <attendanceEmployeeInfoCard
+              v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
               :employee="employeeAssist"
             />
           </div>

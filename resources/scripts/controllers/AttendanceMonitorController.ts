@@ -123,9 +123,6 @@ export default class AttendanceMonitorController {
     series.push({ name: 'Tolerances', data: tolerances, color: '#3CB4E5' })
     series.push({ name: 'Delays', data: delays, color: '#FF993A' })
     series.push({ name: 'Faults', data: faults, color: '#d45633' })
-    console.log('🚀 ---------------------------------------------------------------------------🚀')
-    console.log('🚀 ~ AttendanceMonitorController ~ getDepartmentPeriodData ~ series:', series)
-    console.log('🚀 ---------------------------------------------------------------------------🚀')
 
     return series
   }

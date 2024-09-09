@@ -59,9 +59,7 @@ export default defineComponent({
           detail: positionResponse._data.message,
             life: 5000,
         })
-        console.log('departmentResponse', positionResponse)
         positionResponse = await new PositionService().show(this.department.departmentId ?? 0, this.positionSelected.positionId)
-        console.log('departmentResponse', positionResponse)
         if (positionResponse?.status === 200) {
           const position = positionResponse._data.data.position
           this.$emit('save', position as DepartmentInterface)

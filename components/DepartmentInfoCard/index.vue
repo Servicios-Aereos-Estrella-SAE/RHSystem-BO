@@ -10,8 +10,8 @@
       {{ `Active: ${department.departmentActive ? 'Yes' : 'No'}` }}
     </div>
     <div class="box-tools-footer">
-      <Button class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
-      <Button class="box-btn" @click="handlerClickOnEdit(department.departmentId)" label="Edit" icon="pi pi-pencil" iconPos="right"  /> 
+      <Button v-if="canUpdate" class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
+      <Button v-if="canDelete" class="box-btn" @click="handlerClickOnEdit(department.departmentId)" label="Edit" icon="pi pi-pencil" iconPos="right"  /> 
     </div>
   </div>
 </template>

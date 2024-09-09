@@ -8,7 +8,9 @@ export default defineComponent({
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnGallery: { type: Function, default: null },
-    clickOnDelete: { type: Function, default: null }
+    clickOnDelete: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({}),
   // computed: {

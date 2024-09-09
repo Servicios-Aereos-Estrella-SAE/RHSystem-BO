@@ -221,7 +221,9 @@ export default defineComponent({
       this.setDepartmetList(),
     ])
 
-    await this.setDepartmentPositionEmployeeList()
+    if (this.$config.public.ENVIRONMENT === 'production') {
+      await this.setDepartmentPositionEmployeeList()
+    }
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
@@ -247,10 +249,10 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     setGeneralData () {
-      const assists = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
-      const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
-      const delays = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
-      const faults = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
+      const assists = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
+      const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0)
+      const delays = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0)
+      const faults = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onFaultPercentage || 0), 0)
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
@@ -392,7 +394,9 @@ export default defineComponent({
       const departmentId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
-      this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
+      this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic ().toModelObject(), calendar: [] }))
+
+      this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
@@ -465,44 +469,6 @@ export default defineComponent({
         this.statusInfo = statusInfo
       } catch (error) {}
     },
-   /*  async getExcel() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const departmentId = this.departmenSelected?.departmentId || 0
-      const firstDay = this.weeklyStartDay[0]
-      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
-      
-      const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId)
-      if (assistResponse.status === 201) {
-        const blob = await assistResponse._data
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', 'Report Department Assist.xlsx')
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Excel assist',
-          detail: 'Excel was created successfully',
-            life: 5000,
-        })
-        myGeneralStore.setFullLoader(false)
-      } else {
-        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Excel assist',
-          detail: msgError,
-            life: 5000,
-        })
-        myGeneralStore.setFullLoader(false)
-      }
-    } */
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

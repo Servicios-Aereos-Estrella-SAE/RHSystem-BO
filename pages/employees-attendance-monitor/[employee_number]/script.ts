@@ -160,15 +160,22 @@ export default defineComponent({
       return daysList
     },
     calendarTitle () {
-      const date = DateTime.fromJSDate(this.periodSelected)
-      const start = date.startOf('week')
-      const text = this.visualizationMode?.value === 'weekly' ? `Week #${start.weekNumber}` : start.toFormat('LLLL')
+      if (this.visualizationMode?.value === 'weekly') {
+        const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
+        const start = date.startOf('week')
+        const text = `Week #${start.weekNumber}`
+        return `Check in & Check out on ${text}`
+      }
+
+      const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
+      const start = date.startOf('month')
+      const text = start.toFormat('LLLL')
 
       return `Check in & Check out on ${text}`
     },
     assistSyncStatusDate () {
       if (this.statusInfo) {
-        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
         const dateTimeFormat = dateTime.toFormat('ff')
         return dateTimeFormat
       }
@@ -196,6 +203,16 @@ export default defineComponent({
       const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, null ,1, 1)
       const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
       this.employee = employee
+
+      if (!this.employee) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(false)
+        throw showError({
+          statusCode: 404,
+          fatal: true,
+          message: 'Employee not found'
+       })
+      } 
     },
     async setDefaultVisualizationMode () {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
@@ -241,19 +258,21 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     async handlerVisualizationModeChange () {
-      const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
-      this.visualizationModeOptions.forEach(mode => mode.selected = false)
+      if (this.employee && this.employee.employeeAssistDiscriminator === 0) {
+        const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
+        this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
-      if (idx >= 0) {
-        this.visualizationModeOptions[idx].selected =  true
+        if (idx >= 0) {
+          this.visualizationModeOptions[idx].selected =  true
+        }
+
+        this.periodSelected = new Date()
+
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        await this.getEmployeeAssist()
+        myGeneralStore.setFullLoader(false)
       }
-
-      this.periodSelected = new Date()
-
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      await this.getEmployeeAssist()
-      myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange () {
       await this.getEmployeeAssist()

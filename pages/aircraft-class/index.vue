@@ -15,7 +15,7 @@
                     </div>
                     <div class="input-box">
                         <br />
-                        <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+                        <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
                     </div>
                 </div>
                 <div>
@@ -24,6 +24,7 @@
                         <div v-for="(aircraftClass, index) in filteredAircraftClasses"
                             :key="`aircraftClass-${aircraftClass.id}-${index}`">
                             <aircraftClassInfoCard :aircraftClass="aircraftClass"
+                            :can-update="canUpdate" :can-delete="canDelete" 
                                 :click-on-edit="() => { onEdit(aircraftClass) }"
                                 :click-on-delete="() => { onDelete(aircraftClass) }" />
                         </div>

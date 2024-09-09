@@ -45,6 +45,11 @@
           max-width: 7rem;
         }
       }
+      .img {
+        height: 76%;
+        width: auto;
+        object-fit: contain;
+      }
     }
 
     .aside-button {

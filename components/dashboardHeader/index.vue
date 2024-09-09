@@ -2,7 +2,7 @@
   <div class="header">
     <div class="header-wrapper">
       <div class="logo">
-        <img src="https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg" alt="SAE">
+        <img :src="getBackgroundImage" alt="SAE" class="img">
       </div>
       <div class="aside-button">
         <Button class="btn-aside" @click="toggleAside">

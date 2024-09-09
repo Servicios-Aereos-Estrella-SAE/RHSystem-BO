@@ -28,8 +28,12 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-highcharts',
     '@nuxtjs/color-mode',
-    '@sidebase/nuxt-auth'
+    '@sidebase/nuxt-auth',
+    "vue3-carousel-nuxt"
   ],
+  carousel: {
+    prefix: 'VueCar',
+  },
 
   auth: {
     baseURL: process.env.BASE_API_PATH,

@@ -48,7 +48,6 @@ export default class AircraftPropertyService {
   }
 
   async create(aircraftProperty: AircraftPropertyInterface) {
-    console.log("created");
     let responseRequest: any = null;
     const formData = new FormData();
 
@@ -91,7 +90,6 @@ export default class AircraftPropertyService {
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
     });
-    console.log(responseRequest)
     return responseRequest;
   }
 

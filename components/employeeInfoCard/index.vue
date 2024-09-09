@@ -9,8 +9,9 @@
       </svg>
     </div>
     <div class="name">
-      {{ `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName ||
-      ''}`  }}
+      {{ 
+        `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
+      }}
     </div>
     <div class="info">
       {{ `${employee.position.positionName}` }}
@@ -24,8 +25,11 @@
     <div class="number">
       {{ `No. Emp: ${employee.employeeCode}` }}
     </div>
-    <div class="line">
+    <div class="line"></div>
+    <div class="number">
+      {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'UNSIGNED'}` }}
     </div>
+    <div class="line"></div>
     <div class="vacation-info">
       <div v-if="!canHaveVacations" class="vacation">
         {{ `Vacations will be available at ${dateFirstYear}`}}
@@ -41,8 +45,8 @@
       </div>
     </div>
     <div class="box-tools-footer">
-      <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+      <Button v-if="canUpdate"  icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
+      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>

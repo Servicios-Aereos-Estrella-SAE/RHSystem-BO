@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware((to) => {
   // if ($config) {
   //   console.log('Accessed runtime config within middleware.')
   // }
-  console.log('Heading to', to.path, 'but I think we should go somewhere else...')
+  // console.log('Heading to', to.path, 'but I think we should go somewhere else...')
   // return '/attendance-monitor'
 
   // if (to.params.id === '1') {

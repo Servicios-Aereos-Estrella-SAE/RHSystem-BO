@@ -21,8 +21,8 @@
     </div>
 
     <div class="box-tools-footer"  v-if="showEditButton">
-      <Button v-if="showEditButton" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button v-if="showDeleteButton" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+      <Button v-if="showEditButton && canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
+      <Button v-if="showDeleteButton && canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
     </div>
   </div>
 </template>

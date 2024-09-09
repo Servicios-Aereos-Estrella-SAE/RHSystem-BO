@@ -1,3 +1,4 @@
+import type { BusinessUnitInterface } from "./BusinessUnitInterface"
 import type { DepartmentInterface } from "./DepartmentInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 import type { PositionInterface } from "./PositionInterface"
@@ -18,6 +19,8 @@ interface EmployeeInterface {
   employeePhoto: string | null,
   employeeWorkSchedule: string | null,
   personId: number,
+  businessUnitId: number,
+  employeeAssistDiscriminator: number,
   employeeLastSynchronizationAt: Date | string | null,
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
@@ -25,7 +28,8 @@ interface EmployeeInterface {
 
   person?: PeopleInterface,
   department?: DepartmentInterface,
-  position?: PositionInterface
+  position?: PositionInterface,
+  businessUnit?: BusinessUnitInterface
 }
 
 export type { EmployeeInterface }

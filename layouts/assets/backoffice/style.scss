@@ -73,6 +73,7 @@ body, html {
   .modules-content-wrepper {
     padding: 1rem;
     padding-top: 7rem;
+    padding-bottom: 3rem;
     position: relative;
     background-color: $background;
     font-size: 0.9rem;
@@ -85,6 +86,12 @@ body, html {
       padding: 0.5rem;
       padding-top: 6.5rem;
       border-bottom: solid 3rem white;
+    }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
   }
 }

@@ -2,6 +2,7 @@ import type { PilotInterface } from "~/resources/scripts/interfaces/PilotInterfa
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import PilotService from "~/resources/scripts/services/PilotService";
 import { useMyGeneralStore } from "~/store/general";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 export default defineComponent({
     name: 'Pilots',
     props: {},
@@ -17,11 +18,28 @@ export default defineComponent({
         drawerPilotForm: false,
         drawerPilotPhotoForm: false,
         drawerPilotDelete: false,
-        drawerPilotSync: false
+        drawerPilotSync: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     computed: {},
     created() { },
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+          this.canCreate = true
+          this.canUpdate = true
+          this.canDelete = true
+        } else {
+          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         this.handlerSearchPilot();
     },
     methods: {
@@ -86,7 +104,7 @@ export default defineComponent({
                 this.drawerPilotDelete = false;
                 const pilotService = new PilotService();
                 const pilotResponse = await pilotService.delete(this.pilot);
-                if (pilotResponse.status === 201) {
+                if (pilotResponse.status === 200) {
                     const index = this.filteredPilots.findIndex((pilot: PilotInterface) => pilot.pilotId === this.pilot?.pilotId);
                     if (index !== -1) {
                         this.filteredPilots.splice(index, 1);

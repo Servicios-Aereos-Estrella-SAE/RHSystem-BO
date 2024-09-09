@@ -2,6 +2,7 @@ interface ShiftInterface {
   employees: any
   shiftId: number | null
   shiftName: string
+  shiftCalculateFlag?: string | null
   shiftDayStart: number
   shiftTimeStart: string
   shiftActiveHours: number

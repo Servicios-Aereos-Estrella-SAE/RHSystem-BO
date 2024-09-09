@@ -62,7 +62,6 @@ export default defineComponent({
               life: 5000
             });
             const airport = response._data.data.data;
-            console.log(airport)
             this.$emit('onAirportSave', airport as AirportInterface);
             this.$emit('save-success');
           } else {

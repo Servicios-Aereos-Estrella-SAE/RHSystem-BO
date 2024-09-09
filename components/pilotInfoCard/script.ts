@@ -8,7 +8,9 @@ export default defineComponent({
   props: {
     pilot: { type: Object as PropType<PilotInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
-    clickOnDelete: { type: Function, default: null }
+    clickOnDelete: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({
   }),

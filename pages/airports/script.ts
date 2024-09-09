@@ -1,5 +1,7 @@
+import { useMyGeneralStore } from '~/store/general';
 import AirportService from '../../resources/scripts/services/AirportService';
 import type { AirportInterface } from '~/resources/scripts/interfaces/AirportInterface';
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
 
 export default defineComponent({
     name: 'Airports',
@@ -15,9 +17,26 @@ export default defineComponent({
         rowsPerPage: 20,
         airportService: new AirportService(),
         drawerAirportForm: false,
-        drawerAirportDelete: false
+        drawerAirportDelete: false,
+        canCreate: false,
+        canUpdate: false,
+        canDelete: false
     }),
     async mounted() {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        if (myGeneralStore.isRoot) {
+        this.canCreate = true
+        this.canUpdate = true
+        this.canDelete = true
+        } else {
+        this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+        this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+        this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        }
+        myGeneralStore.setFullLoader(false)
         await this.handlerSearchAirport()
     },
     methods: {
@@ -46,7 +65,6 @@ export default defineComponent({
         async handlerSearchAirport() {
             const response = await this.airportService.getFilteredList(this.search, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.data : [];
-            console.log(list)
             this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
             this.filterAirports = list;

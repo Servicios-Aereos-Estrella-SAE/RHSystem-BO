@@ -18,7 +18,7 @@
         </div>
         <div></div>
         <div class="modules-wrapper">
-          <div class="modules-content-wrepper">
+          <div v-if="displayContent" class="modules-content-wrepper">
             <!-- <div class="box">
               <h1>Color mode: {{ $colorMode.value }}</h1>
               <select v-model="$colorMode.preference" @change="setcolor">
@@ -29,6 +29,11 @@
               </select>
             </div> -->
             <slot />
+          </div>
+          <div v-else class="modules-content-wrepper">
+            <div class="spinner-container">
+              <ProgressSpinner class="custom-spinner" :style="{ color: 'red' }" />
+            </div>
           </div>
         </div>
       </div>
