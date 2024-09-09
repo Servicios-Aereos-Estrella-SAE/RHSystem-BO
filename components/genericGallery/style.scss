@@ -1,7 +1,16 @@
 // style.scss
 @import '/resources/styles/variables.scss';
 
-
+.edit-category{
+  margin-top: 2%;
+}
+.gallery-actions{
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
 
 .gallery-container {
   display: flex;

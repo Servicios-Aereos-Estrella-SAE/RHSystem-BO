@@ -9,6 +9,19 @@ class GalleryService {
     this.API_PATH = CONFIG.public.BASE_API_PATH;
   }
 
+  public async updateImage(imageId: number, formData: FormData) {
+    const response = await fetch(this.API_PATH+`/galleries/${imageId}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Error updating the image');
+    }
+
+    return await response.json();
+  }
+
   public async fetchGallery(
     galeryIdTable: number,
     galeryNameTable: string = "aircrafts",
