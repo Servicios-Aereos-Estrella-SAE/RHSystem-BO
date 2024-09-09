@@ -15,6 +15,7 @@ export default defineComponent({
     submitted: false,
     airportOptions: [],
     aircraftPropertiesOptions: [],
+    drawerProceedingFiles: false,
   }),
   computed: {
     isAircraftActive: {
@@ -31,6 +32,9 @@ export default defineComponent({
     this.loadAircraftPropertiesOptions();
   },
   methods: {
+    getProceedingFiles() {
+      this.drawerProceedingFiles = true
+    },
     async loadAirportOptions() {
       try {
         const airportService = new AirportService();

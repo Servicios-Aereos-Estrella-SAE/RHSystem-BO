@@ -49,9 +49,16 @@
 
                 <div class="box-tools-footer">
                     <Button label="Save" severity="primary" @click="onSave()" />
+                    <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
+
                 </div>
             </div>
         </div>
+        <Sidebar v-model:visible="drawerProceedingFiles" header="Aircraft proceeding files" position="right" class="proceeding-file-sidebar"
+        :showCloseIcon="true">
+        <employeeProceedingFile :employee="aircraft" />
+      </Sidebar>
+
     </div>
 </template>
 
@@ -62,4 +69,13 @@ export default Script
 
 <style lang="scss">
 @import './style';
+
+.proceeding-file-sidebar {
+    width: 100% !important;
+    max-width: 90rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>
