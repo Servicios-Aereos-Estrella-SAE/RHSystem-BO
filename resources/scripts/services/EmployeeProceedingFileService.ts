@@ -91,4 +91,16 @@ export default class EmployeeProceedingFileService {
     }
     return true;
   }
+
+  async getExpiresAndExpiring(dateStart: string, dateEnd: string) {
+    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/employees-proceeding-files/get-expired-and-expiring`, {
+      query: query,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+    return responseRequest
+  }
 }

@@ -9,7 +9,7 @@
     </div>
     <div class="card-content">
       <div class="percentage" :class="classCard">{{ getPercentage }}%</div>
-      <div class="description">Pilot documents available</div>
+      <div class="description">Flight attendant documents available</div>
       <div class="details">
         <span><span class="expired">{{ proceedingFilesExpiredCount }}</span> Expired files</span>
         <span><span class="next-expire">{{ proceedingFilesExpiringCount }}</span> Next to expire</span>
