@@ -56,7 +56,7 @@
         </div>
         <Sidebar v-model:visible="drawerProceedingFiles" header="Aircraft proceeding files" position="right" class="proceeding-file-sidebar"
         :showCloseIcon="true">
-        <employeeProceedingFile :employee="aircraft" />
+        <aircraftProceedingFile :aircraft="aircraft" />
       </Sidebar>
 
     </div>

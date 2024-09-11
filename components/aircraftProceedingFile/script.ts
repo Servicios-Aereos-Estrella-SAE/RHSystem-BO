@@ -9,6 +9,7 @@ import type { AircraftProceedingFileInterface } from '~/resources/scripts/interf
 import type { ProceedingFileInterface } from '~/resources/scripts/interfaces/ProceedingFileInterface';
 import AircraftProceedingFileService from '~/resources/scripts/services/AircraftProceedingFileService';
 
+
 export default defineComponent({
   components: {
     Toast,
@@ -42,13 +43,15 @@ export default defineComponent({
   },
   methods: {
     async getAircraftProceedingFiles() {
+      console.log("getAoircraft Proceddin filles")
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.aircraftProceedingFilesList = []
       const aircraftId = this.aircraft.aircraftId ? this.aircraft.aircraftId : 0
       const aircraftProceedingFileService = new AircraftProceedingFileService()
       const aircraftProceedingFileResponse = await aircraftProceedingFileService.getByAircraft(aircraftId)
-      this.aircraftProceedingFilesList = aircraftProceedingFileResponse.proceedingFiles
+      this.aircraftProceedingFilesList = aircraftProceedingFileResponse.data.data
+      console.log(this.aircraftProceedingFilesList)
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
