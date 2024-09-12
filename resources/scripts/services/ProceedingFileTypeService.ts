@@ -22,4 +22,15 @@ export default class ProceedingFileTypeService {
 
     return responseRequest
   }
+
+  async getByArea (areaToUse: string) {
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/proceeding-file-types/by-area/${areaToUse}`, {
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 }

@@ -1,9 +1,9 @@
 import { DateTime } from "luxon"
-import EmployeeProceedingFileService from "~/resources/scripts/services/EmployeeProceedingFileService"
+import FlightAttendantProceedingFileService from "~/resources/scripts/services/FlightAttendantProceedingFileService"
 import { useMyGeneralStore } from "~/store/general"
 
 export default defineComponent({
-  name: 'employeeDocumentCard',
+  name: 'flightAttendantDocumentCard',
   props: {
     clickOnCard: { type: Function, default: null },
   },
@@ -25,18 +25,18 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    const employeeProceedingFileService = new EmployeeProceedingFileService()
+    const flightAttendantProceedingFileService = new FlightAttendantProceedingFileService()
     const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
-    const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
-    if (employeeProceedingFileResponse.status === 200) {
-       this.proceedingFilesExpiredCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired.length
-       this.proceedingFilesExpiringCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring.length
+    const flightAttendantProceedingFileResponse = await flightAttendantProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+    if (flightAttendantProceedingFileResponse.status === 200) {
+       this.proceedingFilesExpiredCount = flightAttendantProceedingFileResponse._data.data.flightAttendantProceedingFiles.proceedingFilesExpired.length
+       this.proceedingFilesExpiringCount = flightAttendantProceedingFileResponse._data.data.flightAttendantProceedingFiles.proceedingFilesExpiring.length
       
     } else {
       this.$toast.add({
         severity: 'error',
-        summary: 'Employee proceeding files',
-        detail: employeeProceedingFileResponse._data.message,
+        summary: 'Flight attendant proceeding files',
+        detail: flightAttendantProceedingFileResponse._data.message,
         life: 5000,
     });
     }
