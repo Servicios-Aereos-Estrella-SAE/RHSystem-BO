@@ -124,7 +124,6 @@ export default Script
     position: relative;
 
     .input-box {
-        display: flex;
         align-items: center;
     }
 }
