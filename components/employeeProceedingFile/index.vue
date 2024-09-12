@@ -53,7 +53,7 @@
   export default Script
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './style';
   @import '/resources/styles/variables.scss';
 

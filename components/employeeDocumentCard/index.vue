@@ -8,12 +8,11 @@
       </span>
     </div>
     <div class="card-content">
-      <div class="percentage" :class="classCard">{{ employee.activeDocumentsPercentage }}%</div>
+      <div class="percentage" :class="classCard">{{ getPercentage }}%</div>
       <div class="description">Employee documents available</div>
       <div class="details">
-        <span><span class="expired">{{ employee.expiredDocumentsCount }}</span> Expired files</span>
-        <span><span class="next-expire">{{ employee.expiredDocumentsCount }}</span> Next to expire</span>
-        <!-- <span><span class="active">{{ employee.activeDocumentsCount }}</span> Actives files</span> -->
+        <span><span class="expired">{{ proceedingFilesExpiredCount }}</span> Expired files</span>
+        <span><span class="next-expire">{{ proceedingFilesExpiringCount }}</span> Next to expire</span>
       </div>
     </div>
   </div>
