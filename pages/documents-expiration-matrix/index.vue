@@ -20,22 +20,27 @@
            
             <VueCarSlide :key="0">
               <div class="carousel__item">
-                <AircraftDocumentCard :aircraft="aircraft" :clickOnCard="() => { setActive('aircraft')}"></AircraftDocumentCard>
+                <aircraftDocumentCard :aircraft="aircraft" :clickOnCard="() => { setActive('aircraft')}"></aircraftDocumentCard>
               </div>
             </VueCarSlide>
             <VueCarSlide :key="1">
               <div class="carousel__item">
-                <EmployeeDocumentCard :employee="employees" :clickOnCard="() => { setActive('employees') }"></EmployeeDocumentCard>
+                <employeeDocumentCard :clickOnCard="() => { setActive('employees') }"></employeeDocumentCard>
               </div>
             </VueCarSlide>
             <VueCarSlide :key="2">
               <div class="carousel__item">
-                <PilotDocumentCard :pilot="pilots" :clickOnCard="() => { setActive('pilots') }"></PilotDocumentCard>
+                <pilotDocumentCard :clickOnCard="() => { setActive('pilots') }"></pilotDocumentCard>
               </div>
             </VueCarSlide>
             <VueCarSlide :key="3">
               <div class="carousel__item">
-                <CustomerDocumentCard :customer="customers"  :clickOnCard="() => { setActive('customers') }"></CustomerDocumentCard>
+                <customerDocumentCard :clickOnCard="() => { setActive('customers') }"></customerDocumentCard>
+              </div>
+            </VueCarSlide>
+            <VueCarSlide :key="2">
+              <div class="carousel__item">
+                <flightAttendantDocumentCard></flightAttendantDocumentCard>
               </div>
             </VueCarSlide>
             <!-- <VueCarSlide :key="3">
