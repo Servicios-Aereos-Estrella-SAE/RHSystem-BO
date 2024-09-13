@@ -8,8 +8,8 @@ export default defineComponent({
   }),
   computed: {
     classCard() {
-      return (this.aircraft.upcomingExpiredDocumentsCount === 0 && this.aircraft.expiredDocumentsCount === 0) ? '' :
-          this.aircraft.expiredDocumentsCount >= this.aircraft.upcomingExpiredDocumentsCount ? 'expired' : 'next-expire'
+      /* return (this.aircraft.upcomingExpiredDocumentsCount === 0 && this.aircraft.expiredDocumentsCount === 0) ? '' :
+          this.aircraft.expiredDocumentsCount >= this.aircraft.upcomingExpiredDocumentsCount ? 'expired' : 'next-expire' */
     }
   },
   async mounted() {

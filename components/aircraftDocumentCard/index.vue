@@ -11,8 +11,8 @@
       <div class="percentage" :class="classCard">{{ aircraft.activeDocumentsPercentage }}%</div>
       <div class="description">Aircraft documents available</div>
       <div class="details">
-        <span><span class="expired">{{ aircraft.expiredDocumentsCount }}</span> Expired files</span>
-        <span><span class="next-expire">{{ aircraft.upcomingExpiredDocumentsCount }}</span> Next to expire</span>
+      <!--   <span><span class="expired">{{ aircraft.expiredDocumentsCount }}</span> Expired files</span>
+        <span><span class="next-expire">{{ aircraft.upcomingExpiredDocumentsCount }}</span> Next to expire</span> -->
         <!-- <span><span class="active">{{ aircraft.activeDocumentsCount }}</span> Actives files</span> -->
       </div>
     </div>
