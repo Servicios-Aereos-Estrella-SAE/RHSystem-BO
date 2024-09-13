@@ -1,265 +1,213 @@
+import { DateTime } from "luxon";
+import type { ProceedingFileInterface } from "~/resources/scripts/interfaces/ProceedingFileInterface";
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
+import CustomerProceedingFileService from "~/resources/scripts/services/CustomerProceedingFileService";
+import EmployeeProceedingFileService from "~/resources/scripts/services/EmployeeProceedingFileService";
+import FlightAttendantProceedingFileService from "~/resources/scripts/services/FlightAttendantProceedingFileService";
+import PilotProceedingFileService from "~/resources/scripts/services/PilotProceedingFileService";
+import { useMyGeneralStore } from "~/store/general";
+
 export default defineComponent({
-    name: 'DocumentsExpirationMatrix',
-    props: {},
-    data: () => ({
-        // carousel settings
-        settings: {
-            itemsToShow: 3,
-            snapAlign: 'start',
-        },
-        tabActive: 'aircraft' as 'pilots' | 'aircraft' | 'customers' | 'employees',
-        // breakpoints are mobile first
-        // any settings not specified will fallback to the carousel settings
-        breakpoints: {
-            // 700px and up
-            300: {
-                itemsToShow: 1,
-                snapAlign: 'start',
-            },
-            500: {
-              itemsToShow: 2,
-              snapAlign: 'start',
-            },
-            700:{
-              itemsToShow: 2.4,
-              snapAlign: 'start',
-            },
-            // 1024 and up
-            1024: {
-                itemsToShow: 3,
-                snapAlign: 'start',
-            },
-            2084: {
-                itemsToShow: 6,
-                snapAlign: 'start',
-            },
-        },
-        pilots: {
-            expiredDocumentsCount: 2,
-            upcomingExpiredDocumentsCount: 3,
-            activeDocumentsCount: 5,
-            activeDocumentsPercentage: 50, // Esto es un ejemplo calculado
-            documents: [
-            {
-                proceeding_file_id: 1,
-                proceeding_file_name: "Pilot License",
-                proceeding_file_path: "/files/pilot_license.pdf",
-                proceeding_file_expiration_at: "2024-07-23",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "PL-123",
-                proceeding_file_uuid: "uuid-123",
-                proceeding_file_type_name: "License",
-                pilot_name: "John Doe", // Ejemplo de nombre de piloto
-            },
-            {
-                proceeding_file_id: 2,
-                proceeding_file_name: "Medical Certificate",
-                proceeding_file_path: "/files/medical_certificate.pdf",
-                proceeding_file_expiration_at: "2024-09-15",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "MC-456",
-                proceeding_file_uuid: "uuid-456",
-                proceeding_file_type_name: "Certificate",
-                pilot_name: "John Doe", // Ejemplo de nombre de piloto
-              },
-              {
-                proceeding_file_id: 3,
-                proceeding_file_name: "Medical Certificate",
-                proceeding_file_path: "/files/medical_certificate.pdf",
-                proceeding_file_expiration_at: "2024-07-15",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "MC-789",
-                proceeding_file_uuid: "uuid-789",
-                proceeding_file_type_name: "Certificate",
-                pilot_name: "John Doe", // Ejemplo de nombre de piloto
-              },
-              {
-                proceeding_file_id: 4,
-                proceeding_file_name: "Medical Certificate",
-                proceeding_file_path: "/files/medical_certificate.pdf",
-                proceeding_file_expiration_at: "2024-09-16",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "MC-101",
-                proceeding_file_uuid: "uuid-101",
-                proceeding_file_type_name: "Certificate",
-                pilot_name: "John Doe", // Ejemplo de nombre de piloto
-              },
-              {
-                proceeding_file_id: 5,
-                proceeding_file_name: "Medical Certificate",
-                proceeding_file_path: "/files/medical_certificate.pdf",
-                proceeding_file_expiration_at: "2024-09-17",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "MC-112",
-                proceeding_file_uuid: "uuid-112",
-                proceeding_file_type_name: "Certificate",
-                pilot_name: "John Doe", // Ejemplo de nombre de piloto
-              },
-              // Más documentos...
-            ],
-          },
-          aircraft: {
-            expiredDocumentsCount: 1,
-            upcomingExpiredDocumentsCount: 2,
-            activeDocumentsCount: 7,
-            activeDocumentsPercentage: 70,
-            documents: [
-              {
-                proceeding_file_id: 3,
-                proceeding_file_name: "International flight license",
-                proceeding_file_path: "/files/airworthiness_certificate.pdf",
-                proceeding_file_expiration_at: "2024-08-20",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "AC-789",
-                proceeding_file_uuid: "uuid-789",
-                proceeding_file_type_name: "Flight License",
-                tail_number: "N12345",
-                model: "Larget",
-              },
-              {
-                proceeding_file_id: 4,
-                proceeding_file_name: "International flight license",
-                proceeding_file_path: "/files/maintenance_logbook.pdf",
-                proceeding_file_expiration_at: "2024-09-15",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "ML-456",
-                proceeding_file_uuid: "uuid-456",
-                proceeding_file_type_name: "Flight License",
-                tail_number: "N54321",
-                model: "Gulfstream G650",
-              },
-              {
-                proceeding_file_id: 5,
-                proceeding_file_name: "International flight license",
-                proceeding_file_path: "/files/registration_certificate.pdf",
-                proceeding_file_expiration_at: "2024-09-10",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "RC-321",
-                proceeding_file_uuid: "uuid-321",
-                proceeding_file_type_name: "Flight License",
-                tail_number: "N98765",
-                model: "Cessna Citation X",
-              },
-              // Más documentos...
-            ],
-          },
-          customers: {
-            expiredDocumentsCount: 0,
-            upcomingExpiredDocumentsCount: 0,
-            activeDocumentsCount: 9,
-            activeDocumentsPercentage: 100,
-            documents: [
-          //     {
-          //       proceeding_file_id: 5,
-          //       proceeding_file_name: "Employment Contract",
-          //       proceeding_file_path: "/files/employment_contract.pdf",
-          //       proceeding_file_expiration_at: "2024-08-10",
-          //       proceeding_file_active: 1,
-          //       proceeding_file_identify: "EC-654",
-          //       proceeding_file_uuid: "uuid-102",
-          //       proceeding_file_type_name: "Contract",
-          //       customer_name: "Jane Smith",
-          //   },
-          //   {
-          //       proceeding_file_id: 6,
-          //       proceeding_file_name: "Confidentiality Agreement",
-          //       proceeding_file_path: "/files/confidentiality_agreement.pdf",
-          //       proceeding_file_expiration_at: "2024-09-30",
-          //       proceeding_file_active: 1,
-          //       proceeding_file_identify: "CA-321",
-          //       proceeding_file_uuid: "uuid-103",
-          //       proceeding_file_type_name: "Agreement",
-          //       customer_name: "Rogelio Rafael",
-          //   },
-          //   {
-          //       proceeding_file_id: 7,
-          //       proceeding_file_name: "Non-Compete Agreement",
-          //       proceeding_file_path: "/files/non_compete_agreement.pdf",
-          //       proceeding_file_expiration_at: "2024-09-25",
-          //       proceeding_file_active: 1,
-          //       proceeding_file_identify: "NCA-987",
-          //       proceeding_file_uuid: "uuid-104",
-          //       proceeding_file_type_name: "Agreement",
-          //       customer_name: "Wilvardo Ramirez",
-          //   },
-          //   {
-          //     proceeding_file_id: 7,
-          //     proceeding_file_name: "Non-Compete Agreement",
-          //     proceeding_file_path: "/files/non_compete_agreement.pdf",
-          //     proceeding_file_expiration_at: "2024-09-25",
-          //     proceeding_file_active: 1,
-          //     proceeding_file_identify: "NCA-987",
-          //     proceeding_file_uuid: "uuid-104",
-          //     proceeding_file_type_name: "Agreement",
-          //     customer_name: "Wilvardo Ramirez",
-          // },
-            ],
-          },
-          employees: {
-            expiredDocumentsCount: 3,
-            upcomingExpiredDocumentsCount: 1,
-            activeDocumentsCount: 4,
-            activeDocumentsPercentage: 50,
-            documents: [
-            {
-                proceeding_file_id: 5,
-                proceeding_file_name: "Employment Contract",
-                proceeding_file_path: "/files/employment_contract.pdf",
-                proceeding_file_expiration_at: "2024-08-10",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "EC-654",
-                proceeding_file_uuid: "uuid-102",
-                proceeding_file_type_name: "Contract",
-                employee_name: "Jane Smith",
-            },
-            {
-                proceeding_file_id: 6,
-                proceeding_file_name: "Confidentiality Agreement",
-                proceeding_file_path: "/files/confidentiality_agreement.pdf",
-                proceeding_file_expiration_at: "2024-09-30",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "CA-321",
-                proceeding_file_uuid: "uuid-103",
-                proceeding_file_type_name: "Agreement",
-                employee_name: "Rogelio Rafael",
-            },
-            {
-                proceeding_file_id: 7,
-                proceeding_file_name: "Non-Compete Agreement",
-                proceeding_file_path: "/files/non_compete_agreement.pdf",
-                proceeding_file_expiration_at: "2024-09-25",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "NCA-987",
-                proceeding_file_uuid: "uuid-104",
-                proceeding_file_type_name: "Agreement",
-                employee_name: "Wilvardo Ramirez",
-            },
-            {
-                proceeding_file_id: 8,
-                proceeding_file_name: "Safety Training Certificate",
-                proceeding_file_path: "/files/safety_training_certificate.pdf",
-                proceeding_file_expiration_at: "2024-09-15",
-                proceeding_file_active: 1,
-                proceeding_file_identify: "STC-876",
-                proceeding_file_uuid: "uuid-105",
-                proceeding_file_type_name: "Certificate",
-                employee_name: "Jose Guadalupe",
-            },
-            ],
-        },
-    }),
-    computed: {
-        documentsSelected() {
-            let documents = this[this.tabActive].documents;
-            return documents;
-        }
+  name: 'DocumentsExpirationMatrix',
+  props: {},
+  data: () => ({
+    employeeProceedingFiles: [] as Array<ProceedingFileInterface>,
+    pilotProceedingFiles: [] as Array<ProceedingFileInterface>,
+    customerProceedingFiles: [] as Array<ProceedingFileInterface>,
+    flightAttendantProceedingFiles: [] as Array<ProceedingFileInterface>,
+    canReadEmployees: false,
+    canReadPilots: false,
+    canReadCustomers: false,
+    canReadFlightAttendant: false,
+    // carousel settings
+    settings: {
+      itemsToShow: 3,
+      snapAlign: 'start',
     },
-    created () {},
-    mounted() {
+    tabActive: '',
+    // breakpoints are mobile first
+    // any settings not specified will fallback to the carousel settings
+    breakpoints: {
+      // 700px and up
+      300: {
+        itemsToShow: 1,
+        snapAlign: 'start',
+      },
+      500: {
+        itemsToShow: 2,
+        snapAlign: 'start',
+      },
+      700: {
+        itemsToShow: 2.4,
+        snapAlign: 'start',
+      },
+      // 1024 and up
+      1024: {
+        itemsToShow: 3,
+        snapAlign: 'start',
+      },
+      2084: {
+        itemsToShow: 6,
+        snapAlign: 'start',
+      },
     },
-    methods: {
-      setActive(activeTab: 'pilots' | 'aircraft' | 'customers' | 'employees') {
-        this.tabActive = activeTab;
+  }),
+  computed: {
+    getProceedingFiles() {
+      switch (this.tabActive) {
+        case 'employees':
+          return this.employeeProceedingFiles;
+        case 'pilots':
+          return this.pilotProceedingFiles;
+        case 'customers':
+          return this.customerProceedingFiles;
+        case 'flight-attendant':
+          return this.flightAttendantProceedingFiles;
+        default:
+          return [];
       }
     }
+  },
+  created() { },
+  async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    await this.getEmployeeProceedingFiles()
+    await this.getPilotProceedingFiles()
+    await this.getCustomerProceedingFiles()
+    await this.getFlightAttendantProceedingFiles()
+    myGeneralStore.setFullLoader(false)
+  },
+  methods: {
+    setActive(tab: string) {
+      this.tabActive = tab
+    },
+    async getEmployeeProceedingFiles() {
+      const myGeneralStore = useMyGeneralStore()
+      const permissions = await myGeneralStore.getAccess('employees')
+      if (myGeneralStore.isRoot) {
+        this.canReadEmployees = true
+      } else {
+        this.canReadEmployees = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+      const employeeProceedingFileService = new EmployeeProceedingFileService()
+      const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+      const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      if (employeeProceedingFileResponse.status === 200) {
+        if (employeeProceedingFileResponse._data.data.employeeProceedingFiles) {
+          const proceedingFilesExpired = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired
+          for await (const file of proceedingFilesExpired) {
+            this.employeeProceedingFiles.push(file)
+          }
+          const proceedingFilesExpiring = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring
+          for await (const file of proceedingFilesExpiring) {
+            this.employeeProceedingFiles.push(file)
+          }
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Employee proceeding files',
+          detail: employeeProceedingFileResponse._data.message,
+          life: 5000,
+        });
+      }
+    },
+    async getPilotProceedingFiles() {
+      const myGeneralStore = useMyGeneralStore()
+      const permissions = await myGeneralStore.getAccess('pilots')
+      if (myGeneralStore.isRoot) {
+        this.canReadPilots = true
+      } else {
+        this.canReadPilots = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+      this.pilotProceedingFiles = []
+      const pilotProceedingFileService = new PilotProceedingFileService()
+      const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+      const pilotProceedingFileResponse = await pilotProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      if (pilotProceedingFileResponse.status === 200) {
+        if (pilotProceedingFileResponse._data.data.pilotProceedingFiles) {
+          const proceedingFilesExpired = pilotProceedingFileResponse._data.data.pilotProceedingFiles.proceedingFilesExpired
+          for await (const file of proceedingFilesExpired) {
+            this.pilotProceedingFiles.push(file)
+          }
+          const proceedingFilesExpiring = pilotProceedingFileResponse._data.data.pilotProceedingFiles.proceedingFilesExpiring
+          for await (const file of proceedingFilesExpiring) {
+            this.pilotProceedingFiles.push(file)
+          }
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Pilot proceeding files',
+          detail: pilotProceedingFileResponse._data.message,
+          life: 5000,
+        });
+      }
+    },
+    async getCustomerProceedingFiles() {
+      const myGeneralStore = useMyGeneralStore()
+      const permissions = await myGeneralStore.getAccess('customers')
+      if (myGeneralStore.isRoot) {
+        this.canReadCustomers = true
+      } else {
+        this.canReadCustomers = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+      this.customerProceedingFiles = []
+      const customerProceedingFileService = new CustomerProceedingFileService()
+      const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+      const customerProceedingFileResponse = await customerProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      if (customerProceedingFileResponse.status === 200) {
+        if (customerProceedingFileResponse._data.data.customerProceedingFiles) {
+          const proceedingFilesExpired = customerProceedingFileResponse._data.data.customerProceedingFiles.proceedingFilesExpired
+          for await (const file of proceedingFilesExpired) {
+            this.customerProceedingFiles.push(file)
+          }
+          const proceedingFilesExpiring = customerProceedingFileResponse._data.data.customerProceedingFiles.proceedingFilesExpiring
+          for await (const file of proceedingFilesExpiring) {
+            this.customerProceedingFiles.push(file)
+          }
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Customer proceeding files',
+          detail: customerProceedingFileResponse._data.message,
+          life: 5000,
+        });
+      }
+    },
+    async getFlightAttendantProceedingFiles() {
+      const myGeneralStore = useMyGeneralStore()
+      const permissions = await myGeneralStore.getAccess('flight-attendants')
+      if (myGeneralStore.isRoot) {
+        this.canReadFlightAttendant = true
+      } else {
+        this.canReadFlightAttendant = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+      this.flightAttendantProceedingFiles = []
+      const flightAttendantProceedingFileService = new FlightAttendantProceedingFileService()
+      const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+      const flightAttendantProceedingFileResponse = await flightAttendantProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      if (flightAttendantProceedingFileResponse.status === 200) {
+        if (flightAttendantProceedingFileResponse._data.data.flightAttendantProceedingFiles) {
+          const proceedingFilesExpired = flightAttendantProceedingFileResponse._data.data.flightAttendantProceedingFiles.proceedingFilesExpired
+          for await (const file of proceedingFilesExpired) {
+            this.flightAttendantProceedingFiles.push(file)
+          }
+          const proceedingFilesExpiring = flightAttendantProceedingFileResponse._data.data.flightAttendantProceedingFiles.proceedingFilesExpiring
+          for await (const file of proceedingFilesExpiring) {
+            this.flightAttendantProceedingFiles.push(file)
+          }
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Flight attendant proceeding files',
+          detail: flightAttendantProceedingFileResponse._data.message,
+          life: 5000,
+        });
+      }
+    },
+  },
 })

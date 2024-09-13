@@ -1,5 +1,5 @@
 export default defineComponent({
-  name: 'pilotDocumentExpireCard',
+  name: 'flightAttendantDocumentExpireCard',
   props: {
     document: { type: Object as PropType<object> as any, required: true },
     clickOnCard: { type: Function, default: null },
@@ -9,8 +9,12 @@ export default defineComponent({
     isMenuOpen: false,
   }),
   computed: {
+    getName() {
+      const person = this.document.flightAttendantProceedingFile.flightAttendant.person
+      return person ? `${person.personFirstname} ${person.personLastname} ${person.personSecondLastname}` : ''
+    },
     isExpired() {
-      const expirationDate = new Date(this.document.proceeding_file_expiration_at);
+      const expirationDate = new Date(this.document.proceedingFileExpirationAt);
       const currentDate = new Date();
       return expirationDate < currentDate;
     },
