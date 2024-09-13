@@ -1,16 +1,5 @@
 <template>
-    <div class="gallery-container">
-        <div v-if="gallery.length" class="gallery-grid">
-            <div v-for="image in gallery" :key="image.id" class="gallery-card">
-                <Image :src="image.galeryPath" :alt="image.galeryCategory" class="gallery-image" width="250" preview />
-                <div class="gallery-category">{{ image.galeryCategory }} </div>
-                <Button icon="pi pi-trash" class="box-btn btn-red" @click="clickOnDeleteImage(image.id)" />
-            </div>
-        </div>
-        <div v-else class="no-images">
-            No images available.
-        </div>
-    </div>
+ 
     <div>
         <div class="flex flex-col md:flex-row">
             <div class="input-box flex flex-col gap-4 space">
@@ -38,6 +27,34 @@
             </div>
         </div>
     </div>
+  <div class="gallery-container">
+    <div v-if="gallery.length" class="gallery-grid">
+      <div v-for="image in gallery" :key="image.id" class="gallery-card">
+        <Image :src="image.galeryPath" :alt="image.galeryCategory" class="gallery-image" width="250" preview />
+
+        <!-- Modo de edición de la categoría -->
+        <div v-if="isEditing" class="edit-category">
+          <InputText v-model="image.galeryCategory" placeholder="Edit category" />
+        </div>
+        <!-- Mostrar categoría si no está en modo de edición -->
+        <div v-else class="gallery-category">{{ image.galeryCategory }}</div>
+
+        <!-- Botones de guardar cuando esté en modo de edición -->
+        <div v-if="isEditing" class="gallery-actions">
+          <Button icon="pi pi-times" class="box-btn btn-red" @click="cancelEdit(image)" />
+          <Button icon="pi pi-check" class="box-btn btn-green" @click="saveEdit(image)" />
+        </div>
+        <!-- Botones de editar y eliminar cuando no está en modo de edición -->
+        <div v-else class="gallery-actions">
+          <Button icon="pi pi-pencil" class="box-btn btn-blue" @click="editCategory(image)" />
+          <Button icon="pi pi-trash" class="box-btn btn-red" @click="clickOnDeleteImage(image.id)" />
+        </div>
+      </div>
+    </div>
+    <div v-else class="no-images">
+      No images available.
+    </div>
+  </div>
     <Dialog v-model:visible="drawerGalleryDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
@@ -99,6 +116,7 @@ export default Script
 
 .space {
     margin-top: 5%;
+    margin-bottom: 3%;
 }
 
 .form-container {
@@ -106,7 +124,6 @@ export default Script
     position: relative;
 
     .input-box {
-        display: flex;
         align-items: center;
     }
 }
