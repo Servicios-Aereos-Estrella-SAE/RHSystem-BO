@@ -23,11 +23,14 @@ export default class RoleService {
     return responseRequest
   }
 
-  async assign(roleId: number, permissions: Array<any>) {
+  async assign(roleId: number, permissions: Array<any>, departments: Array<any>) {
     let responseRequest: any = null
     const formData = new FormData()
     permissions.forEach((systemPermissionId) => {
       formData.append('permissions[]', systemPermissionId);
+    })
+    departments.forEach((departmentId) => {
+      formData.append('departments[]', departmentId);
     })
     try {
       await $fetch(`${this.API_PATH}/roles/assign/${roleId}`, {
