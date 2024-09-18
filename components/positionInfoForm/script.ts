@@ -80,6 +80,7 @@ export default defineComponent({
             const position = response._data.data.position.positionId;
             //HERE
             const departmentId = this.position.departmentId;
+            console.log(position)
             console.log(departmentId);
             console.log(position);
             const departmentService = new DepartmentService();
