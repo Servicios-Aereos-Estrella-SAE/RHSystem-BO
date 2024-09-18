@@ -22,6 +22,7 @@ export default defineComponent({
     const search = ref<string>('');
     const drawerShiftForm = ref<boolean>(false);
     const drawerPositionForm = ref<boolean>(false);
+    const drawerNewPositionForm = ref<boolean>(false);
     const alertDeletePosition = ref<boolean>(false);
     const messagePosition = ref<string>('');
     let canRead = ref<boolean>(false);
@@ -78,8 +79,22 @@ export default defineComponent({
     const assignPositionDepartment = () => {
       drawerPositionForm.value = true;
     };
+    const newPositionDepartment = () =>{
+      drawerNewPositionForm.value = true;
+    };
     const onSave = () => {
       const departmentId = route.params.departmentId
+      if (departmentId) {
+        fetchShiftDepartment(departmentId);
+      }
+    }
+
+    const onSaveNewPosition = () => {
+      drawerNewPositionForm.value = false;
+      console.log("PRINTL ON SAVE NEW POSITION")
+      const departmentId = route.params.departmentId
+      console.log(departmentId)
+
       if (departmentId) {
         fetchShiftDepartment(departmentId);
       }
@@ -207,6 +222,7 @@ export default defineComponent({
       handleSaveSuccess,
       drawerPositionDelete,
       onSave,
+      onSaveNewPosition,
       syncPositions,
       onSavePosition,
       confirmDelete,
@@ -215,6 +231,8 @@ export default defineComponent({
       canRead,
       canCreate,
       canDelete,
+      newPositionDepartment,
+      drawerNewPositionForm
     };
   }
 });

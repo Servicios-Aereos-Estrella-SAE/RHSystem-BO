@@ -22,7 +22,10 @@
                         <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPosition"
                             @keyup.delete="handlerSearchPosition" />
                     </div>
-                    <div></div>
+                    <div class="input-box" style="margin-left: auto;">
+                        <Button v-if="canCreate" class="btn-add mr-2" label="New position" icon="pi pi-plus" severity="primary" @click="newPositionDepartment" />
+                    </div>
+                    
                     <div class="input-box">
                         <Button v-if="canCreate" class="btn-add mr-2" label="Assign department position" icon="pi pi-plus" severity="primary" @click="assignPositionDepartment" />
                     </div>
@@ -67,6 +70,16 @@
                             />
                         </Sidebar>
                     </div>
+
+                    <!-- Form New Position -->
+                    <div class="card flex justify-content-center">
+                        <Sidebar v-model:visible="drawerNewPositionForm" header="New position" position="right"
+                            class="shift-form-sidebar" :showCloseIcon="true">
+                            <PositionInfoForm :position="department"  @onSaveNewPosition="onSaveNewPosition"
+                            />
+                        </Sidebar>
+                    </div>
+
                     <div class="card flex justify-content-center">
                         <Sidebar v-model:visible="drawerPositionForm" header="Assign Shift to Department" position="right"
                             class="shift-form-sidebar" :showCloseIcon="true">
@@ -74,6 +87,7 @@
                             />
                         </Sidebar>
                     </div>
+
                     <Dialog v-model:visible="drawerPositionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
                         <div class="confirmation-content">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
@@ -85,6 +99,7 @@
                             <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
                         </template>
                     </Dialog>
+
                     <Dialog v-model:visible="alertDeletePosition" :style="{width: '450px'}" header="Delete Department Position" :modal="true">
                         <div class="confirmation-content">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
