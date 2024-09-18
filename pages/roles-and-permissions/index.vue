@@ -34,13 +34,20 @@
                       </template>
                     </Column>
                 </DataTable>
-                <DataTable :value="departmentList" tableStyle="min-width: 50rem">
-                  <Column field="departmentName" header="Departments">
-                      <template #body="slotProps">
-                        <Checkbox v-model="departmentPermissions[indexRole]" name="permission" :disabled="!canUpdate" :value="slotProps.data.departmentId"/>
-                        <label> &nbsp; {{ slotProps.data.departmentName }}</label>
-                      </template>
-                  </Column>
+              <DataTable :value="groupedDepartments" tableStyle="min-width: 50rem">
+                <Column v-for="(dept, index) in groupedDepartments[0]" :key="index" header="Department">
+                  <template #body="slotProps">
+                    <div v-if="slotProps.data[index]">
+                      <Checkbox 
+                        v-model="departmentPermissions[indexRole]" 
+                        name="permission" 
+                        :disabled="!canUpdate" 
+                        :value="slotProps.data[index].departmentId" 
+                      />
+                      <label>&nbsp; {{ slotProps.data[index].departmentName }}</label>
+                    </div>
+                  </template>
+                </Column>
               </DataTable>
                 </AccordionTab>
               </Accordion>

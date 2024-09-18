@@ -1,13 +1,19 @@
 import { tr } from "date-fns/locale";
 import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
 
 export default class DepartmentService {
  
   protected API_PATH: string
-
+  protected GENERAL_HEADERS: GeneralHeadersInterface
+  
   constructor () {
+    const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async syncDepartments() {
@@ -31,9 +37,11 @@ export default class DepartmentService {
     return responseRequest;
   }
   async getAllDepartmentList () {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/departments`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -41,9 +49,11 @@ export default class DepartmentService {
     return responseRequest
   }
   async getSearchDepartmentList(search: string, currentPage: number, rowsPerPage: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
   
     await $fetch(`${this.API_PATH}/departments/search`, {
+      headers,
       query: {
         departmentName: search,
         currentPage,

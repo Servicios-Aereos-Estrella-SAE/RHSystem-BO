@@ -21,6 +21,14 @@ export default defineComponent({
     canUpdate: false,
   }),
   computed: {
+    groupedDepartments() {
+      const columns = 3
+      const groups = []
+      for (let i = 0; i < this.departmentList.length; i += columns) {
+        groups.push(this.departmentList.slice(i, i + columns))
+      }
+      return groups
+    }
   },
   created() { },
   async mounted() {
