@@ -208,4 +208,23 @@ export default class DepartmentService {
     }
     return responseRequest
   }
+
+  async softDeleteDepartmentPosition(positionId: number) {
+    let responseRequest: any = null;
+    try {
+      await $fetch(`${this.API_PATH}/positions/${positionId}`, {
+        method: 'DELETE',
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) {
+          console.error('response error', response);
+          responseRequest = response;
+        }
+      });
+      return responseRequest;
+    } catch (error: any) {
+      responseRequest = error.data;
+    }
+    return responseRequest;
+  }
+  
 }

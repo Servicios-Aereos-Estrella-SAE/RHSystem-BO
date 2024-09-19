@@ -12,7 +12,6 @@
                             Registration number is required.
                         </small>
                     </div>
-
                     <div class="input-box">
                         <label for="aircraftSerialNumber">Serial Number</label>
                         <InputText id="aircraftSerialNumber" v-model="aircraft.aircraftSerialNumber"

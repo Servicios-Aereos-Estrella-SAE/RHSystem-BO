@@ -19,6 +19,7 @@ export default defineComponent({
   props: {
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
   },
+  emits: ['gallery-save', 'file-selected','onGallerySave'],
   data() {
     return {
       gallery: ref<GalleryImage[]>([]),
