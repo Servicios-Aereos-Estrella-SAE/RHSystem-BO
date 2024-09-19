@@ -21,6 +21,7 @@
                       Period
                     </label>
                     <Calendar
+                      v-if="isReady"
                       v-model="periodSelected"
                       view="month"
                       dateFormat="mm/yy"
