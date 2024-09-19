@@ -87,6 +87,27 @@ export default class RoleService {
     }
   }
 
+  async hasAccessDepartment(roleId: number, departmentId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/has-access-department/${roleId}/${departmentId}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              roleHasAccess: roleHasAccess
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
   async getAccessByModule(roleId: number, systemModuleSlug: string) {
     let responseRequest: any = null
     try {
