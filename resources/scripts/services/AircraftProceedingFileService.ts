@@ -1,11 +1,17 @@
 import type { AircraftProceedingFileInterface } from "../interfaces/AircraftProceedingFileInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class AircraftProceedingFileService {
   protected API_PATH: string
-
+  protected GENERAL_HEADERS: GeneralHeadersInterface
+  
   constructor () {
+    const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getByAircraft(aircraftId: number) {
@@ -77,6 +83,20 @@ export default class AircraftProceedingFileService {
         }
       }
     }
+  }
+
+  async getExpiresAndExpiring(dateStart: string, dateEnd: string) {
+    const headers = { ...this.GENERAL_HEADERS }
+    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/aircraft-proceeding-files/get-expired-and-expiring`, {
+      headers,
+      query: query,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+    return responseRequest
   }
 
   validateInfo(aircraftProceedingFile: AircraftProceedingFileInterface): boolean {

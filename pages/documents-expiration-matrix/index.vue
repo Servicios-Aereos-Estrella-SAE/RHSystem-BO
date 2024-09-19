@@ -17,10 +17,9 @@
         </div>
         <div class="head-page">
           <VueCarCarousel v-bind="settings" :breakpoints="breakpoints" >
-           
-            <VueCarSlide :key="0">
+            <VueCarSlide v-if="canReadAircrafts"  :key="0">
               <div class="carousel__item">
-               <!--  <aircraftDocumentCard :aircraft="aircraft" :clickOnCard="() => { setActive('aircraft')}"></aircraftDocumentCard> -->
+               <aircraftDocumentCard :clickOnCard="() => { setActive('aircraft')}"></aircraftDocumentCard>
               </div>
             </VueCarSlide>
             <VueCarSlide v-if="canReadEmployees" :key="1">
@@ -58,9 +57,9 @@
           </div>
           <div class="document-body-content">
             <div v-for="(document, index) in getProceedingFiles">
-              <!-- <div v-if="tabActive === 'aircraft'">
+              <div v-if="tabActive === 'aircraft'">
                 <AircraftDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></AircraftDocumentExpireCard>
-              </div> -->
+              </div>
               <div v-if="tabActive === 'pilots'">
                 <PilotDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></PilotDocumentExpireCard>
               </div>
