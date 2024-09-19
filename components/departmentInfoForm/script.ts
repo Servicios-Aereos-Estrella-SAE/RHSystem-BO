@@ -30,6 +30,12 @@ export default defineComponent({
     isReady: false,
   }),
   computed: {
+    departmentsWithNone() {
+      return [
+        { departmentId: null, departmentName: 'None' }, 
+        ...this.departments
+      ];
+    }
   },
   async mounted() {
     this.isReady = false

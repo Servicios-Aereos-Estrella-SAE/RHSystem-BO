@@ -217,4 +217,16 @@ export default class DepartmentService {
     return responseRequest;
   }
   
+  async delete(department: DepartmentInterface) {
+    let responseRequest: any = null;
+  
+    await $fetch(`${this.API_PATH}/departments/${department.departmentId}`, {
+      method: 'DELETE',
+      onResponse({ response }) { responseRequest = response; },
+      onRequestError({ response }) { responseRequest = response; }
+    });
+  
+    return responseRequest;
+  }
+  
 }

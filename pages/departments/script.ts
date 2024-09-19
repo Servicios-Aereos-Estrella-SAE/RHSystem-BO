@@ -9,14 +9,17 @@ export default defineComponent({
   props: {},
   data: () => ({
     search: '' as string,
+    
     filteredDepartments: [] as DepartmentInterface[],
     department: null as DepartmentInterface | null,
+    departmentService: new DepartmentService(),
     currentPage: 1,
     totalRecords: 0,
     first: 0,
     last: 0,
     rowsPerPage: 30,
     drawerDepartmentDetail: false,
+    drawerDepartmentDelete: false,
     canCreate: false,
     canUpdate: false,
     canDelete: false
@@ -75,6 +78,10 @@ export default defineComponent({
       this.department = { ...department }
       this.drawerDepartmentDetail = true
     },
+    onDelete(department: DepartmentInterface) {
+      this.department = { ...department }
+      this.drawerDepartmentDelete = true
+    },
     onSave(department: DepartmentInterface) {
       this.department = { ...department };
       const index = this.filteredDepartments.findIndex((s: DepartmentInterface) => s.departmentId === this.department?.departmentId);
@@ -104,5 +111,33 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false);
       }
     },
+    async confirmDelete() {
+      if (this.department) {
+        console.log(this.department)
+          this.drawerDepartmentDelete = false; 
+          const departmentResponse = await this.departmentService.delete(this.department); 
+          if (departmentResponse.status === 201 || departmentResponse.status === 200) {
+              const index = this.filteredDepartments.findIndex((department: DepartmentInterface) => department.departmentId === this.department?.departmentId);
+              if (index !== -1) {
+                  this.filteredDepartments.splice(index, 1);
+                  this.$forceUpdate(); 
+              }
+              this.$toast.add({
+                  severity: 'success',
+                  summary: 'Delete department',
+                  detail: departmentResponse._data.message, 
+                  life: 5000,
+              });
+          } else {
+              this.$toast.add({
+                  severity: 'error',
+                  summary: 'Delete department',
+                  detail: departmentResponse._data.message, 
+                  life: 5000,
+              });
+          }
+      }
+  }
+  
   }
 });
