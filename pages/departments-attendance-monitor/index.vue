@@ -14,7 +14,13 @@
               General Attendance Monitor
             </h1>
           </div>
-          <div></div>
+          <div class="input-box">
+            <label for="parentDepartmentId">
+              Status
+            </label>
+            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
+              placeholder="Select a Status" filter class="w-full md:w-14rem"/>
+          </div>
           <div class="input-box">
             <label for="employees">
               Employee
@@ -60,6 +66,7 @@
               Period
             </label>
             <Calendar
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom'"
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
@@ -67,6 +74,19 @@
               :maxDate="maxDate"
               showWeek
               @update:modelValue="handlerPeriodChange"
+            />
+            <Calendar
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Custom'"
+              v-model="datesSelected"
+              :view="visualizationMode.calendar_format.mode"
+              :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              hideOnRangeSelection
+              selectionMode="range"
+              :numberOfMonths="visualizationMode?.number_months"
+              @update:modelValue="handlerPeriodChange"
+              showWeek
             />
           </div>
         </div>
