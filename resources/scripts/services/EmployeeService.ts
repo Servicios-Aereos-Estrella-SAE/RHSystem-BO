@@ -1,17 +1,24 @@
 import type { EmployeeInterface } from "../interfaces/EmployeeInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { PeopleInterface } from "../interfaces/PeopleInterface"
 
 export default class EmployeeService {
   protected API_PATH: string
-
+  protected GENERAL_HEADERS: GeneralHeadersInterface
+  
   constructor () {
+    const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
-
   async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees`, {
+      headers,
       query: {
         search: searchText,
         departmentId,

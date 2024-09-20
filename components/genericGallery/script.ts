@@ -19,6 +19,7 @@ export default defineComponent({
   props: {
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
   },
+  emits: ['gallery-save', 'file-selected','onGallerySave'],
   data() {
     return {
       gallery: ref<GalleryImage[]>([]),
@@ -46,10 +47,42 @@ export default defineComponent({
       filteredCategories: [] as string[],
       drawerGalleryDelete: false,
       imageIdToDelete: null as number | null,
-
+      isEditing: false,
     };
   },
   methods: {
+    async saveEdit(image: any) {
+    
+      if (!image.galeryCategory) {
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append('galeryCategory', image.galeryCategory);
+    
+      if (this.aircraft.aircraftId !== null) {
+        formData.append('galeryIdTable', this.aircraft.aircraftId.toString());
+      }
+    
+      formData.append('galeryNameTable', 'aircrafts');
+      const galleryService = new GalleryService();
+    
+      try {
+        // Llama al servicio para actualizar la imagen
+        const response = await galleryService.updateImage(image.id, formData);
+        this.isEditing = false;
+        this.fetchGallery();
+    
+      } catch (error) {
+        console.error('Error updating image:', error);
+      }
+    },
+    cancelEdit(){
+      this.isEditing = false;
+    },
+    editCategory(_imageId: number) {
+      this.isEditing = true;
+    },
     clickOnDeleteImage(imageId: number) {
       this.imageIdToDelete = imageId
       this.drawerGalleryDelete = true
@@ -107,7 +140,6 @@ export default defineComponent({
       const galleryService = new GalleryService();
       try {
         const response = await galleryService.uploadImage(formData);
-        console.log('Image uploaded successfully:', response.data);
         this.fetchGallery(); 
         this.galeryCategory = '';
         this.galeryPath = null;

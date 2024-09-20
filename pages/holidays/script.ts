@@ -25,9 +25,11 @@ export default defineComponent({
         drawerHolidayDelete: false,
         canCreate: false,
         canUpdate: false,
-        canDelete: false
+        canDelete: false,
+        isReady: false
     }),
     async mounted() {
+        this.isReady = false
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
         const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
@@ -43,6 +45,7 @@ export default defineComponent({
         }
         myGeneralStore.setFullLoader(false)
         await this.handlerSearchHoliday()
+        this.isReady = true
     },
     methods: {
         addNew() {

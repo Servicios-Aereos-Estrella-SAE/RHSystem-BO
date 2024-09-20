@@ -53,6 +53,24 @@ export default defineComponent({
         message: 'You don´t have access'
      })
     }
+    if ((systemModuleSlug === 'departments' || systemModuleSlug === 'departments-attendance-monitor') && fullPath.split('/')[2] && !myGeneralStore.isRoot) {
+      const departmentId = fullPath.split('/')[2]
+      let hasAccessDepartment = false
+      hasAccessDepartment = await myGeneralStore.hasAccessDepartment(parseInt(departmentId))
+      if (!hasAccessDepartment) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Not access department',
+          detail: 'you don´t have access to this department',
+          life: 5000,
+        });
+        throw showError({
+          statusCode: 403,
+          fatal: true,
+          message: 'You don´t have access to this department'
+       })
+      }
+    }
     myGeneralStore.displayContent = true
   },
   methods: {

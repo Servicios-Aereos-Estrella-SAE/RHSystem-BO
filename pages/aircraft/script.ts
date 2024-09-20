@@ -98,6 +98,10 @@ export default defineComponent({
             this.drawerAircraftForm = true;
         },
         onGallery(aircraft: AircraftInterface) {
+            if (!aircraft) {
+                console.error('No aircraft provided');
+                return;
+              }
             this.aircraft = { ...aircraft };
             this.drawerAircraftFormGallery = true;
             
