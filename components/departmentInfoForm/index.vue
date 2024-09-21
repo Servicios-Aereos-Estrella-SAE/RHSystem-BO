@@ -19,7 +19,7 @@
           <label for="parentDepartmentId">
             Parent Department
           </label>
-          <Dropdown v-model="department.parentDepartmentId" :options="departments" optionLabel="departmentName" optionValue="departmentId"
+          <Dropdown v-model="department.parentDepartmentId" :options="departmentsWithNone" optionLabel="departmentName" optionValue="departmentId"
             placeholder="Select a Department" filter class="w-full md:w-14rem"/>
         </div>
         <div class="box-tools-footer">

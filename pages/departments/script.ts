@@ -9,14 +9,17 @@ export default defineComponent({
   props: {},
   data: () => ({
     search: '' as string,
+    
     filteredDepartments: [] as DepartmentInterface[],
     department: null as DepartmentInterface | null,
+    departmentService: new DepartmentService(),
     currentPage: 1,
     totalRecords: 0,
     first: 0,
     last: 0,
     rowsPerPage: 30,
     drawerDepartmentDetail: false,
+    drawerDepartmentDelete: false,
     canCreate: false,
     canUpdate: false,
     canDelete: false
@@ -75,6 +78,10 @@ export default defineComponent({
       this.department = { ...department }
       this.drawerDepartmentDetail = true
     },
+    onDelete(department: DepartmentInterface) {
+      this.department = { ...department }
+      this.drawerDepartmentDelete = true
+    },
     onSave(department: DepartmentInterface) {
       this.department = { ...department };
       const index = this.filteredDepartments.findIndex((s: DepartmentInterface) => s.departmentId === this.department?.departmentId);
@@ -104,5 +111,108 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false);
       }
     },
+  //   async confirmDelete() {
+  //     if (this.department) {
+  //       console.log(this.department)
+  //         this.drawerDepartmentDelete = false; 
+  //         const departmentResponse = await this.departmentService.delete(this.department); 
+  //         if (departmentResponse.status === 201 || departmentResponse.status === 200) {
+  //             const index = this.filteredDepartments.findIndex((department: DepartmentInterface) => department.departmentId === this.department?.departmentId);
+  //             if (index !== -1) {
+  //                 this.filteredDepartments.splice(index, 1);
+  //                 this.$forceUpdate(); 
+  //             }
+  //             this.$toast.add({
+  //                 severity: 'success',
+  //                 summary: 'Delete department',
+  //                 detail: departmentResponse._data.message, 
+  //                 life: 5000,
+  //             });
+  //         } else if(departmentResponse.status === 206){
+
+  //         } 
+  //         else {
+  //             this.$toast.add({
+  //                 severity: 'error',
+  //                 summary: 'Delete department',
+  //                 detail: departmentResponse._data.message, 
+  //                 life: 5000,
+  //             });
+  //         }
+  //     }
+  // }
+  async confirmDelete() {
+    if (this.department) {
+      console.log(this.department);
+      this.drawerDepartmentDelete = false; 
+      const departmentResponse = await this.departmentService.delete(this.department); 
+  
+      if (departmentResponse.status === 201 || departmentResponse.status === 200) {
+        const index = this.filteredDepartments.findIndex((department: DepartmentInterface) => department.departmentId === this.department?.departmentId);
+        if (index !== -1) {
+          this.filteredDepartments.splice(index, 1);
+          this.$forceUpdate(); 
+        }
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Delete department',
+          detail: departmentResponse._data.message, 
+          life: 5000,
+        });
+      } 
+      else if (departmentResponse.status === 206) {
+        // Mostrar la alerta de confirmación cuando haya empleados relacionados
+        this.$confirm.require({
+          message: `${departmentResponse._data.message}. There are ${departmentResponse._data.data.totalEmployees} related employees. Are you sure you want to delete this department?`,
+          header: 'Confirm Delete',
+          icon: 'pi pi-exclamation-triangle',
+          acceptLabel: 'Yes, delete',
+          rejectLabel: 'No',
+          accept: async () => {
+            // Si acepta, llamar al servicio forceDelete
+            const forceDeleteResponse = await this.departmentService.forceDelete(this.department.departmentId);
+            if (forceDeleteResponse.status === 201 || forceDeleteResponse.status === 200) {
+              const index = this.filteredDepartments.findIndex((department: DepartmentInterface) => department.departmentId === this.department?.departmentId);
+              if (index !== -1) {
+                this.filteredDepartments.splice(index, 1);
+                this.$forceUpdate(); 
+              }
+              this.$toast.add({
+                severity: 'success',
+                summary: 'Department force deleted',
+                detail: forceDeleteResponse._data.message,
+                life: 5000,
+              });
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: 'Error deleting department',
+                detail: forceDeleteResponse._data.message,
+                life: 5000,
+              });
+            }
+          },
+          reject: () => {
+            // Si rechaza, no se realiza ninguna acción
+            this.$toast.add({
+              severity: 'info',
+              summary: 'Delete cancelled',
+              detail: 'The department delete operation was cancelled',
+              life: 5000,
+            });
+          }
+        });
+      } 
+      else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Delete department',
+          detail: departmentResponse._data.message, 
+          life: 5000,
+        });
+      }
+    }
+  }
+  
   }
 });

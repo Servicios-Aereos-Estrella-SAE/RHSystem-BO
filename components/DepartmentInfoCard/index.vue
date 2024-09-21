@@ -11,7 +11,9 @@
     </div>
     <div class="box-tools-footer">
       <Button v-if="canUpdate" class="box-btn" @click="handlerClickOnDetail(department.departmentId)" label="See details" icon="pi-arrow-right" iconPos="right"  /> 
-      <Button v-if="canDelete" class="box-btn" @click="handlerClickOnEdit(department.departmentId)" label="Edit" icon="pi pi-pencil" iconPos="right"  /> 
+      <Button v-if="canDelete" class="box-btn" @click="handlerClickOnEdit(department.departmentId)" label="Edit" icon="pi pi-pencil" iconPos="right"  />
+      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()" />
+
     </div>
   </div>
 </template>
@@ -46,7 +48,14 @@ export default Script
     align-items: center;
     border: 1px solid #e3ebf6;
     text-decoration: none;
+    
+    .btn-red{
+      color: red;
+    }
   }
+  .btn-red{
+      color: red;
+    }
   .department-name {
     text-align: left;
     font-weight: 500;
