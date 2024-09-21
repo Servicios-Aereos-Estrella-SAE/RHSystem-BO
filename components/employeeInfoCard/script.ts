@@ -54,6 +54,9 @@ export default defineComponent({
         this.clickOnEdit()
       }
     },
+    handlerClickOnShifts () {
+      this.$emit('clickShifts', this.employee)
+    },
     onClickPhoto() {
       this.clickOnPhoto()
     },
@@ -102,6 +105,9 @@ export default defineComponent({
         vacationPeriodStart: vacationPeriodStart.toISODate(),
         vacationPeriodEnd: vacationPeriodEnd.toISODate()
       }
+    },
+    handlerOpenProceedingFiles () {
+      this.$emit('clickProceedingFiles', this.employee)
     }
   }
 })

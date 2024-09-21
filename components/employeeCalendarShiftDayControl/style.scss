@@ -1,0 +1,89 @@
+@import '/resources/styles/variables.scss';
+
+.caledar-day {
+  box-sizing: border-box;
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  text-align: center;
+  color: $icon;
+
+  .date {
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    .number {
+      border-radius: 100%;
+      background: white;
+      border: $border-dashed;
+      height: 3rem;
+      width: 3rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0.5rem;
+
+      &.active {
+        background: aliceblue;
+        border-color: aliceblue;
+      }
+    }
+  }
+
+  .day {
+    font-size: 0.7rem;
+  }
+
+  .shift {
+    font-size: 0.7rem;
+    color: $text;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $gray, $amount: 0.5);
+    border-radius: 0.35rem;
+    height: 43.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    .off {
+      opacity: 0.2;
+    }
+  }
+
+  .status {
+    font-size: 0.7rem;
+
+    .no-shift {
+      color: transparentize($color: $warning, $amount: 0.25);
+    }
+  }
+
+  .tools {
+    margin-top: 1rem;
+    border-top: $border-dashed;
+    padding-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+
+      .dot {
+        width: 0.65rem;
+        height: 0.65rem;
+        box-sizing: border-box;
+        border: solid 2px white;
+        border-radius: 100%;
+        background-color: $info;
+        position: absolute;
+        margin-right: -1rem;
+        margin-top: -1rem;
+      }
+    }
+  }
+}
