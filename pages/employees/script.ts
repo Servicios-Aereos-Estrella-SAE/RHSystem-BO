@@ -1,3 +1,4 @@
+import { defineComponent } from 'vue'
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
@@ -25,7 +26,9 @@ export default defineComponent({
         drawerEmployeeSync: false,
         canCreate: false,
         canUpdate: false,
-        canDelete: false
+        canDelete: false,
+        drawerShifts: false,
+        drawerProceedingFiles: false
     }),
     computed: {},
     created () {},
@@ -128,27 +131,29 @@ export default defineComponent({
                 this.drawerEmployeeDelete = false;
                 const employeeService = new EmployeeService();
                 const employeeResponse = await employeeService.delete(this.employee);
+
                 if (employeeResponse.status === 201) {
-                const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId);
-                if (index !== -1) {
-                    this.filteredEmployees.splice(index, 1);
-                    this.$forceUpdate();
+                    const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId);
+                    if (index !== -1) {
+                        this.filteredEmployees.splice(index, 1);
+                        this.$forceUpdate();
+                    }
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Delete employee',
+                        detail: employeeResponse._data.message,
+                        life: 5000,
+                    });
+                } else {
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'Delete employee',
+                        detail: employeeResponse._data.message,
+                        life: 5000,
+                    });
                 }
-                this.$toast.add({
-                    severity: 'success',
-                    summary: 'Delete employee',
-                    detail: employeeResponse._data.message,
-                    life: 5000,
-                });
-            } else {
-                this.$toast.add({
-                    severity: 'error',
-                    summary: 'Delete employee',
-                    detail: employeeResponse._data.message,
-                    life: 5000,
-                });
             }
-            }
+            alert('eliminado')
         },
         onSave(employee: EmployeeInterface) {
             this.employee = { ...employee };
@@ -189,6 +194,17 @@ export default defineComponent({
               })
             }
             myGeneralStore.setFullLoader(false)
+        },
+        handlerOpenShifts (employee: EmployeeInterface) {
+            this.employee = employee
+            this.drawerShifts = true
+        },
+        onProceedingFiles (employee: EmployeeInterface) {
+            this.employee = employee
+            this.drawerProceedingFiles = true
+        },
+        onCancelEmployeeDelete () {
+            this.drawerEmployeeDelete = false
         }
     }
 });

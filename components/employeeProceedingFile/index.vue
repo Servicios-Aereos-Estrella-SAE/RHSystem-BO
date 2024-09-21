@@ -1,26 +1,28 @@
 <template>
-  <div v-if="isReady" class="box employee-proceeding-files">
+  <div v-if="isReady" class="employee-proceeding-files">
     <Toast />
-    <h4>
-      {{ employee.employeeFirstName }} {{ employee.employeeLastName }}
-    </h4>
     <div v-if="isReady" class="employee">
       <div class="form-container">
         <div class="employee-proceeding-file-wrapper">
-          <div class="box head-page">
+          <div class="head-page">
+            <div></div>
             <div class="input-box">
-              <br />
-              <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button class="btn btn-block btn-primary" @click="addNew">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" fill="#fff" class="fill-212121"></path></svg>
+                Add file
+              </Button>
             </div>
           </div>
         </div>
-        <div class="employee-proceeding-file-wrapper">
+
+        <div class="proceeding-files-wrapper">
           <div v-for="(employeeProceedingFile, index) in employeeProceedingFilesList" :key="`proceeding-file-${index}`">
             <employeeProceedingFileInfoCard :employeeProceedingFile="employeeProceedingFile"
               :click-on-edit="() => { onEdit(employeeProceedingFile) }"
               :click-on-delete="() => { onDelete(employeeProceedingFile) }" />
           </div>
         </div>
+
         <!-- Rmployee Proceeding File form -->
         <div class="card flex justify-content-center">
           <Sidebar v-model:visible="drawerEmployeeProceedingFileForm" position="right"
@@ -30,20 +32,15 @@
           </Sidebar>
         </div>
       </div>
-      <Dialog v-model:visible="drawerEmployeeProceedingFileDelete" :style="{width: '450px'}" header="Confirm"
-        :modal="true">
-        <div class="confirmation-content">
-          <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="employeeProceedingFile"> Are you sure you want to delete proceeding file at
-            <b>{{`${selectedDateTimeDeleted || ''}`}}</b>
-            ?</span>
-        </div>
-        <template #footer>
-          <Button label="No" icon="pi pi-times" text @click="drawerEmployeeProceedingFileDelete = false" />
-          <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-        </template>
-      </Dialog>
     </div>
+
+    <transition name="page">
+      <confirmDelete
+        v-if="drawerEmployeeProceedingFileDelete"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="drawerEmployeeProceedingFileDelete = false"
+      />
+    </transition>
   </div>
 </template>
 
@@ -53,8 +50,11 @@
   export default Script
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './style';
+</style>
+
+<style lang="scss">
   @import '/resources/styles/variables.scss';
 
   .employee-proceeding-file-form-sidebar {

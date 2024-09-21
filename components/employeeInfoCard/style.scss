@@ -4,6 +4,7 @@
   margin-top: 2.25rem;
   position: relative;
   min-height: 23.5rem;
+  padding: 1.5rem;
 
   .avatar {
     width: 4rem;
@@ -31,33 +32,39 @@
     }
   }
 
-  .info {
+  .employee-number {
     text-align: left;
-    font-weight: 500;
-    font-size: 0.8rem;
-    border-radius: calc($radius / 2);
-    box-sizing: border-box;
-    padding: 0.3rem;
-  }
-
-  .position,.number {
-    text-align: left;
-    font-weight: 500;
+    font-weight: 300;
     font-size: 0.7rem;
     border-radius: calc($radius / 2);
     box-sizing: border-box;
-    padding: 0.3rem;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .info {
+    font-weight: 300;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    line-height: 1.25rem;
+  }
+
+  .business-unit {
+    font-size: 0.75rem;
+    font-weight: normal;
   }
 
   .vacation-info {
     height: 4.5rem;
+
     .vacation {
       text-align: left;
-      font-weight: 500;
+      font-weight: normal;
       font-size: 0.7rem;
       border-radius: calc($radius / 2);
       box-sizing: border-box;
       padding: 0.3rem;
+      padding-left: 0;
     }
   }
  
@@ -68,6 +75,7 @@
     margin-top: 1rem;
     margin-bottom: 1rem;
   }
+
   .name {
     text-align: left;
     font-weight: 500;
@@ -78,11 +86,13 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     padding-top: 2rem;
+    font-size: 0.8rem;
 
     @media screen and (max-width: $ipad) {
       font-size: 0.7rem;
     }
   }
+
   .box-btn {
     padding: 1rem;
     box-sizing: border-box;
@@ -99,9 +109,11 @@
     align-items: center;
     border: 1px solid #e3ebf6;
     text-decoration: none;
-  }
-  .btn-red{
-    color: red;
+    box-sizing: border-box;
+
+    svg {
+      width: 1.25rem;
+    }
   }
 
   .box-tools-footer {

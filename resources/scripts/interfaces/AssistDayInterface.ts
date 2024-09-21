@@ -19,11 +19,12 @@ interface AssistDayInterface {
     isRestDay: boolean
     isVacationDate: boolean
     isHoliday: boolean
-    checkInDateTime: Date
-    checkOutDateTime: Date
+    checkInDateTime: Date | string
+    checkOutDateTime: Date | string
     holiday: HolidayInterface | null
     hasExceptions: boolean
-    exceptions: ShiftExceptionInterface[]
+    exceptions: ShiftExceptionInterface[],
+    assitFlatList: AssistInterface[]
   }
 }
 
