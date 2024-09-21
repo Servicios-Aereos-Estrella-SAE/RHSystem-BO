@@ -5,19 +5,12 @@ $color-next-expire: #ff9e44;
 $color-active: #4ac19d;
 
 .card-container {
-  display: flex;
   cursor: pointer;
   align-items: start;
   background-color: $white;
-  // border: 3px solid #000; /* Borde gris */
   border-radius: 8px;
   padding: 16px;
-  // box-shadow: 0.4rem 0.4rem 0.4rem $gray;
-  box-shadow: rgba(101, 100, 100, 0.212) 0px 5px 9px;
-  width: 98%; // Ajusta según sea necesario
-  &.active {
-    box-shadow:  4px 8px rgba(0, 0, 0, 0.1);
-  }
+  box-shadow: $shadow;
 }
 
 
@@ -61,7 +54,7 @@ $color-active: #4ac19d;
 
 
 .card-content {
-  flex: 1;
+  flex-grow: 1;
 }
 
 .percentage {
@@ -71,15 +64,17 @@ $color-active: #4ac19d;
   color: $color-active;
 }
 
-.description {
-  height: 40px;
+ .description {
+  height: 2rem;
   font-size: 1rem;
   text-align: left;
   color: $accent;
   margin: 8px 0;
   font-weight: 400;
+  @media screen and (max-width: $phone) {
+    height: 5rem!important;
+  }
 }
-
 .details {
   display: flex;
   flex-direction: column;
@@ -106,6 +101,7 @@ $color-active: #4ac19d;
 }
 
 .calendar-container {
+  flex-shrink: 0;
   display: inline-block;
   margin-top: .4rem;
   width: 4rem; // Ancho del calendario
@@ -149,17 +145,18 @@ $color-active: #4ac19d;
 .menu-container {
   position: relative; // Para que el menú desplegable se posicione respecto a este contenedor
   margin-left: 1rem;
-  margin-top: .4rem;
 }
 
 .dots-menu {
+  width: 1.5rem;
+  height: 1.5rem;
   font-size: 1rem;
   cursor: pointer;
   color: $black;
   font-weight: bold;
   background-color: #f0f4fa; /* Fondo gris claro */
-  padding: .3rem;
-  border-radius: $radius; /* Redondear los bordes para que sea circular */
+  padding-top: .1rem;
+  padding-left: .5rem;
 }
 
 .dropdown-menu {
