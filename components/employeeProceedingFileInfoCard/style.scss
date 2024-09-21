@@ -1,72 +1,133 @@
 @import '/resources/styles/variables.scss';
 
-.employee-proceeding-file-info-card {
-  border: $border;
-  margin-top: 2.25rem;
-  position: relative;
+// .employee-proceeding-file-info-card {
+//   border: $border;
+//   margin-top: 2.25rem;
+//   position: relative;
 
-  .menu{
-    padding: 2rem;
-    background-color: aqua;
-    align-items: end;
-    .icon {
-      background-color: red;
-      align-items: center;
-    }
-  }
-  .proceeding-file-type-name {
-    text-align: left;
-    font-weight: 500;
-    box-sizing: border-box;
-    padding: 0.5rem 3px;
-  }
-  .proceeding-file-date {
-    text-align: left;
-    font-weight: 400;
-    box-sizing: border-box;
-    padding: 0.1rem 3px;
-  }
-  .proceeding-file-name {
-    text-align: left;
-    font-weight: 400;
-    box-sizing: border-box;
-    padding: 0.2rem 3px;
-    width: 100%;
-    height: 4rem;
-    text-align: justify;
-    word-wrap: break-word;
-  }
-  .proceeding-file-identify {
-    text-align: left;
-    font-weight: 400;
-    box-sizing: border-box;
-    padding: 0.1rem 3px;
-  }
-  .box-btn {
-    padding: 1rem;
-    box-sizing: border-box;
-    border-radius: 0.375rem;
-    border: none;
-    background-color: white;
-    color: #303e67;
-    font-size: 0.7rem;
-    cursor: pointer;
+//   .proceeding-file-type-name {
+//     text-align: left;
+//     font-weight: 500;
+//     box-sizing: border-box;
+//     padding: 0.5rem 3px;
+//   }
+//   .proceeding-file-date {
+//     text-align: left;
+//     font-weight: 400;
+//     box-sizing: border-box;
+//     padding: 0.1rem 3px;
+//   }
+//   .proceeding-file-name {
+//     text-align: left;
+//     font-weight: 400;
+//     box-sizing: border-box;
+//     padding: 0.2rem 3px;
+//     width: 100%;
+//     height: 4rem;
+//     text-align: justify;
+//     word-wrap: break-word;
+//   }
+//   .proceeding-file-identify {
+//     text-align: left;
+//     font-weight: 400;
+//     box-sizing: border-box;
+//     padding: 0.1rem 3px;
+//   }
+//   .box-btn {
+//     padding: 1rem;
+//     box-sizing: border-box;
+//     border-radius: 0.375rem;
+//     border: none;
+//     background-color: white;
+//     color: #303e67;
+//     font-size: 0.7rem;
+//     cursor: pointer;
+//     transition: all 0.4s;
+//     display: flex;
+//     gap: 0.5rem;
+//     justify-content: center;
+//     align-items: center;
+//     border: 1px solid #e3ebf6;
+//     text-decoration: none;
+//   }
+//   .btn-red{
+//     color: red;
+//   }
+// }
+
+.file {
+  box-sizing: border-box;
+  position: relative;
+  padding: 1.5rem;
+  border-radius: $radius;
+  transition: all 0.4s;
+  border: $border;
+
+  &:hover {
     transition: all 0.4s;
+    background-color: transparentize($color: $gray, $amount: 0.5);
+  }
+
+  .icon {
     display: flex;
-    gap: 0.5rem;
     justify-content: center;
     align-items: center;
-    border: 1px solid #e3ebf6;
-    text-decoration: none;
-  }
-  .btn-red{
-    color: red;
-  }
-}
 
-.menu-top-right {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1000; /* Asegúrate de que esté sobre otros elementos si es necesario */
+    svg, img {
+      height: 4rem;
+    }
+  }
+
+  .type {
+    font-weight: 500;
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
+  .file-info {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: normal;
+    border-top: $border-dashed;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    font-size: 0.7rem;
+
+    .opt-val {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+
+    .opt {
+      font-weight: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      display: -webkit-box;
+      overflow: hidden;
+    }
+
+    .val {
+      font-weight: 300;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      display: -webkit-box;
+      overflow: hidden;
+    }
+  }
+
+  .btn-menu-tools {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
 }

@@ -1,14 +1,62 @@
 @import '/resources/styles/colors.scss';
 
+.btn {
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid #e3ebf6;
+  background-color: white;
+  color: $icon;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.4s;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  height: 45.5px;
+  box-shadow: $shadow;
+
+  @media screen and (max-width: $phone) {
+    height: 36.69px;
+  }
+  
+  svg {
+    width: 1.25rem;
+  }
+
+  &.btn-block {
+    width: 100%;
+  }
+}
+
 :deep(.p-button) {
 
   &.btn-block {
     width: 100%;
-    display: block;
+  }
+
+  &.btn-primary {
+    background-color: $primary !important;
+    border-color: $primary !important;
+    color: white !important;
+  }
+
+  &.btn-danger {
+    background-color: $danger !important;
+    border-color: $danger !important;
+    color: white !important;
   }
 
   &.btn-gray {
     background-color: $gray !important;
+    border-color: $gray !important;
+  }
+
+  &.btn-white-outline {
+    background-color: $white !important;
     border-color: $gray !important;
   }
 }

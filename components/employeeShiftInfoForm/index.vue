@@ -18,7 +18,7 @@
           <label for="date">
             Apply Since
           </label>
-          <Calendar v-model="employeeShift.employeShiftsApplySince" @update:model-value="handleDateChange"/>
+          <Calendar v-model="employeeShift.employeShiftsApplySince" @update:model-value="handleDateChange" />
           <small class="p-error" v-if="submitted && !employeeShift.employeShiftsApplySince">Apply since is required.</small>
         </div>
         <div class="box-tools-footer">
