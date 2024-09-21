@@ -59,6 +59,25 @@
             max-width: 100vw; /* Asegurarse de que ocupe todo el ancho de la vista */
             box-sizing: border-box; /* Incluir padding y border en el width */
             // margin-left: 1rem;
+            .expired-card-wrapper {
+                box-sizing: border-box;
+                display: grid;
+                grid-auto-flow: dense;
+                grid-template-columns: repeat(auto-fill, minmax(28rem, 1fr));
+                gap: .5rem;
+                margin-top: 0.5rem;
+                @media screen and (max-width: $desktop) {
+                    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+                }
+    
+                @media screen and (max-width: $tablet) {
+                    grid-template-columns: 1fr;
+                }
+    
+                @media screen and (max-width: $phone) {
+                    grid-template-columns: 2fr;
+                }
+            }
         }
         .document-head-title {
             margin-bottom: 20px; /* Espacio inferior para separar del contenido */

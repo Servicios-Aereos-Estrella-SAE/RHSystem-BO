@@ -23,11 +23,14 @@ export default class RoleService {
     return responseRequest
   }
 
-  async assign(roleId: number, permissions: Array<any>) {
+  async assign(roleId: number, permissions: Array<any>, departments: Array<any>) {
     let responseRequest: any = null
     const formData = new FormData()
     permissions.forEach((systemPermissionId) => {
       formData.append('permissions[]', systemPermissionId);
+    })
+    departments.forEach((departmentId) => {
+      formData.append('departments[]', departmentId);
     })
     try {
       await $fetch(`${this.API_PATH}/roles/assign/${roleId}`, {
@@ -67,6 +70,27 @@ export default class RoleService {
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/roles/has-access/${roleId}/${systemModuleSlug}/${systemPermissionSlug}`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              roleHasAccess: roleHasAccess
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
+  async hasAccessDepartment(roleId: number, departmentId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/roles/has-access-department/${roleId}/${departmentId}`, {
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

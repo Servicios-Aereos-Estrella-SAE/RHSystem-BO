@@ -9,8 +9,12 @@ export default defineComponent({
     isMenuOpen: false,
   }),
   computed: {
+    getName() {
+      const person = this.document.employeeProceedingFile?.employee?.person
+      return person ? `${person.personFirstname} ${person.personLastname} ${person.personSecondLastname}` : ''
+    },
     isExpired() {
-      const expirationDate = new Date(this.document.proceeding_file_expiration_at);
+      const expirationDate = new Date(this.document.proceedingFileExpirationAt);
       const currentDate = new Date();
       return expirationDate < currentDate;
     },
@@ -21,5 +25,8 @@ export default defineComponent({
     toggleMenu(isOpen: boolean) {
       this.isMenuOpen = isOpen;
     },
+    openFile() {
+      window.open(this.document.proceedingFilePath)
+    }
   },
 })

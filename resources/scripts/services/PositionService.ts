@@ -7,6 +7,46 @@ export default class PositionService {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
+    // Función para almacenar una nueva posición
+    async store(position: PositionInterface) {
+      let responseRequest: any = null;
+      try {
+        await $fetch(`${this.API_PATH}/positions`, {
+          method: 'POST',
+          body: position,
+          onResponse({ response }) {
+            responseRequest = response;
+          },
+          onRequestError({ response }) {
+            responseRequest = response;
+          }
+        });
+      } catch (error) {
+        console.error("Error al crear la posición:", error);
+      }
+      return responseRequest;
+    }
+  
+    // Función para actualizar una posición existente
+    async update(position: PositionInterface) {
+      let responseRequest: any = null;
+      try {
+        await $fetch(`${this.API_PATH}/positions/${position.positionId}`, {
+          method: 'PUT',
+          body: position,
+          onResponse({ response }) {
+            responseRequest = response;
+          },
+          onRequestError({ response }) {
+            responseRequest = response;
+          }
+        });
+      } catch (error) {
+        console.error("Error al actualizar la posición:", error);
+      }
+      return responseRequest;
+    }
+    
   async getPositionsDepartment(departmentId: number): Promise<PositionInterface[]> {
     let responseRequest: any = null
 

@@ -102,6 +102,23 @@ export const useMyGeneralStore = defineStore({
       return hasAccess
     },
 
+    async hasAccessDepartment(departmentId: number) {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      let hasAccess = false
+      if (authUser && authUser.roleId) {
+        const roleService = new RoleService()
+        const roleResponse = await roleService.hasAccessDepartment(authUser.roleId, departmentId)
+        if (roleResponse && roleResponse.status === 200) {
+          hasAccess = roleResponse._data.data.roleHasAccess
+        }
+      } else {
+        this.isRoot = false
+      }
+      return hasAccess
+    },
+
     async getAccess(systemModuleSlug: string) {
       const { getSession } = useAuth()
       const session: unknown = await getSession()

@@ -40,7 +40,7 @@
           <div class="department-card-wrapper">
             <div v-for="(department, index) in filteredDepartments"
               :key="`department-${department.departmentId}-${index}`">
-              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"/>
+              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" />
             </div>
           </div>
 
@@ -62,6 +62,17 @@
           </div>
         </div>
       </div>
+      <Dialog v-model:visible="drawerDepartmentDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <div class="confirmation-content">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                    <span v-if="department">Are you sure you want to delete?</span>
+                </div>
+                <template #footer>
+                    <Button label="No" icon="pi pi-times" text @click="drawerDepartmentDelete = false" />
+                    <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+                </template>
+            </Dialog>
+
     </NuxtLayout>
   </div>
 </template>

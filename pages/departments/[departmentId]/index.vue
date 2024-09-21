@@ -22,7 +22,10 @@
                         <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchPosition"
                             @keyup.delete="handlerSearchPosition" />
                     </div>
-                    <div></div>
+                    <div class="input-box" style="margin-left: auto;">
+                        <Button v-if="canCreate" class="btn-add mr-2" label="New position" icon="pi pi-plus" severity="primary" @click="newPositionDepartment" />
+                    </div>
+                    
                     <div class="input-box">
                         <Button v-if="canCreate" class="btn-add mr-2" label="Assign department position" icon="pi pi-plus" severity="primary" @click="assignPositionDepartment" />
                     </div>
@@ -56,7 +59,7 @@
                     </h3>
                     <div class="department-card-wrapper">
                         <div v-for="(position, index) in positions" :key="`position-${position.positionId}-${index}`">
-                            <positionInfoCard :department="department" :position="position" :click-on-delete="() => { onDeletePosition(position)}" :can-delete="canDelete" />
+                            <positionInfoCard :department="department" :position="position" :click-on-delete="() => { onDeletePosition(position)}" :can-delete="canDelete" :click-on-edit="() => { onEdit(position) }" :click-on-soft-delete="() => { onSoftDeletePosition(position)}" />
                         </div>
                     </div>
                        <!-- Form Shift Apply To Department -->
@@ -67,6 +70,16 @@
                             />
                         </Sidebar>
                     </div>
+
+                    <!-- Form New Position -->
+                    <div class="card flex justify-content-center" >
+                        <Sidebar v-model:visible="drawerNewPositionForm" header="New position" position="right"
+                            class="shift-form-sidebar" :showCloseIcon="true">
+                            <PositionInfoForm :position="position"  @onSaveNewPosition="onSaveNewPosition"
+                            />
+                        </Sidebar>
+                    </div>
+
                     <div class="card flex justify-content-center">
                         <Sidebar v-model:visible="drawerPositionForm" header="Assign Shift to Department" position="right"
                             class="shift-form-sidebar" :showCloseIcon="true">
@@ -74,10 +87,11 @@
                             />
                         </Sidebar>
                     </div>
+
                     <Dialog v-model:visible="drawerPositionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
                         <div class="confirmation-content">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                            <span v-if="position"> Are you sure you want to delete
+                            <span v-if="position"> Are you sure you want to unasigned
                             ?</span>
                         </div>
                         <template #footer>
@@ -85,6 +99,20 @@
                             <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
                         </template>
                     </Dialog>
+
+                    <Dialog v-model:visible="drawerSoftPositionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+                        <div class="confirmation-content">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                            <span v-if="position"> Are you sure you want to delete
+                            ?</span>
+                        </div>
+                        <template #footer>
+                            <Button label="No" icon="pi pi-times" text @click="drawerSoftPositionDelete = false" />
+                            <Button label="Yes" icon="pi pi-check" text @click="confirmSoftDelete()" />
+                        </template>
+                    </Dialog>
+
+
                     <Dialog v-model:visible="alertDeletePosition" :style="{width: '450px'}" header="Delete Department Position" :modal="true">
                         <div class="confirmation-content">
                             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
@@ -94,6 +122,8 @@
                             <Button label="OK" text @click="alertDeletePosition = false" />
                         </template>
                     </Dialog>
+
+                    
                 </div>
             </div>
         </NuxtLayout>

@@ -16,7 +16,7 @@
             </h2>
             <div class="roles-and-permissions-card-wrapper">
               <Accordion v-model:activeIndex="roleSelected">
-                <AccordionTab :header="role.roleName" v-for="(role, index) in roleList" :key="`role-${role.roleId}-${index}`">
+                <AccordionTab :header="role.roleName" v-for="(role, indexRole) in roleList" :key="`role-${role.roleId}-${indexRole}`">
                   <DataTable :value="systemModulesList" tableStyle="min-width: 50rem">
                     <Column field="systemModuleName" header="Module">
                         <template #body="slotProps">
@@ -26,14 +26,29 @@
                     <Column header="Permissions">
                       <template #body="slotProps" >
                         <div class="permissions">
-                          <div v-for="(permission, indexP) in slotProps.data.systemPermissions" :key="`permission-${index}-${indexP}`" class="permission">
-                            <Checkbox v-model="permissions[index]" name="permission" :disabled="!canUpdate" :value="permission.systemPermissionId"/>
+                          <div v-for="(permission, indexP) in slotProps.data.systemPermissions" :key="`permission-${indexRole}-${indexP}`" class="permission">
+                            <Checkbox v-model="permissions[indexRole]" name="permission" :disabled="!canUpdate" :value="permission.systemPermissionId"/>
                             <label> {{ permission.systemPermissionName }}</label>
                           </div>
                         </div>
                       </template>
                     </Column>
                 </DataTable>
+              <DataTable :value="groupedDepartments" tableStyle="min-width: 50rem">
+                <Column v-for="(dept, index) in groupedDepartments[0]" :key="index" header="Department">
+                  <template #body="slotProps">
+                    <div v-if="slotProps.data[index]">
+                      <Checkbox 
+                        v-model="departmentPermissions[indexRole]" 
+                        name="permission" 
+                        :disabled="!canUpdate" 
+                        :value="slotProps.data[index].departmentId" 
+                      />
+                      <label>&nbsp; {{ slotProps.data[index].departmentName }}</label>
+                    </div>
+                  </template>
+                </Column>
+              </DataTable>
                 </AccordionTab>
               </Accordion>
             </div>

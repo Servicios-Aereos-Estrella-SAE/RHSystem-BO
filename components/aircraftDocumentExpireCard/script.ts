@@ -12,7 +12,7 @@ export default defineComponent({
   }),
   computed: {
     isExpired() {
-      const expirationDate = new Date(this.document.proceeding_file_expiration_at);
+      const expirationDate = new Date(this.document.proceedingFileExpirationAt);
       const currentDate = new Date();
       return expirationDate < currentDate;
     },
@@ -23,5 +23,8 @@ export default defineComponent({
     toggleMenu(isOpen: boolean) {
       this.isMenuOpen = isOpen;
     },
+    openFile() {
+      window.open(this.document.proceedingFilePath)
+    }
   },
 })

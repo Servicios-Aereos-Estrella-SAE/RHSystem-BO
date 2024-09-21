@@ -22,6 +22,8 @@ export default defineComponent({
     const search = ref<string>('');
     const drawerShiftForm = ref<boolean>(false);
     const drawerPositionForm = ref<boolean>(false);
+    const drawerNewPositionForm = ref<boolean>(false);
+    const drawerSoftPositionDelete = ref<boolean>(false);
     const alertDeletePosition = ref<boolean>(false);
     const messagePosition = ref<string>('');
     let canRead = ref<boolean>(false);
@@ -36,7 +38,7 @@ export default defineComponent({
             positionName
           }
         });
-        positions.value = positionsResponse.data.data.positions;
+        positions.value = positionsResponse.data.data.positions.filter((item: any) => item.position !== null);
       } catch (error) {
         console.error('Failed to fetch positions:', error);
       } finally {
@@ -78,10 +80,43 @@ export default defineComponent({
     const assignPositionDepartment = () => {
       drawerPositionForm.value = true;
     };
+    const newPositionDepartment = () =>{
+      const departmentIds = route.params.departmentId
+
+      const newPosition: PositionInterface = {
+        positionId: 0,
+        positionSyncId: '',
+        positionCode: '',
+        positionName: undefined,
+        positionAlias: '',
+        positionIsDefault: 0,
+        positionActive: 0,
+        parentPositionId: null,
+        parentPositionSyncId: '',
+        companyId: null,
+        departmentId: departmentIds,
+        positionLastSynchronizationAt: null,
+        positionCreatedAt: null,
+        positionUpdatedAt: null,
+        positionDeletedAt: null
+      }
+      position.value = newPosition
+      drawerNewPositionForm.value = true;
+    };
     const onSave = () => {
       const departmentId = route.params.departmentId
       if (departmentId) {
         fetchShiftDepartment(departmentId);
+      }
+    }
+
+    const onSaveNewPosition = () => {
+      drawerNewPositionForm.value = false;
+      const departmentId = route.params.departmentId
+
+      if (departmentId) {
+        fetchPositions(departmentId.toString());
+
       }
     }
 
@@ -93,11 +128,56 @@ export default defineComponent({
       }
     }
 
+    const onEdit = (_position: any) => {
+      if (_position.position) {
+        position.value = {
+          ..._position.position,  
+          departmentPositionId: _position.departmentPositionId,
+          departmentId: _position.departmentId,
+          departmentPositionLastSynchronizationAt: _position.departmentPositionLastSynchronizationAt,
+          departmentPositionCreatedAt: _position.departmentPositionCreatedAt,
+          departmentPositionUpdatedAt: _position.departmentPositionUpdatedAt,
+          deletedAt: _position.deletedAt,
+        };
+      } else {
+        position.value = { ..._position };
+      }
+    
+      drawerNewPositionForm.value = true; 
+    };
+    
+
     const onDeletePosition = (_position: PositionInterface) => {
       position.value = { ..._position };
       drawerPositionDelete.value = true;
     }
 
+    const onSoftDeletePosition  = (_position: PositionInterface) => {
+      console.log("department on softdelete")
+      position.value = { ..._position };
+      drawerSoftPositionDelete.value = true;
+    }
+    const confirmSoftDelete = async () => {
+      if (position.value) {
+        drawerSoftPositionDelete.value = false; 
+        const departmentId = route.params.departmentId ? route.params.departmentId.toString() : null;
+        const departmentService = new DepartmentService();
+    
+        const departmentPositionResponse = await departmentService.softDeleteDepartmentPosition(position.value.positionId);
+    
+        if (departmentPositionResponse.status === 201) { 
+          const index = positions.value?.findIndex((_position: PositionInterface) => _position.positionId === position.value?.positionId);
+          if (index !== -1) {
+            await fetchPositions(departmentId ?? '', search.value); 
+          }
+        } else {
+          console.error('Failed to soft delete position:', departmentPositionResponse);
+          alertDeletePosition.value = true;
+          messagePosition.value = departmentPositionResponse.message;
+        }
+      }
+    };
+    
     const confirmDelete = async () => {
       if (position.value) {
         drawerPositionDelete.value = false;
@@ -206,7 +286,9 @@ export default defineComponent({
       onDeletePosition,
       handleSaveSuccess,
       drawerPositionDelete,
+      drawerSoftPositionDelete,
       onSave,
+      onSaveNewPosition,
       syncPositions,
       onSavePosition,
       confirmDelete,
@@ -215,6 +297,11 @@ export default defineComponent({
       canRead,
       canCreate,
       canDelete,
+      newPositionDepartment,
+      drawerNewPositionForm,
+      onEdit,
+      onSoftDeletePosition,
+      confirmSoftDelete
     };
   }
 });

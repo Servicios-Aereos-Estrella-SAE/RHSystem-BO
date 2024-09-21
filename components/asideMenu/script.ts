@@ -12,7 +12,7 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    isReady: false,
+    isReady: true,
     roleSystemPermissions: [] as Array<RoleSystemPermissionInterface>,
     menuGroups: [] as Array<SystemModuleInterface>,
     menu: [] as Array<MenuGroupInterface>
@@ -30,20 +30,16 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.isReady = false
-    const myGeneralStore = useMyGeneralStore()
-    //myGeneralStore.getSystemSettings()
-    this.isReady = true
   },
   async created() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.displayContent = false
-    await this.getGroupMenu()
     let hasAccess = false
     const fullPath = this.$route.path;
     const firstSegment = fullPath.split('/')[1];
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
+    await this.getGroupMenu()
     if (!hasAccess) {
       this.$toast.add({
         severity: 'warn',
@@ -57,8 +53,25 @@ export default defineComponent({
         message: 'You don´t have access'
      })
     }
+    if ((systemModuleSlug === 'departments' || systemModuleSlug === 'departments-attendance-monitor') && fullPath.split('/')[2] && !myGeneralStore.isRoot) {
+      const departmentId = fullPath.split('/')[2]
+      let hasAccessDepartment = false
+      hasAccessDepartment = await myGeneralStore.hasAccessDepartment(parseInt(departmentId))
+      if (!hasAccessDepartment) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Not access department',
+          detail: 'you don´t have access to this department',
+          life: 5000,
+        });
+        throw showError({
+          statusCode: 403,
+          fatal: true,
+          message: 'You don´t have access to this department'
+       })
+      }
+    }
     myGeneralStore.displayContent = true
-
   },
   methods: {
     async getGroupMenu() {
@@ -101,7 +114,6 @@ export default defineComponent({
     async assignItemsMenu(systemModules: Array<SystemModuleInterface>, group: string) {
       const myGeneralStore = useMyGeneralStore()
       const existGroupMenu = this.menu.find(a => a.label === group)
-   
       if (existGroupMenu) {
         const items = systemModules.filter((a: SystemModuleInterface) => a.systemModuleGroup === group)
         for await (const item of items) {

@@ -102,12 +102,16 @@ export default defineComponent({
       },
       series: [] as Array<Object>
     },
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }] as Array<Object>,
+    statusSelected: null as string | null,
     visualizationModeOptions: [
-      { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
-      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
+      { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1  },
+      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1  },
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
+    datesSelected: [] as Date[],
     maxDate: new Date() as Date,
     minDate: new Date() as Date,
     employeeDepartmentPositionList: [] as EmployeeAssistStatisticInterface[],
@@ -120,10 +124,10 @@ export default defineComponent({
     departmentList: [] as DepartmentInterface[]
   }),
   computed: {
-    weeklyStartDay () {
-      const daysList =[]
+    weeklyStartDay() {
+      const daysList = []
 
-      if (!this.periodSelected) {
+      if (!this.periodSelected && !this.datesSelected.length) {
         return []
       }
 
@@ -165,13 +169,35 @@ export default defineComponent({
           }
           break;
         }
+        case 'custom': {
+          if (this.datesSelected.length === 2) {
+            const startDate = DateTime.fromJSDate(this.datesSelected[0]) // Fecha de inicio
+            const endDate = DateTime.fromJSDate(this.datesSelected[1])   // Fecha de fin
+
+            const daysBetween = Math.floor(endDate.diff(startDate, 'days').days) + 1
+
+            for (let index = 0; index < daysBetween; index++) {
+              const currentDay = startDate.plus({ days: index })
+              const year = parseInt(currentDay.toFormat('yyyy'))
+              const month = parseInt(currentDay.toFormat('LL'))
+              const day = parseInt(currentDay.toFormat('dd'))
+
+              daysList.push({
+                year,
+                month,
+                day
+              })
+            }
+          }
+          break;
+      }
         default:
           break;
       }
 
       return daysList
     },
-    lineChartTitle () {
+    lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
         return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
@@ -186,7 +212,7 @@ export default defineComponent({
         return 'Weekly behavior'
       }
     },
-    assistSyncStatusDate () {
+    assistSyncStatusDate() {
       if (this.statusInfo) {
         const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
         const dateTimeFormat = dateTime.toFormat('ff')
@@ -194,13 +220,15 @@ export default defineComponent({
       }
 
       return ''
-    }
+    },
   },
-  created () {
+  created() {
+    
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
     this.periodSelected = new Date()
+    this.datesSelected = this.getDefaultDatesRange();
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -221,7 +249,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async setDefaultVisualizationMode () {
+    async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
       if (index >= 0) {
@@ -230,7 +258,19 @@ export default defineComponent({
 
       await this.handlerVisualizationModeChange()
     },
-    setGeneralData () {
+    getDefaultDatesRange() {
+      const today = new Date();
+      
+      // Obtener el día anterior al día actual
+      const previousDay = new Date(today);
+      previousDay.setDate(today.getDate() - 1);
+
+      // Usar la fecha actual como el último día del rango
+      const currentDay = today;
+
+      return [previousDay, currentDay];
+    },
+    setGeneralData() {
       const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
       const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0)
       const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0)
@@ -249,6 +289,33 @@ export default defineComponent({
       serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData
+    },
+    hasEmployees(employeeList: Array<EmployeeAssistStatisticInterface> | null) {
+      if (!employeeList) {
+        return false
+      } else {
+        return this.filtersEmployeesByStatus(employeeList).length > 0
+      }
+    },
+    isShowByStatusSelected(employee: EmployeeAssistStatisticInterface) {
+      if (this.statusSelected === 'Faults') {
+        return employee?.assistStatistics?.onFaultPercentage ?? 0 > 0
+      } else if (this.statusSelected === 'Delays') {
+        return employee?.assistStatistics?.onDelayPercentage ?? 0 > 0
+      } else if (this.statusSelected === 'Tolerances') {
+        return employee?.assistStatistics?.onTolerancePercentage ?? 0 > 0
+      } else if (this.statusSelected === 'On time') {
+        return employee?.assistStatistics?.onTimePercentage ?? 0 > 0
+      } else if (this.statusSelected === null || this.statusSelected === 'All') {
+        return true
+      }
+      return true
+    },
+    filtersEmployeesByStatus(employees: Array<EmployeeAssistStatisticInterface> | null) {
+      if(!employees) {
+        return []
+      }
+      return employees.filter(employee => this.isShowByStatusSelected(employee))
     },
     setPeriodData () {
       let periodLenght = 12
@@ -270,6 +337,21 @@ export default defineComponent({
           const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
           start = date.startOf('week')
           periodLenght = 7
+          break
+        case 'custom':
+          if (this.datesSelected.length === 2) {
+            const startDate = DateTime.fromJSDate(this.datesSelected[0])  // Fecha de inicio del rango
+            const endDate = DateTime.fromJSDate(this.datesSelected[1])    // Fecha de fin del rango
+
+            // Calcular el número de días en el rango seleccionado
+            periodLenght = Math.floor(endDate.diff(startDate, 'days').days) + 1
+
+            // Establecer el inicio del periodo como la fecha de inicio seleccionada por el usuario
+            start = startDate
+          } else {
+            // Si no hay un rango válido seleccionado, establecer el periodo en 0
+            periodLenght = 0
+          }
           break
         default:
           periodLenght = 0
@@ -418,6 +500,7 @@ export default defineComponent({
     },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
+      console.log('idx', idx)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
@@ -425,8 +508,9 @@ export default defineComponent({
       }
 
       this.periodSelected = new Date()
+      this.datesSelected = this.getDefaultDatesRange();
     },
-    async onInputVisualizationModeChange () {
+    async onInputVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
@@ -435,13 +519,18 @@ export default defineComponent({
       this.setPeriodData()
       myGeneralStore.setFullLoader(false)
     },
-    async handlerPeriodChange () {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
-      this.setGeneralData()
-      this.setPeriodData()
-      myGeneralStore.setFullLoader(false)
+    async handlerPeriodChange() {
+      if (this.isValidPeriodSelected()) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+        this.setGeneralData()
+        this.setPeriodData()
+        myGeneralStore.setFullLoader(false)
+      }
+    },
+    isValidPeriodSelected() {
+      return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
