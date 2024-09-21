@@ -9,8 +9,12 @@ export default defineComponent({
     isMenuOpen: false,
   }),
   computed: {
+    getName() {
+      const person = this.document.customerProceedingFile?.customer?.person
+      return person ? `${person.personFirstname} ${person.personLastname} ${person.personSecondLastname}` : ''
+    },
     isExpired() {
-      const expirationDate = new Date(this.document.proceeding_file_expiration_at);
+      const expirationDate = new Date(this.document.proceedingFileExpirationAt);
       const currentDate = new Date();
       return expirationDate < currentDate;
     },

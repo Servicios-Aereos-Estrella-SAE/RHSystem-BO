@@ -56,7 +56,7 @@
             <h3>{{ tabActive.charAt(0).toUpperCase() + tabActive.slice(1) }} Expirations</h3>
           </div>
           <div class="document-body-content">
-            <div v-for="(document, index) in getProceedingFiles">
+            <div v-for="(document, index) in getProceedingFiles" class="expired-card-wrapper">
               <div v-if="tabActive === 'aircraft'">
                 <AircraftDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></AircraftDocumentExpireCard>
               </div>

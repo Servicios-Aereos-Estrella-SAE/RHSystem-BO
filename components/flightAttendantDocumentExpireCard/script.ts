@@ -10,7 +10,7 @@ export default defineComponent({
   }),
   computed: {
     getName() {
-      const person = this.document.flightAttendantProceedingFile.flightAttendant.person
+      const person = this.document.flightAttendantProceedingFile?.flightAttendant?.person
       return person ? `${person.personFirstname} ${person.personLastname} ${person.personSecondLastname}` : ''
     },
     isExpired() {
