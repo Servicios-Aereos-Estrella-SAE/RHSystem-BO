@@ -73,6 +73,16 @@
                 </template>
             </Dialog>
 
+            <Dialog v-model:visible="drawerDepartmentForceDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <div class="confirmation-content">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                    <span v-if="department">There are department related employees. Are you sure you want to delete this department?</span>
+                </div>
+                <template #footer>
+                    <Button label="No" icon="pi pi-times" text @click="drawerDepartmentForceDelete = false" />
+                    <Button label="Yes" icon="pi pi-check" text @click="confirmForceDelete()" />
+                </template>
+            </Dialog>
     </NuxtLayout>
   </div>
 </template>
