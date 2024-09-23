@@ -2,8 +2,8 @@
 @import 'primeicons/primeicons.css';
 
 .card-container {
-  display: flex;
   cursor: pointer;
+  display: flex;
   align-items: center;
   background-color: $white;
   border-radius: 8px;
@@ -95,7 +95,8 @@
   color: #ff9e44;
   font-weight: 600;
 }
+
 .active {
   color: #4ac19d;
-  font-weight: 600;
+  font-weight: 500;
 }

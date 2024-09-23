@@ -13,7 +13,9 @@ export default defineComponent({
     },
     clickOnEdit: { type: Function, default: null, required: true },
     canUpdate: { type: Boolean, default: false, required: true },
-    canDelete: { type: Boolean, default: false, required: true }
+    canDelete: { type: Boolean, default: false, required: true },
+    clickOnDelete: { type: Function, default: null },
+
   },
   setup() {
     const router = useRouter()
@@ -27,6 +29,11 @@ export default defineComponent({
     handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
+      }
+    },
+    handlerClickOnDelete() {
+      if (this.clickOnDelete) {
+        this.clickOnDelete()
       }
     }
   }

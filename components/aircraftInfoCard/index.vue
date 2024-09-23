@@ -23,6 +23,7 @@
 
         <div class="box-tools-footer">
             <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
+            <Button v-if="canUpdate" icon="pi pi-images" class="box-btn" @click="handlerClickOnGallery()" />
             <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()" />
         </div>
     </div>

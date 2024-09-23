@@ -1,4 +1,4 @@
-import type { PeopleInterface } from "./PeopleInterface"
+import type { RoleDepartmentInterface } from "./RoleDepartmentsInterface"
 import type { RoleSystemPermissionInterface } from "./RoleSystemPermissionInterface"
 
 interface RoleInterface {
@@ -11,6 +11,7 @@ interface RoleInterface {
   roleUpdatedAt: string,
   roleDeletedAt: string | null
   roleSystemPermissions: [RoleSystemPermissionInterface]
+  roleDepartments: [RoleDepartmentInterface]
 }
 
 export type { RoleInterface }

@@ -8,12 +8,11 @@
       </span>
     </div>
     <div class="card-content">
-      <div class="percentage" :class="classCard">{{ aircraft.activeDocumentsPercentage }}%</div>
+      <div class="percentage" :class="classCard">{{ getPercentage }}%</div>
       <div class="description">Aircraft documents available</div>
       <div class="details">
-        <span><span class="expired">{{ aircraft.expiredDocumentsCount }}</span> Expired files</span>
-        <span><span class="next-expire">{{ aircraft.upcomingExpiredDocumentsCount }}</span> Next to expire</span>
-        <!-- <span><span class="active">{{ aircraft.activeDocumentsCount }}</span> Actives files</span> -->
+        <span><span class="expired">{{ proceedingFilesExpiredCount }}</span> Expired files</span>
+        <span><span class="next-expire">{{ proceedingFilesExpiringCount }}</span> Next to expire</span>
       </div>
     </div>
   </div>
@@ -23,6 +22,6 @@
   export default Script
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
   @import './style';
 </style>

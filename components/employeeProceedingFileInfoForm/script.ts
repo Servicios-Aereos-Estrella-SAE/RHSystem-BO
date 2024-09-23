@@ -76,8 +76,8 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.proceedingFileTypesList = []
       const proceedingFileTypeService = new ProceedingFileTypeService()
-      const proceedingFileTypeResponse = await proceedingFileTypeService.getFilteredList('')
-      this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes.data
+      const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
+      this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
       myGeneralStore.setFullLoader(false)
     },
     async onSave() {

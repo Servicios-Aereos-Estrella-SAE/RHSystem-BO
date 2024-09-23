@@ -1,18 +1,46 @@
+import { DateTime } from "luxon"
+import AircraftProceedingFileService from "~/resources/scripts/services/AircraftProceedingFileService"
+import { useMyGeneralStore } from "~/store/general"
+
 export default defineComponent({
   name: 'aircraftDocumentCard',
   props: {
-    aircraft: { type: Object as PropType<object> as any, required: true },
     clickOnCard: { type: Function, default: null },
   },
   data: () => ({
+    proceedingFilesExpiredCount: 0,
+    proceedingFilesExpiringCount: 0,
   }),
   computed: {
+    getPercentage () {
+      let total = this.proceedingFilesExpiredCount + this.proceedingFilesExpiringCount
+      const percentage = (this.proceedingFilesExpiringCount / total) * 100
+      return total > 0 ?  Math.ceil(percentage) : 0
+    },
     classCard() {
-      return (this.aircraft.upcomingExpiredDocumentsCount === 0 && this.aircraft.expiredDocumentsCount === 0) ? '' :
-          this.aircraft.expiredDocumentsCount >= this.aircraft.upcomingExpiredDocumentsCount ? 'expired' : 'next-expire'
+      return (this.proceedingFilesExpiringCount === 0 && this.proceedingFilesExpiredCount === 0) ? '' :
+          this.proceedingFilesExpiredCount >= this.proceedingFilesExpiringCount ? 'expired' : 'next-expire'
     }
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    const aircraftProceedingFileService = new AircraftProceedingFileService()
+    const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+    const aircraftProceedingFileResponse = await aircraftProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+    if (aircraftProceedingFileResponse.status === 200) {
+       this.proceedingFilesExpiredCount = aircraftProceedingFileResponse._data.data.aircraftProceedingFiles.proceedingFilesExpired.length
+       this.proceedingFilesExpiringCount = aircraftProceedingFileResponse._data.data.aircraftProceedingFiles.proceedingFilesExpiring.length
+      
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: 'Aircraft proceeding files',
+        detail: aircraftProceedingFileResponse._data.message,
+        life: 5000,
+    });
+    }
+    myGeneralStore.setFullLoader(false)
   },
   methods: {
     handlerClickOnCard () {

@@ -23,6 +23,7 @@ export default defineNuxtConfig({
       ]
     }
   },
+
   modules: [
     'nuxt-primevue',
     '@pinia/nuxt',
@@ -31,6 +32,7 @@ export default defineNuxtConfig({
     '@sidebase/nuxt-auth',
     "vue3-carousel-nuxt"
   ],
+
   carousel: {
     prefix: 'VueCar',
   },
@@ -105,4 +107,6 @@ export default defineNuxtConfig({
     host: process.env.HOST || '127.0.0.1',
     port: parseInt(`${process.env.PORT}`) || 3000
   },
+
+  compatibilityDate: '2024-09-09',
 })

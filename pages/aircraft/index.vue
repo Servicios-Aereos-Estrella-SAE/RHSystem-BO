@@ -30,9 +30,10 @@
                     <div class="aircraft-card-wrapper">
                         <div v-for="(aircraft, index) in filterAircrafts"
                             :key="`aircraft-${aircraft.aircraftId}-${index}`">
-                            <aircraftInfoCard :aircraft="aircraft" :can-update="canUpdate" :can-delete="canDelete"
+                            <aircraftInfoCard :aircraft="aircraft" :can-update="canUpdate" :can-delete="canDelete" 
                                 :click-on-edit="() => { onEdit(aircraft) }"
-                                :click-on-delete="() => { onDelete(aircraft) }" />
+                                :click-on-delete="() => { onDelete(aircraft) }" 
+                                :click-on-gallery="() => {onGallery(aircraft) }"/>
                         </div>
                     </div>
                     <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
@@ -44,6 +45,14 @@
                             <aircraftInfoForm :aircraft="aircraft" @onAircraftSave="onSave" />
                         </Sidebar>
                     </div>
+
+                    <!-- Form Sidebar Gallery -->
+                     <div class="card flex justify-content-center">
+                        <Sidebar v-model:visible="drawerAircraftFormGallery" header="Aircraft Gallery" position="right"
+                            class="aircraft-form-sidebar" :showCloseIcon="true">
+                             <genericGallery  :aircraft="aircraft" @onGallerySave="onSaveGallery" /> 
+                        </Sidebar>
+                     </div>
                 </div>
             </div>
             <Dialog v-model:visible="drawerAircraftDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
