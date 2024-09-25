@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Toast />
     <NuxtLayout name="guest">
       <div class="guest-page">
         <div v-if="!validToken" class="invalid">
@@ -23,7 +24,7 @@
           </div>
           <div class="guest-form">
             <div class="form-container">
-              <div class="input-box">
+              <!-- <div class="input-box">
                 <label for="otp-code">
                   Enter the validation code
                   <small>
@@ -34,7 +35,10 @@
                 </label>
                 <InputOtp id="otp-code" v-model="otpCode" integerOnly />
               </div>
-              <br>
+              <br> -->
+              <label for="otp-code">
+                Enter the new password
+              </label>
               <div class="input-box">
                 <label for="password">
                   New Password
