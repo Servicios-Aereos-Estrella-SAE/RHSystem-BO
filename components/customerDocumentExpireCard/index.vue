@@ -1,15 +1,16 @@
 <template>
   <div class="card-container" @click="toggleMenu(false)">
     <div class="calendar-container" :class="isExpired ? 'expired': 'next-expire'">
-      <div class="calendar-header" :class="isExpired ? 'expired': 'next-expire'">{{new Date(document.proceeding_file_expiration_at).toLocaleString('en-US', { month: 'short' }) }}</div>
-      <div class="calendar-day">{{ new Date(document.proceeding_file_expiration_at).getDate().toString().padStart(2, '0') }}</div>
+      <div class="calendar-header" :class="isExpired ? 'expired': 'next-expire'">{{new Date(document.proceedingFileExpirationAt).toLocaleString('en-US', { month: 'short' }) }}</div>
+      <div class="calendar-day">{{ new Date(document.proceedingFileExpirationAt).getDate().toString().padStart(2, '0') }}</div>
     </div>
     <div class="card-content">
-      <div class="description">International flight license</div>
+      <div class="description">{{ document.proceedingFileName }}</div>
       <div class="details">
-        <span> Name: {{ document.customer_name }}</span>
-        <span> UUID: License {{ document.proceeding_file_identify }}</span>
-        <span> File: {{ document.proceeding_file_type_name }}</span>
+        <span> Name: {{ getName }}</span>
+        <span> Identify: {{ document.proceedingFileType.proceedingFileTypeName }} {{ document.proceedingFileIdentify }}</span>
+        <span> UUID: {{ document.proceedingFileUuid.toLocaleUpperCase() }}</span>
+        <span> File: {{ document.proceedingFileType.proceedingFileTypeName }}</span>
       </div>
     </div>
     <div class="menu-container">

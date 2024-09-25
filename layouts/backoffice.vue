@@ -1,14 +1,7 @@
 <template>
   <div>
     <transition name="page">
-      <div v-show="statusFullLoader" class="page-loader">
-        <div>
-          <img src="/public/isotipo-v1-loader.png" alt="">
-          <div class="loader-text">
-            Loading content....
-          </div>
-        </div>
-      </div>
+      <loader v-if="statusFullLoader" />
     </transition>
     <div v-if="authAccess">
       <dashboardHeader />

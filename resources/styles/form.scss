@@ -2,6 +2,20 @@
   width: 100%;
 }
 
+:deep(.p-calendar) {
+  width: 100%;
+}
+
+:deep(.p-inputtext) {
+  color: $text;
+  border-color: $border-color;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  height: 45.5px;
+  align-items: center;
+  display: flex;
+}
+
 .graph-label-attendance-monitor-period {
   font-size: 0.75rem;
   
@@ -53,6 +67,11 @@
       margin-top: 1rem;
     }
   }
+
+  &:has(.btn) {
+    display: flex;
+    align-items: flex-end;
+  }
 }
 
 .p-autocomplete-empty-message,
@@ -74,4 +93,11 @@
     margin-top: 0.25rem;
     opacity: 0.75;
   }
+}
+
+.input-search {
+  display: grid;
+  grid-template-columns: auto 4rem;
+  gap: 0.25rem;
+  align-items: flex-end;
 }

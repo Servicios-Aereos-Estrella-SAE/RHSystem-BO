@@ -6,10 +6,10 @@ import ToastService from 'primevue/toastservice'
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon';
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
 import ShiftService from '~/resources/scripts/services/ShiftService';
-import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
+import AssistService from '~/resources/scripts/services/AssistService';
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 
 export default defineComponent({
   components: {
@@ -17,177 +17,170 @@ export default defineComponent({
     ToastService,
     Calendar
   },
-  name: 'employeeShift',
+  name: 'employeeShiftCalendarControl',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true }
   },
   data: () => ({
     isReady: false,
-    employeeShiftsList: [] as EmployeeShiftInterface[],
     shiftsList: [] as ShiftInterface[],
-    selectedShiftId: null as number | null,
-    selectedDateRange: ref(null),
-    selectedDateStart: '' as string | null,
-    selectedDateEnd: '' as string | null,
-    employeeShift: null as EmployeeShiftInterface | null,
-    employeeShiftActiveId: 0 as number | null,
-    drawerEmployeeShiftForm: false,
-    drawerEmployeeShiftDelete: false,
-    selectedDateTimeDeleted: '' as string | null
+    employeeCalendar: [] as AssistDayInterface[],
+    selectedDate: DateTime.now() as DateTime,
+    inputSelectedDate: new Date(),
+    displayInputCalendar: false as boolean,
+    displayCalendar: false,
+    drawerShiftExceptions: false
   }),
   computed: {
+    monthName () {
+      const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
+      return calendarDate.toFormat('LLLL, y')
+    },
+    period () {
+      const daysList =[]
+
+      const start = this.selectedDate.startOf('month')
+      const daysInMonth = (start.daysInMonth || 0)
+      
+      for (let index = 0; index < daysInMonth; index++) {
+        const currentDay = start.plus({ days: index })
+        const year = parseInt(currentDay.toFormat('yyyy'))
+        const month = parseInt(currentDay.toFormat('LL'))
+        const day = parseInt(currentDay.toFormat('dd'))
+
+        daysList.push({
+          year,
+          month,
+          day
+        })
+      }
+
+      return daysList
+    },
+  },
+  created () {
   },
   async mounted() {
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.getShifts()
-    await this.getShiftActive()
-    await this.getEmployeeShift()
+
+    await Promise.all([
+      this.getShifts(),
+      this.getEmployeeCalendar()
+    ])
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    
   },
   methods: {
-    async handleDateChange(e: any) {
-      this.selectedDateStart = null
-      this.selectedDateEnd = null
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      try {
-        const selectedDate = e
-        if (selectedDate && selectedDate.length === 2) {
-          const [startDate, endDate] = selectedDate
-          const formattedStartDate = startDate.toISOString().split('T')[0]
-          const formattedEndDate = endDate.toISOString().split('T')[0]
-          this.selectedDateStart = formattedStartDate
-          this.selectedDateEnd = formattedEndDate
-        }
-      } catch (error) {
-      }
-      myGeneralStore.setFullLoader(false)
-      await this.getEmployeeShift()
-    },
-    async getEmployeeShift() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.employeeShiftsList = []
-      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-      const employeeShiftService = new EmployeeShiftService()
-      const employeeShiftResponse = await employeeShiftService.getByEmployee(employeeId, this.selectedShiftId, this.selectedDateStart,this.selectedDateEnd)
-      this.employeeShiftsList = employeeShiftResponse.employeeShifts
-      const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
-      if (index !== -1) {
-        this.employeeShiftsList[index].isActive = true
-        this.$forceUpdate()
-      }
-      myGeneralStore.setFullLoader(false)
-    },
     async getShifts() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const response = await new ShiftService().getFilteredList('', 1, 100)
+      const response = await new ShiftService().getFilteredList('', 1, 999999)
       const list = response.status === 200 ? response._data.data.data : []
       this.shiftsList = list
-      myGeneralStore.setFullLoader(false)
     },
-    addNew() {
-      const newEmployeeShift: EmployeeShiftInterface = {
-        employeeShiftId: null,
-        employeeId: this.employee.employeeId,
-        shiftId: null,
-        employeShiftsApplySince: '',
-        employeShiftsCreatedAt: null,
-        employeShiftsUpdatedAt: null,
-        employeShiftsDeletedAt: null
-      }
-      this.employeeShift = newEmployeeShift
-      this.drawerEmployeeShiftForm = true
-    },
-    async onSave(employeeShift: EmployeeShiftInterface) {
+    async onSuccessShiftAssigned(employeeShiftResponse: any) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.employeeShift = {...employeeShift}
-      if (this.employeeShift.employeShiftsApplySince) {
-        const newDate = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('America/Mexico_City')
-        this.employeeShift.employeShiftsApplySince = newDate ? newDate.toString() : ''
-      }
-      const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShift?.employeeShiftId)
-      if (index !== -1) {
-        this.employeeShiftsList[index] = employeeShift
-        this.$forceUpdate()
-      } else {
-        this.employeeShiftsList.push(employeeShift)
-        this.$forceUpdate()
-      }
-      await this.getShiftActive()
-      this.drawerEmployeeShiftForm = false
-      myGeneralStore.setFullLoader(false)
-    },
-    onEdit(employeeShift: EmployeeShiftInterface) {
-      this.employeeShift = {...employeeShift}
-      this.drawerEmployeeShiftForm = true
-    },
-    onDelete(employeeShift: EmployeeShiftInterface) {
-      this.employeeShift = {...employeeShift}
-      this.selectedDateTimeDeleted = ''
-      if (this.employeeShift.employeShiftsApplySince) {
-        this.selectedDateTimeDeleted = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString()).toHTTP()
-      }
-      this.drawerEmployeeShiftDelete = true
-    },
-    async confirmDelete() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      if (this.employeeShift) {
-        this.drawerEmployeeShiftDelete = false
-        const employeeShiftService = new EmployeeShiftService()
-        const employeeShiftResponse = await employeeShiftService.delete(this.employeeShift)
-        if (employeeShiftResponse.status === 200) {
-          const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShift?.employeeShiftId)
-          if (index !== -1) {
-            this.employeeShiftsList.splice(index, 1)
-            this.$forceUpdate()
-          }
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Delete shift employee',
-            detail: employeeShiftResponse._data.message,
-              life: 5000,
-          })
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Delete shift employee',
-            detail: employeeShiftResponse._data.message,
-              life: 5000,
-          })
-        }
-      }
-      await this.getShiftActive()
-      myGeneralStore.setFullLoader(false)
-    },
-    async getShiftActive() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.employeeShiftActiveId = null
-      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-      const employeeShiftService = new EmployeeShiftService()
-      const employeeShiftResponse = await employeeShiftService.getShiftActiveByEmployee(employeeId)
-      
-      if (employeeShiftResponse.employeeShift) {
-        this.employeeShiftActiveId = employeeShiftResponse.employeeShift.employeeShiftId || null
-        for await (const employeeShift of this.employeeShiftsList) {
-          employeeShift.isActive = false
-        }
-        const index = this.employeeShiftsList.findIndex((employeeShift: EmployeeShiftInterface) => employeeShift.employeeShiftId === this.employeeShiftActiveId)
-        if (index !== -1) {
-          this.employeeShiftsList[index].isActive = true
-          this.$forceUpdate()
-        }
-      }
+
+      await this.getEmployeeCalendar()
+
+      this.$toast.add({
+        severity: 'success',
+        summary: 'Employee shift assigned',
+        detail: employeeShiftResponse._data.message,
+        life: 5000,
+      })
 
       myGeneralStore.setFullLoader(false)
     },
+    async getEmployeeCalendar () {
+      this.displayCalendar =  false
+      const firstDay = this.period[0]
+      const lastDay = this.period[this.period.length - 1]
+
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeID = this.employee?.employeeId || 0
+      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
+      this.displayCalendar =  true
+    },
+    async handlerCalendarChange () {
+      const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('America/Mexico_City').setLocale('en')
+
+      if (calendarDate.toFormat('LLLL').toLocaleLowerCase() !== this.selectedDate.toFormat('LLLL').toLocaleLowerCase()) {
+        this.selectedDate = calendarDate
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        this.displayInputCalendar = false
+        await this.getEmployeeCalendar()
+        myGeneralStore.setFullLoader(false)
+      }
+    },
+    async handlerLastMonth () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('America/Mexico_City').setLocale('en')
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
+    },
+    async handlerNextMonth () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('America/Mexico_City').setLocale('en')
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
+    },
+    getFakeEmployeeCalendar () {
+      const assistCalendar: AssistDayInterface[] = []
+
+      this.period.forEach((periodDay) => {
+        const assistDay: AssistDayInterface = {
+          day: `${periodDay.year}-${`${periodDay.month}`.padStart(2, '0')}-${`${periodDay.day}`.padStart(2, '0')}`,
+          assist: {
+            checkIn: null,
+            checkOut: null,
+            checkEatIn: null,
+            checkEatOut: null,
+            dateShift: null,
+            dateShiftApplySince: '',
+            shiftCalculateFlag: '',
+            checkInDateTime: '',
+            checkOutDateTime: '',
+            checkInStatus: '',
+            checkOutStatus: '',
+            isFutureDay: false,
+            isSundayBonus: false,
+            isRestDay: false,
+            isVacationDate: false,
+            isHoliday: false,
+            holiday: null,
+            hasExceptions: false,
+            exceptions: [],
+            assitFlatList: []
+          }
+        }
+
+        assistCalendar.push(assistDay)
+      })
+
+      return assistCalendar
+    },
+    handlerDisplayInputDate () {
+      this.inputSelectedDate = new Date()
+      this.displayInputCalendar = true
+    },
+    handlerCalendarCancel () {
+      this.displayInputCalendar = false
+    },
+    onClickExceptions (employeeCalendar: AssistDayInterface) {
+      console.log('🚀 -----------------------------------------------------------🚀')
+      console.log('🚀 ~ onClickExceptions ~ employeeCalendar:', employeeCalendar)
+      console.log('🚀 -----------------------------------------------------------🚀')
+      this.drawerShiftExceptions = true
+    }
   }
 })

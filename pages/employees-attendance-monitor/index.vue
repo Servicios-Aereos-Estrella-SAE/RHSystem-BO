@@ -14,7 +14,13 @@
               General Employees Attendance Monitor
             </h1>
           </div>
-          <div></div>
+          <div class="input-box">
+            <label for="parentDepartmentId">
+              Status
+            </label>
+            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
+              placeholder="Select a Status" filter class="w-full md:w-14rem"/>
+          </div>
           <div class="input-box">
             <label for="employees">
               Employee
@@ -60,7 +66,7 @@
               Period
             </label>
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom'"
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
@@ -69,6 +75,20 @@
               @update:modelValue="handlerPeriodChange"
               showWeek
             />
+            <Calendar
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Custom'"
+              v-model="datesSelected"
+              :view="visualizationMode.calendar_format.mode"
+              :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              hideOnRangeSelection
+              selectionMode="range"
+              :numberOfMonths="visualizationMode?.number_months"
+              @update:modelValue="handlerPeriodChange"
+              showWeek
+            />
+
           </div>
         </div>
 
@@ -111,8 +131,8 @@
               Employees into
               {{ item.department.departmentAlias || item.department.departmentName }}
             </h2>
-            <div v-if="!!(item.employees) && item.employees.length > 0" class="department-positions-wrapper">
-              <div v-for="(employeeAssist, index) in item.employees" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
+            <div v-if="hasEmployees(item.employees)" class="department-positions-wrapper">
+              <div v-for="(employeeAssist, index) in filtersEmployeesByStatus(item.employees)" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
                 <attendanceEmployeeInfoCard
                   v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
                   :employee="employeeAssist"

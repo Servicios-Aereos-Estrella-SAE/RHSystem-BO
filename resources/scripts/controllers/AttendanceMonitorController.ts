@@ -74,7 +74,7 @@ export default class AttendanceMonitorController {
     }
   }
 
-  getDepartmentPeriodData (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date) {
+  getDepartmentPeriodData (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null) {
     const assists = []
     const tolerances = []
     const delays = []
@@ -97,6 +97,22 @@ export default class AttendanceMonitorController {
       }
       case 'weekly':
         periodLenght = 7
+        break
+      case 'custom':
+        if(datesSelected) {
+          if (datesSelected.length === 2) {
+            const startDate = DateTime.fromJSDate(datesSelected[0])  // Fecha de inicio del rango
+            const endDate = DateTime.fromJSDate(datesSelected[1])    // Fecha de fin del rango
+
+            // Calcular el número de días en el rango seleccionado
+            periodLenght = Math.floor(endDate.diff(startDate, 'days').days) + 1
+
+            // Establecer el inicio del periodo como la fecha de inicio seleccionada por el usuario
+          } else {
+            // Si no hay un rango válido seleccionado, establecer el periodo en 0
+            periodLenght = 0
+          }
+        }
         break
       default:
         periodLenght = 12

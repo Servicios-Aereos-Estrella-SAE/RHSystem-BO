@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import type { ProceedingFileInterface } from "~/resources/scripts/interfaces/ProceedingFileInterface";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
+import AircraftProceedingFileService from "~/resources/scripts/services/AircraftProceedingFileService";
 import CustomerProceedingFileService from "~/resources/scripts/services/CustomerProceedingFileService";
 import EmployeeProceedingFileService from "~/resources/scripts/services/EmployeeProceedingFileService";
 import FlightAttendantProceedingFileService from "~/resources/scripts/services/FlightAttendantProceedingFileService";
@@ -11,10 +12,12 @@ export default defineComponent({
   name: 'DocumentsExpirationMatrix',
   props: {},
   data: () => ({
+    aircraftProceedingFiles: [] as Array<ProceedingFileInterface>,
     employeeProceedingFiles: [] as Array<ProceedingFileInterface>,
     pilotProceedingFiles: [] as Array<ProceedingFileInterface>,
     customerProceedingFiles: [] as Array<ProceedingFileInterface>,
     flightAttendantProceedingFiles: [] as Array<ProceedingFileInterface>,
+    canReadAircrafts: false,
     canReadEmployees: false,
     canReadPilots: false,
     canReadCustomers: false,
@@ -55,6 +58,8 @@ export default defineComponent({
   computed: {
     getProceedingFiles() {
       switch (this.tabActive) {
+        case 'aircraft':
+          return this.aircraftProceedingFiles;
         case 'employees':
           return this.employeeProceedingFiles;
         case 'pilots':
@@ -72,6 +77,7 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    await this.getAircraftProceedingFiles()
     await this.getEmployeeProceedingFiles()
     await this.getPilotProceedingFiles()
     await this.getCustomerProceedingFiles()
@@ -81,6 +87,37 @@ export default defineComponent({
   methods: {
     setActive(tab: string) {
       this.tabActive = tab
+    },
+    async getAircraftProceedingFiles() {
+      const myGeneralStore = useMyGeneralStore()
+      const permissions = await myGeneralStore.getAccess('aircraft')
+      if (myGeneralStore.isRoot) {
+        this.canReadAircrafts = true
+      } else {
+        this.canReadAircrafts = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+      const aircraftProceedingFileService = new AircraftProceedingFileService()
+      const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
+      const aircraftProceedingFileResponse = await aircraftProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      if (aircraftProceedingFileResponse.status === 200) {
+        if (aircraftProceedingFileResponse._data.data.aircraftProceedingFiles) {
+          const proceedingFilesExpired = aircraftProceedingFileResponse._data.data.aircraftProceedingFiles.proceedingFilesExpired
+          for await (const file of proceedingFilesExpired) {
+            this.aircraftProceedingFiles.push(file)
+          }
+          const proceedingFilesExpiring = aircraftProceedingFileResponse._data.data.aircraftProceedingFiles.proceedingFilesExpiring
+          for await (const file of proceedingFilesExpiring) {
+            this.aircraftProceedingFiles.push(file)
+          }
+        }
+      } else {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Aircraft proceeding files',
+          detail: aircraftProceedingFileResponse._data.message,
+          life: 5000,
+        });
+      }
     },
     async getEmployeeProceedingFiles() {
       const myGeneralStore = useMyGeneralStore()

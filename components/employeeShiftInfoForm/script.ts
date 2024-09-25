@@ -90,6 +90,7 @@ export default defineComponent({
         employeeShiftResponse = await  employeeShiftService.show(employeeShiftResponse._data.data.employeeShiftId)
         if (employeeShiftResponse.status === 200) {
           const employeeShift = employeeShiftResponse._data.data.employeeShift
+          myGeneralStore.setFullLoader(false)
           this.$emit('onEmployeeShiftSave', employeeShift as EmployeeShiftInterface)
         }
       } else {
@@ -101,9 +102,9 @@ export default defineComponent({
           detail: msgError,
             life: 5000,
         })
+        myGeneralStore.setFullLoader(false)
       }
       this.employeeShift.employeShiftsApplySince = employeeShiftDateTemp
-      myGeneralStore.setFullLoader(false)
     },
     handleDateChange() {
       if (this.isReady) {

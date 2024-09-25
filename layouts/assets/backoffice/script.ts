@@ -27,7 +27,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.fullLoader
       return status
-    }
+    },
   },
   async created() {
     await this.validateSession()
@@ -39,12 +39,6 @@ export default defineComponent({
     })
   },
   mounted() {
-    // document.addEventListener('visibilitychange', async () => {
-    //   if (document.visibilityState === 'visible') {
-    //     await this.validateSession()
-    //   }
-    // })
-
     window.addEventListener('focus', async () => {
       await this.validateSession()
     })
