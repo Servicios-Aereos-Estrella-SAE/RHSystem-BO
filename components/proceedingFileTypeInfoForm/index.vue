@@ -11,14 +11,28 @@
         </label>
         <InputSwitch v-model="activeSwicht" />
       </div>
-        <div class="input-box">
-          <label for="firstName">Name</label>
-          <InputText v-model="proceedingFileType.proceedingFileTypeName" placeholder="Enter Name" />
-          <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeName">Name is required.</small>
-        </div>
-        <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
-        </div>
+      <div class="input-box">
+        <label for="firstName">Name</label>
+        <InputText v-model="proceedingFileType.proceedingFileTypeName" placeholder="Enter Name" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeName">Name is required.</small>
+      </div>
+      <div class="input-box">
+        <label for="firstName">Slug</label>
+        <InputText v-model="proceedingFileType.proceedingFileTypeSlug" placeholder="Enter Slug" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeSlug">Slug is required.</small>
+      </div>
+      <div class="input-box">
+        <label for="proceeding-file">
+          Area to Use
+        </label>
+        <Dropdown v-model="proceedingFileType.proceedingFileTypeAreaToUse" :options="proceedingFileTypeAreaToUseList"
+          optionLabel="proceedingFileTypeAreaToUse" optionValue="proceedingFileTypeAreaToUse" placeholder="" filter
+          class="w-full md:w-14rem" :invalid="submitted && !proceedingFileType.proceedingFileTypeAreaToUse" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeAreaToUse">Area to use is
+          required.</small>
+      </div>
+      <div class="box-tools-footer">
+        <Button label="Save" severity="primary" @click="onSave()" />
       </div>
     </div>
   </div>

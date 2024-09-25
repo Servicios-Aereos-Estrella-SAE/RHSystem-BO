@@ -30,13 +30,13 @@ export default defineComponent({
         const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
         const permissions = await myGeneralStore.getAccess(systemModuleSlug)
         if (myGeneralStore.isRoot) {
-          this.canCreate = true
-          this.canUpdate = true
-          this.canDelete = true
+            this.canCreate = true
+            this.canUpdate = true
+            this.canDelete = true
         } else {
-          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
-          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
-          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+            this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+            this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+            this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
         }
         myGeneralStore.setFullLoader(false)
         this.handlerSearchProceedingFileType();
@@ -66,7 +66,6 @@ export default defineComponent({
                 proceedingFileTypeId: null,
                 proceedingFileTypeName: '',
                 proceedingFileTypeSlug: '',
-                proceedingFileTypeIcon: '',
                 proceedingFileTypeAreaToUse: '',
                 proceedingFileTypeActive: 1
             }

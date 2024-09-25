@@ -19,11 +19,17 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-    padding-top: 2rem;
+    padding-top: 0.5rem;
 
     @media screen and (max-width: $ipad) {
       font-size: 0.7rem;
     }
+  }
+  .info {
+    font-weight: 300;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    line-height: 1.25rem;
   }
   .box-btn {
     padding: 1rem;
@@ -53,5 +59,18 @@
     button {
       width: 100%;
     }
+  }
+  .assist {
+    color: $success;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
+  .status {
+    text-align: left;
+    font-weight: 300;
+    font-size: 0.7rem;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    padding: 2%;
   }
 }

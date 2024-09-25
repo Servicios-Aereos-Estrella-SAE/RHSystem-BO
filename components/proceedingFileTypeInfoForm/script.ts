@@ -4,8 +4,7 @@ import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces
 import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFileTypeService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import type { ProceedingFileTypeAreaToUseInterface } from '~/resources/scripts/interfaces/ProceedingFileTypeAreaToUseInterface';
 
 export default defineComponent({
   components: {
@@ -23,11 +22,23 @@ export default defineComponent({
     currenProceedingFileType: null as ProceedingFileTypeInterface | null,
     isNewProceedingFileType: false,
     isReady: false,
+    proceedingFileTypeAreaToUseList: [
+      { proceedingFileTypeAreaToUse: 'employee' },
+      { proceedingFileTypeAreaToUse: 'pilot' },
+      { proceedingFileTypeAreaToUse: 'customer' },
+      { proceedingFileTypeAreaToUse: 'aircraft' },
+      { proceedingFileTypeAreaToUse: 'flight-attendant' }
+    ] as Array<ProceedingFileTypeAreaToUseInterface>
   }),
   computed: {
   },
   async mounted() {
     this.isReady = false
+    let isActive: number = 1
+    if (this.proceedingFileType.proceedingFileTypeId) {
+      isActive = this.proceedingFileType.proceedingFileTypeActive
+    }
+    this.activeSwicht = isActive === 1 ? true : false
     this.isNewProceedingFileType = !this.proceedingFileType.proceedingFileTypeId ? true : false
     this.isReady = true
   },
@@ -40,7 +51,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -56,7 +67,7 @@ export default defineComponent({
           severity: 'success',
           summary: `Proceeding file type ${this.proceedingFileType.proceedingFileTypeId ? 'updated' : 'created'}`,
           detail: proceedingFileTypeResponse._data.message,
-            life: 5000,
+          life: 5000,
         })
         proceedingFileTypeResponse = await proceedingFileTypeService.show(proceedingFileTypeResponse._data.data.proceedingFileType.proceedingFileTypeId)
         if (proceedingFileTypeResponse?.status === 200) {
@@ -69,7 +80,7 @@ export default defineComponent({
           severity: 'error',
           summary: `Proceeding file type ${this.proceedingFileType.proceedingFileTypeId ? 'updated' : 'created'}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
       }
     },

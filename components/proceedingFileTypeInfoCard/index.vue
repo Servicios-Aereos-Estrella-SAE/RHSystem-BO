@@ -5,9 +5,15 @@
     </div>
     <div class="line">
     </div>
+    <div class="info capitalize">
+      <strong>{{ `${proceedingFileType.proceedingFileTypeAreaToUse || ''}`}}</strong>
+    </div>
+    <div class="status assist">
+      {{ `Active: ${proceedingFileType.proceedingFileTypeActive ? 'Yes' : 'No'}` }}
+    </div>
     <div class="box-tools-footer">
-      <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+      <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
+      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()" />
     </div>
   </div>
 </template>

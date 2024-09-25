@@ -20,7 +20,8 @@
             </div>
             <div class="input-box">
               <br />
-              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
+                @click="addNew" />
             </div>
           </div>
           <div>
@@ -28,9 +29,11 @@
               Proceeding File Types
             </h2>
             <div class="proceeding-file-type-card-wrapper">
-              <div v-for="(ProceedingFileType, index) in filteredProceedingFileTypes" :key="`proceeding-file-type-${ProceedingFileType.proceedingFileTypeId}-${index}`">
-                <proceedingFileTypeInfoCard :proceeding-file-type="ProceedingFileType"
-                  :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(ProceedingFileType) }" :click-on-delete="() => { onDelete(ProceedingFileType) }" />
+              <div v-for="(ProceedingFileType, index) in filteredProceedingFileTypes"
+                :key="`proceeding-file-type-${ProceedingFileType.proceedingFileTypeId}-${index}`">
+                <proceedingFileTypeInfoCard :proceeding-file-type="ProceedingFileType" :can-update="canUpdate"
+                  :can-delete="canDelete" :click-on-edit="() => { onEdit(ProceedingFileType) }"
+                  :click-on-delete="() => { onDelete(ProceedingFileType) }" />
               </div>
             </div>
             <div></div>
@@ -38,14 +41,15 @@
               @page="onPageChange" />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
-              <Sidebar v-model:visible="drawerProceedingFileTypeForm" header="Proceeding file type form" position="right"
-                class="proceeding-file-type-form-sidebar" :showCloseIcon="true">
+              <Sidebar v-model:visible="drawerProceedingFileTypeForm" header="Proceeding file type form"
+                position="right" class="proceeding-file-type-form-sidebar" :showCloseIcon="true">
                 <proceedingFileTypeInfoForm :proceeding-file-type="proceedingFileType" @save="onSave" />
               </Sidebar>
             </div>
           </div>
         </div>
-        <Dialog v-model:visible="drawerProceedingFileTypeDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog v-model:visible="drawerProceedingFileTypeDelete" :style="{width: '450px'}" header="Confirm"
+          :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span v-if="proceedingFileType"> Are you sure you want to delete
@@ -71,7 +75,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
- 
+
   .proceeding-file-type-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
@@ -81,4 +85,3 @@
     }
   }
 </style>
-
