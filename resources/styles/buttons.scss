@@ -79,3 +79,25 @@
     width: 1.25rem;
   }
 }
+
+.p-sidebar-header {
+  border-bottom: solid 0.5em $background;
+}
+
+.p-sidebar-header-content {
+  opacity: 0;
+}
+
+.p-sidebar .p-sidebar-header .p-sidebar-close, .p-sidebar .p-sidebar-header .p-sidebar-icon {
+  @extend .btn;
+  background-color: $icon !important;
+  width: 3rem !important;
+  height: 3rem !important;
+  border-radius: $radius !important;
+
+  svg {
+    path {
+      fill: white;
+    }
+  }
+}

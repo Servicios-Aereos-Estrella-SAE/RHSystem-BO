@@ -14,6 +14,10 @@
   height: 45.5px;
   align-items: center;
   display: flex;
+
+  @media screen and (max-width: $phone) {
+    height: 36.69px;
+  }
 }
 
 .graph-label-attendance-monitor-period {

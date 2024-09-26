@@ -73,15 +73,15 @@
   @import './style';
 </style>
 <style scoped>
-  /deep/ .p-button[aria-label="Upload"] {
+  :deep(.p-button)[aria-label="Upload"] {
     display: none;
   }
 
-  /deep/ .p-button[aria-label="Cancel"] {
+  :deep(.p-button)[aria-label="Cancel"] {
     display: none;
   }
 
-  /deep/ .p-button[aria-label="Choose"] {
+  :deep(.p-button)[aria-label="Choose"] {
     display: block;
   }
 </style>

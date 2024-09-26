@@ -17,5 +17,5 @@
 </script>
 
 <style lang="scss">
-@import './assets/guest/style';
+@import './assets/backoffice/style';
 </style>
