@@ -1,5 +1,8 @@
 <template>
   <div>
+    <transition name="page">
+      <loader v-if="statusFullLoader" />
+    </transition>
     <Toast />
     <NuxtLayout name="guest">
       <div class="guest-page">
@@ -57,6 +60,7 @@
                           <li>Minimum 8 characters</li>
                       </ul>
                   </template>
+                  <Button label="Generate" severity="secondary" @click="generatePassword()" />
                 </Password>
               </div>
               <div class="input-box">
