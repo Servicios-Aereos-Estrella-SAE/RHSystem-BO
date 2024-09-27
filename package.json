@@ -28,6 +28,7 @@
     "axios": "^1.7.2",
     "date-fns": "^2.30.0",
     "luxon": "^3.4.4",
+    "moment": "^2.30.1",
     "nuxt": "^3.11.2",
     "nuxt-calendly": "^0.1.20",
     "nuxt-highcharts": "^3.1.1",

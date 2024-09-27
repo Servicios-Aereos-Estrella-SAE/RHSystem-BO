@@ -24,14 +24,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: [
-    'nuxt-primevue',
-    '@pinia/nuxt',
-    'nuxt-highcharts',
-    '@nuxtjs/color-mode',
-    '@sidebase/nuxt-auth',
-    "vue3-carousel-nuxt"
-  ],
+  modules: ['nuxt-primevue', '@pinia/nuxt', 'nuxt-highcharts', '@nuxtjs/color-mode', '@sidebase/nuxt-auth', "vue3-carousel-nuxt", '@samk-dev/nuxt-vcalendar'],
 
   carousel: {
     prefix: 'VueCar',
