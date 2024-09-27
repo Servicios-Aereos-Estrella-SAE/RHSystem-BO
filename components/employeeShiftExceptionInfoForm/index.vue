@@ -1,9 +1,11 @@
 <template>
-  <div class="box shift-exception-info-form">
+  <div class="shift-exception-info-form">
     <Toast />
-    <h4>
-      {{ isNewShiftException ? 'New shift exception' : 'Update shift exception' }}
-    </h4>
+    
+    <h1>
+      {{ isNewShiftException ? 'Add shift exception' : 'Update shift exception' }}
+    </h1>
+    
     <div v-if="isReady" class="shift-exception-form">
       <div class="form-container">
         <div class="input-box">
@@ -15,21 +17,18 @@
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
         </div>
         <div class="input-box">
-          <label for="date">
-            Date
-          </label>
-          <Calendar v-model="shiftException.shiftExceptionsDate" :minDate="minDate" @update:model-value="handleDateChange"/>
-          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDate">Date is required.</small>
-        </div>
-        <div class="input-box">
           <label for="description">
-            Description</label>
-            <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30" />
-
-          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDescription">Descritpion is required.</small>
+            Description
+          </label>
+          <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30" />
+          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDescription">
+            Descritpion is required.
+          </small>
         </div>
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
+          <Button class="btn btn-block btn-primary" @click="onSave">
+            Save exception
+          </Button>
         </div>
       </div>
     </div>

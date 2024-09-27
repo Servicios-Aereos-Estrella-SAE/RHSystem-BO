@@ -18,6 +18,7 @@ export default defineComponent({
   name: 'shiftExceptionForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    date: { type: Date, required: true },
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
@@ -39,18 +40,25 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     this.isNewShiftException = !this.shiftException.shiftExceptionId ? true : false
+
     if (this.shiftException.shiftExceptionId) {
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await  shiftExceptionService.show(this.shiftException.shiftExceptionId)
+
       if (shiftExceptionResponse.status === 200) {
         this.currentShiftException = shiftExceptionResponse._data.data.shiftException
       }
+
       if (this.currentShiftException && this.currentShiftException.shiftExceptionsDate) {
         this.currentDate = `${this.currentShiftException.shiftExceptionsDate}`
         const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
+    } else {
+      this.shiftException.shiftExceptionsDate = this.date
+      this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
     }
+
     await this.getExceptionTypes()
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
@@ -106,12 +114,6 @@ export default defineComponent({
       }
 
       if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
-        this.$toast.add({
-          severity: 'success',
-          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'updated' : 'created'}`,
-          detail: shiftExceptionResponse._data.message,
-            life: 5000,
-        })
         shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
         if (shiftExceptionResponse.status === 200) {
           const shiftException = shiftExceptionResponse._data.data.shiftException

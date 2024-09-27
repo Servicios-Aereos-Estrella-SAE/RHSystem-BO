@@ -54,7 +54,10 @@
     </div>
 
     <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right" class="shift-exception-sidebar">
-      <employeeShiftException :employee="employee" />
+      <employeeShiftException
+        :employee="employee"
+        :date="selectedExceptionDate"
+      />
     </Sidebar>
   </div>
 </template>
@@ -71,7 +74,7 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
 
-  .employee-shift-form-sidebar{
+  .employee-shift-form-sidebar {
     width: 100% !important;
     max-width: 35rem !important;
 
@@ -82,7 +85,7 @@
 
   .shift-exception-sidebar {
     width: 100% !important;
-    max-width: 70rem !important;
+    max-width: 33rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

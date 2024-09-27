@@ -35,8 +35,8 @@ export default defineComponent({
         { label: 'Not specified', value: 'Otro' }
     ],
     assistDiscriminatorOptions: [
-      { label: 'Do not discriminate in assistance', value: 0 },
-      { label: 'Yes, discriminate in assistance', value: 1 }
+      { label: 'Do not discriminate in assistance report', value: 0 },
+      { label: 'Yes, discriminate in assistance report', value: 1 }
     ],
     currenEmployee: null as EmployeeInterface | null,
     passwordConfirm: '',

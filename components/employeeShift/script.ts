@@ -29,7 +29,8 @@ export default defineComponent({
     inputSelectedDate: new Date(),
     displayInputCalendar: false as boolean,
     displayCalendar: false,
-    drawerShiftExceptions: false
+    drawerShiftExceptions: false,
+    selectedExceptionDate: new Date() as Date
   }),
   computed: {
     monthName () {
@@ -177,9 +178,7 @@ export default defineComponent({
       this.displayInputCalendar = false
     },
     onClickExceptions (employeeCalendar: AssistDayInterface) {
-      console.log('🚀 -----------------------------------------------------------🚀')
-      console.log('🚀 ~ onClickExceptions ~ employeeCalendar:', employeeCalendar)
-      console.log('🚀 -----------------------------------------------------------🚀')
+      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
       this.drawerShiftExceptions = true
     }
   }

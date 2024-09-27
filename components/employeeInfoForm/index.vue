@@ -81,7 +81,7 @@
         </div>
         <div class="input-box">
           <label for="employeeLastName">Phone</label>
-          <InputText v-model="employee.person.personPhone" placeholder="Enter employee phone" />
+          <InputMask v-model="employee.person.personPhone" mask="(999) 999 99 99" placeholder="Enter employee phone" />
         </div>
         <div class="input-box">
           <label for="personGender">Gender</label>

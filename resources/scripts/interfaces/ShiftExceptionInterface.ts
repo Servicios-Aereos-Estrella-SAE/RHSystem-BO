@@ -6,7 +6,7 @@ interface ShiftExceptionInterface {
   employeeId: number | null
   exceptionTypeId: number | null
   shiftExceptionsDescription: string
-  shiftExceptionsDate: string | null | DateTime
+  shiftExceptionsDate: string | null | DateTime | Date
   shiftExceptionsCreatedAt: Date | string | null
   shiftExceptionsUpdatedAt: Date | string | null
   shiftExceptionsDeletedAt: Date | string | null

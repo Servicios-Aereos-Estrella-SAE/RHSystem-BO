@@ -2,37 +2,48 @@
 @import 'primeicons/primeicons.css';
 
 .employee-shift-exceptions {
-  margin-top: 2.25rem;
   position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+  }
 
   .shift-exception-wrapper {
     box-sizing: border-box;
     display: grid;
     grid-auto-flow: dense;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: 1fr;
     gap: .5rem;
-    margin-top: 0.5rem;
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem 20rem 10rem;
+      grid-template-columns: 15rem auto;
       gap: 0.5rem;
+      margin-bottom: 1.5rem;
 
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: 20rem 20rem 10rem;
-      }
-
-      @media screen and (max-width: $tablet) {
+      @media screen and (max-width: $ipad) {
         grid-template-columns: 1fr;
       }
+    }
 
-      @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr;
-      }
-
-      .btn-add {
-        width: fit-content;
-      }
+    .empty-data {
+      text-align: center;
+      background-color: $gray;
+      padding: 2rem;
+      color: $icon;
+      border-radius: $radius;
+      font-size: 0.8rem;
+      height: 10rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 

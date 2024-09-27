@@ -32,16 +32,16 @@
   }
 }
 
+.btn-primary {
+  background-color: $primary !important;
+  border-color: $primary !important;
+  color: white !important;
+}
+
 :deep(.p-button) {
 
   &.btn-block {
     width: 100%;
-  }
-
-  &.btn-primary {
-    background-color: $primary !important;
-    border-color: $primary !important;
-    color: white !important;
   }
 
   &.btn-danger {
