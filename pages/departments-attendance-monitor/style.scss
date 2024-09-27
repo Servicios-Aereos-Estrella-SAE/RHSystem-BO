@@ -15,11 +15,11 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: auto 15rem 15rem 20rem 10rem;
+      grid-template-columns: auto 15rem 15rem 25rem 10rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: auto 15rem 15rem 20rem 10rem;
+        grid-template-columns: auto 15rem 15rem 25rem 10rem;
       }
 
       @media screen and (max-width: $ipad) {

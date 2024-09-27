@@ -66,7 +66,7 @@
               Period
             </label>
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
               v-model="periodSelected"
               :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format"
@@ -88,6 +88,23 @@
               @update:modelValue="handlerPeriodChange"
               showWeek
             />
+
+            <Calendar
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+              v-model="periodSelected"
+              :view="visualizationMode.calendar_format.mode"
+              :dateFormat="visualizationMode.calendar_format.format"
+              :minDate="minDate"
+              hideOnRangeSelection
+              :numberOfMonths="visualizationMode?.number_months"
+              @update:modelValue="handlerPeriodChange"
+              showWeek
+            >
+              <template #date="slotProps">
+                <strong v-if="isThursday(slotProps.date)" >{{ slotProps.date.day }}</strong>
+                <template v-else ><span style="text-decoration: line-through" >{{ slotProps.date.day }} </span></template>
+              </template>
+            </Calendar>
 
           </div>
         </div>
@@ -156,4 +173,14 @@
 
 <style lang="scss" scoped>
 @import './style';
+//  .p-dropdown {
+//     width: 100%;
+//     max-height: 2.8rem;
+//   }
+
+//   .p-dropdown-label {
+//       height: 2rem!important;
+//     }
+
+  
 </style>
