@@ -1,6 +1,6 @@
 import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
-
+import moment from 'moment';
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
@@ -108,6 +108,7 @@ export default defineComponent({
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -192,7 +193,32 @@ export default defineComponent({
             }
           }
           break;
-      }
+        }
+        case 'fourteen': {
+          const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
+          const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
+          
+          // Encontrar el jueves de la semana seleccionada
+          let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+
+          // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          let startDate = thursday.minus({ weeks: 2 }) // Jueves de dos semanas atrás
+
+          // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
+          for (let index = 0; index < 15; index++) {
+            const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+
+            daysList.push({
+              year,
+              month,
+              day
+            })
+          }
+          break;
+        }
         default:
           break;
       }
@@ -269,6 +295,12 @@ export default defineComponent({
 
       this.handlerVisualizationModeChange()
     },
+    isThursday(dateObject: any, addOneMonth = true) {
+      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
+      const weekDayName = moment(mydate).format('dddd');
+      return weekDayName === 'Thursday';
+    },
     getDefaultDatesRange() {
       const today = new Date();
       
@@ -292,6 +324,17 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     isValidPeriodSelected() {
+      if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Invalid Date',
+          detail: 'You should select a valid date. Only Thursdays are valid',
+            life: 5000,
+        })
+        return false;
+      } else {
+        return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom';
+      }
       return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
     },
     setGeneralData () {
@@ -350,6 +393,24 @@ export default defineComponent({
             periodLenght = 0
           }
           break
+        case 'fourteen': {
+            const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+            const startOfWeek = date.startOf('week')
+
+            // Encontrar el jueves de la semana seleccionada
+            let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+            console.log('thursday', thursday);
+          
+          
+
+            // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          start = thursday.minus({ weeks: 2 }) // El jueves dos semanas atrás
+          console.log('start', start);
+
+            // El periodo es de 14 días (dos semanas completas)
+            periodLenght = 15
+          break
+        }
         default:
           periodLenght = 0
           break
@@ -436,6 +497,20 @@ export default defineComponent({
         this.setGraphsData()
         myGeneralStore.setFullLoader(false)
       }
+    },
+    isValidFourteen() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        // valid if period selected is a thursday periodSelected
+        const stringDate = DateTime.fromJSDate(this.periodSelected).toFormat('yyyy-LL-dd')
+        const dateObject = {
+          year: parseInt(stringDate.split('-')[0]),
+          month: parseInt(stringDate.split('-')[1]),
+          day: parseInt(stringDate.split('-')[2])
+        }
+        return this.isThursday(dateObject, false)
+        console.log(dateObject);
+      }
+      return true
     },
     async onInputVisualizationModeChange () {
       const myGeneralStore = useMyGeneralStore()
