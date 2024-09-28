@@ -87,6 +87,49 @@ export default class UserService {
     }
   }
 
+  async recovery (userEmail: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/auth/recovery`, {
+        method: 'POST',
+        query: { userEmail: userEmail },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async passwordReset (token: string, userPassword: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/auth/password/reset`, {
+        method: 'POST',
+        query: { token: token, userPassword: userPassword },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async verifyToken (token: string) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/auth/request/verify/${token}`, {
+        method: 'POST',
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      
+    }
+    return responseRequest
+  }
+
+
   validateSamePass (password: string, passwordConfirm: string) {
     return password === passwordConfirm
   }
