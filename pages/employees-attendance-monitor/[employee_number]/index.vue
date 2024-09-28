@@ -30,13 +30,7 @@
               </small>
             </h1>
           </div>
-          <div class="input-box">
-            <!-- <label for="parentDepartmentId">
-              Status
-            </label>
-            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
-              placeholder="Select a Status" filter class="w-full md:w-14rem"/> -->
-          </div>
+          <div></div>
           <div class="input-box">
             <label for="employees">
               Employee

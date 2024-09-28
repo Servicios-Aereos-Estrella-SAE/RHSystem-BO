@@ -225,6 +225,17 @@ export default defineComponent({
         return `Check in & Check out on ${text}`
       }
 
+      if (this.visualizationMode?.value === 'fourteen') {
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
+        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+      }
+
+      if (this.visualizationMode?.value === 'custom') {
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
+        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+      }
+
       const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
       const start = date.startOf('month')
       const text = start.toFormat('LLLL')
@@ -273,7 +284,6 @@ export default defineComponent({
        })
       } 
     },
-
     isThursday(dateObject: any, addOneMonth = true) {
       console.log(dateObject);
       const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
@@ -282,7 +292,6 @@ export default defineComponent({
       return weekDayName === 'Thursday';
       
     },
-    
     async setDefaultVisualizationMode () {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
@@ -293,14 +302,8 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const today = new Date();
-      
-      // Obtener el día anterior al día actual
-      const previousDay = new Date(today);
-      previousDay.setDate(today.getDate() - 1);
-
-      // Usar la fecha actual como el último día del rango
-      const currentDay = today;
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
 
       return [previousDay, currentDay];
     },
