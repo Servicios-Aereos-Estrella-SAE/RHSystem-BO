@@ -34,8 +34,10 @@ export default defineComponent({
       const employeeVacationsInfo = await this.getCurrentVacationPeriod(this.employee.employeeHireDate.toString())
       if (hasCompletedYear) {
         this.canHaveVacations = true
-        await this.getVacationsUsed()
-        await this.getVacationsCorresponding()
+        await Promise.all([
+          this.getVacationsUsed(),
+          this.getVacationsCorresponding()
+        ])
         if (this.daysVacationsCorresponding === 0) {
           this.daysVacationsRest = 0
         } else {

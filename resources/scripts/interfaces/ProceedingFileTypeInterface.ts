@@ -1,13 +1,12 @@
 interface ProceedingFileTypeInterface {
-  proceedingFileTypeId: number,
+  proceedingFileTypeId: number | null,
   proceedingFileTypeName: string,
-  proceedingFileTypeIcon: string,
   proceedingFileTypeSlug: string,
   proceedingFileTypeAreaToUse: string,
   proceedingFileTypeActive: number,
-  proceedingFileTypeCreatedAt: string,
-  proceedingFileTypeUpdatedAt: string,
-  proceedingFileTypeDeletedAt: string | null
+  proceedingFileTypeCreatedAt?: string | null,
+  proceedingFileTypeUpdatedAt?: string | null,
+  proceedingFileTypeDeletedAt?: string | null
 }
 
 export type { ProceedingFileTypeInterface }

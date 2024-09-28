@@ -45,7 +45,7 @@ export default class AttendanceMonitorController {
 
         return categories
       }
-      case 'weekly':
+      case 'weekly': {
         const date = DateTime.fromJSDate(periodDate)
         const start = date.startOf('week')
         const daysList =[]
@@ -69,9 +69,50 @@ export default class AttendanceMonitorController {
         }
 
         return daysList
+      }
+      case 'fourteen': {
+        const date = DateTime.fromJSDate(periodDate)
+        const start = date.startOf('week')
+        let thursday = start.plus({ days: 3 })
+        let startDate = thursday.minus({ weeks: 2 })
+        const daysList =[]
+
+        for (let index = 0; index < 15; index++) {
+          const currentDay = startDate.plus({ days: index })
+          const year = parseInt(currentDay.toFormat('yyyy'))
+          const month = parseInt(currentDay.toFormat('LL'))
+          const day = parseInt(currentDay.toFormat('dd'))
+          const dayDate = DateTime.local(year, month, day)
+          const formatedDay = dayDate.toFormat('DD')
+
+          daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+        }
+
+        return daysList
+      }
       default:
         return []
     }
+  }
+
+  getCustomPeriodCategories (periodDate: Date[]): string[] {
+    const start = DateTime.fromJSDate(periodDate[0]).setZone('America/Mexico_City')
+    const date = DateTime.fromJSDate(periodDate[1]).setZone('America/Mexico_City')
+    const periodLenght = Math.floor(date.diff(start, 'days').days) + 1
+    const daysList =[]
+
+    for (let index = 0; index < periodLenght; index++) {
+      const currentDay = start.plus({ days: index })
+      const year = parseInt(currentDay.toFormat('yyyy'))
+      const month = parseInt(currentDay.toFormat('LL'))
+      const day = parseInt(currentDay.toFormat('dd'))
+      const dayDate = DateTime.local(year, month, day)
+      const formatedDay = dayDate.toFormat('DD')
+
+      daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+    }
+
+    return daysList
   }
 
   getDepartmentPeriodData (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null) {

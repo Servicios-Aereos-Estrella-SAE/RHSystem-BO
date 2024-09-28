@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
 import { useMyGeneralStore } from '~/store/general'
+import moment from 'moment';
 
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -106,8 +107,9 @@ export default defineComponent({
     statusSelected: null as string | null,
     visualizationModeOptions: [
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1  },
-      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1  },
+      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -190,7 +192,32 @@ export default defineComponent({
             }
           }
           break;
-      }
+        }
+        case 'fourteen': {
+          const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
+          const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
+          
+          // Encontrar el jueves de la semana seleccionada
+          let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+
+          // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          let startDate = thursday.minus({ weeks: 2 }) // Jueves de dos semanas atrás
+
+          // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
+          for (let index = 0; index < 15; index++) {
+            const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+
+            daysList.push({
+              year,
+              month,
+              day
+            })
+          }
+          break;
+        }
         default:
           break;
       }
@@ -211,6 +238,17 @@ export default defineComponent({
       if (this.visualizationMode?.value === 'weekly') {
         return 'Weekly behavior'
       }
+
+      if (this.visualizationMode?.value === 'fourteen') {
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
+        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+      }
+
+      if (this.visualizationMode?.value === 'custom') {
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
+        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+      }
     },
     assistSyncStatusDate() {
       if (this.statusInfo) {
@@ -223,7 +261,6 @@ export default defineComponent({
     },
   },
   created() {
-    
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -235,12 +272,14 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await this.setDefaultVisualizationMode()
-    
-    await Promise.all([
-      this.setAssistSyncStatus(),
-      this.setDepartmetList(),
-      this.setDepartmentPositionEmployeeList()
-    ])
+
+    if (this.$config.public.ENVIRONMENT === 'production') {
+      await Promise.all([
+        this.setAssistSyncStatus(),
+        this.setDepartmetList(),
+        this.setDepartmentPositionEmployeeList()
+      ])
+    }
 
     this.setGeneralData()
     this.setPeriodData()
@@ -249,6 +288,12 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
+    isThursday(dateObject: any, addOneMonth = true) {
+      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
+      const weekDayName = moment(mydate).format('dddd');
+      return weekDayName === 'Thursday';
+    },
     async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
 
@@ -259,14 +304,8 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const today = new Date();
-      
-      // Obtener el día anterior al día actual
-      const previousDay = new Date(today);
-      previousDay.setDate(today.getDate() - 1);
-
-      // Usar la fecha actual como el último día del rango
-      const currentDay = today;
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -353,6 +392,17 @@ export default defineComponent({
             periodLenght = 0
           }
           break
+        case 'fourteen': {
+            const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+            const startOfWeek = date.startOf('week')
+            // Encontrar el jueves de la semana seleccionada
+            let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+            // Establecer el inicio del periodo como el jueves de dos semanas atrás
+            start = thursday.minus({ weeks: 2 }) // El jueves dos semanas atrás
+            // El periodo es de 14 días (dos semanas completas)
+            periodLenght = 15
+          break
+        }
         default:
           periodLenght = 0
           break
@@ -418,7 +468,11 @@ export default defineComponent({
       }
     },
     setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      if (this.visualizationMode?.value === 'custom') {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
+      } else {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      }
     },
     async setDepartmentPositionEmployeeList () {
       const departmentId = null
@@ -445,7 +499,7 @@ export default defineComponent({
         this.setGeneralStatisticsData(employee, employee.calendar)
 
         if (assistReq.status === 400) {
-          console.log('NO shift', employeeID)
+          console.error('NO shift', employeeID)
         }
 
       } catch (error) {
@@ -500,7 +554,6 @@ export default defineComponent({
     },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
-      console.log('idx', idx)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
@@ -530,7 +583,30 @@ export default defineComponent({
       }
     },
     isValidPeriodSelected() {
-      return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
+      if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Invalid Date',
+          detail: 'You should select a valid date. Only Thursdays are valid',
+            life: 5000,
+        })
+        return false;
+      } else {
+        return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom';
+      }
+    },
+    isValidFourteen() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        // valid if period selected is a thursday periodSelected
+        const stringDate = DateTime.fromJSDate(this.periodSelected).toFormat('yyyy-LL-dd')
+        const dateObject = {
+          year: parseInt(stringDate.split('-')[0]),
+          month: parseInt(stringDate.split('-')[1]),
+          day: parseInt(stringDate.split('-')[2])
+        }
+        return this.isThursday(dateObject, false)
+      }
+      return true
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
