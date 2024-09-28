@@ -38,6 +38,16 @@
   color: white !important;
 }
 
+.p-selectbutton.p-button-group {
+  .p-button {
+    height: 45.5px;
+
+    @media screen and (max-width: $phone) {
+      height: 36.69px;
+    }
+  }
+}
+
 :deep(.p-button) {
 
   &.btn-block {

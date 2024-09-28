@@ -238,6 +238,17 @@ export default defineComponent({
       if (this.visualizationMode?.value === 'weekly') {
         return 'Weekly behavior'
       }
+
+      if (this.visualizationMode?.value === 'fourteen') {
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
+        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+      }
+
+      if (this.visualizationMode?.value === 'custom') {
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
+        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+      }
     },
     departmentCollection (): DepartmentInterface[] {
       const list: DepartmentInterface[] = JSON.parse(JSON.stringify(this.departmentList)) as DepartmentInterface[]
@@ -269,8 +280,6 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange();
-    
-
     this.setDefaultVisualizationMode()
 
     await Promise.all([
@@ -278,9 +287,7 @@ export default defineComponent({
       this.setDepartmetList(),
     ])
 
-    // if (this.$config.public.ENVIRONMENT === 'production') {
-      await this.setDepartmentPositionEmployeeList()
-    // }
+    await this.setDepartmentPositionEmployeeList()
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
@@ -302,14 +309,8 @@ export default defineComponent({
       return weekDayName === 'Thursday';
     },
     getDefaultDatesRange() {
-      const today = new Date();
-      
-      // Obtener el día anterior al día actual
-      const previousDay = new Date(today);
-      previousDay.setDate(today.getDate() - 1);
-
-      // Usar la fecha actual como el último día del rango
-      const currentDay = today;
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -321,7 +322,11 @@ export default defineComponent({
       this.setGeneralData()
     },
     setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      if (this.visualizationMode?.value === 'custom') {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
+      } else {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      }
     },
     isValidPeriodSelected() {
       if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
@@ -399,13 +404,9 @@ export default defineComponent({
 
             // Encontrar el jueves de la semana seleccionada
             let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-            console.log('thursday', thursday);
-          
-          
 
             // Establecer el inicio del periodo como el jueves de dos semanas atrás
-          start = thursday.minus({ weeks: 2 }) // El jueves dos semanas atrás
-          console.log('start', start);
+            start = thursday.minus({ weeks: 2 }) // El jueves dos semanas atrás
 
             // El periodo es de 14 días (dos semanas completas)
             periodLenght = 15
@@ -508,7 +509,6 @@ export default defineComponent({
           day: parseInt(stringDate.split('-')[2])
         }
         return this.isThursday(dateObject, false)
-        console.log(dateObject);
       }
       return true
     },
