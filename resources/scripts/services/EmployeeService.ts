@@ -120,10 +120,10 @@ export default class EmployeeService {
     // }
 
     // validate employee.person.personPhone is a valid phone number with 10 digits and dont have letters
-    if (employee.person?.personPhone && !/^\d{10}$/.test(employee.person.personPhone)) {
-      console.error('Wrong phone number');
-      return false;
-    }
+    // if (employee.person?.personPhone && !/^\d{10}$/.test(employee.person.personPhone)) {
+    //   console.error('Wrong phone number');
+    //   return false;
+    // }
 
     return true;
   }

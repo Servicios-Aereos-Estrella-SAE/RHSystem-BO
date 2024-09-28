@@ -8,22 +8,15 @@
     </Head>
     <NuxtLayout name="backoffice">
       <div class="dashboard-wrapper">
+        <div class="title">
+          <h1>
+            General Departments Attendance Monitor
+          </h1>
+        </div>
         <div class="box head-page">
-          <div class="title">
-            <h1>
-              General Attendance Monitor
-            </h1>
-          </div>
-          <div class="input-box">
-            <label for="parentDepartmentId">
-              Status
-            </label>
-            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
-              placeholder="Select a Status" filter class="w-full md:w-14rem"/>
-          </div>
           <div class="input-box">
             <label for="employees">
-              Employee
+              Search Employee
             </label>
             <AutoComplete
               v-model="selectedEmployee"
@@ -46,6 +39,14 @@
                 </div>
               </template>
             </AutoComplete>
+          </div>
+          <div></div>
+          <div class="input-box">
+            <label for="parentDepartmentId">
+              Status
+            </label>
+            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
+              placeholder="Select a Status" filter class="w-full md:w-14rem"/>
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">

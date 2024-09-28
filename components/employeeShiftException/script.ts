@@ -19,53 +19,42 @@ export default defineComponent({
   },
   name: 'employeeShiftException',
   props: {
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    date: { type: Date, required: true }
   },
   data: () => ({
     isReady: false,
     shiftExceptionsList: [] as ShiftExceptionInterface[],
     exceptionTypesList: [] as ExceptionTypeInterface[],
     selectedExceptionTypeId: null as number | null,
-    selectedDateRange: ref(null),
-    selectedDateStart: '' as string | null,
-    selectedDateEnd: '' as string | null,
+    selectedDateStart: '' as string,
+    selectedDateEnd: '' as string,
     shiftException: null as ShiftExceptionInterface | null,
     drawerShiftExceptionForm: false,
     drawerShiftExceptionDelete: false,
     selectedDateTimeDeleted: '' as string | null,
   }),
   computed: {
+    selectedExceptionDate () {
+      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      return day
+    }
   },
   async mounted() {
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.getExceptionTypes()
+
+    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+
     await this.getShiftEmployee()
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    
   },
   methods: {
-    async handleDateChange(e: any) {
-      this.selectedDateStart = null
-      this.selectedDateEnd = null
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      try {
-        const selectedDate = e
-        if (selectedDate && selectedDate.length === 2) {
-          const [startDate, endDate] = selectedDate
-          const formattedStartDate = startDate.toISOString().split('T')[0]
-          const formattedEndDate = endDate.toISOString().split('T')[0]
-          this.selectedDateStart = formattedStartDate
-          this.selectedDateEnd = formattedEndDate
-        }
-      } catch (error) {
-      }
-      myGeneralStore.setFullLoader(false)
-      await this.getShiftEmployee()
-    },
     async getShiftEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -74,14 +63,6 @@ export default defineComponent({
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeId, this.selectedExceptionTypeId, this.selectedDateStart,this.selectedDateEnd)
       this.shiftExceptionsList = shiftExceptionResponse
-      myGeneralStore.setFullLoader(false)
-    },
-    async getExceptionTypes() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
-      const list = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      this.exceptionTypesList = list
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -143,12 +124,6 @@ export default defineComponent({
             this.shiftExceptionsList.splice(index, 1)
             this.$forceUpdate()
           }
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Delete shift exception',
-            detail: shiftExceptionResponse._data.message,
-              life: 5000,
-          })
         } else {
           this.$toast.add({
             severity: 'error',

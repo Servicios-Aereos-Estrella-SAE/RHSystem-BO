@@ -1,61 +1,57 @@
 <template>
-  <div v-if="isReady" class="box employee-shift-exceptions">
+  <div v-if="isReady" class="employee-shift-exceptions">
     <Toast />
-    <h4>
-      {{ employee.employeeFirstName }} {{ employee.employeeLastName }}
-    </h4>
+
+    <h1>
+      Exceptions to
+      {{ selectedExceptionDate }}
+    </h1>
+
     <div v-if="isReady" class="employee">
-      <div class="form-container">
+      <div class="">
         <div class="shift-exception-wrapper">
-          <div class="box head-page">
+          <div class="head-page">
             <div class="input-box">
-              <label for="roles">
-                Date range
-              </label>
-              <Calendar v-model="selectedDateRange" selectionMode="range" @update:model-value="handleDateChange"/>
-            </div>
-            <div class="input-box">
-              <label for="roles">
-                Exception type
-              </label>
-              <Dropdown v-model="selectedExceptionTypeId" :options="exceptionTypesList" optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId"
-                placeholder="" filter class="w-full md:w-14rem" @change="getShiftEmployee" />
-            </div>
-            <div class="input-box">
-              <br />
-              <Button class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button class="btn btn-block" @click="addNew">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" fill="#88a4bf" class="fill-212121"></path></svg>
+                Add shift exception
+              </Button>
             </div>
           </div>
         </div>
-        <div class="shift-exception-wrapper">
-            <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
-              <employeeShiftExceptionCard
-                :shiftException="shiftException"
-                :click-on-edit="() => { onEdit(shiftException) }"
-                :click-on-delete="() => { onDelete(shiftException) }" 
-              />
+        <div v-if="shiftExceptionsList.length > 0" class="shift-exception-wrapper">
+          <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
+            <employeeShiftExceptionCard
+              :shiftException="shiftException"
+              :click-on-edit="() => { onEdit(shiftException) }"
+              :click-on-delete="() => { onDelete(shiftException) }" 
+            />
           </div>
         </div>
-         <!-- ShiftException form -->
-         <div class="card flex justify-content-center">
-          <Sidebar v-model:visible="drawerShiftExceptionForm" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
-            <employeeShiftExceptionInfoForm :shiftException="shiftException" :employee="employee" @onShiftExceptionSave="onSave" />
-          </Sidebar>
+        <div v-else class="shift-exception-wrapper">
+          <div class="empty-data">
+            No shifts exceptions for today
+          </div>
         </div>
       </div>
-      <Dialog v-model:visible="drawerShiftExceptionDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
-        <div class="confirmation-content">
-          <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="shiftException"> Are you sure you want to delete exception at
-              <b>{{`${selectedDateTimeDeleted || ''}`}}</b>
-            ?</span>
-        </div>
-        <template #footer>
-          <Button label="No" icon="pi pi-times" text @click="drawerShiftExceptionDelete = false" />
-          <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-        </template>
-      </Dialog>
     </div>
+
+    <Sidebar v-model:visible="drawerShiftExceptionForm" header="form" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
+      <employeeShiftExceptionInfoForm
+        :shiftException="shiftException"
+        :employee="employee"
+        :date="date"
+        @onShiftExceptionSave="onSave"
+      />
+    </Sidebar>
+
+    <transition name="page">
+      <confirmDelete
+        v-if="drawerShiftExceptionDelete"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="drawerShiftExceptionDelete = false"
+      />
+    </transition>
   </div>
 </template>
 
@@ -69,9 +65,9 @@
   @import './style';
   @import '/resources/styles/variables.scss';
 
-  .shift-exception-form-sidebar{
+  .shift-exception-form-sidebar {
     width: 100% !important;
-    max-width: 35rem !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

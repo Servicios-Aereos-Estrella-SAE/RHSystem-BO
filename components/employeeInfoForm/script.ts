@@ -12,6 +12,7 @@ import type { PeopleInterface } from '~/resources/scripts/interfaces/PeopleInter
 import PersonService from '~/resources/scripts/services/PersonService';
 import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
 import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
+import { DateTime } from 'luxon';
 
 export default defineComponent({
   components: {
@@ -34,8 +35,8 @@ export default defineComponent({
         { label: 'Not specified', value: 'Otro' }
     ],
     assistDiscriminatorOptions: [
-      { label: 'Do not discriminate in assistance', value: 0 },
-      { label: 'Yes, discriminate in assistance', value: 1 }
+      { label: 'Do not discriminate in assistance report', value: 0 },
+      { label: 'Yes, discriminate in assistance report', value: 1 }
     ],
     currenEmployee: null as EmployeeInterface | null,
     passwordConfirm: '',
@@ -48,14 +49,33 @@ export default defineComponent({
     drawerProceedingFiles: false,
     isValidCURP: true,
     isValidRFC: true,
-    businessUnits: [] as BusinessUnitInterface[]
+    businessUnits: [] as BusinessUnitInterface[],
+    employeeHireDate: '' as string,
+    personBirthday: '' as string,
+    displayHireDateCalendar: false as boolean,
+    displayBirthDateCalendar: false as boolean
   }),
   computed: {
+  },
+  watch: {
+    'employee.departmentId': function(newVal) {
+      if (newVal) {
+        this.getPositions(newVal);
+      }
+    },
+    'activeSwicht': function (newVal) {
+      this.employee.employeeWorkSchedule = newVal ? 'Onsite' : 'Remote'
+    },
+    'employee.employeeHireDate' (val: Date) {
+      this.employeeHireDate = this.getHireDateFormatted(val)
+    },
+    'employee.person.personBirthday' (val: Date) {
+      this.personBirthday = this.getBirthdayFormatted(val)
+    }
   },
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee.employeeId ? true : false
-    this.isReady = true
 
     await Promise.all([
       this.getBusinessUnits(),
@@ -64,6 +84,31 @@ export default defineComponent({
 
     if (!this.isNewUser) {
       this.activeSwicht = this.employee.employeeWorkSchedule === 'Onsite' ? true : false
+
+      if (this.employee.employeeHireDate) {
+        const hireDate = DateTime.fromISO(`${this.employee.employeeHireDate}T00:00:00.000-06:00`, { setZone: true })
+          .setZone('America/Mexico_City')
+          .setLocale('en')
+          .toJSDate()
+
+        this.employee.employeeHireDate = hireDate
+        this.employeeHireDate = this.getHireDateFormatted(this.employee.employeeHireDate as Date)
+      }
+
+      if (this.employee?.person?.personBirthday) {
+        const year = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[0]
+        const month = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[1]
+        const day = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[2]
+
+        const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
+          .setZone('America/Mexico_City')
+          .setLocale('en')
+          .toJSDate()
+
+        this.employee.person.personBirthday = birthDay
+        this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
+      }
+
       await this.getPositions(this.employee.departmentId)
     } else {
       this.employee.employeeAssistDiscriminator = 0
@@ -72,6 +117,8 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
+
+    this.isReady = true
   },
   methods: {
     async getPositions(departmentId: number) {
@@ -221,16 +268,32 @@ export default defineComponent({
     async getBusinessUnits () {
       const body = await new BusinessUnitService().index()
       this.businessUnits =  body.status === 200 ? body._data.data.data || [] : []
-    }
-  },
-  watch: {
-    'employee.departmentId': function(newVal) {
-      if (newVal) {
-        this.getPositions(newVal);
-      }
     },
-    'activeSwicht': function (newVal) {
-      this.employee.employeeWorkSchedule = newVal ? 'Onsite' : 'Remote'
+    getHireDateFormatted (date: Date) {
+      if (!this.employee.employeeHireDate) {
+        return ''
+      }
+
+      return DateTime.fromJSDate(date)
+        .setZone('America/Mexico_City')
+        .setLocale('es')
+        .toFormat('DDDD')
+    },
+    getBirthdayFormatted (date: Date) {
+      if (!this.employee.employeeHireDate) {
+        return ''
+      }
+
+      return DateTime.fromJSDate(date)
+        .setZone('America/Mexico_City')
+        .setLocale('es')
+        .toFormat('DDD')
+    },
+    handlerDisplayHireDate () {
+      this.displayHireDateCalendar = true
+    },
+    handlerDisplayBirthDate () {
+      this.displayBirthDateCalendar = true
     }
-  },
+  }
 })

@@ -49,22 +49,49 @@
   }
 }
 
+.month-year-mobile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  padding-bottom: 1rem;
+
+  @media screen and (min-width: $phone) {
+    display: none;
+  }
+  
+  .text {
+    text-align: center;
+  }
+}
+
 .head-calendar {
   display: grid;
   gap: 0.5rem;
-  grid-template-columns: 4rem 4rem 4rem auto 4rem 4rem 4rem;
+  grid-template-columns: 4rem 4rem auto 4rem 4rem;
   margin-bottom: 2rem;
   border-bottom: $border-dashed;
   border-top: $border-dashed;
   padding-bottom: 1rem;
   padding-top: 1rem;
 
+  @media screen and (max-width: $phone) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
   .month-year {
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 500;
-    text-align: center;
+
+    @media screen and (max-width: $phone) {
+      display: none;
+    }
+    
+    .text {
+      text-align: center;
+    }
   }
 }
 

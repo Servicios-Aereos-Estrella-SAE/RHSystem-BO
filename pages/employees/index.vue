@@ -29,8 +29,8 @@
                 New Employee
               </Button>
             </div>
-            <div class="input-box">
-              <Button v-if="canCreate" class="btn btn-block" @click="syncEmployees">
+            <div v-if="canCreate" class="input-box">
+              <Button class="btn btn-block" @click="syncEmployees">
                 <span>
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.052 5.029a1 1 0 0 0 .189 1.401 7.002 7.002 0 0 1-3.157 12.487l.709-.71a1 1 0 0 0-1.414-1.414l-2.5 2.5a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 1.414-1.414l-.843-.842A9.001 9.001 0 0 0 17.453 4.84a1 1 0 0 0-1.401.189Zm-1.93-1.736-2.5-2.5a1 1 0 0 0-1.498 1.32l.083.094.843.843a9.001 9.001 0 0 0-4.778 15.892A1 1 0 0 0 7.545 17.4a7.002 7.002 0 0 1 3.37-12.316l-.708.709a1 1 0 0 0 1.32 1.497l.094-.083 2.5-2.5a1 1 0 0 0 .083-1.32l-.083-.094Z" fill="#88a4bf" class="fill-212121"></path></svg>
                 </span>
@@ -127,7 +127,7 @@
   @import '/resources/styles/variables.scss';
 
   .shift-form-sidebar {
-    width: 100% !important;
+    width: 90% !important;
     max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
@@ -136,7 +136,7 @@
   }
 
   .sidebar-shifts {
-    width: 100% !important;
+    width: 90% !important;
     max-width: 120rem !important;
 
     @media screen and (max-width: $sm) {
@@ -145,7 +145,7 @@
   }
 
   .proceeding-file-sidebar {
-    width: 100% !important;
+    width: 90% !important;
     max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {

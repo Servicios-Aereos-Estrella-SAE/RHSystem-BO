@@ -199,11 +199,9 @@ export default defineComponent({
           
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-          console.log('thursday', thursday);
 
           // Establecer el inicio del periodo como el jueves de dos semanas atrás
           let startDate = thursday.minus({ weeks: 2 }) // Jueves de dos semanas atrás
-          console.log('startDate', startDate);  
 
           // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
           for (let index = 0; index < 15; index++) {
@@ -240,6 +238,17 @@ export default defineComponent({
       if (this.visualizationMode?.value === 'weekly') {
         return 'Weekly behavior'
       }
+
+      if (this.visualizationMode?.value === 'fourteen') {
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
+        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+      }
+
+      if (this.visualizationMode?.value === 'custom') {
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
+        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+      }
     },
     assistSyncStatusDate() {
       if (this.statusInfo) {
@@ -252,7 +261,6 @@ export default defineComponent({
     },
   },
   created() {
-    
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -264,12 +272,14 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await this.setDefaultVisualizationMode()
-    
-    await Promise.all([
-      this.setAssistSyncStatus(),
-      this.setDepartmetList(),
-      this.setDepartmentPositionEmployeeList()
-    ])
+
+    if (this.$config.public.ENVIRONMENT === 'production') {
+      await Promise.all([
+        this.setAssistSyncStatus(),
+        this.setDepartmetList(),
+        this.setDepartmentPositionEmployeeList()
+      ])
+    }
 
     this.setGeneralData()
     this.setPeriodData()
@@ -294,14 +304,8 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const today = new Date();
-      
-      // Obtener el día anterior al día actual
-      const previousDay = new Date(today);
-      previousDay.setDate(today.getDate() - 1);
-
-      // Usar la fecha actual como el último día del rango
-      const currentDay = today;
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -464,7 +468,11 @@ export default defineComponent({
       }
     },
     setPeriodCategories () {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      if (this.visualizationMode?.value === 'custom') {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
+      } else {
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+      }
     },
     async setDepartmentPositionEmployeeList () {
       const departmentId = null
@@ -491,7 +499,7 @@ export default defineComponent({
         this.setGeneralStatisticsData(employee, employee.calendar)
 
         if (assistReq.status === 400) {
-          console.log('NO shift', employeeID)
+          console.error('NO shift', employeeID)
         }
 
       } catch (error) {
@@ -546,7 +554,6 @@ export default defineComponent({
     },
     async handlerVisualizationModeChange () {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
-      console.log('idx', idx)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
@@ -598,7 +605,6 @@ export default defineComponent({
           day: parseInt(stringDate.split('-')[2])
         }
         return this.isThursday(dateObject, false)
-        console.log(dateObject);
       }
       return true
     },

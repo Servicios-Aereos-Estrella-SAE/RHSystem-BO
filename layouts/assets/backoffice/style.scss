@@ -148,3 +148,61 @@ body, html {
 .head-page {
   margin-bottom: 0.5rem;
 }
+
+
+.guest-layout-wrapper {
+  display: grid;
+  grid-template-columns: 50rem auto;
+  gap: 2rem;
+  box-sizing: border-box;
+
+  @media screen and (max-width: $desktop) {
+    grid-template-columns: 40rem auto;
+  }
+
+  @media screen and (max-width: $ipad) {
+    grid-template-columns: 1fr;
+  }
+
+  @media screen and (max-width: $phone) {
+    background-image: url('https://sae-assets.sfo3.cdn.digitaloceanspaces.com/rh-system/images/1e8de231-428a-47bf-82fc-6466cf4cbdcb.png');
+    background-position: top;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    .logo {
+      margin-bottom: 4rem !important;
+      margin-top: 15rem !important;
+
+      img {
+        max-width: 9rem !important;
+      }
+    }
+  }
+
+  .form-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+  }
+
+  .banner-wrapper {
+    position: relative;
+    box-sizing: border-box;
+    height: 100dvh;
+    min-height: 700px;
+    padding: 2rem;
+
+    @media screen and (max-width: $ipad) {
+      display: none;
+    }
+
+    img {
+      box-sizing: border-box;
+      width: 100%;
+      border-radius: $radius;
+      object-fit: cover;
+      height: 100%;
+    }
+  }
+}

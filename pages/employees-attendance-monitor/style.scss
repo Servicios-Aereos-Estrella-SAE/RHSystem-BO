@@ -13,40 +13,41 @@
     min-height: 100dvh;
     box-sizing: border-box;
 
+    .department-position {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      h1 {
+        display: block;
+        font-weight: 500;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+
+        small {
+          display: block;
+          margin-top: 0.25rem;
+          font-size: 0.8rem;
+          font-weight: normal;
+        }
+      }
+    }
+
     .head-page {
       display: grid;
-      grid-template-columns: auto 12rem 13rem 25rem 10rem;
+      grid-template-columns: 20rem auto 13rem 24.1rem 10rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: auto 12rem 13rem 25rem 10rem;
+        grid-template-columns: 20rem auto 13rem 24.1rem 10rem;
       }
 
-      @media screen and (max-width: $tablet) {
+      @media screen and (max-width: $ipad) {
         grid-template-columns: 1fr;
       }
 
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
-      }
-
-      .department-position {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-
-        h1 {
-          display: block;
-          font-weight: 550;
-          font-size: 1rem;
-
-          small {
-            display: block;
-            margin-top: 0.25rem;
-            font-size: 0.8rem;
-            font-weight: normal;
-          }
-        }
       }
 
       &.sync {

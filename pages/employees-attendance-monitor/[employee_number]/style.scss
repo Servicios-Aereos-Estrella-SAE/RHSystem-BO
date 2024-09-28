@@ -8,14 +8,14 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 29rem 10rem 10rem 25rem 10rem;
+      grid-template-columns: 30rem auto 20rem 24.1rem 10rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 29rem 10rem 10rem 25rem 10rem;
+        grid-template-columns: 30rem auto 20rem 24.1rem 10rem;
       }
 
-      @media screen and (max-width: $tablet) {
+      @media screen and (max-width: $ipad) {
         grid-template-columns: 1fr;
       }
 
