@@ -50,7 +50,7 @@
       <Button v-if="canUpdate" class="btn" @click="handlerClickOnEdit">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
-      <Button v-if="canUpdate"  class="btn" @click="handlerClickOnShifts">
+      <Button v-if="canManageShifts"  class="btn" @click="handlerClickOnShifts">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 13.5h-4a.75.75 0 0 1-.75-.75v-6a.75.75 0 0 1 1.5 0V12h3.25a.75.75 0 0 1 0 1.5ZM12 2C6.478 2 2 6.478 2 12s4.478 10 10 10 10-4.478 10-10S17.522 2 12 2Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
       <Button v-if="canUpdate" id="btn-procceding-files" class="btn" @click="handlerOpenProceedingFiles">
