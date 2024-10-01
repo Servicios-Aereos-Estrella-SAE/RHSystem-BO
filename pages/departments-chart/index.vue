@@ -1,157 +1,161 @@
 <template>
-    <div>
-      <Toast />
-      <div class="chart-page">
-        <Head>
-          <Title>Organigrama de Empresa</Title>
-        </Head>
-        <NuxtLayout name="backoffice">
-          <div class="pilot-wrapper">
-            <div class="box head-page">
-              <div class="departments-chart-page">
-                <h3>Organigrama de Empresa</h3>
-                <div class="box">
-                  <OrganizationChart :value="data" collapsible>
-                    <template #person="slotProps">
-                      <div class="flex flex-col">
-                        <div class="flex flex-col items-center">
-                          <img :alt="slotProps.node.data.name" :src="slotProps.node.data.image" class="mb-4 w-12 h-12" />
-                          <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
-                          <span>{{ slotProps.node.data.title }}</span>
-                        </div>
+  <div class="department-chart">
+    <Toast />
+    
+
+      <Head>
+        <Title>Organigrama de Empresa</Title>
+      </Head>
+      <NuxtLayout name="backoffice">
+        <div class="pilot-wrapper">
+          <div class="box head-page">
+            <div class="departments-chart-page">
+              <h3>Organigrama de Empresa </h3>
+              <div class="box">
+                <ThemeSwitcher />
+               
+                <OrganizationChart :value="data" collapsible>
+                
+                  <template #person="slotProps">
+                    <div :class="['flex flex-col', getNodeClass(slotProps.node)]">
+
+                      <div class="flex flex-col items-center">
+                        <span class="font-bold mb-2">{{ slotProps.node.data.name }} - </span>
+                        <span>{{ slotProps.node.data.title || 'No Alias' }}</span>
                       </div>
-                    </template>
-                    <template #default="slotProps">
-                      <span>{{ slotProps.node.label }}</span>
-                    </template>
-                  </OrganizationChart>
-                </div>
+                    </div>
+                  </template>
+                  <template #default="slotProps">
+                    <span>{{ slotProps.node.label }}</span>
+                  </template>
+                </OrganizationChart>
               </div>
             </div>
           </div>
-        </NuxtLayout>
-      </div>
+        </div>
+      </NuxtLayout>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import Toast from 'primevue/toast';
-  import OrganizationChart from 'primevue/organizationchart'; // Importa el componente
-  import ToastService from 'primevue/toastservice';
-  
-  const data = ref({
-    key: '0',
-    type: 'person',
-    styleClass: 'bg-indigo-100 text-white rounded-xl', // Estilo del CEO
-    data: {
+</template>
 
-      title: 'CEO'
-    },
-    children: [
-      {
-        key: '0_0',
-        type: 'person',
-        styleClass: 'bg-purple-100 text-white rounded-xl', // Estilo del CFO
-        data: {
-          title: 'CFO'
-        },
-        children: [
-          {
-            label: 'Contable',
-            styleClass: 'bg-purple-200 text-white rounded-xl' // Estilo para Contable
-          },
-          {
-            label: 'Finanzas',
-            styleClass: 'bg-purple-300 text-white rounded-xl' // Estilo para Finanzas
-          }
-        ]
+<script setup>
+import { ref, onMounted } from 'vue';
+import Toast from 'primevue/toast';
+import OrganizationChart from 'primevue/organizationchart';
+import ToastService from 'primevue/toastservice';
+import DepartmentService from "~/resources/scripts/services/DepartmentService";
+
+const data = ref([]);
+
+const search = ref('');
+const currentPage = ref(1);
+const rowsPerPage = ref(10);
+
+const fetchData = async () => {
+  try {
+    const response = await new DepartmentService().getSearchDepartmentList(search.value, currentPage.value, rowsPerPage.value);
+    const departments = response._data.data.data;     
+    const mappedData = mapDepartments(departments);
+    if (mappedData.length > 0) {
+      data.value = mappedData[0];
+    }
+
+  } catch (error) {
+    console.error("Error fetching department data", error);
+  }
+};
+
+const mapDepartments = (departments) => {
+  const departmentMap = {};
+  let keyCounter = 0; 
+
+  departments.forEach(dept => {
+    departmentMap[dept.departmentId] = {
+      key: keyCounter.toString(),
+      type: 'person',
+      styleClass: getDepartmentStyle(dept.departmentName),
+      data: {
+        name: dept.departmentName,
+        title: dept.departmentAlias
       },
-      {
-        key: '0_1',
-        type: 'person',
-        styleClass: 'bg-teal-100 text-white rounded-xl', // Estilo del CTO
-        data: {
-          title: 'Carlos Ruiz - CTO'
-        },
-        children: [
-          {
-            label: 'Desarrollo',
-            styleClass: 'bg-teal-200 text-white rounded-xl' // Estilo para Desarrollo
-          },
-          {
-            label: 'QA',
-            styleClass: 'bg-teal-300 text-white rounded-xl' // Estilo para QA
-          }
-        ]
-      },
-      {
-        key: '0_2',
-        type: 'person',
-        styleClass: 'bg-pink-100 text-white rounded-xl', // Estilo para HR
-        data: {
-    
-          title: 'HR'
-        },
-        children: [
-          {
-            label: 'Asistente',
-            styleClass: 'bg-pink-200 text-white rounded-xl' // Estilo para Asistente
-          }
-        ]
-      }
-    ]
+      children: []
+    };
+    keyCounter++; 
   });
-  </script>
-  
-  <style scoped>
-  .chart-page {
-    padding: 20px;
+
+  departments.forEach(dept => {
+    if (dept.parentDepartmentId) {
+      const parentKey = departmentMap[dept.parentDepartmentId].key; 
+      const childCount = departmentMap[dept.parentDepartmentId].children.length; 
+      const childKey = `${parentKey}_${childCount}`; 
+
+      departmentMap[dept.departmentId].key = childKey;
+
+      departmentMap[dept.parentDepartmentId].children.push(departmentMap[dept.departmentId]);
+    }
+  });
+
+  const cleanedDepartments = Object.values(departmentMap).filter(dept => !dept.parentDepartmentId);
+
+  return cleanedDepartments;
+};
+
+const getDepartmentStyle = (name) => {
+  const styles = {
+    "AA": "!bg-indigo-100 text-white rounded-xl",
+    "Administración": "bg-purple-100 text-white rounded-xl",
+    "CTO": "bg-teal-100 text-white rounded-xl",
+    "HR": "bg-pink-100 text-white rounded-xl",
+  };
+  return styles[name] || "bg-gray-100 text-white rounded-xl"; // Estilo por defecto
+};
+
+const getNodeClass = (node) => {
+  const role = node.data.name;
+  console.log(role)
+  if (role === 'AA') {
+    return 'bg-purple-100';
+  } else if (role === 'CFO') {
+    return 'bg-purple-100';
+  } else if (role === 'CTO') {
+    return 'bg-teal-100';
+  } else if (role === 'HR') {
+    return 'bg-pink-100';
   }
-  
-  .p-organizationchart .p-node img {
-    width: 50px; /* Ajusta el ancho según sea necesario */
-    height: 50px; /* Ajusta la altura según sea necesario */
-    object-fit: cover; /* Mantiene la relación de aspecto de la imagen */
-    border-radius: 50%; /* Hace las imágenes redondas */
-  }
-  
-  /* Estilos personalizados para los nodos */
-  .bg-indigo-100 {
-    background-color: #6f8ce0 !important; /* Cambia el color de fondo */
-  }
-  
-  .bg-purple-100 {
-    background-color: #9a67b3 !important; /* Cambia el color de fondo */
-  }
-  
-  .bg-teal-100 {
-    background-color: #66b2a8 !important; /* Cambia el color de fondo */
-  }
-  
-  .bg-pink-100 {
-    background-color: #f78da7 !important; /* Cambia el color de fondo */
-  }
-  
-  /* Más variaciones para los hijos */
-  .bg-purple-200 {
-    background-color: #a16cb8 !important; /* Cambia el color de fondo para Contable */
-  }
-  
-  .bg-purple-300 {
-    background-color: #b688c6 !important; /* Cambia el color de fondo para Finanzas */
-  }
-  
-  .bg-teal-200 {
-    background-color: #79c4b6 !important; /* Cambia el color de fondo para Desarrollo */
-  }
-  
-  .bg-teal-300 {
-    background-color: #8fd8d2 !important; /* Cambia el color de fondo para QA */
-  }
-  
-  .bg-pink-200 {
-    background-color: #f79baf !important; /* Cambia el color de fondo para Asistente */
-  }
-  </style>
-  
+  return 'bg-teal-100'; // Clase por defecto
+};
+
+onMounted(fetchData);
+</script>
+
+<style scoped>
+.chart-page {
+  padding: 20px;
+}
+
+
+.bg-indigo-100 {
+  background-color: #6f8ce0 !important;
+  padding: 20px;
+}
+
+.bg-purple-100 {
+  background-color: #9a67b3 !important;
+  padding: 20px;
+}
+
+.bg-teal-100 {
+  background-color: #66b2a8 !important;
+  padding: 20px;
+}
+
+.bg-pink-100 {
+  background-color: #f78da7 !important;
+  padding: 20px;
+}
+
+.bg-gray-100 {
+  background-color: #c4c4c4 !important;
+  padding: 20px;
+}
+
+</style>
