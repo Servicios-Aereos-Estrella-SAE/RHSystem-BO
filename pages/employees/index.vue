@@ -50,6 +50,7 @@
                 <EmployeeInfoCard
                   :click-on-photo="() => { onPhoto(employee) }"
                   :employee="employee"
+                  :can-manage-shifts="hasAccessToManageShifts"
                   :can-update="canUpdate"
                   :can-delete="canDelete"
                   :click-on-edit="() => { onEdit(employee) }"

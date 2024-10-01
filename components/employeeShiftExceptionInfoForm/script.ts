@@ -58,8 +58,13 @@ export default defineComponent({
       this.shiftException.shiftExceptionsDate = this.date
       this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
     }
-
-    await this.getExceptionTypes()
+    let hasAccess = false
+    const fullPath = this.$route.path;
+    const firstSegment = fullPath.split('/')[1]
+    const systemModuleSlug = firstSegment
+    hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
+    const exceptionType = hasAccess ? '' : 'rest-day'
+    await this.getExceptionTypes(exceptionType)
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
     if (index >= 0) {
@@ -72,8 +77,8 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
-    async getExceptionTypes() {
-      const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
+    async getExceptionTypes(search: string) {
+      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100)
       const list = response.status === 200 ? response._data.data.exceptionTypes.data : []
       this.exceptionTypeList = list
     },
