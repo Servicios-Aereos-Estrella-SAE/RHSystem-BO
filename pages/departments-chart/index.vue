@@ -4,13 +4,13 @@
     
 
       <Head>
-        <Title>Organigrama de Empresa</Title>
+        <Title>Organization Chart</Title>
       </Head>
       <NuxtLayout name="backoffice">
         <div class="pilot-wrapper">
           <div class="box head-page">
             <div class="departments-chart-page">
-              <h3>Organigrama de Empresa </h3>
+              <h3>Organization Chart</h3>
               <div class="box">
                 <ThemeSwitcher />
                
