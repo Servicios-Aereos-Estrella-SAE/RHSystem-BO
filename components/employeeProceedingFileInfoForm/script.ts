@@ -11,6 +11,8 @@ import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces
 import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFileTypeService';
 import ProceedingFileService from '~/resources/scripts/services/ProceedingFilleService';
 import { DateTime } from 'luxon';
+import type { ProceedingFileStatusInterface } from '~/resources/scripts/interfaces/ProceedingFileStatusInterface';
+import ProceedingFileStatusService from '~/resources/scripts/services/ProceedingFileStatusService';
 
 export default defineComponent({
   components: {
@@ -25,15 +27,25 @@ export default defineComponent({
   },
   data: () => ({
     proceedingFileTypesList: [] as ProceedingFileTypeInterface[],
+    proceedingFileStatusList: [] as ProceedingFileStatusInterface[],
     submitted: false,
     currentEmployeeProceedingFile: null as EmployeeProceedingFileInterface | null,
     isNewEmployeeProceedingFile: false,
-    currentDate: null as string | null,
-    dateWasChange: false,
+    currentDateExpirationAt: null as string | null,
+    currentDateSignatureDate: null as string | null,
+    currentDateEffectiveStartDate: null as string | null,
+    currentDateEffectiveEndDate: null as string | null,
+    currentDateInclusionInTheFilesDate: null as string | null,
+    dateWasChangeExpirationAt: false,
+    dateWasChangeSignatureDate: false,
+    dateWasChangeEffectiveStartDate: false,
+    dateWasChangeEffectiveEndDate: false,
+    dateWasChangeInclusionInTheFilesDate: false,
     isReady: false,
     files: [] as Array<any>,
     proceedingFile: null as ProceedingFileInterface | null,
     activeSwicht: true,
+    processCompleteSwicht: false,
   }),
   computed: {
   },
@@ -45,17 +57,31 @@ export default defineComponent({
       proceedingFileExpirationAt: this.employeeProceedingFile.proceedingFile?.proceedingFileExpirationAt,
       proceedingFileActive: this.employeeProceedingFile.proceedingFile?.proceedingFileActive,
       proceedingFileIdentify: this.employeeProceedingFile.proceedingFile?.proceedingFileIdentify,
-      proceedingFileTypeId: this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId
+      proceedingFileTypeId: this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId,
+      proceedingFileObservations: this.employeeProceedingFile.proceedingFile?.proceedingFileObservations,
+      proceedingFileAfacRights: this.employeeProceedingFile.proceedingFile?.proceedingFileAfacRights,
+      proceedingFileSignatureDate: this.employeeProceedingFile.proceedingFile?.proceedingFileSignatureDate,
+      proceedingFileEffectiveStartDate: this.employeeProceedingFile.proceedingFile?.proceedingFileEffectiveStartDate,
+      proceedingFileEffectiveEndDate: this.employeeProceedingFile.proceedingFile?.proceedingFileEffectiveEndDate,
+      proceedingFileInclusionInTheFilesDate: this.employeeProceedingFile.proceedingFile?.proceedingFileInclusionInTheFilesDate,
+      proceedingFileOperationCost: this.employeeProceedingFile.proceedingFile?.proceedingFileOperationCost,
+      proceedingFileCompleteProcess: this.employeeProceedingFile.proceedingFile?.proceedingFileCompleteProcess
     } as ProceedingFileInterface
     let isActive: number = 1
     if (this.proceedingFile.proceedingFileId) {
       isActive = this.proceedingFile.proceedingFileActive
     }
     this.activeSwicht = isActive === 1 ? true : false
+    let isProcessComplete: number = 1
+    if (this.proceedingFile.proceedingFileId) {
+      isProcessComplete = this.proceedingFile.proceedingFileCompleteProcess
+    }
+    this.processCompleteSwicht = isProcessComplete === 1 ? true : false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     await this.getProceedingFileTypes()
+    await this.getProceedingFileStatus()
     this.isNewEmployeeProceedingFile = !this.employeeProceedingFile.employeeProceedingFileId ? true : false
     if (this.employeeProceedingFile.employeeProceedingFileId) {
       const employeeProceedingFileService = new EmployeeProceedingFileService()
@@ -64,9 +90,21 @@ export default defineComponent({
         this.currentEmployeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile
       }
     }
-    this.currentDate = `${this.proceedingFile.proceedingFileExpirationAt}`
-    await this.formatDate()
-    this.dateWasChange = false
+    this.currentDateExpirationAt = `${this.proceedingFile.proceedingFileExpirationAt}`
+    this.currentDateSignatureDate = `${this.proceedingFile.proceedingFileSignatureDate}`
+    this.currentDateEffectiveStartDate = `${this.proceedingFile.proceedingFileEffectiveStartDate}`
+    this.currentDateEffectiveEndDate = `${this.proceedingFile.proceedingFileEffectiveEndDate}`
+    this.currentDateInclusionInTheFilesDate = `${this.proceedingFile.proceedingFileInclusionInTheFilesDate}`
+    await this.formatDate('proceedingFileExpirationAt')
+    await this.formatDate('proceedingFileSignatureDate')
+    await this.formatDate('proceedingFileEffectiveStartDate')
+    await this.formatDate('proceedingFileEffectiveEndDate')
+    await this.formatDate('proceedingFileInclusionInTheFilesDate')
+    this.dateWasChangeExpirationAt = false
+    this.dateWasChangeSignatureDate = false
+    this.dateWasChangeEffectiveStartDate = false
+    this.dateWasChangeEffectiveEndDate = false
+    this.dateWasChangeInclusionInTheFilesDate = false
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -78,6 +116,15 @@ export default defineComponent({
       const proceedingFileTypeService = new ProceedingFileTypeService()
       const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
+      myGeneralStore.setFullLoader(false)
+    },
+    async getProceedingFileStatus() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.proceedingFileStatusList = []
+      const proceedingFileStatusService = new ProceedingFileStatusService()
+      const proceedingFileStatusResponse = await proceedingFileStatusService.getFilteredList('')
+      this.proceedingFileStatusList = proceedingFileStatusResponse._data.data.proceedingFileStatus.data
       myGeneralStore.setFullLoader(false)
     },
     async onSave() {
@@ -130,15 +177,44 @@ export default defineComponent({
       if (this.proceedingFile) {
         const files = this.files.length > 0 ? this.files[0] : null
         const proceedingFileExpirationAtTemp = this.proceedingFile.proceedingFileExpirationAt
-        if (!this.dateWasChange) {
-          this.proceedingFile.proceedingFileExpirationAt = this.currentDate
+        if (!this.dateWasChangeExpirationAt) {
+          this.proceedingFile.proceedingFileExpirationAt = this.currentDateExpirationAt
         } else {
           if (this.proceedingFile.proceedingFileExpirationAt) {
             this.proceedingFile.proceedingFileExpirationAt = this.getDate(this.proceedingFile.proceedingFileExpirationAt)
           }
         }
+        if (!this.dateWasChangeSignatureDate) {
+          this.proceedingFile.proceedingFileSignatureDate = this.currentDateSignatureDate
+        } else {
+          if (this.proceedingFile.proceedingFileSignatureDate) {
+            this.proceedingFile.proceedingFileSignatureDate = this.getDate(this.proceedingFile.proceedingFileSignatureDate)
+          }
+        }
+        if (!this.dateWasChangeEffectiveStartDate) {
+          this.proceedingFile.proceedingFileEffectiveStartDate = this.currentDateEffectiveStartDate
+        } else {
+          if (this.proceedingFile.proceedingFileEffectiveStartDate) {
+            this.proceedingFile.proceedingFileEffectiveStartDate = this.getDate(this.proceedingFile.proceedingFileEffectiveStartDate)
+          }
+        }
+        if (!this.dateWasChangeEffectiveEndDate) {
+          this.proceedingFile.proceedingFileEffectiveEndDate = this.currentDateEffectiveEndDate
+        } else {
+          if (this.proceedingFile.proceedingFileEffectiveEndDate) {
+            this.proceedingFile.proceedingFileEffectiveEndDate = this.getDate(this.proceedingFile.proceedingFileEffectiveEndDate)
+          }
+        }
+        if (!this.dateWasChangeInclusionInTheFilesDate) {
+          this.proceedingFile.proceedingFileEffectiveInclusionInTheFilesDate = this.currentDateInclusionInTheFilesDate
+        } else {
+          if (this.proceedingFile.proceedingFileEffectiveInclusionInTheFilesDate) {
+            this.proceedingFile.proceedingFileEffectiveInclusionInTheFilesDate = this.getDate(this.proceedingFile.proceedingFileEffectiveInclusionInTheFilesDate)
+          }
+        }
         let proceedingFileResponse = null
         this.proceedingFile.proceedingFileActive = this.activeSwicht ? 1 : 0
+        this.proceedingFile.proceedingFileCompleteProcess = this.processCompleteSwicht ? 1 : 0
         if (!this.proceedingFile.proceedingFileId) {
           proceedingFileResponse = await proceedingFileService.store(this.proceedingFile, files)
         } else {
@@ -209,45 +285,54 @@ export default defineComponent({
     getObjectURL(file: any) {
       return URL.createObjectURL(file);
     },
-    dateYear() {
-      if (!this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt) {
+    dateYear(date: string) {
+      if (!date) {
         return 0
       }
 
-      const year = parseInt(`${this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt.toString().split('-')[0]}`)
+      const year = parseInt(`${date.toString().split('-')[0]}`)
       return year
     },
-    dateMonth() {
-      if (!this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt) {
+    dateMonth(date: string) {
+      if (!date) {
         return 0
       }
 
-      const month = parseInt(`${this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt.toString().split('-')[1]}`)
+      const month = parseInt(`${date.toString().split('-')[1]}`)
       return month
     },
-    dateDay() {
-      if (!this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt) {
+    dateDay(date: string) {
+      if (!date) {
         return 0
       }
 
-      const day = parseInt(`${this.employeeProceedingFile?.proceedingFile?.proceedingFileExpirationAt.toString().split('-')[2]}`)
+      const day = parseInt(`${date.toString().split('-')[2]}`)
       return day
     },
-    formatDate() {
-      if (this.proceedingFile && this.proceedingFile.proceedingFileExpirationAt) {
-        const date = DateTime.local(this.dateYear(), this.dateMonth(), this.dateDay(), 0)
-        const day = date.toFormat('yyyy-MM-dd')
+    formatDate(dateName: string) {
+      if (!this.proceedingFile) return;
+      const dateMapping: Record<string, string> = {
+        proceedingFileExpirationAt: 'proceedingFileExpirationAt',
+        proceedingFileSignatureDate: 'proceedingFileSignatureDate',
+        proceedingFileEffectiveStartDate: 'proceedingFileEffectiveStartDate',
+        proceedingFileEffectiveEndDate: 'proceedingFileEffectiveEndDate',
+        proceedingFileInclusionInTheFilesDate: 'proceedingFileInclusionInTheFilesDate',
+      };
+      const dateField = dateMapping[dateName];
+      let dateValue = this.proceedingFile[dateField] || '';
+      if (dateValue) {
+        dateValue = dateValue.toString();
+        let date = DateTime.fromJSDate(new Date(dateValue));
+        if (!date.isValid) {
+          date = DateTime.fromHTTP(dateValue);
+        }
         if (date.isValid) {
-          this.proceedingFile.proceedingFileExpirationAt = day
-        } else {
-          const newDate = DateTime.fromHTTP(this.proceedingFile.proceedingFileExpirationAt)
-          if (date.isValid) {
-            const day = newDate.toFormat('yyyy-MM-dd')
-            this.proceedingFile.proceedingFileExpirationAt = day
-          }
+          const formattedDate = date.toFormat('yyyy-MM-dd');
+          this.proceedingFile[dateField] = formattedDate;
+          const flagField = `dateWasChange${dateField.charAt(0).toUpperCase() + dateField.slice(1)}`.replaceAll('ProceedingFile', '');
+          (this as any)[flagField] = true
         }
       }
-      this.dateWasChange = true
     },
     openFile() {
       window.open(this.proceedingFile?.proceedingFilePath)
