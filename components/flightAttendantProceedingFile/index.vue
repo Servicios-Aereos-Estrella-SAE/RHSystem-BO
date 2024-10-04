@@ -25,7 +25,7 @@
         </div>
         <!-- Rmployee Proceeding File form -->
         <div class="card flex justify-content-center">
-          <Sidebar v-model:visible="drawerFlightAttendantProceedingFileForm" position="right"
+          <Sidebar v-model:visible="drawerFlightAttendantProceedingFileForm" header="Files" position="right"
             class="flight-attendant-proceeding-file-form-sidebar" :showCloseIcon="true">
             <flightAttendantProceedingFileInfoForm :flightAttendantProceedingFile="flightAttendantProceedingFile"
               @onFlightAttendantProceedingFileSave="onSave" />

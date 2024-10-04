@@ -55,15 +55,26 @@
           <div class="date-box-container">
             <label>Expiration at</label>
             <div v-if="!displayExpirationAtCalendar" class="date-box">
-              <InputText v-model="expirationAt" readonly class="capitalize"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="handlerDisplayExpirationAt">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <InputText v-model="expirationAt" readonly class="capitalize" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="handlerDisplayExpirationAt">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
             <div v-if="displayExpirationAtCalendar" class="date-box-controller">
-              <Calendar v-if="displayExpirationAtCalendar" dateFormat="yy-mm-dd" v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="displayExpirationAtCalendar = false">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <Calendar v-if="displayExpirationAtCalendar" dateFormat="yy-mm-dd"
+                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="displayExpirationAtCalendar = false">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
           </div>
@@ -81,15 +92,26 @@
           <div class="date-box-container">
             <label>Signature date</label>
             <div v-if="!displaySignatureDateCalendar" class="date-box">
-              <InputText v-model="signatureDate" readonly class="capitalize"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="handlerDisplaySignatureDate">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <InputText v-model="signatureDate" readonly class="capitalize" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="handlerDisplaySignatureDate">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
             <div v-if="displaySignatureDateCalendar" class="date-box-controller">
-              <Calendar v-if="displaySignatureDateCalendar" dateFormat="yy-mm-dd" v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select expiration at date"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="displaySignatureDateCalendar = false">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <Calendar v-if="displaySignatureDateCalendar" dateFormat="yy-mm-dd"
+                v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select signature date" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="displaySignatureDateCalendar = false">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
           </div>
@@ -98,15 +120,27 @@
           <div class="date-box-container">
             <label>Effective start date</label>
             <div v-if="!displayEffectiveStartDateCalendar" class="date-box">
-              <InputText v-model="effectiveStartDate" readonly class="capitalize"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="handlerDisplayEffectiveStartDate">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <InputText v-model="effectiveStartDate" readonly class="capitalize" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="handlerDisplayEffectiveStartDate">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
             <div v-if="displayEffectiveStartDateCalendar" class="date-box-controller">
-              <Calendar v-if="displayEffectiveStartDateCalendar" dateFormat="yy-mm-dd" v-model.lazy="proceedingFile.proceedingFileEffectiveStartDate" placeholder="Select expiration at date"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="displayEffectiveStartDateCalendar = false">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <Calendar v-if="displayEffectiveStartDateCalendar" dateFormat="yy-mm-dd"
+                v-model.lazy="proceedingFile.proceedingFileEffectiveStartDate"
+                placeholder="Select effective start date" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="displayEffectiveStartDateCalendar = false">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
           </div>
@@ -115,15 +149,26 @@
           <div class="date-box-container">
             <label>Effective end date</label>
             <div v-if="!displayEffectiveEndDateCalendar" class="date-box">
-              <InputText v-model="effectiveEndDate" readonly class="capitalize"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="handlerDisplayEffectiveEndDate">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <InputText v-model="effectiveEndDate" readonly class="capitalize" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="handlerDisplayEffectiveEndDate">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
             <div v-if="displayEffectiveEndDateCalendar" class="date-box-controller">
-              <Calendar v-if="displayEffectiveEndDateCalendar" dateFormat="yy-mm-dd" v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select expiration at date"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="displayEffectiveEndDateCalendar = false">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <Calendar v-if="displayEffectiveEndDateCalendar" dateFormat="yy-mm-dd"
+                v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select effective end date" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="displayEffectiveEndDateCalendar = false">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
           </div>
@@ -132,22 +177,35 @@
           <div class="date-box-container">
             <label>Inclusion in the files date</label>
             <div v-if="!displayInclusionInTheFilesDateCalendar" class="date-box">
-              <InputText v-model="inclusionInTheFilesDate" readonly class="capitalize"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="handlerDisplayInclusionInTheFilesDate">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <InputText v-model="inclusionInTheFilesDate" readonly class="capitalize" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="handlerDisplayInclusionInTheFilesDate">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
             <div v-if="displayInclusionInTheFilesDateCalendar" class="date-box-controller">
-              <Calendar v-if="displayInclusionInTheFilesDateCalendar" dateFormat="yy-mm-dd" v-model.lazy="proceedingFile.proceedingFileInclusionInTheFilesDate" placeholder="Select expiration at date"/>
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at" @click="displayInclusionInTheFilesDateCalendar = false">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <Calendar v-if="displayInclusionInTheFilesDateCalendar" dateFormat="yy-mm-dd"
+                v-model.lazy="proceedingFile.proceedingFileInclusionInTheFilesDate"
+                placeholder="Select inclusion in the files date" />
+              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                @click="displayInclusionInTheFilesDateCalendar = false">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </Button>
             </div>
           </div>
         </div>
         <div class="input-box">
           <label for="proceedingFileOperationCost">Operation cost (USD)</label>
-          <InputNumber v-model="proceedingFile.proceedingFileOperationCost" :minFractionDigits="2" fluid />
+          <InputNumber v-model="proceedingFile.proceedingFileOperationCost" :minFractionDigits="2" fluid mode="currency"
+            currency="USD" locale="en-US" />
         </div>
         <div class="input-box">
           <label for="proceedingFileCompleteProcess">

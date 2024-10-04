@@ -31,16 +31,6 @@ export default defineComponent({
     submitted: false,
     currentEmployeeProceedingFile: null as EmployeeProceedingFileInterface | null,
     isNewEmployeeProceedingFile: false,
-   /*  currentDateExpirationAt: null as string | null,
-    currentDateSignatureDate: null as string | null,
-    currentDateEffectiveStartDate: null as string | null,
-    currentDateEffectiveEndDate: null as string | null,
-    currentDateInclusionInTheFilesDate: null as string | null, */
-  /*   dateWasChangeExpirationAt: false,
-    dateWasChangeSignatureDate: false,
-    dateWasChangeEffectiveStartDate: false,
-    dateWasChangeEffectiveEndDate: false,
-    dateWasChangeInclusionInTheFilesDate: false, */
     isReady: false,
     files: [] as Array<any>,
     proceedingFile: null as ProceedingFileInterface | null,
@@ -160,21 +150,6 @@ export default defineComponent({
         this.currentEmployeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile
       }
     }
-    /* this.currentDateExpirationAt = `${this.proceedingFile.proceedingFileExpirationAt}`
-    this.currentDateSignatureDate = `${this.proceedingFile.proceedingFileSignatureDate}`
-    this.currentDateEffectiveStartDate = `${this.proceedingFile.proceedingFileEffectiveStartDate}`
-    this.currentDateEffectiveEndDate = `${this.proceedingFile.proceedingFileEffectiveEndDate}`
-    this.currentDateInclusionInTheFilesDate = `${this.proceedingFile.proceedingFileInclusionInTheFilesDate}` */
-   /*  await this.formatDate('proceedingFileExpirationAt')
-    await this.formatDate('proceedingFileSignatureDate')
-    await this.formatDate('proceedingFileEffectiveStartDate')
-    await this.formatDate('proceedingFileEffectiveEndDate')
-    await this.formatDate('proceedingFileInclusionInTheFilesDate') */
-   /*  this.dateWasChangeExpirationAt = false
-    this.dateWasChangeSignatureDate = false
-    this.dateWasChangeEffectiveStartDate = false
-    this.dateWasChangeEffectiveEndDate = false
-    this.dateWasChangeInclusionInTheFilesDate = false */
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -247,21 +222,6 @@ export default defineComponent({
       if (this.proceedingFile) {
         const files = this.files.length > 0 ? this.files[0] : null
         const proceedingFileExpirationAtTemp = this.proceedingFile.proceedingFileExpirationAt
-        /* if (!this.dateWasChangeExpirationAt) {
-          this.proceedingFile.proceedingFileExpirationAt = this.currentDateExpirationAt
-        } */
-      /*   if (!this.dateWasChangeSignatureDate) {
-          this.proceedingFile.proceedingFileSignatureDate = this.currentDateSignatureDate
-        }
-        if (!this.dateWasChangeEffectiveStartDate) {
-          this.proceedingFile.proceedingFileEffectiveStartDate = this.currentDateEffectiveStartDate
-        }
-        if (!this.dateWasChangeEffectiveEndDate) {
-          this.proceedingFile.proceedingFileEffectiveEndDate = this.currentDateEffectiveEndDate
-        }
-        if (!this.dateWasChangeInclusionInTheFilesDate) {
-          this.proceedingFile.proceedingFileEffectiveInclusionInTheFilesDate = this.currentDateInclusionInTheFilesDate
-        } */
         let proceedingFileResponse = null
         this.proceedingFile.proceedingFileActive = this.activeSwicht ? 1 : 0
         this.proceedingFile.proceedingFileCompleteProcess = this.processCompleteSwicht ? 1 : 0
@@ -359,38 +319,6 @@ export default defineComponent({
       const day = parseInt(`${date.toString().split('-')[2]}`)
       return day
     },
-    /* formatDate(dateName: string) {
-      if (!this.proceedingFile) return;
-      const dateMapping: Record<string, string> = {
-        proceedingFileExpirationAt: 'proceedingFileExpirationAt',
-        proceedingFileSignatureDate: 'proceedingFileSignatureDate',
-        proceedingFileEffectiveStartDate: 'proceedingFileEffectiveStartDate',
-        proceedingFileEffectiveEndDate: 'proceedingFileEffectiveEndDate',
-        proceedingFileInclusionInTheFilesDate: 'proceedingFileInclusionInTheFilesDate',
-      };
-      const dateField = dateMapping[dateName];
-      let dateValue = this.proceedingFile[dateField] || '';
-      if (dateValue) {
-        dateValue = dateValue.toString();
-        let dt;
-        if (DateTime.fromISO(dateValue).isValid) {
-          dt = DateTime.fromISO(dateValue, { zone: 'utc' });
-        }
-        else if (DateTime.fromJSDate(new Date(dateValue)).isValid) {
-          dt = DateTime.fromJSDate(new Date(dateValue));
-        }
-        let newDate = ''
-        if (dt && dt.isValid) {
-          newDate = dt.toFormat('yyyy-MM-dd');
-        }
-        if (newDate > '') {
-          const formattedDate = newDate
-          this.proceedingFile[dateField] = formattedDate;
-        }
-      }
-      const flagField = `dateWasChange${dateField.charAt(0).toUpperCase() + dateField.slice(1)}`.replaceAll('ProceedingFile', '');
-      (this as any)[flagField] = true
-    }, */
     openFile() {
       window.open(this.proceedingFile?.proceedingFilePath)
     },
@@ -398,23 +326,6 @@ export default defineComponent({
       const newDate = DateTime.fromJSDate(new Date(date), { zone: 'local' }).toFormat('yyyy-MM-dd')
       return newDate;
     },
-    /* getDateFormatted (date: string) {
-      if (!date) {
-        return ''
-      }
-      let dt
-      if (DateTime.fromISO(date).isValid) {
-        dt = DateTime.fromISO(date)
-        .setLocale('es')
-        .toFormat('DDDD')
-      }
-      else if (DateTime.fromJSDate(new Date(date)).isValid) {
-        dt = DateTime.fromJSDate(new Date(date)) .setZone('America/Mexico_City')
-        .setLocale('es')
-        .toFormat('DDDD')
-      }
-      return dt ? dt : ''
-    }, */
     getDateFormatted (date: Date) {
       if (!date) {
         return ''
@@ -422,8 +333,8 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('America/Mexico_City')
-        .setLocale('es')
-        .toFormat('DDDD')
+        .setLocale('en')
+        .toFormat('DDD')
     },
     handlerDisplayExpirationAt () {
       this.displayExpirationAtCalendar = true
