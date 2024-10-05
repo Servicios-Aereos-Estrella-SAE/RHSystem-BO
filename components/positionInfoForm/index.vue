@@ -43,8 +43,21 @@
                                 Company is required.
                             </small>
                     </div>
-
-
+                    <div class="input-box">
+                        <label for="parentPositionId">Parent Position</label>
+                        <Dropdown 
+                            id="parentPositionId" 
+                            v-model="position.parentPositionId" 
+                            optionLabel="positionName" 
+                            optionValue="positionId"
+                            :placeholder="'Select a Parent Position'"
+                            :disabled="!parentPositions.length"
+                            :invalid="submitted && !position.parentPositionId"
+                        />
+                        <small class="p-error" v-if="submitted && !position.parentPositionId">
+                            Parent position is required.
+                        </small>
+                    </div>
                     <div class="input-box">
                         <label for="positionIsDefault">Default Position</label>
                         <ToggleButton v-model="position.positionIsDefault" onLabel="Yes" offLabel="No" />

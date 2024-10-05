@@ -15,6 +15,9 @@ export default defineComponent({
   data: () => ({
     submitted: false,
     companyOptions: [], 
+    parentPositions: [],
+    positions: [] as PositionInterface[],
+
   }),
   computed: {
     isPositionActive: {
@@ -28,6 +31,7 @@ export default defineComponent({
   },
   mounted() {
     // this.loadCompanyOptions(); // Carga las opciones del dropdown de empresas al montar el componente
+    this.loadParentPositions();
   },
   methods: {
     // async loadCompanyOptions() {
@@ -56,6 +60,31 @@ export default defineComponent({
     //     });
     //   }
     // },
+    async loadParentPositions() {
+      try {
+        const positionService = new PositionService();
+        const departmentId = parseInt(`${this.$route.params.department || 0}`)
+
+        this.positions = await positionService.getPositionsDepartment(departmentId);
+        if (this.positions) {
+          console.log(this.positions)
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error loading parent positions options.',
+            life: 5000
+          });
+        }
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error loading parent positions options.',
+          life: 5000
+        });
+      }
+    },
     async onSave() {
       this.submitted = true;
       if (
