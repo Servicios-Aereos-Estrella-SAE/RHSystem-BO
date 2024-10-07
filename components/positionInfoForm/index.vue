@@ -48,10 +48,11 @@
                         <Dropdown 
                             id="parentPositionId" 
                             v-model="position.parentPositionId" 
+                            :options="positions"
                             optionLabel="positionName" 
                             optionValue="positionId"
                             :placeholder="'Select a Parent Position'"
-                            :disabled="!parentPositions.length"
+                            :disabled="!positions.length"
                             :invalid="submitted && !position.parentPositionId"
                         />
                         <small class="p-error" v-if="submitted && !position.parentPositionId">
