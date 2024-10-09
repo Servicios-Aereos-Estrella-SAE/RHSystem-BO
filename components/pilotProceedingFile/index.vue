@@ -25,7 +25,7 @@
         </div>
         <!-- Rmployee Proceeding File form -->
         <div class="card flex justify-content-center">
-          <Sidebar v-model:visible="drawerPilotProceedingFileForm" position="right"
+          <Sidebar v-model:visible="drawerPilotProceedingFileForm" header="Files" position="right"
             class="pilot-proceeding-file-form-sidebar" :showCloseIcon="true">
             <pilotProceedingFileInfoForm :pilotProceedingFile="pilotProceedingFile"
               @onPilotProceedingFileSave="onSave" />

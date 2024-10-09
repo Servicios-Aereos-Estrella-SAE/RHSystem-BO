@@ -43,7 +43,6 @@ export default defineComponent({
   },
   methods: {
     async getAircraftProceedingFiles() {
-      console.log("getAoircraft Proceddin filles")
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.aircraftProceedingFilesList = []
@@ -51,7 +50,6 @@ export default defineComponent({
       const aircraftProceedingFileService = new AircraftProceedingFileService()
       const aircraftProceedingFileResponse = await aircraftProceedingFileService.getByAircraft(aircraftId)
       this.aircraftProceedingFilesList = aircraftProceedingFileResponse.data.data
-      console.log(this.aircraftProceedingFilesList)
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -69,8 +67,7 @@ export default defineComponent({
     async onSave(aircraftProceedingFile: AircraftProceedingFileInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.aircraftProceedingFile = { ...aircraftProceedingFile }
-      
+      this.aircraftProceedingFile = {...aircraftProceedingFile}
       const index = this.aircraftProceedingFilesList.findIndex((aircraftProceedingFile: AircraftProceedingFileInterface) => aircraftProceedingFile.aircraftProceedingFileId === this.aircraftProceedingFile?.aircraftProceedingFileId)
       if (index !== -1) {
         this.aircraftProceedingFilesList[index] = aircraftProceedingFile

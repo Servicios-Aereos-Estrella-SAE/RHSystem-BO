@@ -17,4 +17,22 @@
       width: 100%;
     }
   }
+  .date-box-container {
+    width: 100%;
+    display: block;
+  }
+
+  .date-box {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
+
+  .date-box-controller {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
 }
