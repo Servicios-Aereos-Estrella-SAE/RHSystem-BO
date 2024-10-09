@@ -1,0 +1,45 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.employee-shift-vacations {
+  position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+  }
+
+  .head {
+    display: grid;
+    grid-template-columns: 15rem auto;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    @media screen and (max-width: $ipad) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .vacations-wrapper {
+
+    .vacation-control {
+
+      .read-date {
+        display: grid;
+        grid-template-columns: auto 4rem 4rem;
+        gap: 0.25rem;
+      }
+
+      .form-date {
+        display: grid;
+        grid-template-columns: auto 4rem 4rem;
+        gap: 0.25rem;
+      }
+    }
+  }
+}
