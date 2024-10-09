@@ -1,0 +1,22 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.employee-shift-vacations {
+  position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+  }
+
+  .vacation-periods-wrapper {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.5rem;
+  }
+}

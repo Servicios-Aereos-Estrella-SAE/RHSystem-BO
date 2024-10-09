@@ -33,7 +33,7 @@
       <Button v-if="displayInputCalendar" class="btn btn-block" @click="handlerCalendarChange">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
-      <Button v-if="!displayInputCalendar" title="Vacations" class="btn btn-block" disabled>
+      <Button v-if="!displayInputCalendar" title="Vacations" class="btn btn-block" @click="onClickVacations">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 3a.75.75 0 0 1 .75.75V7h1.75A3.25 3.25 0 0 1 21 10.25v6.5A3.25 3.25 0 0 1 17.75 20H6.25A3.25 3.25 0 0 1 3 16.75v-6.5A3.25 3.25 0 0 1 6.25 7H8V3.75a.75.75 0 0 1 .648-.743L8.75 3h6.5Zm-.75 1.5h-5V7h5V4.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
     </div>
@@ -53,10 +53,39 @@
       This employee has no shifts assigned to this month
     </div>
 
-    <Sidebar v-model:visible="drawerShiftExceptions" header="Employee shift exceptions" position="right" class="shift-exception-sidebar">
+    <Sidebar v-model:visible="drawerShiftExceptions" :blockScroll="true" :dismissable="false"  :closeOnEscape="false" header="Employee shift exceptions" position="right" class="shift-exception-sidebar">
       <employeeShiftException
         :employee="employee"
         :date="selectedExceptionDate"
+      />
+    </Sidebar>
+
+    <Sidebar
+      v-model:visible="displaySidebarVacations"
+      :blockScroll="true"
+      :dismissable="false"
+      :closeOnEscape="false"
+      header="vacations"
+      position="right"
+      class="shift-vacations-sidebar"
+      >
+      <employeeVacations
+        :employee="employee"
+        @manageVacations="handlerVacationsManager"
+      />
+    </Sidebar>
+
+    <Sidebar
+      v-model:visible="displaySidebarVacationsManager"
+      :blockScroll="true"
+      :dismissable="false"
+      :closeOnEscape="false"
+      header="vacations"
+      position="right"
+      class="shift-vacations-manage-sidebar"
+    >
+      <employeeVacationsControl
+        :employee="employee"
       />
     </Sidebar>
   </div>
@@ -86,6 +115,24 @@
   .shift-exception-sidebar {
     width: 100% !important;
     max-width: 33rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .shift-vacations-sidebar {
+    width: 100% !important;
+    max-width: 27rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .shift-vacations-manage-sidebar {
+    width: 100% !important;
+    max-width: 27rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
