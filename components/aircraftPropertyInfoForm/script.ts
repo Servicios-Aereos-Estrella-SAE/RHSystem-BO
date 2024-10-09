@@ -29,17 +29,22 @@ export default defineComponent({
           const aircraftClassService = new AircraftClassService()
           const response = await aircraftClassService.getFilteredList('',1,100) 
           this.aircraftClasses = response._data.data.data 
+          
+          // if (this.aircraftProperty && this.aircraftProperty.aircraftClassId) {
+          //   const selectedClass = this.aircraftClasses.find(
+          //     (ac) => ac.aircraftClassId === this.aircraftProperty.aircraftClassId
+          //   );
 
-          if (this.aircraftProperty && this.aircraftProperty.aircraftClassId) {
-            const selectedClass = this.aircraftClasses.find(
-              (ac) => ac.aircraftClassId === this.aircraftProperty.aircraftClassId
-            );
-
-            if (selectedClass) {
-                this.selectedAircraftClassId = selectedClass.aircraftClassId;
-                this.photoForm = selectedClass.aircraftClassBanner;
-            }
-          }
+          //   if (selectedClass) {
+          //       this.selectedAircraftClassId = selectedClass.aircraftClassId;
+          //       this.photoForm = selectedClass.aircraftClassBanner;
+          //   }
+          // }
+          if (this.aircraftProperty && this.aircraftProperty.aircraftPropertiesBanner) {
+            // Asigna directamente el id de clase de aeronave y la imagen
+            this.selectedAircraftClassId = this.aircraftProperty.aircraftClassId;
+            this.photoForm = this.aircraftProperty.aircraftPropertiesBanner;
+        }
         } catch (error) {
           console.error('Error fetching aircraft classes:', error)
         }
