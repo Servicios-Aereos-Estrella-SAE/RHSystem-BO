@@ -38,9 +38,31 @@ export default defineComponent({
     timer: null as any,
     delay: 250 as number,
     folderSelected: null as ProceedingFileTypeInterface | null,
-    filesLoader: false as boolean
+    filesLoader: false as boolean,
+    filterFolderText: '' as string,
+    filterFileText: '' as string
   }),
   computed: {
+    foldersFiltered (): ProceedingFileTypeInterface[] {
+      if (!this.filterFolderText) {
+        return this.proceedingFileTypesList
+      }
+
+      const filtered: ProceedingFileTypeInterface[] = this.proceedingFileTypesList.filter(folder =>  folder.proceedingFileTypeSlug.includes(this.filterFolderText))
+      return filtered
+    },
+    filesFolderFiltered (): AircraftProceedingFileInterface[] {
+      if (!this.filterFileText) {
+        return this.aircraftProceedingFilesList
+      }
+
+      const filtered: AircraftProceedingFileInterface[] = this.aircraftProceedingFilesList.filter((folder) =>
+        this.slugify(folder.proceedingFile?.proceedingFileName || '').includes(this.filterFileText) ||
+        this.slugify(folder.proceedingFile?.proceedingFileIdentify || '').includes(this.filterFileText) ||
+        this.slugify(folder.proceedingFile?.proceedingFileUuid || '').includes(this.filterFileText)
+      )
+      return filtered
+    }
   },
   async mounted() {
     this.isReady = false
@@ -161,6 +183,18 @@ export default defineComponent({
     handlerUnselectFolder () {
       this.folderSelected = null
       this.aircraftProceedingFilesList = []
+    },
+    slugify(input: string) {
+      if (!input) {
+        return ''
+      }
+
+      let slug = input.toLowerCase().trim()
+      slug = slug.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      slug = slug.replace(/[^a-z0-9\s-]/g, ' ').trim()
+      slug = slug.replace(/[\s-]+/g, '-')
+  
+      return slug
     }
   }
 })
