@@ -34,9 +34,6 @@ export default defineComponent({
     drawerAircraftProceedingFileDelete: false,
     selectedDateTimeDeleted: '' as string | null,
     proceedingFileTypesList: [] as ProceedingFileTypeInterface[],
-    clicks: 0 as number,
-    timer: null as any,
-    delay: 250 as number,
     folderSelected: null as ProceedingFileTypeInterface | null,
     filesLoader: false as boolean,
     filterFolderText: '' as string,
@@ -141,12 +138,6 @@ export default defineComponent({
             this.aircraftProceedingFilesList.splice(index, 1)
             this.$forceUpdate()
           }
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Delete proceeding file aircraft',
-            detail: aircraftProceedingFileResponse._data.message,
-            life: 5000,
-          })
         } else {
           this.$toast.add({
             severity: 'error',
@@ -165,24 +156,15 @@ export default defineComponent({
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
     },
     async handlerDoubleClick (folder: ProceedingFileTypeInterface) {
-      this.clicks++
-      if (this.clicks === 1) {
-        this.timer = setTimeout( () => {
-          this.clicks = 0
-        }, this.delay)
-      } else {
-        clearTimeout(this.timer)
-        this.clicks = 0
-        this.folderSelected = folder
-
-        this.filesLoader = true
-        await this.getAircraftProceedingFiles()
-        this.filesLoader = false
-      }
+      this.folderSelected = folder
+      this.filesLoader = true
+      await this.getAircraftProceedingFiles()
+      this.filesLoader = false
     },
     handlerUnselectFolder () {
       this.folderSelected = null
       this.aircraftProceedingFilesList = []
+      this.filterFileText = ''
     },
     slugify(input: string) {
       if (!input) {
