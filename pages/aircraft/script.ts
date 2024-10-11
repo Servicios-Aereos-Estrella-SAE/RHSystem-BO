@@ -21,7 +21,8 @@ export default defineComponent({
         drawerAircraftFormGallery: false,
         canCreate: false,
         canUpdate: false,
-        canDelete: false
+        canDelete: false,
+        drawerProceedingFiles: false as boolean
     }),
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
@@ -131,6 +132,14 @@ export default defineComponent({
                     });
                 }
             }
+        },
+        handlerOpenProceedingFiles (aircraft: AircraftInterface) {
+            if (!aircraft) {
+                console.error('No aircraft provided');
+                return;
+              }
+            this.aircraft = { ...aircraft };
+            this.drawerProceedingFiles = true;
         }
     },
 });

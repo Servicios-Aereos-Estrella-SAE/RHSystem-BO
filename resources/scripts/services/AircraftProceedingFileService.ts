@@ -14,10 +14,11 @@ export default class AircraftProceedingFileService {
     }
   }
 
-  async getByAircraft(aircraftId: number) {
+  async getByAircraft(aircraftId: number, fileTypeId?: number) {
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/aircraft-proceeding-files/${aircraftId}/proceeding-files`, {
+      query: { type: fileTypeId },
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })

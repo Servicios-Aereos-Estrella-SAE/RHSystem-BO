@@ -34,3 +34,16 @@ $radius: 0.75rem;
   border-radius: $radius;
 }
 
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10rem;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: normal;
+  font-size: 0.85rem;
+  text-align: center;
+  border-radius: $radius;
+  background-color: transparentize($color: $gray, $amount: 0.5);
+}
