@@ -86,6 +86,7 @@
     >
       <employeeVacationsControl
         :employee="employee"
+        :vacation-period="vacationPeriod"
       />
     </Sidebar>
   </div>

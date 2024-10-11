@@ -3,8 +3,10 @@
     <h1>
       Manage vacations
     </h1>
-
-    <vacationsPeriodCard hideManager class="period-info" />
+    <h1>{{ 
+      `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
+    }}</h1>
+    <vacationsPeriodCard :vacation-period="vacationPeriod" hideManager class="period-info" />
 
     <div class="head">
       <Button class="btn btn-block">
@@ -15,8 +17,12 @@
 
     <div v-if="isReady">
       <div class="vacations-wrapper">
-        <vacationsControl v-for="(item, index) in 10" :key="`employee-vacation-${index}`" />
-      </div>
+        <!-- <vacationsControl v-for="(item, index) in 10" :key="`employee-vacation-${index}`" /> -->
+        <div v-for="(shiftException, index) in shiftExceptions" :key="`employee-vacation-${index}`">
+          <vacationsControl
+            :shift-exception="shiftException" />
+        </div>
+    </div>
     </div>
     <ProgressSpinner v-else />
 
