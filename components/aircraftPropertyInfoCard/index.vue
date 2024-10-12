@@ -1,8 +1,8 @@
 <template>
     <div class="box aircraft-property-info-card">
-        <div class="image-aircraft" v-if="aircraftProperty.aircraftClass?.aircraftClassBanner">
+        <div class="image-aircraft" v-if="aircraftProperty.aircraftPropertiesBanner">
             <img :alt="`Banner for ${aircraftProperty.aircraftPropertiesName}`"
-                :src="aircraftProperty.aircraftClass.aircraftClassBanner" />
+                :src="aircraftProperty.aircraftPropertiesBanner" />
         </div>
 
         <div class="aircraft-property-name">

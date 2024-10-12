@@ -408,6 +408,19 @@ export default defineComponent({
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
     },
+    async syncEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeCode = this.employee?.employeeCode || "0"
+      const assistReq = await new AssistService().syncEmployee(startDay, endDay, employeeCode)
+      console.log('assistReq', assistReq);
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
+    },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

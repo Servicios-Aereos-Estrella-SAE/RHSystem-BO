@@ -28,7 +28,8 @@ export default defineComponent({
         canUpdate: false,
         canDelete: false,
         drawerShifts: false,
-        drawerProceedingFiles: false
+        drawerProceedingFiles: false,
+        hasAccessToManageShifts: false
     }),
     computed: {},
     created () {},
@@ -48,7 +49,8 @@ export default defineComponent({
           }
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
-        this.handlerSearchEmployee();
+        await this.handlerSearchEmployee()
+        this.hasAccessToManageShifts = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift')
     },
     methods: {
         async handlerSearchEmployee() {

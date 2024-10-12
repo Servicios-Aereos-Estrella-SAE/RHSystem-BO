@@ -1,13 +1,12 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
-@import '/resources/styles/colors.scss';
 
 .aircrafts-page {
+
   h2 {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 500;
     margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   .aircraft-wrapper {
@@ -16,21 +15,8 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 30rem auto 15rem;
       gap: 0.5rem;
-      justify-content: space-between;
-
-      .input-box {
-        label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 500;
-        }
-
-        .btn-add {
-          margin-top: 0.5rem;
-        }
-      }
 
       @media screen and (max-width: $desktop) {
         grid-template-columns: 1fr auto;

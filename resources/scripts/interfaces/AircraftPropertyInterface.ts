@@ -1,4 +1,5 @@
 export interface AircraftPropertyInterface {
+    aircraftPropertiesBanner: any;
     aircraftPropertiesHourlyRate: any;
     aircraftPropertiesLandingCostBase: any;
     aircraftPropertiesLandingCostInternational: any;

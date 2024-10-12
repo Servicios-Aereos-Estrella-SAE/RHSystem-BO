@@ -76,6 +76,34 @@ export default class DepartmentService {
     return responseRequest  
   }
 
+  async getSearchOrganization(search: string, currentPage: number, rowsPerPage: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+  
+    await $fetch(`${this.API_PATH}/departments/organization`, {
+      headers,
+      query: {
+        departmentName: search,
+        currentPage,
+        rowsPerPage
+      },
+      onResponse({ response }) {
+        responseRequest = response
+      },
+      onRequestError({ response }) {
+        responseRequest = response
+      }
+    })
+
+    if (responseRequest?.data) {
+      return {
+        data: responseRequest.data.data,
+        meta: responseRequest.data.meta
+      }
+    }
+    return responseRequest  
+  }
+
   async getDepartmentPositions (departmentId: number) {
     let responseRequest: any = null
 

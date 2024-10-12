@@ -59,23 +59,32 @@ export default defineComponent({
       this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
     }
 
-    await this.getExceptionTypes()
+    let hasAccess = false
+    const fullPath = this.$route.path;
+    const firstSegment = fullPath.split('/')[1]
+    const systemModuleSlug = firstSegment
+    hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
+    const exceptionType = hasAccess ? '' : 'rest-day'
+    await this.getExceptionTypes(exceptionType)
+
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
+
     if (index >= 0) {
       if (this.exceptionTypeList[index].exceptionTypeSlug === 'vacation') {
         isVacation = true
       }
     }
+
     this.setMinDate(isVacation)
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
   methods: {
-    async getExceptionTypes() {
-      const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
-      const list = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      this.exceptionTypeList = list
+    async getExceptionTypes(search: string) {
+      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100)
+      const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
+      this.exceptionTypeList = list.filter(item => item.exceptionTypeSlug !== 'vacation')
     },
     async onSave() {
       this.submitted = true
@@ -100,12 +109,6 @@ export default defineComponent({
       if (!this.dateWasChange) {
         this.shiftException.shiftExceptionsDate = this.currentDate
       }
-
-      const dateToException = DateTime.fromJSDate(new Date(`${this.shiftException.shiftExceptionsDate}`)).setZone(
-        'America/Mexico_City'
-      )
-
-      this.shiftException.shiftExceptionsDate = dateToException.toFormat('yyyy-LL-dd')
 
       if (!this.shiftException.shiftExceptionId) {
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)

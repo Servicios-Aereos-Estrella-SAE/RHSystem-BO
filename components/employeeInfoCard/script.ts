@@ -11,6 +11,7 @@ export default defineComponent({
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     clickOnPhoto: { type: Function, default: null },
+    canManageShifts: { type: Boolean, default: false, required: true },
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true }
   },

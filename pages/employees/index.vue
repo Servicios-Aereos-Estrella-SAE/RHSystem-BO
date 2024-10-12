@@ -50,6 +50,7 @@
                 <EmployeeInfoCard
                   :click-on-photo="() => { onPhoto(employee) }"
                   :employee="employee"
+                  :can-manage-shifts="hasAccessToManageShifts"
                   :can-update="canUpdate"
                   :can-delete="canDelete"
                   :click-on-edit="() => { onEdit(employee) }"
@@ -75,19 +76,19 @@
           </div>
         </div>
 
-        <Sidebar v-model:visible="drawerEmployeeForm" header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+        <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
           <employeeInfoForm :employee="employee" @save="onSave" />
         </Sidebar>
 
-        <Sidebar v-model:visible="drawerEmployeePhotoForm" header="Employee photo" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+        <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee photo" position="right" class="shift-form-sidebar" :showCloseIcon="true">
           <employeePhotoForm :employee="employee" @save="onSave" />
         </Sidebar>
 
-        <Sidebar v-model:visible="drawerShifts" :blockScroll="true" header="Employee shifts calendar" :dismissable="false" position="right" class="sidebar-shifts">
+        <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
           <employeeShift :employee="employee" />
         </Sidebar>
         
-        <Sidebar v-model:visible="drawerProceedingFiles" header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
+        <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
           <employeeProceedingFile :employee="employee" />
         </Sidebar>
 
@@ -102,8 +103,9 @@
         <Dialog v-model:visible="drawerEmployeeSync" :style="{width: '450px'}" header="Confirm" :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span> Are you sure you want to sync
-              ?</span>
+            <span>
+              Are you sure you want to sync?
+            </span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" text @click="drawerEmployeeSync = false" />

@@ -98,13 +98,17 @@ export default class ProceedingFileService {
         }
       }
       let responseRequest: any = null
-      await $fetch(`${this.API_PATH}/proceeding-files/${proceedingFile.proceedingFileId}`, {
-        headers,
-        method: 'PUT',
-        body: formData,
-        onResponse({ response }) { responseRequest = response },
-        onRequestError({ response }) { responseRequest = response }
-      })
+      try {
+        await $fetch(`${this.API_PATH}/proceeding-files/${proceedingFile.proceedingFileId}`, {
+          headers,
+          method: 'PUT',
+          body: formData,
+          onResponse({ response }) { responseRequest = response },
+          onRequestError({ response }) { responseRequest = response }
+        })
+      } catch (error) {
+      }
+     
       return responseRequest
     }
   }

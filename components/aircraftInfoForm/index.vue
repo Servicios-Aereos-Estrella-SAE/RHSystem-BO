@@ -48,15 +48,11 @@
 
                 <div class="box-tools-footer">
                     <Button label="Save" severity="primary" @click="onSave()" />
-                    <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
+                    <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->
 
                 </div>
             </div>
         </div>
-        <Sidebar v-model:visible="drawerProceedingFiles" header="Aircraft proceeding files" position="right" class="proceeding-file-sidebar"
-        :showCloseIcon="true">
-        <aircraftProceedingFile :aircraft="aircraft" />
-      </Sidebar>
 
     </div>
 </template>
