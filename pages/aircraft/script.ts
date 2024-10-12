@@ -21,7 +21,8 @@ export default defineComponent({
         drawerAircraftFormGallery: false,
         canCreate: false,
         canUpdate: false,
-        canDelete: false
+        canDelete: false,
+        drawerProceedingFiles: false as boolean
     }),
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
@@ -60,7 +61,6 @@ export default defineComponent({
         async handlerSearchAircraft() {
             const response = await this.aircraftService.getFilteredList(this.search, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.data : [];
-            console.log(list);
             this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
             this.filterAircrafts = list;
@@ -87,7 +87,6 @@ export default defineComponent({
             this.drawerAircraftForm = false;
         },
         onSaveGallery(){
-            console.log("page Aircraft");
         },
         onDelete(aircraft: AircraftInterface) {
             this.aircraft = { ...aircraft };
@@ -131,6 +130,14 @@ export default defineComponent({
                     });
                 }
             }
+        },
+        handlerOpenProceedingFiles (aircraft: AircraftInterface) {
+            if (!aircraft) {
+                console.error('No aircraft provided');
+                return;
+              }
+            this.aircraft = { ...aircraft };
+            this.drawerProceedingFiles = true;
         }
     },
 });
