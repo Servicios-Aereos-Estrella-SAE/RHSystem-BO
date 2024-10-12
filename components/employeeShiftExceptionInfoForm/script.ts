@@ -110,12 +110,6 @@ export default defineComponent({
         this.shiftException.shiftExceptionsDate = this.currentDate
       }
 
-      const dateToException = DateTime.fromJSDate(new Date(`${this.shiftException.shiftExceptionsDate}`)).setZone(
-        'America/Mexico_City'
-      )
-
-      this.shiftException.shiftExceptionsDate = dateToException.toFormat('yyyy-LL-dd')
-
       if (!this.shiftException.shiftExceptionId) {
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)
       } else {

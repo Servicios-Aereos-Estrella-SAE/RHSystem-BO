@@ -62,6 +62,10 @@ export default defineComponent({
 
       return daysList
     },
+    statusForm () {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.userVacationFormClosed
+    }
   },
   created () {
   },
@@ -191,6 +195,10 @@ export default defineComponent({
     handlerVacationsManager (vacationPeriod: VacationPeriodInterface) {
       this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
+    },
+    handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setUserVacationFormStatus(true)
     }
   }
 })
