@@ -13,7 +13,8 @@ export const useMyGeneralStore = defineStore({
     backgroundColorDark: '#092c50',
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
     isRoot: false,
-    displayContent: false
+    displayContent: false,
+    userVacationFormClosed: false,
   }),
   actions: {
     setDisplayAside(status: boolean) {
@@ -142,5 +143,8 @@ export const useMyGeneralStore = defineStore({
       }
       return systemPermissions
     },
+    setUserVacationFormStatus (status: boolean) {
+      this.userVacationFormClosed = status
+    }
   }
 })

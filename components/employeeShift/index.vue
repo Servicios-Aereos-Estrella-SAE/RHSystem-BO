@@ -72,11 +72,13 @@
       <employeeVacations
         :employee="employee"
         @manageVacations="handlerVacationsManager"
+        :status-form="statusForm"
       />
     </Sidebar>
 
     <Sidebar
       v-model:visible="displaySidebarVacationsManager"
+      @hide="handlerSidebarVacationsClose(vacationPeriod)"
       :blockScroll="true"
       :dismissable="false"
       :closeOnEscape="false"
@@ -86,6 +88,8 @@
     >
       <employeeVacationsControl
         :employee="employee"
+        :vacation-period="vacationPeriod"
+        @closeVacations="handlerVacationsClose"
       />
     </Sidebar>
   </div>
