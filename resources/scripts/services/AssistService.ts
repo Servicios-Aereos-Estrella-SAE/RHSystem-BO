@@ -49,6 +49,20 @@ export default class AssistService {
     return responseRequest
   }
 
+  async syncEmployee (startDate: string | Date, endDate: string | Date, empCode: string) {
+    let responseRequest: any = null
+    const payload = { startDate, endDate, empCode, page: 1 }
+    const headers = { ...this.GENERAL_HEADERS }
+    await $fetch(`${this.API_PATH}/v1/assists/employee-synchronize`, {
+      method: 'POST',
+      headers,
+      query: { ...payload },
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+    return responseRequest
+  }
+
   async getExcelByEmployee (
     date: string | Date,
     dateEnd: string | Date,
