@@ -134,4 +134,48 @@ export default class SystemSettingService {
 
     return true;
   }
+  async getTolerances() {
+    let responseRequest: any = null
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances`, {
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      return responseRequest
+    } catch (error) {
+      console.error('Error fetching tolerances:', error)
+      return null
+    }
+  }
+  async updateTolerance(toleranceId: number, toleranceMinutes: number) {
+    let responseRequest: any = null
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances/${toleranceId}`, {
+        method: 'PUT',
+        body: {
+          tolerance_minutes: toleranceMinutes
+        },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      console.error('Error updating tolerance:', error)
+    }
+    return responseRequest
+  }
+
+  async deleteTolerance(id: null) {
+    let responseRequest: any = null
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances/${id}`, {
+        method: 'DELETE', 
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      console.error(`Error deleting tolerance with ID ${id}`, error)
+    }
+    return responseRequest
+  }
+  
 }
