@@ -78,6 +78,23 @@
             </div>
           </div>
         </div>
+        <div class="input-box">
+          <DataTable :value="groupedSystemModules" tableStyle="min-width: 50rem">
+            <Column v-for="(dept, index) in groupedSystemModules[0]" :key="index" header="System Module">
+              <template #body="slotProps">
+                <div v-if="slotProps.data[index]">
+                  <Checkbox 
+                    v-model="systemModules[0]" 
+                    name="permission" 
+                    :disabled="!canUpdate" 
+                    :value="slotProps.data[index].systemModuleId" 
+                  />
+                  <label>&nbsp; {{ slotProps.data[index].systemModuleName }}</label>
+                </div>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
 
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
