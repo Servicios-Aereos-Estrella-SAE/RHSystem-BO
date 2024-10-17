@@ -27,7 +27,7 @@ export default defineComponent({
       itemsToShow: 3,
       snapAlign: 'start',
     },
-    tabActive: '',
+    tabActive: 'aircraft',
     // breakpoints are mobile first
     // any settings not specified will fallback to the carousel settings
     breakpoints: {
@@ -78,10 +78,10 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     await this.getAircraftProceedingFiles()
-    await this.getEmployeeProceedingFiles()
-    await this.getPilotProceedingFiles()
-    await this.getCustomerProceedingFiles()
-    await this.getFlightAttendantProceedingFiles()
+    // await this.getEmployeeProceedingFiles()
+    // await this.getPilotProceedingFiles()
+    // await this.getCustomerProceedingFiles()
+    // await this.getFlightAttendantProceedingFiles()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
