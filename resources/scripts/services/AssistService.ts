@@ -1,3 +1,4 @@
+import type { AssistInterface } from "../interfaces/AssistInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class AssistService {
@@ -167,6 +168,22 @@ export default class AssistService {
       onRequestError ({ response }) { responseRequest = response }
     })
 
+    return responseRequest
+  }
+
+  async store(assist: AssistInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    try {
+      await $fetch(`${this.API_PATH}/v1/assists`, {
+        method: 'POST',
+        headers,
+        query: { ...assist },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 }

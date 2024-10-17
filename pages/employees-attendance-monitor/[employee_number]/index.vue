@@ -130,9 +130,16 @@
               </small>
             </span>
           </h6>
+          <div v-if="visualizationMode && isRoot" class="input-box">
+            <Button v-if="employee.employeeAssistDiscriminator === 0" class="btn-sync btn-block" severity="success" @click="addNewAssist">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM21 8.5l.001 3.523a6.5 6.5 0 0 0-8.979 8.979L6.25 21A3.25 3.25 0 0 1 3 17.75V8.5h18ZM17.5 14l-.09.008a.5.5 0 0 0-.402.402L17 14.5V17h-2.5l-.09.008a.5.5 0 0 0-.402.402L14 17.5l.008.09a.5.5 0 0 0 .402.402l.09.008H17v2.5l.008.09a.5.5 0 0 0 .402.402l.09.008.09-.008a.5.5 0 0 0 .402-.402L18 20.5V18h2.5l.09-.008a.5.5 0 0 0 .402-.402L21 17.5l-.008-.09a.5.5 0 0 0-.402-.402L20.5 17H18v-2.5l-.008-.09a.5.5 0 0 0-.402-.402L17.5 14Zm.25-11A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#fff" class="fill-212121"></path></svg>
+            </Button>
+          </div>
           <div v-if="visualizationMode" class="input-box">
             <Button v-if="employee.employeeAssistDiscriminator === 0" class="btn-sync btn-block" severity="success" @click="syncEmployee">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#f0f0f0" d="M440.7 12.6l4 82.8A247.2 247.2 0 0 0 255.8 8C134.7 8 33.9 94.9 12.3 209.8A12 12 0 0 0 24.1 224h49.1a12 12 0 0 0 11.7-9.3 175.9 175.9 0 0 1 317-56.9l-101.5-4.9a12 12 0 0 0 -12.6 12v47.4a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0 -12-12h-47.4a12 12 0 0 0 -12 12.6zM255.8 432a175.6 175.6 0 0 1 -146-77.8l101.8 4.9a12 12 0 0 0 12.6-12v-47.4a12 12 0 0 0 -12-12H12a12 12 0 0 0 -12 12V500a12 12 0 0 0 12 12h47.4a12 12 0 0 0 12-12.6l-4.2-82.6A247.2 247.2 0 0 0 255.8 504c121.1 0 221.9-86.9 243.6-201.8a12 12 0 0 0 -11.8-14.2h-49.1a12 12 0 0 0 -11.7 9.3A175.9 175.9 0 0 1 255.8 432z"/></svg>
+              <svg fill="none" viewBox="0 0 24 24" xmlns="
+http://www.w3.org/2000/svg"><path
+d="M7.586 8.004H4a1 1 0 0 1 0-2h4a1 1 0 0 1 .707.293L13.414 11h5.17l-3.29-3.289a1 1 0 0 1 1.413-1.414l5 4.996a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L18.586 13h-5.172l-4.707 4.707A1 1 0 0 1 8 18H4a1 1 0 0 1 0-2h3.586l4-4-4-3.996Z" fill="#ffffff" class="fill-212121"></path></svg>
             </Button>
           </div>
           <div v-if="visualizationMode" class="input-box">
@@ -211,6 +218,13 @@
             </div>
           </div>
         </div>
+        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
+          <EmployeeAssistInfoForm
+            :assist="assist"
+            :employee="employee"
+            @onAssistSave="onSaveAssist"
+          />
+        </Sidebar>
       </div>
     </NuxtLayout>
   </div>
@@ -226,6 +240,15 @@
 </style>
 
 <style lang="scss">
+  @import './style';
+  .employee-assist-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 :deep(.graph-label) {
   color: red;
 }
