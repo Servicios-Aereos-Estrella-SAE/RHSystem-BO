@@ -34,10 +34,14 @@ export default defineComponent({
     toleranceDelayId: null,
     toleranceFaultId: null,
     systemModuleList: [] as SystemModuleInterface[],
-    systemModules: []  as number[][],
-    canUpdate: false,
+    systemModules: [] as number[][],
+    canUpdate: true,
   }),
   computed: {
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     groupedSystemModules() {
       const columns = 3
       const groups = []
@@ -67,7 +71,12 @@ export default defineComponent({
     async getSystemModules() {
       const response = await new SystemModuleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.systemModules.data : []
-      this.systemModuleList = list
+      for await (const systemModule of list) {
+        if (systemModule.systemModuleSlug !== 'users' && systemModule.systemModuleSlug !== 'system-settings' && systemModule.systemModuleSlug !== 'roles-and-permissions') {
+          this.systemModuleList.push(systemModule)
+        }
+      }
+
       const systemSettingModules = [] as number[][]
       if (this.systemSetting.systemSettingId) {
         const systemModules = [] as Array<number>
@@ -80,7 +89,7 @@ export default defineComponent({
         }
         systemSettingModules[0] = systemModules
       }
-     this.systemModules = systemSettingModules 
+      this.systemModules = systemSettingModules
     },
     async fetchTolerances() {
       const systemSettingService = new SystemSettingService();
@@ -118,9 +127,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: "save sucess",
             life: 5000,
           });
@@ -144,9 +152,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: "save sucess",
             life: 5000,
           });
@@ -179,7 +186,7 @@ export default defineComponent({
         } else if (id === this.toleranceFaultId) {
           this.toleranceFault = 0
         }
-        
+
       } else {
         console.error(`Error deleting tolerance with ID ${id}`)
       }
@@ -266,9 +273,8 @@ export default defineComponent({
         ) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: systemSettingResponse._data.message,
             life: 5000,
           });
@@ -277,7 +283,36 @@ export default defineComponent({
           );
           if (systemSettingResponse?.status === 200) {
             const systemSetting =
-              systemSettingResponse._data.data.systemSetting;
+              systemSettingResponse._data.data.systemSetting
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            if (myGeneralStore.isRoot) {
+              const systemModules = []
+              for (const systemModuleId of this.systemModules[0]) {
+                systemModules.push(systemModuleId)
+              }
+              const response = await new SystemSettingService().assignSystemModules(systemSetting.systemSettingId, systemModules)
+              if (response.status === 201) {
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'System modules assigned',
+                  detail: 'All system modules were assigned successfully.',
+                  life: 5000,
+                });
+              } else {
+                const msgError = response._data.error
+                  ? response._data.error
+                  : response._data.message;
+                this.$toast.add({
+                  severity: "warn",
+                  summary: `System modules assign ${this.systemSetting.systemSettingId ? "updated" : "created"
+                    }`,
+                  detail: msgError,
+                  life: 5000,
+                });
+              }
+            }
+            myGeneralStore.setFullLoader(false)
             this.$emit("save", systemSetting as SystemSettingInterface);
           }
         } else {
@@ -286,9 +321,8 @@ export default defineComponent({
             : systemSettingResponse._data.message;
           this.$toast.add({
             severity: "warn",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: msgError,
             life: 5000,
           });
