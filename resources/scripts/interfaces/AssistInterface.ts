@@ -11,6 +11,7 @@ interface AssistInterface {
   assistLatitude: string
   assistUploadTime: string | Date | null
   assistEmpId: number | null
+  employeeId: number | null
   assistTerminalId: number | null
   assistAssistSyncId: string
   assistCreatedAt: string | Date | null
