@@ -93,6 +93,15 @@
                 </Button>
               </div>
 
+              <div v-if="folderSelected.children && folderSelected.children.length > 0" class="proceeding-file-wrapper children">
+                <proceedingFileTypeFolder
+                  v-for="(folder, index) in folderSelected.children"
+                  :key="`proceeding-file-folder-child-${index}`"
+                  :folder="folder"
+                  @dblclick="handlerDoubleClick(folder)"
+                />
+              </div>
+
               <div v-if="filesFolderFiltered.length > 0" class="file-list-wrapper">
                 <div v-for="(aircraftProceedingFile, index) in filesFolderFiltered" :key="`proceeding-file-${index}`">
                   <aircraftProceedingFileInfoCard

@@ -81,6 +81,15 @@ export default defineComponent({
       const aircraftProceedingFileResponse = await aircraftProceedingFileService.getByAircraft(aircraftId, this.folderSelected.proceedingFileTypeId as number)
       this.aircraftProceedingFilesList = aircraftProceedingFileResponse.data.data
     },
+    async getAircraftProceedingFilesType(typeId: number) {
+      if (!this.folderSelected) {
+        return false
+      }
+
+      const proceedingFileTypeService = new ProceedingFileTypeService()
+      const proceedingFileTypeResponse: any = await proceedingFileTypeService.show(typeId)
+      this.folderSelected = proceedingFileTypeResponse._data.data.proceedingFileType || null
+    },
     addNew() {
       if (!this.folderSelected) {
         return
@@ -161,10 +170,16 @@ export default defineComponent({
       await this.getAircraftProceedingFiles()
       this.filesLoader = false
     },
-    handlerUnselectFolder () {
-      this.folderSelected = null
-      this.aircraftProceedingFilesList = []
-      this.filterFileText = ''
+    async handlerUnselectFolder () {
+      if (this.folderSelected && this.folderSelected.parentId) {
+        await this.getAircraftProceedingFilesType(this.folderSelected.parentId)
+        await this.getAircraftProceedingFiles()
+        this.filterFileText = ''
+      } else {
+        this.folderSelected = null
+        this.aircraftProceedingFilesList = []
+        this.filterFileText = ''
+      }
     },
     slugify(input: string) {
       if (!input) {
