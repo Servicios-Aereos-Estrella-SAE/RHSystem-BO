@@ -31,11 +31,13 @@ export default defineComponent({
     files: [] as Array<any>,
     toleranceDelay: 0,
     toleranceFault: 0,
+    tardinessTolerance: 0,
     toleranceDelayId: null,
     toleranceFaultId: null,
     systemModuleList: [] as SystemModuleInterface[],
     systemModules: [] as number[][],
     canUpdate: true,
+    tardinessToleranceId: null,
   }),
   computed: {
     isRoot() {
@@ -102,7 +104,9 @@ export default defineComponent({
         const faultTolerance = tolerances.find(
           (t: { toleranceName: string }) => t.toleranceName === "Fault"
         );
-
+        const tardinessTolerance = tolerances.find(
+          (t: { toleranceName: string }) => t.toleranceName === "TardinessTolerance"
+        );
         if (delayTolerance) {
           this.toleranceDelay = delayTolerance.toleranceMinutes;
           this.toleranceDelayId = delayTolerance.toleranceId;
@@ -110,6 +114,10 @@ export default defineComponent({
         if (faultTolerance) {
           this.toleranceFault = faultTolerance.toleranceMinutes;
           this.toleranceFaultId = faultTolerance.toleranceId;
+        }
+        if (tardinessTolerance) {
+          this.tardinessTolerance = tardinessTolerance.toleranceMinutes; 
+          this.tardinessToleranceId = tardinessTolerance.toleranceId;
         }
       }
     },
@@ -164,7 +172,36 @@ export default defineComponent({
         console.error("Fault tolerance ID is missing");
       }
     },
-
+    async saveTardiness() {
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+      
+      if (this.tardinessToleranceId !== null) {
+        const systemSettingService = new SystemSettingService();
+        const response = await systemSettingService.updateTolerance(
+          this.tardinessToleranceId,
+          this.tardinessTolerance
+        );
+        
+        myGeneralStore.setFullLoader(false);
+        
+        if (response) {
+          this.$toast.add({
+            severity: "success",
+            summary: `Tardiness tolerance ${
+              this.tardinessToleranceId ? "updated" : "created"
+            }`,
+            detail: "Tardiness tolerance saved successfully",
+            life: 5000,
+          });
+        } else {
+          console.error("Error updating Tardiness Tolerance");
+        }
+      } else {
+        console.error("Tardiness tolerance ID is missing");
+      }
+    },
+    
     onUpload(event: any) {
       this.systemSetting.systemSettingPhoto = event.files[0];
     },
@@ -201,6 +238,14 @@ export default defineComponent({
     deleteFault() {
       if (this.toleranceFaultId !== null) {
         this.deleteTolerance(this.toleranceFaultId)
+      } else {
+        console.error('Fault tolerance ID is missing')
+      }
+    },
+    deleteTardiness(){
+      if (this.tardinessToleranceId !== null) {
+        this.deleteTolerance(this.tardinessToleranceId)
+        this.tardinessTolerance = 0
       } else {
         console.error('Fault tolerance ID is missing')
       }

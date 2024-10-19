@@ -96,6 +96,18 @@
           </DataTable>
         </div>
 
+        <div class="input-box">
+          <label for="tardinessTolerance">Tardiness Tolerance (Occurrences)</label>
+          <div style="display: flex; align-items: center; gap: 40px;">
+            <InputNumber id="tardinessTolerance" v-model="tardinessTolerance" :invalid="submitted" />
+            <div style="display:flex; gap: 20px">
+              <Button label="Save Tardiness" severity="primary" @click="saveTardiness()" />
+              <Button label="Delete" severity="danger" @click="deleteTardiness()" />
+            </div>
+          </div>
+        </div>
+
+
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>

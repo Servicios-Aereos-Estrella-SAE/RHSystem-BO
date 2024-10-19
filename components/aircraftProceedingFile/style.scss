@@ -126,6 +126,10 @@
       grid-template-columns: 1fr;
     }
 
+    &.children {
+      margin-bottom: 1rem;
+    }
+
     .folder {
       box-sizing: border-box;
       position: relative;
