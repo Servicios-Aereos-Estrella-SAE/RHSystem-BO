@@ -6,6 +6,8 @@ import Toast from "primevue/toast";
 import ToastService from "primevue/toastservice";
 import { useMyGeneralStore } from "~/store/general";
 import axios from "axios";
+import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
+import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 
 export default defineComponent({
   components: {
@@ -29,10 +31,28 @@ export default defineComponent({
     files: [] as Array<any>,
     toleranceDelay: 0,
     toleranceFault: 0,
+    tardinessTolerance: 0,
     toleranceDelayId: null,
     toleranceFaultId: null,
+    systemModuleList: [] as SystemModuleInterface[],
+    systemModules: [] as number[][],
+    canUpdate: true,
+    tardinessToleranceId: null,
   }),
-  computed: {},
+  computed: {
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
+    groupedSystemModules() {
+      const columns = 3
+      const groups = []
+      for (let i = 0; i < this.systemModuleList.length; i += columns) {
+        groups.push(this.systemModuleList.slice(i, i + columns))
+      }
+      return groups
+    }
+  },
   async mounted() {
     this.isReady = false;
     this.isNewSystemSetting = !this.systemSetting.systemSettingId
@@ -45,10 +65,34 @@ export default defineComponent({
     this.systemSetting.systemSettingSidebarColor =
       "#" + this.systemSetting.systemSettingSidebarColor;
     this.activeSwicht = isActive === 1 ? true : false;
+    await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
   },
   methods: {
+    async getSystemModules() {
+      const response = await new SystemModuleService().getFilteredList('', 1, 100)
+      const list = response.status === 200 ? response._data.data.systemModules.data : []
+      for await (const systemModule of list) {
+        if (systemModule.systemModuleSlug !== 'users' && systemModule.systemModuleSlug !== 'system-settings' && systemModule.systemModuleSlug !== 'roles-and-permissions') {
+          this.systemModuleList.push(systemModule)
+        }
+      }
+
+      const systemSettingModules = [] as number[][]
+      if (this.systemSetting.systemSettingId) {
+        const systemModules = [] as Array<number>
+        const systemSettingService = new SystemSettingService()
+        const systemSettingResponse = await systemSettingService.show(this.systemSetting.systemSettingId)
+        if (systemSettingResponse?.status === 200) {
+          for await (const systemSettingSystemModule of systemSettingResponse._data.data.systemSetting.systemSettingSystemModules) {
+            systemModules.push(systemSettingSystemModule.systemModuleId)
+          }
+        }
+        systemSettingModules[0] = systemModules
+      }
+      this.systemModules = systemSettingModules
+    },
     async fetchTolerances() {
       const systemSettingService = new SystemSettingService();
       const response = await systemSettingService.getTolerances();
@@ -60,7 +104,9 @@ export default defineComponent({
         const faultTolerance = tolerances.find(
           (t: { toleranceName: string }) => t.toleranceName === "Fault"
         );
-
+        const tardinessTolerance = tolerances.find(
+          (t: { toleranceName: string }) => t.toleranceName === "TardinessTolerance"
+        );
         if (delayTolerance) {
           this.toleranceDelay = delayTolerance.toleranceMinutes;
           this.toleranceDelayId = delayTolerance.toleranceId;
@@ -68,6 +114,10 @@ export default defineComponent({
         if (faultTolerance) {
           this.toleranceFault = faultTolerance.toleranceMinutes;
           this.toleranceFaultId = faultTolerance.toleranceId;
+        }
+        if (tardinessTolerance) {
+          this.tardinessTolerance = tardinessTolerance.toleranceMinutes; 
+          this.tardinessToleranceId = tardinessTolerance.toleranceId;
         }
       }
     },
@@ -85,9 +135,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: "save sucess",
             life: 5000,
           });
@@ -111,9 +160,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: "save sucess",
             life: 5000,
           });
@@ -124,7 +172,36 @@ export default defineComponent({
         console.error("Fault tolerance ID is missing");
       }
     },
-
+    async saveTardiness() {
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+      
+      if (this.tardinessToleranceId !== null) {
+        const systemSettingService = new SystemSettingService();
+        const response = await systemSettingService.updateTolerance(
+          this.tardinessToleranceId,
+          this.tardinessTolerance
+        );
+        
+        myGeneralStore.setFullLoader(false);
+        
+        if (response) {
+          this.$toast.add({
+            severity: "success",
+            summary: `Tardiness tolerance ${
+              this.tardinessToleranceId ? "updated" : "created"
+            }`,
+            detail: "Tardiness tolerance saved successfully",
+            life: 5000,
+          });
+        } else {
+          console.error("Error updating Tardiness Tolerance");
+        }
+      } else {
+        console.error("Tardiness tolerance ID is missing");
+      }
+    },
+    
     onUpload(event: any) {
       this.systemSetting.systemSettingPhoto = event.files[0];
     },
@@ -146,7 +223,7 @@ export default defineComponent({
         } else if (id === this.toleranceFaultId) {
           this.toleranceFault = 0
         }
-        
+
       } else {
         console.error(`Error deleting tolerance with ID ${id}`)
       }
@@ -161,6 +238,14 @@ export default defineComponent({
     deleteFault() {
       if (this.toleranceFaultId !== null) {
         this.deleteTolerance(this.toleranceFaultId)
+      } else {
+        console.error('Fault tolerance ID is missing')
+      }
+    },
+    deleteTardiness(){
+      if (this.tardinessToleranceId !== null) {
+        this.deleteTolerance(this.tardinessToleranceId)
+        this.tardinessTolerance = 0
       } else {
         console.error('Fault tolerance ID is missing')
       }
@@ -233,9 +318,8 @@ export default defineComponent({
         ) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: systemSettingResponse._data.message,
             life: 5000,
           });
@@ -244,7 +328,36 @@ export default defineComponent({
           );
           if (systemSettingResponse?.status === 200) {
             const systemSetting =
-              systemSettingResponse._data.data.systemSetting;
+              systemSettingResponse._data.data.systemSetting
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            if (myGeneralStore.isRoot) {
+              const systemModules = []
+              for (const systemModuleId of this.systemModules[0]) {
+                systemModules.push(systemModuleId)
+              }
+              const response = await new SystemSettingService().assignSystemModules(systemSetting.systemSettingId, systemModules)
+              if (response.status === 201) {
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'System modules assigned',
+                  detail: 'All system modules were assigned successfully.',
+                  life: 5000,
+                });
+              } else {
+                const msgError = response._data.error
+                  ? response._data.error
+                  : response._data.message;
+                this.$toast.add({
+                  severity: "warn",
+                  summary: `System modules assign ${this.systemSetting.systemSettingId ? "updated" : "created"
+                    }`,
+                  detail: msgError,
+                  life: 5000,
+                });
+              }
+            }
+            myGeneralStore.setFullLoader(false)
             this.$emit("save", systemSetting as SystemSettingInterface);
           }
         } else {
@@ -253,9 +366,8 @@ export default defineComponent({
             : systemSettingResponse._data.message;
           this.$toast.add({
             severity: "warn",
-            summary: `System setting ${
-              this.systemSetting.systemSettingId ? "updated" : "created"
-            }`,
+            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
+              }`,
             detail: msgError,
             life: 5000,
           });

@@ -15,11 +15,23 @@ export default defineComponent({
     getPercentage () {
       let total = this.proceedingFilesExpiredCount + this.proceedingFilesExpiringCount
       const percentage = (this.proceedingFilesExpiringCount / total) * 100
-      return total > 0 ?  Math.ceil(percentage) : 0
+      const safePercentage = total > 0 ?  Math.ceil(percentage) : 0
+      const value = 100 - safePercentage
+      return value
     },
     classCard() {
-      return (this.proceedingFilesExpiringCount === 0 && this.proceedingFilesExpiredCount === 0) ? '' :
-          this.proceedingFilesExpiredCount >= this.proceedingFilesExpiringCount ? 'expired' : 'next-expire'
+      const percentage =  this.getPercentage
+      let className = 'active'
+
+      if (percentage > 0) {
+        className = 'next-expire'
+      }
+
+      if (percentage >= 75) {
+        className = 'expired'
+      }
+
+      return className
     }
   },
   async mounted() {

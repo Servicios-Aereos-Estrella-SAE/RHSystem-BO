@@ -177,5 +177,24 @@ export default class SystemSettingService {
     }
     return responseRequest
   }
+
+
+  async assignSystemModules(systemSettingId: number, systemModules: Array<any>) {
+    let responseRequest: any = null
+    const formData = new FormData()
+    systemModules.forEach((systemModuleId) => {
+      formData.append('systemModules[]', systemModuleId);
+    })
+    try {
+      await $fetch(`${this.API_PATH}/system-settings/assign-system-modules/${systemSettingId}`, {
+        method: 'POST',
+        body: formData,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
   
 }

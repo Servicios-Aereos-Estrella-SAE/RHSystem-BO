@@ -1,38 +1,43 @@
 <template>
   <div class="card-container" @click="toggleMenu(false)">
-      <div class="calendar-container" :class="isExpired ? 'expired': 'next-expire'">
-        <div class="calendar-header" :class="isExpired ? 'expired': 'next-expire'">{{new Date(document.proceedingFileExpirationAt).toLocaleString('en-US', { month: 'short' }) }}</div>
-        <div class="calendar-day">{{ new Date(document.proceedingFileExpirationAt).getDate().toString().padStart(2, '0') }}</div>
+    <div class="calendar-container" :class="isExpired ? 'expired': 'next-expire'">
+      <div class="calendar-header" :class="isExpired ? 'expired': 'next-expire'">
+        {{new Date(document.proceedingFileExpirationAt).toLocaleString('en-US', { month: 'short' }) }}
       </div>
-      <div class="card-content">
-        <div class="description">{{ document.proceedingFileName }}</div>
-        <div class="details">
-          <span> Aircraft tail number: {{ document.aircraftProceedingFile.aircraft.aircraftRegistrationNumber }}</span>
-          <span> UUID: License {{ document.proceedingFileUuid.toLocaleUpperCase() }}</span>
-          <span> File: {{ document.proceedingFileType.proceedingFileTypeName }}</span>
-        </div>
+      <div class="calendar-day">
+        {{ new Date(document.proceedingFileExpirationAt).getDate().toString().padStart(2, '0') }}
       </div>
-    
+    </div>
+
+    <div class="card-content">
+      <div class="description uppercase">
+        {{ `${document.proceedingFileType.proceedingFileTypeName}`.toLocaleLowerCase() }}
+      </div>
+      <div class="details">
+        <span> Aircraft: {{ document.aircraftProceedingFile.aircraft.aircraftRegistrationNumber }}</span>
+        <span> File: {{ document.proceedingFileName }}</span>
+        <span> Identifier: {{ document.proceedingFileIdentify || '---' }}</span>
+      </div>
+    </div>
 
     <div class="menu-container">
-      <div class="dots-menu" @click.stop="toggleMenu(!isMenuOpen)">⋮</div>
+      <div class="dots-menu" @click.stop="toggleMenu(!isMenuOpen)">
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM12 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM10 18a2 2 0 1 0 4 0 2 2 0 0 0-4 0Z" fill="#88a4bf" class="fill-212121"></path></svg>
+      </div>
         <div class="dropdown-menu" v-if="isMenuOpen">
           <a @click="openFile" href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-symlink-fill" viewBox="0 0 16 16">
-              <path d="M13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2l.04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3M2.19 3q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293L7.586 3zm9.608 5.271-3.182 1.97c-.27.166-.616-.036-.616-.372V9.1s-2.571-.3-4 2.4c.571-4.8 3.143-4.8 4-4.8v-.769c0-.336.346-.538.616-.371l3.182 1.969c.27.166.27.576 0 .742"/>
-            </svg>
-              See document
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.25A2.25 2.25 0 0 1 4.25 4h3.956a2.25 2.25 0 0 1 1.438.52l2.381 1.98h5.725A2.25 2.25 0 0 1 20 8.75v.752H6.422a2.25 2.25 0 0 0-2.183 1.705l-1.923 7.7c.043-.171 0 .005 0 0a2.24 2.24 0 0 1-.32-1.158L2 6.25Z" fill="#88a4bf" class="fill-212121"></path><path d="M3.745 19.379A.5.5 0 0 0 4.23 20h14.24a1.75 1.75 0 0 0 1.698-1.326l1.763-7.05a.5.5 0 0 0-.485-.622H6.422a.75.75 0 0 0-.728.568L3.745 19.38Z" fill="#88a4bf" class="fill-212121"></path></svg>
+            Open file
           </a>
           <a href="#">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
-              <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
-            </svg>
-            Go to document manager
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.821 6.5h5.929a2.25 2.25 0 0 1 2.229 1.938l.016.158.005.154v8.278l-2.013-2.012a1.75 1.75 0 0 0-2.82 1.985h-2.332a1.75 1.75 0 0 0-2.822-1.98l-2.5 2.498a1.75 1.75 0 0 0 0 2.476l.005.005H4.25a2.25 2.25 0 0 1-2.245-2.096L2 17.75v-7.251l6.207.001.196-.009a2.25 2.25 0 0 0 1.088-.393l.156-.12L13.821 6.5Z" fill="#88a4bf" class="fill-212121"></path><path d="M8.207 4c.46 0 .908.141 1.284.402l.156.12 2.103 1.751-3.063 2.553-.085.061a.75.75 0 0 1-.29.106L8.206 9 2 8.999V6.25a2.25 2.25 0 0 1 2.096-2.245L4.25 4h3.957ZM13.78 16.79a.75.75 0 0 0-1.06-1.062l-2.5 2.499a.75.75 0 0 0 0 1.06l2.5 2.497a.75.75 0 1 0 1.06-1.061L12.556 19.5h6.883l-1.219 1.216a.75.75 0 1 0 1.06 1.061l2.5-2.495a.75.75 0 0 0 0-1.061l-2.5-2.499a.75.75 0 0 0-1.06 1.062L19.437 18h-6.869l1.212-1.212Z" fill="#88a4bf" class="fill-212121"></path></svg>
+            Manage file
           </a>
         </div>
     </div>
   </div>
 </template>
+
 <script>
   import Script from './script.ts'
   export default Script
@@ -40,4 +45,4 @@
 
 <style scoped lang="scss">
   @import './style';
-</style>./script.js
+</style>
