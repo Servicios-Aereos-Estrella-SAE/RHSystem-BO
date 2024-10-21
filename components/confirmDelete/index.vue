@@ -20,7 +20,13 @@
           </span>
           to delete.
         </p>
-        <InputText v-model="verifyWord" class="uppercase text-center"/>
+
+        <InputText
+          v-model="verifyWord"
+          class="uppercase text-center"
+          @keyup.enter="handlerConfirmDelete"
+        />
+
         <p v-if="isIncorrect" class="incorrect">
           Incorrect value to confirm
         </p>

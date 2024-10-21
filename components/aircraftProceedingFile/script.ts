@@ -48,6 +48,20 @@ export default defineComponent({
       const filtered: ProceedingFileTypeInterface[] = this.proceedingFileTypesList.filter(folder =>  folder.proceedingFileTypeSlug.includes(this.filterFolderText))
       return filtered
     },
+    childrenFoldersFiltered () {
+      if (!this.folderSelected) {
+        return []
+      }
+
+      if (!this.filterFolderText) {
+        return this.folderSelected.children
+      }
+
+      if (this.folderSelected && this.folderSelected.children && this.folderSelected.children.length > 0) {
+        const filtered: ProceedingFileTypeInterface[] = this.folderSelected.children.filter(folder =>  folder.proceedingFileTypeSlug.includes(this.filterFolderText))
+        return filtered
+      }
+    },
     filesFolderFiltered (): AircraftProceedingFileInterface[] {
       if (!this.filterFileText) {
         return this.aircraftProceedingFilesList

@@ -143,12 +143,8 @@
         justify-content: center;
         align-items: center;
         background-color: $gray;
-        height: 4rem;
+        min-height: 4rem;
         border-radius: $radius;
-
-        @media screen and (max-width: $ipad) {
-          // min-height: 6rem;
-        }
 
         svg {
           width: 2rem;
