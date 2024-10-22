@@ -1,17 +1,26 @@
 import type { PositionInterface } from "../interfaces/PositionInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class PositionService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
     // Función para almacenar una nueva posición
     async store(position: PositionInterface) {
       let responseRequest: any = null;
+      const headers = { ...this.GENERAL_HEADERS }
+
       try {
         await $fetch(`${this.API_PATH}/positions`, {
+          headers,
           method: 'POST',
           body: position,
           onResponse({ response }) {
@@ -27,11 +36,12 @@ export default class PositionService {
       return responseRequest;
     }
   
-    // Función para actualizar una posición existente
     async update(position: PositionInterface) {
+      const headers = { ...this.GENERAL_HEADERS }
       let responseRequest: any = null;
       try {
         await $fetch(`${this.API_PATH}/positions/${position.positionId}`, {
+          headers,
           method: 'PUT',
           body: position,
           onResponse({ response }) {
@@ -49,8 +59,10 @@ export default class PositionService {
     
   async getPositionsDepartment(departmentId: number): Promise<PositionInterface[]> {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -62,8 +74,10 @@ export default class PositionService {
 
   async show (departmentId: number, positionId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -82,10 +96,12 @@ export default class PositionService {
   }
 
   async assignShift (departmentId: number, positionId: number, shiftId: number, applySince: string) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const query = { 'departmentId': departmentId, 'shiftId': shiftId,  'applySince': applySince }
     try {
       await $fetch(`${this.API_PATH}/position/assign-shift/${positionId}`, {
+        headers,
         method: 'POST',
         query: { ...query },
         onResponse ({ response }) { responseRequest = response },
@@ -98,8 +114,10 @@ export default class PositionService {
 
   async getPositions (): Promise<PositionInterface[]> {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/positions`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
