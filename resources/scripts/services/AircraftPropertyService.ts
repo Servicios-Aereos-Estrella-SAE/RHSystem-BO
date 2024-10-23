@@ -1,17 +1,25 @@
 import type { AircraftPropertyInterface } from "../interfaces/AircraftPropertyInterface";
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class AircraftPropertyService {
   protected API_PATH: string;
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor() {
     const CONFIG = useRuntimeConfig();
+    const { token } = useAuth()
     this.API_PATH = CONFIG.public.BASE_API_PATH;
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getFilteredList(searchText: string, page: number = 1, limit: number = 10) {
     let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/aircraft-properties`, {
+      headers,
       query: {
         searchText,  
         page,
@@ -37,8 +45,10 @@ export default class AircraftPropertyService {
 
   async delete(aircraftProperty: AircraftPropertyInterface) {
     let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/aircraft-properties/${aircraftProperty.aircraftPropertiesId}`, {
+      headers,
       method: 'DELETE',
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
@@ -50,6 +60,7 @@ export default class AircraftPropertyService {
   async create(aircraftProperty: AircraftPropertyInterface) {
     let responseRequest: any = null;
     const formData = new FormData();
+    const headers = { ...this.GENERAL_HEADERS }
 
     formData.append('aircraftPropertiesName', aircraftProperty.aircraftPropertiesName);
     formData.append('aircraftClassId', aircraftProperty.aircraftClassId?.toString() || '');
@@ -85,8 +96,7 @@ export default class AircraftPropertyService {
     await $fetch(`${this.API_PATH}/aircraft-properties`, {
       method: 'POST',
       body: formData,
-      headers: {
-      },
+      headers,
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
     });
@@ -95,6 +105,8 @@ export default class AircraftPropertyService {
 
   async update(aircraftProperty: AircraftPropertyInterface) {
     let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS }
+
     const formData = new FormData();
     if (aircraftProperty.aircraftPropertiesName) {
       formData.append('aircraftPropertiesName', aircraftProperty.aircraftPropertiesName);
@@ -148,8 +160,7 @@ export default class AircraftPropertyService {
     await $fetch(`${this.API_PATH}/aircraft-properties/${aircraftProperty.aircraftPropertiesId}`, {
       method: 'PUT',
       body: formData,
-      headers: {
-      },
+      headers,
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
     });

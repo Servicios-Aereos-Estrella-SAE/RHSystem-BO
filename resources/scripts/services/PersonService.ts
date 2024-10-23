@@ -1,16 +1,24 @@
 import type { PeopleInterface } from "../interfaces/PeopleInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class PersonService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
   async getEmployee(id: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/person-get-employee/${id}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -29,9 +37,11 @@ export default class PersonService {
   }
 
   async store(person: PeopleInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/persons`, {
+        headers,
         method: 'POST',
         query: { ...person },
         onResponse ({ response }) { responseRequest = response },
@@ -43,9 +53,11 @@ export default class PersonService {
   }
 
   async update(person: PeopleInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/persons/${person.personId}`, {
+        headers,
         method: 'PUT',
         query: { ...person },
         onResponse ({ response }) { responseRequest = response },

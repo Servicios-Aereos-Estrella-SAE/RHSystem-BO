@@ -1,17 +1,25 @@
 import type { ShiftExceptionInterface } from "../interfaces/ShiftExceptionInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class ShiftExceptionService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
   async getByEmployee(employeeId: number, exceptionTypeId: number | null, dateStart: string | null, dateEnd: string | null) {
     const query = { 'exceptionTypeId': exceptionTypeId, 'dateStart': dateStart,  'dateEnd': dateEnd }
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/shift-exception-employee/${employeeId}`, {
+      headers,
       query: query,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -23,8 +31,11 @@ export default class ShiftExceptionService {
 
   async store (shiftException: ShiftExceptionInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/shift-exception`, {
+        headers,
         method: 'POST',
         body: { ...shiftException },
         onResponse ({ response }) { responseRequest = response },
@@ -37,8 +48,11 @@ export default class ShiftExceptionService {
 
   async update (shiftException: ShiftExceptionInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/shift-exception/${shiftException.shiftExceptionId}`, {
+        headers,
         method: 'PUT',
         body: { ...shiftException },
         onResponse ({ response }) { responseRequest = response },
@@ -51,8 +65,10 @@ export default class ShiftExceptionService {
 
   async delete (shiftException: ShiftExceptionInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/shift-exception/${shiftException.shiftExceptionId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -63,8 +79,10 @@ export default class ShiftExceptionService {
 
   async show (shiftExceptionId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/shift-exception/${shiftExceptionId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })

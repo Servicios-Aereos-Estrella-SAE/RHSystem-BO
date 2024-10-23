@@ -1,16 +1,24 @@
 import type { CustomerInterface } from "../interfaces/CustomerInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class CustomerService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/customers`, {
+      headers,
       query: {
         search: searchText,
         page,
@@ -24,6 +32,7 @@ export default class CustomerService {
   }
 
   async store(customer: CustomerInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     for (const key in customer) {
       if (customer.hasOwnProperty(key)) {
@@ -36,6 +45,7 @@ export default class CustomerService {
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/customers`, {
+        headers,
         method: 'POST',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -47,6 +57,7 @@ export default class CustomerService {
   }
 
   async update(customer: CustomerInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     for (const key in customer) {
       if (customer.hasOwnProperty(key)) {
@@ -59,6 +70,7 @@ export default class CustomerService {
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/customers/${customer.customerId}`, {
+        headers,
         method: 'PUT',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -70,9 +82,11 @@ export default class CustomerService {
   }
 
   async show(id: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/customers/${id}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -109,8 +123,10 @@ export default class CustomerService {
 
   async delete(customer: CustomerInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/customers/${customer.customerId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }

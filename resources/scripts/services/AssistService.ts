@@ -40,8 +40,10 @@ export default class AssistService {
   async sync () {
     let responseRequest: any = null
     const payload = { date: '2024-05-01', page: 1 }
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/v1/assists/synchronize`, {
+      headers,
       method: 'POST',
       query: { ...payload },
       onResponse ({ response }) { responseRequest = response },
