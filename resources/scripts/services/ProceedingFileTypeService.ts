@@ -114,6 +114,27 @@ export default class ProceedingFileTypeService {
     return responseRequest
   }
 
+  async getLegacyEmails(proceedingFileTypeId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/proceeding-file-types/${proceedingFileTypeId}/get-legacy-emails`, {
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const proceedingFileTypeEmails = responseRequest.status === 200 ? responseRequest._data.data.proceedingFileTypeEmails : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              proceedingFileTypeEmails: proceedingFileTypeEmails
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
   validateInfo(proceedingFileType: ProceedingFileTypeInterface): boolean {
     if (!proceedingFileType.proceedingFileTypeName) {
       console.error('Wrong name');

@@ -10,6 +10,7 @@ import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterfa
 import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
+import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
 
 export default defineComponent({
   components: {
@@ -25,6 +26,7 @@ export default defineComponent({
     isReady: false,
     shiftsList: [] as ShiftInterface[],
     employeeCalendar: [] as AssistDayInterface[],
+    vacationPeriod: null as VacationPeriodInterface | null,
     selectedDate: DateTime.now() as DateTime,
     inputSelectedDate: new Date(),
     displayInputCalendar: false as boolean,
@@ -60,6 +62,10 @@ export default defineComponent({
 
       return daysList
     },
+    statusForm () {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.userVacationFormClosed
+    }
   },
   created () {
   },
@@ -186,8 +192,13 @@ export default defineComponent({
     onClickVacations () {
       this.displaySidebarVacations = true
     },
-    handlerVacationsManager () {
+    handlerVacationsManager (vacationPeriod: VacationPeriodInterface) {
+      this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
+    },
+    handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setUserVacationFormStatus(true)
     }
   }
 })

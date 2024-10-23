@@ -114,20 +114,24 @@ export default defineComponent({
     async assignItemsMenu(systemModules: Array<SystemModuleInterface>, group: string) {
       const myGeneralStore = useMyGeneralStore()
       const existGroupMenu = this.menu.find(a => a.label === group)
+      const systemModulesActive = myGeneralStore.systemModules
       if (existGroupMenu) {
         const items = systemModules.filter((a: SystemModuleInterface) => a.systemModuleGroup === group)
         for await (const item of items) {
-          if (!item.systemModulePath.toString().includes('#')) {
-            const hasPermission = this.roleSystemPermissions.find((a) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read' && a.systemPermissions.systemModule && a.systemPermissions.systemModule.systemModuleSlug === item.systemModuleSlug)
-            if (hasPermission || myGeneralStore.isRoot) {
-              existGroupMenu.items.push(
-              {
-                label: item.systemModuleName,
-                name: item.systemModuleName,
-                path: item.systemModulePath,
-                icon: item.systemModuleIcon,
-                items: []
-              })
+          const isItemActive = systemModulesActive.find(a => a.systemModuleId === item.systemModuleId)
+          if (isItemActive || item.systemModuleSlug === 'users' || item.systemModuleSlug === 'system-settings' || item.systemModuleSlug === 'roles-and-permissions') {
+            if (!item.systemModulePath.toString().includes('#')) {
+              const hasPermission = this.roleSystemPermissions.find((a) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read' && a.systemPermissions.systemModule && a.systemPermissions.systemModule.systemModuleSlug === item.systemModuleSlug)
+              if (hasPermission || myGeneralStore.isRoot) {
+                existGroupMenu.items.push(
+                {
+                  label: item.systemModuleName,
+                  name: item.systemModuleName,
+                  path: item.systemModulePath,
+                  icon: item.systemModuleIcon,
+                  items: []
+                })
+              }
             }
           }
         }

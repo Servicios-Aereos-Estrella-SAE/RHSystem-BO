@@ -7,6 +7,8 @@ interface ProceedingFileTypeInterface {
   proceedingFileTypeCreatedAt?: string | null,
   proceedingFileTypeUpdatedAt?: string | null,
   proceedingFileTypeDeletedAt?: string | null
+  parentId: number | null
+  children?: ProceedingFileTypeInterface[]
 }
 
 export type { ProceedingFileTypeInterface }

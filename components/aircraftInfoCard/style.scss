@@ -1,0 +1,57 @@
+@import '/resources/styles/variables.scss';
+
+.aircraft-info-card {
+  position: relative;
+  padding: 1rem;
+  border-radius: $border;
+  background-color: white;
+
+  .banner {
+    background-color: $gray;
+    border-radius: $radius;
+    position: relative;
+    height: 8rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    svg {
+      width: 5rem;
+      transform: rotate(-30deg);
+    }
+  }
+
+  .tail {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .prop-value {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+
+    .prop {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .value {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      text-align: right;
+
+      &.active {
+        color: $success;
+      }
+    }
+  }
+}

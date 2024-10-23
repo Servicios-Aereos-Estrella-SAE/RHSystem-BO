@@ -1,240 +1,145 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
-$color-expired: #ff4b4b;
-$color-next-expire: #ff9e44;
-$color-active: #4ac19d;
+
+$color-expired: $danger;
+$color-next-expire: $warning;
+$color-active: $success;
 
 .card-container {
-  cursor: pointer;
-  align-items: start;
+  box-sizing: border-box;
   background-color: $white;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: $shadow;
-}
-
-
-
-.card-icon {
-  background-color: #d2f0e7;
-  border-radius: 50%;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  &.expired {
-    background-color: #fbcfcf;
-  }
-  &.next-expire {
-    background-color: #ffe4d1;
-  }
-}
-
-.icon-placeholder {
-  display: inline-block;
-  width: 4rem;
-  height: 4rem;
-  background-color: $color-active;
-  border-radius: 50%;
-  padding: 1rem;
-  &.expired {
-    background-color: $color-expired;
-  }
-  &.next-expire {
-    background-color: $color-next-expire;
-  }
-  svg {
-    font-size: 2rem;
-    color: #fff;
-    width: 100%;
-    height: 100%;
-  }
-}
-
-
-.card-content {
-  flex-grow: 1;
-}
-
-.percentage {
-  font-size: 1.8rem;
-  font-weight: 400;
-  text-align: left;
-  color: $color-active;
-}
-
- .description {
-  height: 2rem;
-  font-size: 1rem;
-  text-align: left;
-  color: $accent;
-  margin: 8px 0;
-  font-weight: 400;
-  @media screen and (max-width: $phone) {
-    height: 5rem!important;
-  }
-}
-.details {
-  display: flex;
-  flex-direction: column;
-  margin-top: -4px;
-  font-size: .8rem;
-  font-weight: 300;
-  align-items: flex-start;
-  color: $black;
-}
-
-.details span {
-  margin-bottom: 4px; /* Espacio entre filas */
-  color: $accent;
-}
-
-.expired {
-  color: $color-expired;
-  font-weight: 600;
-}
-
-.next-expire {
-  color: $color-next-expire;
-  font-weight: 600;
-}
-
-.calendar-container {
-  flex-shrink: 0;
-  display: inline-block;
-  margin-top: .4rem;
-  width: 4rem; // Ancho del calendario
-  height: 3.2rem;
-  border: 2px solid $color-active; // Borde rojo
-  border-radius: 8px 8px 0 8px;
-  text-align: center;
-  margin-right: 1rem;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-  &.expired {
-    border-color: $color-expired; // Borde rojo si está vencido
-  }
-  &.next-expire {
-    border-color: $color-next-expire; // Borde naranja si está por vencer
-  }
-}
-
-.calendar-header {
-  background-color: $color-active; // Fondo rojo en la parte superior
-  color: $white; // Texto blanco
-  padding: 4px 0;
-  font-size: .7rem;
-  font-weight: 300;
-  text-transform: uppercase; // Para que el mes aparezca en mayúsculas
-  &.expired {
-    background-color: $color-expired; // Fondo rojo si está vencido
-  }
-  &.next-expire {
-    background-color: $color-next-expire; // Fondo naranja si está por vencer
-  }
-}
-
-.calendar-day {
-  color: $accent; // Color del día
-  padding: 4px 0;
-  font-weight: 200;
-  font-size: 1rem;
-}
-
-.menu-container {
-  position: relative; // Para que el menú desplegable se posicione respecto a este contenedor
-  margin-left: 1rem;
-}
-
-.dots-menu {
-  width: 1.5rem;
-  height: 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  color: $black;
-  font-weight: bold;
-  background-color: #f0f4fa; /* Fondo gris claro */
-  padding-top: .1rem;
-  padding-left: .5rem;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 0;
-  right: calc(100% + 10px); /* Colocar el menú a la derecha del botón */
-  background-color: $white;
-  border: $border;
   border-radius: $radius;
-  box-shadow: $shadow;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  z-index: 1000; /* Asegurarse de que esté sobre otros elementos */
-  white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
-}
+  padding: 1rem;
+  border: $border;
+  display: grid;
+  grid-template-columns: 4rem auto 2rem;
+  gap: 0.5rem;
 
-.dropdown-menu::before {
-  content: "";
-  position: absolute;
-  top: 15px;
-  right: -6px;
-  border-width: $radius;
-  border-style: solid;
-  border-color: transparent transparent transparent #ffffff;
-  z-index: 1001;
-}
+  .calendar-container {
+    box-sizing: border-box;
+    height: 3.35rem;
+    width: 3.35rem;
+    border: 2px solid $color-active;
+    border-radius: 0.5rem 0.5rem 0 0.5rem;
+    text-align: center;
 
-.dropdown-menu a {
-  text-decoration: none;
-  color: #4b5a6a;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  svg {
-    margin-right: 8px; /* Espacio entre el icono y el texto */
-  }
-}
+    &.expired {
+      border-color: $color-expired;
+    }
 
-.dropdown-menu a:hover {
-  background-color: #f0f0f0;
-}
+    &.next-expire {
+      border-color: $color-next-expire;
+    }
 
-.dropdown-menu a i {
-  margin-right: 8px; /* Espacio entre el icono y el texto */
-}
+    .calendar-header {
+      background-color: $color-active;
+      color: $white;
+      padding-top: 0.35rem;
+      padding-bottom: 0.35rem;
+      font-size: .7rem;
+      font-weight: normal;
+      text-transform: uppercase;
+      
+      &.expired {
+        background-color: $color-expired;
+      }
+      
+      &.next-expire {
+        background-color: $color-next-expire;
+      }
+    }
 
-@media screen and (max-width: $phone) {
-  .card-container {
-    display: flex;
-    cursor: pointer;
-    align-items: start;
-    background-color: $white;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: rgba(101, 100, 100, 0.212) 0px 5px 9px;
-    width: 100%; // Ajusta según sea necesario
-    &.active {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    .calendar-day {
+      font-weight: normal;
+      font-size: 0.85rem;
+      box-sizing: border-box;
+      height: 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 
-  .description {
-    height: 40px;
-    font-size: 1.3rem;
-    text-align: left;
-    color: $accent;
-    margin: 8px 0;
-    font-weight: 400;
+  .card-content {
+
+    .description {
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      display: -webkit-box;
+      overflow: hidden;
+    }
+    
+    .details {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      
+      span {
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        display: -webkit-box;
+        overflow: hidden;
+      }
+    }
   }
-  
-  .details {
-    display: flex;
-    flex-direction: column;
-    margin-top: -4px;
-    font-size: 1rem;
-    font-weight: 300;
-    align-items: flex-start;
-    color: $black;
+
+  .menu-container {
+    position: relative;
+
+    .dots-menu {
+      height: 2rem;
+      cursor: pointer;
+      background-color: $gray;
+      border-radius: calc($radius / 2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      svg {
+        width: 1rem;
+      }
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 0;
+      right: calc(100% + 10px);
+      background-color: $white;
+      border: $border;
+      border-radius: $radius;
+      box-shadow: $shadow;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      z-index: 1000;
+      white-space: nowrap;
+
+      svg {
+        width: 1.25rem;
+      }
+    }
+    
+    .dropdown-menu a {
+      text-decoration: none;
+      color: #4b5a6a;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      svg {
+        margin-right: 8px;
+      }
+    }
+    
+    .dropdown-menu a:hover {
+      background-color: #f0f0f0;
+      border-radius: calc($radius / 2);
+    }
+    
+    .dropdown-menu a i {
+      margin-right: 8px;
+    }
+    
   }
 }

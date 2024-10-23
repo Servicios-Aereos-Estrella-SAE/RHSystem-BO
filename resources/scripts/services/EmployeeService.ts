@@ -274,4 +274,30 @@ export default class EmployeeService {
     }
     return responseRequest
   }
+
+  async getYearsWorked(employeeId: number, year: number | null) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employeeId}/get-years-worked`, {
+        query: { year: year },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationsByPeriod(employeeId: number, vacationSettingId: number) {
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-by-period`, {
+        query: { vacationSettingId: vacationSettingId },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 }

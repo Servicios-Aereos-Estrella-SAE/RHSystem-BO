@@ -11,6 +11,7 @@ import { useMyGeneralStore } from '~/store/general'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
+import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface';
 
 export default defineComponent({
   components: {
@@ -115,9 +116,15 @@ export default defineComponent({
     onTolerancePercentage: 0 as number,
     onDelayPercentage: 0 as number,
     onFaultPercentage: 0 as number,
-    statusInfo: null as AssistSyncStatus | null
+    statusInfo: null as AssistSyncStatus | null,
+    assist: null as AssistInterface | null,
+    drawerAssistForm: false as boolean
   }),
   computed: {
+    isRoot () {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     weeklyStartDay () {
       const daysList = []
       if (!this.periodSelected && !this.datesSelected.length) {
@@ -408,6 +415,19 @@ export default defineComponent({
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
     },
+    async syncEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeCode = this.employee?.employeeCode || "0"
+      const assistReq = await new AssistService().syncEmployee(startDay, endDay, employeeCode)
+      console.log('assistReq', assistReq);
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
+    },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -452,6 +472,20 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) {}
+    },
+    addNewAssist () {
+      if (this.employee && this.employee.employeeId) {
+        const assist = {
+          assistEmpId: this.employee.employeeId,
+          employeeId: this.employee.employeeId,
+        } as AssistInterface
+        this.assist = assist
+        this.drawerAssistForm = true
+      }
+    },
+    onSaveAssist () {
+      this.drawerAssistForm = false
+      this.handlerPeriodChange()
     }
   }
 })
