@@ -37,7 +37,8 @@ export default defineComponent({
     folderSelected: null as ProceedingFileTypeInterface | null,
     filesLoader: false as boolean,
     filterFolderText: '' as string,
-    filterFileText: '' as string
+    filterFileText: '' as string,
+    drawerProceedingFileTypeEmailForm: false as boolean,
   }),
   computed: {
     foldersFiltered (): ProceedingFileTypeInterface[] {
@@ -104,11 +105,16 @@ export default defineComponent({
       const proceedingFileTypeResponse: any = await proceedingFileTypeService.show(typeId)
       this.folderSelected = proceedingFileTypeResponse._data.data.proceedingFileType || null
     },
+    addEmails () {
+      if (!this.folderSelected) {
+        return
+      }
+      this.drawerProceedingFileTypeEmailForm = true
+    },
     addNew() {
       if (!this.folderSelected) {
         return
       }
-
       const fakeProceedingFile: ProceedingFileInterface = new ProceedingFile().toModelObject()
       fakeProceedingFile.proceedingFileTypeId = this.folderSelected.proceedingFileTypeId
 

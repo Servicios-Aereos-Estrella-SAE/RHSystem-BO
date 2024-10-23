@@ -20,21 +20,20 @@
       <div class="proceeding-file-type-emails-wrapper">
         <div v-for="(proceedingFileTypeEmail, index) in proceedingFileTypeEmails" :key="`proceeding-file-type-email-${index}`">
           <proceedingFileTypeEmailControl :proceeding-file-type-email="proceedingFileTypeEmail"
-            :click-on-delete="() => { onDelete(proceedingFileTypeEmail, index) }" @onSave="onSave" />
+            :click-on-delete="() => { onDelete(proceedingFileTypeEmail, index) }" />
+        </div>
+        <h5 v-if="legacyProceedingFileTypeEmails.length > 0">Legacy emails</h5>
+        <div v-for="(proceedingFileTypeEmail, index) in legacyProceedingFileTypeEmails" :key="`legacy-proceeding-file-type-emaiL-${index}`">
+         <span>{{ proceedingFileTypeEmail.proceedingFileTypeEmailEmail }}</span>
         </div>
       </div>
-      <Dialog v-model:visible="drawerProceedingFileTypeEmailDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
-        <div class="confirmation-content">
-          <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="shiftException"> Are you sure you want to delete email
-            <b>{{ `${emailToDelete || ''}` }}</b>
-            ?</span>
-        </div>
-        <template #footer>
-          <Button label="No" icon="pi pi-times" text @click="drawerProceedingFileTypeEmailDelete = false" />
-          <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-        </template>
-      </Dialog>
+      <transition name="page">
+        <confirmDelete
+          v-if="drawerProceedingFileTypeEmailDelete"
+          @confirmDelete="confirmDelete"
+          @cancelDelete="drawerProceedingFileTypeEmailDelete = false"
+        />
+      </transition>
     </div>
     <ProgressSpinner v-else />
   </div>
