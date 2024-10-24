@@ -74,10 +74,10 @@ export default class AttendanceMonitorController {
         const date = DateTime.fromJSDate(periodDate)
         const start = date.startOf('week')
         let thursday = start.plus({ days: 3 })
-        let startDate = thursday.minus({ weeks: 2 })
+        let startDate = thursday.minus({ days: 24 })
         const daysList =[]
 
-        for (let index = 0; index < 15; index++) {
+        for (let index = 0; index < 13; index++) {
           const currentDay = startDate.plus({ days: index })
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))

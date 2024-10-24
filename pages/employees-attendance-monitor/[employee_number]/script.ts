@@ -193,11 +193,11 @@ export default defineComponent({
           console.log('thursday', thursday);
 
           // Establecer el inicio del periodo como el jueves de dos semanas atrás
-          let startDate = thursday.minus({ weeks: 2 }) // Jueves de dos semanas atrás
+          let startDate = thursday.minus({ days: 24 }) // Jueves de dos semanas atrás
           console.log('startDate', startDate);  
 
           // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
-          for (let index = 0; index < 15; index++) {
+          for (let index = 0; index < 13; index++) {
             const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
