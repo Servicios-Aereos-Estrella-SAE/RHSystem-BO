@@ -201,7 +201,7 @@ export default defineComponent({
           let startDate = thursday.minus({ days: 24 }) // Jueves de dos semanas atrás
 
           // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
-          for (let index = 0; index < 13; index++) {
+          for (let index = 0; index < 14; index++) {
             const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
@@ -237,8 +237,22 @@ export default defineComponent({
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+        // Convertimos la fecha inicio desde weeklyStartDay[0]
+        const startDate = DateTime.fromObject({
+          year: this.weeklyStartDay[0].year,
+          month: this.weeklyStartDay[0].month,
+          day: this.weeklyStartDay[0].day
+        }).setLocale('en');
+
+        // Convertimos la fecha fin desde weeklyStartDay[1]
+        const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+        const endDate = DateTime.fromObject({
+          year: endDateObject.year,
+          month: endDateObject.month,
+          day: endDateObject.day
+        }).setLocale('en');
+
+        return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
@@ -427,7 +441,7 @@ export default defineComponent({
             // Establecer el inicio del periodo como el jueves de dos semanas atrás
             start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
             // El periodo es de 14 días (dos semanas completas)
-            periodLenght = 13
+            periodLenght = 14
           break
         }
         default:
