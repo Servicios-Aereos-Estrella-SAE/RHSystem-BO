@@ -17,8 +17,10 @@ export default class EmployeeProceedingFileService {
 
   async getByEmployee(employeeId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/${employeeId}/proceeding-files`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -29,9 +31,11 @@ export default class EmployeeProceedingFileService {
 
 
   async store (employeeProceedingFile: EmployeeProceedingFileInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees-proceeding-files`, {
+        headers,
         method: 'POST',
         query: { ...employeeProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -43,9 +47,11 @@ export default class EmployeeProceedingFileService {
   }
 
   async update (employeeProceedingFile: EmployeeProceedingFileInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFile.employeeProceedingFileId}`, {
+        headers,
         method: 'PUT',
         query: { ...employeeProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -58,8 +64,10 @@ export default class EmployeeProceedingFileService {
 
   async delete (employeeProceedingFile: EmployeeProceedingFileInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFile.employeeProceedingFileId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -70,8 +78,10 @@ export default class EmployeeProceedingFileService {
 
   async show (employeeProceedingFileId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFileId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })

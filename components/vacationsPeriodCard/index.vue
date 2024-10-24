@@ -1,16 +1,14 @@
 <template>
-  <div class="vacation-period-card">
+  <div v-if="vacationPeriod" class="vacation-period-card">
     <div class="title">
-      September 24, 2020
-      -
-      September 24, 2020
+      {{ vacationPeriod.vacationPeriodRange }}
     </div>
     <div class="info">
       <div class="prop">
         Active work years
       </div>
       <div class="value">
-        01
+        {{ vacationPeriod.vacationPeriodActiveWorkYears.toString().padStart(2, '0') }}
       </div>
     </div>
     <div class="info">
@@ -18,7 +16,7 @@
         Corresponding days
       </div>
       <div class="value">
-        12
+        {{ vacationPeriod.vacationPeriodCorrespondingDays.toString().padStart(2, '0') }}
       </div>
     </div>
     <div class="info">
@@ -26,7 +24,7 @@
         Used days
       </div>
       <div class="value">
-        00
+        {{ vacationPeriod.vacationPeriodUsedDays.toString().padStart(2, '0') }}
       </div>
     </div>
     <div class="info">
@@ -34,7 +32,7 @@
         Available days
       </div>
       <div class="value">
-        12
+        {{ vacationPeriod.vacationPeriodAvailableDays.toString().padStart(2, '0') }}
       </div>
     </div>
     <br>

@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
+import SystemModuleService from '~/resources/scripts/services/SystemModuleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export const useMyGeneralStore = defineStore({
@@ -13,7 +15,10 @@ export const useMyGeneralStore = defineStore({
     backgroundColorDark: '#092c50',
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
     isRoot: false,
-    displayContent: false
+    displayContent: false,
+    userVacationFormClosed: false,
+    systemSettingId: null as number | null,
+    systemModules: [] as Array<SystemModuleInterface>
   }),
   actions: {
     setDisplayAside(status: boolean) {
@@ -36,6 +41,7 @@ export const useMyGeneralStore = defineStore({
       const systemSettingService = new SystemSettingService()
       const systemSettingResponse = await systemSettingService.getActive()
       if (systemSettingResponse) {
+        this.systemSettingId = systemSettingResponse.systemSettingId
         if (systemSettingResponse.systemSettingSidebarColor) {
           this.backgroundColor = `#${systemSettingResponse.systemSettingSidebarColor}`
           const shades = this.generateColorShades(this.backgroundColor)
@@ -44,6 +50,7 @@ export const useMyGeneralStore = defineStore({
         if (systemSettingResponse.systemSettingLogo) {
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
         }
+        this.getSystemModules()
       }
     },
 
@@ -84,6 +91,13 @@ export const useMyGeneralStore = defineStore({
       let hasAccess = false
       if (authUser && authUser.roleId) {
         if (authUser.role) {
+          if (this.systemModules.length === 0) {
+            await this.getSystemModules()
+          }
+          const isModuleActive = this.systemModules.find(a => a.systemModuleSlug === systemModuleSlug)
+          if (!isModuleActive && systemModuleSlug !== 'users' && systemModuleSlug !== 'system-settings' && systemModuleSlug !== 'roles-and-permissions') {
+            return false
+          }
           if (authUser.role.roleSlug === 'root') {
             this.isRoot = true
             return true
@@ -142,5 +156,21 @@ export const useMyGeneralStore = defineStore({
       }
       return systemPermissions
     },
+    async getSystemModules() {
+      this.systemModules = []
+      if (this.systemSettingId) {
+        const systemSettingService = new SystemSettingService()
+        const systemSettimgResponse = await systemSettingService.show(this.systemSettingId)
+        if (systemSettimgResponse && systemSettimgResponse.status === 200) {
+          const systemSettingSystemModules = systemSettimgResponse._data.data.systemSetting.systemSettingSystemModules
+          for await (const systemModule of systemSettingSystemModules) {
+            this.systemModules.push(systemModule.systemModule)
+          }
+        }
+      }
+    },
+    setUserVacationFormStatus(status: boolean) {
+      this.userVacationFormClosed = status
+    }
   }
 })

@@ -6,11 +6,12 @@
 
     <div v-if="isReady">
       <div class="vacation-periods-wrapper">
-        <vacationsPeriodCard
-          v-for="(item , index) in 3"
-          :key="`vacation-period-${index}`"
-          @manageVacations="handlerClickManage"
-        />
+        <div v-for="(vacationPeriod, index) in vacationPeriods" :key="`vacation-period-${index}`">
+          <vacationsPeriodCard
+            :vacation-period="vacationPeriod"
+            @manageVacations="handlerClickManage(vacationPeriod)" />
+        </div>
+
       </div>
     </div>
     <ProgressSpinner v-else />

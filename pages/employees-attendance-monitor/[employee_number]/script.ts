@@ -11,6 +11,7 @@ import { useMyGeneralStore } from '~/store/general'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
+import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface';
 
 export default defineComponent({
   components: {
@@ -115,9 +116,15 @@ export default defineComponent({
     onTolerancePercentage: 0 as number,
     onDelayPercentage: 0 as number,
     onFaultPercentage: 0 as number,
-    statusInfo: null as AssistSyncStatus | null
+    statusInfo: null as AssistSyncStatus | null,
+    assist: null as AssistInterface | null,
+    drawerAssistForm: false as boolean
   }),
   computed: {
+    isRoot () {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     weeklyStartDay () {
       const daysList = []
       if (!this.periodSelected && !this.datesSelected.length) {
@@ -465,6 +472,20 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) {}
+    },
+    addNewAssist () {
+      if (this.employee && this.employee.employeeId) {
+        const assist = {
+          assistEmpId: this.employee.employeeId,
+          employeeId: this.employee.employeeId,
+        } as AssistInterface
+        this.assist = assist
+        this.drawerAssistForm = true
+      }
+    },
+    onSaveAssist () {
+      this.drawerAssistForm = false
+      this.handlerPeriodChange()
     }
   }
 })

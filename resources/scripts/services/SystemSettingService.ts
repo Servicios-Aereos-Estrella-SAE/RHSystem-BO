@@ -1,16 +1,25 @@
 import type { SystemSettingInterface } from "../interfaces/SystemSettingInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class SystemSettingService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
+    const { token } = useAuth()
+
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/system-settings`, {
+      headers,
       query: {
         search: searchText,
         page,
@@ -24,6 +33,7 @@ export default class SystemSettingService {
   }
 
   async store(systemSetting: SystemSettingInterface, logo: any) {
+    const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     if (logo) {
       formData.append('logo', logo)
@@ -39,6 +49,7 @@ export default class SystemSettingService {
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/system-settings`, {
+        headers,
         method: 'POST',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -50,6 +61,7 @@ export default class SystemSettingService {
   }
 
   async update(systemSetting: SystemSettingInterface, logo: any) {
+    const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     if (logo) {
       formData.append('logo', logo)
@@ -65,6 +77,7 @@ export default class SystemSettingService {
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/system-settings/${systemSetting.systemSettingId}`, {
+        headers,
         method: 'PUT',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -76,9 +89,11 @@ export default class SystemSettingService {
   }
 
   async show(id: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/system-settings/${id}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -98,8 +113,10 @@ export default class SystemSettingService {
 
   async delete(systemSetting: SystemSettingInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/system-settings/${systemSetting.systemSettingId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -109,9 +126,12 @@ export default class SystemSettingService {
   }
 
   async getActive() {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
+      const headers = { ...this.GENERAL_HEADERS }
       await $fetch(`${this.API_PATH}/system-settings/get-active`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -134,4 +154,74 @@ export default class SystemSettingService {
 
     return true;
   }
+  async getTolerances() {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      return responseRequest
+    } catch (error) {
+      console.error('Error fetching tolerances:', error)
+      return null
+    }
+  }
+  async updateTolerance(toleranceId: number, toleranceMinutes: number) {
+       const headers = { ...this.GENERAL_HEADERS }
+ let responseRequest: any = null
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances/${toleranceId}`, {
+        headers,
+        method: 'PUT',
+        body: {
+          tolerance_minutes: toleranceMinutes
+        },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      console.error('Error updating tolerance:', error)
+    }
+    return responseRequest
+  }
+
+  async deleteTolerance(id: null) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    try {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances/${id}`, {
+        headers,
+        method: 'DELETE', 
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      console.error(`Error deleting tolerance with ID ${id}`, error)
+    }
+    return responseRequest
+  }
+
+
+  async assignSystemModules(systemSettingId: number, systemModules: Array<any>) {
+    let responseRequest: any = null
+    const formData = new FormData()
+    systemModules.forEach((systemModuleId) => {
+      formData.append('systemModules[]', systemModuleId);
+    })
+    try {
+      await $fetch(`${this.API_PATH}/system-settings/assign-system-modules/${systemSettingId}`, {
+        method: 'POST',
+        body: formData,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+  
 }

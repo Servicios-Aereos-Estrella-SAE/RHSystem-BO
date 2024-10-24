@@ -1,155 +1,168 @@
 <template>
-  <div class="department-chart">
+  <div class='department-chart'>
     <Toast />
-    
+    <Head>
+      <Title>Organization Chart</Title>
+    </Head>
+    <NuxtLayout name='backoffice'>
+      <div class='pilot-wrapper'>
+        <div class='box head-page'>
+          <div class='departments-chart-page'>
+            <h3>Organization Chart</h3>
+            <div class='box'>
 
-      <Head>
-        <Title>Organization Chart</Title>
-      </Head>
-      <NuxtLayout name="backoffice">
-        <div class="pilot-wrapper">
-          <div class="box head-page">
-            <div class="departments-chart-page">
-              <h3>Organization Chart</h3>
-              <div class="box">
-
-                <OrganizationChart :value="data" collapsible>
-                <!-- Personalización de cada nodo del organigrama -->
-                <template #person="slotProps">
-                  <div :class="['flex flex-col', getNodeClass(slotProps.node)]">
-                    <!-- Nombre del departamento -->
-                    <div class="flex flex-col items-center">
-                      <span class="font-bold mb-2">{{ slotProps.node.data.name }} - </span>
-                      <span>{{ slotProps.node.data.title || 'No Alias' }}</span>
-                    </div>
-                    <!-- Listado de posiciones dentro del departamento -->
-                    <div class="flex flex-col items-center mt-2">
-                      <h4 class="font-bold">Positions: </h4>
-                      <div v-if="slotProps.node.data">
-                      <!-- Filtrar posiciones duplicadas -->
-                      <p v-for="(position, index) in getUniquePositions(slotProps.node.data.positions)" :key="index" class="position-name">
-                        - {{ position.position.positionName }} <!-- Acceder a positionName dentro de employee.position -->
+              <OrganizationChart :value='data' collapsible>
+              <template #person='slotProps'>
+                <div>
+                  <div>
+                    <span>
+                      {{ slotProps.node.data.name }}
+                    </span>
+                  </div>
+                  <div class='department-positions'>
+                    <div v-if='slotProps.node.data'>
+                      <p v-for='(position, index) in slotProps.node.data.positions' :key='index' class='position-name'>
+                        - {{ position.position.positionName }}
                       </p>
                     </div>
-                    <span v-else>No positions available</span>
-                    </div>
                   </div>
-                </template>
-              </OrganizationChart>
-              </div>
+                </div>
+              </template>
+            </OrganizationChart>
             </div>
           </div>
         </div>
-      </NuxtLayout>
-    </div>
+      </div>
+    </NuxtLayout>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import Toast from 'primevue/toast';
-import OrganizationChart from 'primevue/organizationchart';
-import ToastService from 'primevue/toastservice';
-import DepartmentService from "~/resources/scripts/services/DepartmentService";
+import { ref, onMounted } from 'vue'
+import Toast from 'primevue/toast'
+import OrganizationChart from 'primevue/organizationchart'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
 
-const data = ref([]);
+const data = ref([])
 
-const search = ref('');
-const currentPage = ref(1);
-const rowsPerPage = ref(10);
+const search = ref('')
+const currentPage = ref(1)
+const rowsPerPage = ref(9999)
 
 const fetchData = async () => {
   try {
-    const response = await new DepartmentService().getSearchOrganization(search.value, currentPage.value, rowsPerPage.value);
-    const departments = response._data.data.departments;     
-    const mappedData = mapDepartments(departments);
-    if (mappedData.length > 0) {
-      data.value = mappedData[0];
-    }
+    const response = await new DepartmentService().getSearchOrganization(search.value, currentPage.value, rowsPerPage.value)
+    const departments = response._data.data.departments
+    const mappedData = mapDepartments(departments)
 
+    if (mappedData.length > 0) {
+      data.value = mappedData[0]
+    }
   } catch (error) {
-    console.error("Error fetching department data", error);
+    console.error('Error fetching department data', error)
   }
-};
+}
 
 const mapDepartments = (departments) => {
-  const departmentMap = {};
-  let keyCounter = 0; 
+  const departmentMap = {}
+  let keyCounter = 0 
 
   departments.forEach(dept => {
     departmentMap[dept.departmentId] = {
       key: keyCounter.toString(),
       type: 'person',
-      styleClass: getDepartmentStyle(dept.departmentName),
+      styleClass: getDepartmentStyle(dept),
       data: {
         name: dept.departmentName,
-        title: dept.departmentAlias,
-        positions: dept.employees
+        positions: dept.departmentsPositions
       },
       children: []
-    };
-    keyCounter++; 
-  });
+    }
+
+    keyCounter++ 
+  })
 
   departments.forEach(dept => {
     if (dept.parentDepartmentId) {
-      const parentKey = departmentMap[dept.parentDepartmentId].key; 
-      const childCount = departmentMap[dept.parentDepartmentId].children.length; 
-      const childKey = `${parentKey}_${childCount}`; 
+      const parentKey = departmentMap[dept.parentDepartmentId].key 
+      const childCount = departmentMap[dept.parentDepartmentId].children.length 
+      const childKey = `${parentKey}_${childCount}` 
 
-      departmentMap[dept.departmentId].key = childKey;
+      departmentMap[dept.departmentId].key = childKey
 
-      departmentMap[dept.parentDepartmentId].children.push(departmentMap[dept.departmentId]);
+      departmentMap[dept.parentDepartmentId].children.push(departmentMap[dept.departmentId])
     }
-  });
+  })
 
-  const cleanedDepartments = Object.values(departmentMap).filter(dept => !dept.parentDepartmentId);
 
-  return cleanedDepartments;
-};
+  const cleanedDepartments = Object.values(departmentMap).filter(dept => !dept.parentDepartmentId)
 
-const getDepartmentStyle = (name) => {
+  return cleanedDepartments
+}
+
+const getDepartmentStyle = (node) => {
   const styles = {
-    "AA": "!bg-indigo-100 text-white rounded-xl",
-    "Administración": "bg-purple-100 text-white rounded-xl",
-    "CTO": "bg-teal-100 text-white rounded-xl",
-    "HR": "bg-pink-100 text-white rounded-xl",
-  };
-  return styles[name] || "bg-gray-100 text-white rounded-xl"; // Estilo por defecto
-};
+    'Dirección General': 'ceo',
+  }
+  return styles[node.departmentName] || ''
+}
+
 const getUniquePositions = (positions) => {
-  const seen = new Set();
+  const seen = new Set()
   return positions.filter((position) => {
-    const isDuplicate = seen.has(position.position.positionName);
-    seen.add(position.position.positionName);
-    return !isDuplicate;
-  });
-};
+    const isDuplicate = seen.has(position.position.positionName)
+    seen.add(position.position.positionName)
+    return !isDuplicate
+  })
+}
 
 const getNodeClass = (node) => {
-  const role = node.data.name;
-  console.log(role)
-  if (role === 'AA') {
-    return 'bg-purple-100';
-  } else if (role === 'CFO') {
-    return 'bg-purple-100';
-  } else if (role === 'CTO') {
-    return 'bg-teal-100';
-  } else if (role === 'HR') {
-    return 'bg-pink-100';
-  }
-  return 'bg-teal-100'; // Clase por defecto
-};
+  // const nodeLevel = `${node.key}`.split('_').length
+  // return `level-${nodeLevel}`
+}
 
-onMounted(fetchData);
+onMounted(fetchData)
 </script>
 
-<style scoped>
-.chart-page {
-  padding: 20px;
+<style lang='scss'>
+.p-organizationchart-node-content {
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  // &.ceo {
+  //   background-color: #33D4AD;
+  //   color: white;
+  // }
+
+  // &:has(.level-2) {
+  //   background-color: #3CB4E5;
+  //   color: white;
+  // }
+
+  // &:has(.level-3) {
+  //   background-color: #88a4bf;
+  //   color: white;
+  // }
 }
 
 
-.bg-indigo-100 {
+.department-positions {
+  
+  .position-name {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.65rem;
+  }
+}
+
+.p-organizationchart-table > tbody > tr > td {
+  padding: 0 0.15rem;
+}
+
+/* .bg-indigo-100 {
   background-color: #6f8ce0 !important;
   padding: 20px;
 }
@@ -175,5 +188,5 @@ onMounted(fetchData);
 }
 .position-name{
   text-align: left;
-}
+} */
 </style>

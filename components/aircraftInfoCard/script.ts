@@ -13,18 +13,6 @@ export default defineComponent({
     canDelete: { type: Boolean, default: false, required: true }
   },
   data: () => ({}),
-  // computed: {
-  //   truncatedAircraftRegistrationNumber() {
-  //     const maxLength = 20
-  //     if (this.aircraft.aircraftRegistrationNumber.length > maxLength) {
-  //       return this.aircraft.aircraftRegistrationNumber.slice(0, maxLength) + '...'
-  //     }
-  //     return this.aircraft.aircraftRegistrationNumber
-  //   },
-  //   showEditButton() {
-  //     return !!this.clickOnEdit
-  //   }
-  // },
   mounted() {},
   methods: {
     handlerClickOnEdit() {
@@ -41,6 +29,9 @@ export default defineComponent({
       if (this.clickOnDelete) {
         this.clickOnDelete(this.aircraft)
       }
+    },
+    handlerOpenProceedingFiles () {
+      this.$emit('openProceedingFiles', this.aircraft)
     }
   }
 })

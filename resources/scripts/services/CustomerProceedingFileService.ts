@@ -1,16 +1,24 @@
 import type { CustomerProceedingFileInterface } from "../interfaces/CustomerProceedingFileInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class CustomerProceedingFileService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
   async getByCustomer(customerId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/customers/${customerId}/proceeding-files`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -22,8 +30,11 @@ export default class CustomerProceedingFileService {
 
   async store (customerProceedingFile: CustomerProceedingFileInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/customers-proceeding-files`, {
+        headers,
         method: 'POST',
         query: { ...customerProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -36,8 +47,11 @@ export default class CustomerProceedingFileService {
 
   async update (customerProceedingFile: CustomerProceedingFileInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/customers-proceeding-files/${customerProceedingFile.customerProceedingFileId}`, {
+        headers,
         method: 'PUT',
         query: { ...customerProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -50,8 +64,10 @@ export default class CustomerProceedingFileService {
 
   async delete (customerProceedingFile: CustomerProceedingFileInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/customers-proceeding-files/${customerProceedingFile.customerProceedingFileId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -62,8 +78,10 @@ export default class CustomerProceedingFileService {
 
   async show (customerProceedingFileId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/customers-proceeding-files/${customerProceedingFileId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -80,6 +98,7 @@ export default class CustomerProceedingFileService {
   }
 
   validateInfo(customerProceedingFile: CustomerProceedingFileInterface): boolean {
+   
     if (!customerProceedingFile.proceedingFileId) {
       console.error('Wrong proceeding file id');
       return false;
@@ -94,8 +113,10 @@ export default class CustomerProceedingFileService {
   async getExpiresAndExpiring(dateStart: string, dateEnd: string) {
     const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/customers-proceeding-files/get-expired-and-expiring`, {
+      headers,
       query: query,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }

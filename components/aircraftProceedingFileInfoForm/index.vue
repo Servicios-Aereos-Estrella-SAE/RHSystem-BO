@@ -14,35 +14,38 @@
           </div>
           <div class="input-box">
             <label for="proceeding-file">
-              Type
-            </label>
-            <Dropdown v-model="proceedingFile.proceedingFileTypeId" :options="proceedingFileTypesList"
-              optionLabel="proceedingFileTypeName" optionValue="proceedingFileTypeId" placeholder="" filter
-              class="w-full md:w-14rem" :invalid="submitted && !proceedingFile.proceedingFileTypeId" />
-            <small class="p-error" v-if="submitted && !proceedingFile.proceedingFileTypeId">Type is required.</small>
-          </div>
-          <div class="input-box">
-            <label for="proceeding-file">
               Proceeding file
             </label>
-            <Button v-if="proceedingFile.proceedingFilePath" label="Open file" severity="primary" @click="openFile()" />
-            <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-              :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
-              <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+            <FileUpload
+              v-model="files"
+              name="demo[]"
+              url="/api/upload"
+              @upload="onAdvancedUpload($event)"
+              :custom-upload="true"
+              :maxFileSize="1000000"
+              :fileLimit="1"
+              :showUploadButton="false"
+              @select="validateFiles"
+            >
+              <template #content="{ files }">
                 <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
-                  <img v-if="file && file.type.startsWith('image/')" role="presentation"
-                    class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
-                  <span v-if="file">{{ file.name }}</span>
-                  <Button v-if="file" @click="removeFileCallback(index)"
-                    class="p-ml-auto p-button p-component p-button-text">
-                    <span class="p-button-icon pi pi-times"></span>
-                  </Button>
+                  <!-- <img
+                    v-if="file && file.type.startsWith('image/')"
+                    role="presentation"
+                    class="p-fileupload-file-thumbnail"
+                    width="50"
+                    :alt="file.name"
+                    :src="getObjectURL(file)" /> -->
+                  <span v-if="file">
+                    {{ file.name }}
+                  </span>
                 </div>
               </template>
               <template #empty>
                 <p>Drag and drop file here to upload.</p>
               </template>
             </FileUpload>
+
           </div>
           <div class="input-box">
             <label for="proceedingFileName">Name</label>

@@ -1,12 +1,13 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface'
 
 export default defineComponent({
   components: {
   },
   name: 'vacationsPeriodCard',
   props: {
+    vacationPeriod: { type: Object as PropType<VacationPeriodInterface>, required: true },
     hideManager: { type: Boolean, default: false }
   },
   data: () => ({
@@ -17,7 +18,7 @@ export default defineComponent({
   },
   methods: {
     handlerClickManage () {
-      this.$emit('manageVacations')
+      this.$emit('manageVacations', this.vacationPeriod as VacationPeriodInterface)
     }
   }
 })

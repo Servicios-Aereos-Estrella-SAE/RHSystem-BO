@@ -7,13 +7,6 @@
           <h2>
             Documents Expiration Matrix
           </h2>
-          <!-- <div class="department-card-wrapper">
-            <div v-for="(department, index) in filteredDepartments"
-              :key="`department-${department.departmentId}-${index}`">
-              <DepartmentInfoCard :department="department"  :click-on-edit="() => { onEdit(department) }"/>
-            </div>
-          </div> -->
-
         </div>
         <div class="head-page">
           <VueCarCarousel v-bind="settings" :breakpoints="breakpoints" >
@@ -22,7 +15,7 @@
                <aircraftDocumentCard :clickOnCard="() => { setActive('aircraft')}"></aircraftDocumentCard>
               </div>
             </VueCarSlide>
-            <VueCarSlide v-if="canReadEmployees" :key="1">
+            <!-- <VueCarSlide v-if="canReadEmployees" :key="1">
               <div class="carousel__item">
                 <employeeDocumentCard :clickOnCard="() => { setActive('employees') }"></employeeDocumentCard>
               </div>
@@ -41,57 +34,50 @@
               <div class="carousel__item">
                 <flightAttendantDocumentCard :clickOnCard="() => { setActive('flight-attendant') }"></flightAttendantDocumentCard>
               </div>
-            </VueCarSlide>
-            <!-- <VueCarSlide :key="3">
-              <div class="carousel__item">
-              </div>
             </VueCarSlide> -->
-            <template #addons>
+            <!-- <template #addons>
               <VueCarPagination />
-            </template>
+            </template> -->
           </VueCarCarousel>
         </div>
+
         <div class="document-body-wrapper">
           <div class="document-head-title">
-            <h3>{{ tabActive.charAt(0).toUpperCase() + tabActive.slice(1) }} Expirations</h3>
+            <h3>
+              Selected
+              {{ tabActive.charAt(0).toUpperCase() + tabActive.slice(1) }}
+              Expirations
+            </h3>
           </div>
+
           <div class="document-body-content">
-            <div v-for="(document, index) in getProceedingFiles" class="expired-card-wrapper">
-              <div v-if="tabActive === 'aircraft'">
-                <AircraftDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></AircraftDocumentExpireCard>
-              </div>
-              <div v-if="tabActive === 'pilots'">
-                <PilotDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></PilotDocumentExpireCard>
-              </div>
-              <div v-if="tabActive === 'employees'">
-                <EmployeeDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></EmployeeDocumentExpireCard>
-              </div>
-              <div v-if="tabActive === 'customers'">
-                <CustomerDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></CustomerDocumentExpireCard>
-              </div>
-              <div v-if="tabActive === 'flight-attendant'">
-                <flightAttendantDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></flightAttendantDocumentExpireCard>
+            <div v-if="getProceedingFiles.length > 0" class="expired-card-wrapper">
+              <div v-for="(document, index) in getProceedingFiles" :key="`expired-card-wrapper-${index}`">
+                <div v-if="tabActive === 'aircraft'">
+                  <AircraftDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></AircraftDocumentExpireCard>
+                </div>
+                <div v-if="tabActive === 'pilots'">
+                  <PilotDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></PilotDocumentExpireCard>
+                </div>
+                <div v-if="tabActive === 'employees'">
+                  <EmployeeDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></EmployeeDocumentExpireCard>
+                </div>
+                <div v-if="tabActive === 'customers'">
+                  <CustomerDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></CustomerDocumentExpireCard>
+                </div>
+                <div v-if="tabActive === 'flight-attendant'">
+                  <flightAttendantDocumentExpireCard :document="document" :click-on-card="() => { alert('hello') }"></flightAttendantDocumentExpireCard>
+                </div>
               </div>
             </div>
-            <div v-if="getProceedingFiles.length === 0" class="wrapper-without-documents">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder-check" viewBox="0 0 16 16">
-                  <path d="m.5 3 .04.87a2 2 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2m5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19q-.362.002-.683.12L1.5 2.98a1 1 0 0 1 1-.98z"/>
-                  <path d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.707 0l-1.5-1.5a.5.5 0 0 1 .707-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0"/>
-                </svg>
+            <div v-else class="wrapper-without-documents">
+              <div class="info">
+                <div class="icon">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Zm-2.146-2.354a.5.5 0 0 0-.708 0L15.5 7.793l-1.646-1.647a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0 0-.708Zm-.354 8.122V14H15a.75.75 0 0 0-.75.75 2.25 2.25 0 0 1-4.5 0l-.007-.102A.75.75 0 0 0 9 14H4.5V7.25c0-.966.784-1.75 1.75-1.75h3.826c.081-.523.224-1.026.422-1.5H6.25A3.25 3.25 0 0 0 3 7.25v11.5A3.25 3.25 0 0 0 6.25 22h11.5A3.25 3.25 0 0 0 21 18.75v-7.56c-.444.427-.949.79-1.5 1.078Z" fill="#88a4bf" class="fill-212121"></path></svg>
+                </div>
                 <span>The list does not have expiration alerts</span>
+              </div>
             </div>
-            <!-- <div>
-              <CustomerDocumentExpireCard :click-on-card="() => { alert('hello') }"></CustomerDocumentExpireCard>
-            </div>
-            <div>
-              <EmployeeDocumentExpireCard :click-on-card="() => { alert('hello') }"></EmployeeDocumentExpireCard>
-            </div>
-            <div>
-              <PilotDocumentExpireCard :click-on-card="() => { alert('hello') }"></PilotDocumentExpireCard>
-            </div> -->
-            <!-- <div>
-              <CustomerDocumentExpireCard :click-on-card="() => { alert('hello') }"></CustomerDocumentExpireCard>
-            </div> -->
           </div>
         </div>
       </div>
@@ -105,19 +91,30 @@
 
 <style lang="scss" scoped>
   @import './style';
-  .carousel__slide {
-    justify-content: start;
-  }
-  .carousel__item{
-    width: 97%;
-  }
-  @media screen and (max-width: $phone) {
-    .carousel__pagination {
+</style>
+
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .document-wrapper {
+
+    .carousel__slide {
       justify-content: start;
-      margin-left: 23.5%;
     }
+
     .carousel__item{
-      width: 50%;
+      width: 97%;
+    }
+
+    @media screen and (max-width: $phone) {
+      .carousel__pagination {
+        justify-content: start;
+        margin-left: 23.5%;
+      }
+
+      .carousel__item{
+        width: 50%;
+      }
     }
   }
 </style>

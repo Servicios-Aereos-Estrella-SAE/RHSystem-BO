@@ -130,3 +130,11 @@
     }
   }
 }
+
+button {
+
+  &:disabled {
+    cursor: no-drop !important;
+    opacity: 0.25;
+  }
+}

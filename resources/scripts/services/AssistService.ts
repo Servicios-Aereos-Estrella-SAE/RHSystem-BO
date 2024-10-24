@@ -1,3 +1,4 @@
+import type { AssistInterface } from "../interfaces/AssistInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class AssistService {
@@ -39,8 +40,10 @@ export default class AssistService {
   async sync () {
     let responseRequest: any = null
     const payload = { date: '2024-05-01', page: 1 }
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/v1/assists/synchronize`, {
+      headers,
       method: 'POST',
       query: { ...payload },
       onResponse ({ response }) { responseRequest = response },
@@ -167,6 +170,22 @@ export default class AssistService {
       onRequestError ({ response }) { responseRequest = response }
     })
 
+    return responseRequest
+  }
+
+  async store(assist: AssistInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    try {
+      await $fetch(`${this.API_PATH}/v1/assists`, {
+        method: 'POST',
+        headers,
+        query: { ...assist },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
     return responseRequest
   }
 }

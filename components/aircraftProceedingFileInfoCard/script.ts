@@ -17,7 +17,22 @@ export default defineComponent({
   },
   data: () => ({
     menuRef: null as any, // Ref para el componente Menu
-    items: [] as Array<ItemMenuInterface>
+    items: [] as Array<ItemMenuInterface>,
+    fileIcons: [
+      { ext: 'webp', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icono-image.svg' },
+      { ext: 'jpg', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icono-image.svg' },
+      { ext: 'jpeg', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icono-image.svg' },
+      { ext: 'png', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icono-image.svg' },
+      { ext: 'xlsx', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-excel.svg' },
+      { ext: 'xls', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-excel.svg' },
+      { ext: 'pdf', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-pdf.svg' },
+      { ext: 'doc', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-word.svg' },
+      { ext: 'docs', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-word.svg' },
+      { ext: 'ppt', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-presentation.svg' },
+      { ext: 'pptx', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-presentation.svg' },
+      { ext: 'zip', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-zip.svg' },
+      { ext: 'rar', icon: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-zip.svg' },
+    ]
   }),
   computed: {
     dateYear() {
@@ -49,6 +64,18 @@ export default defineComponent({
       const day = date.toFormat('DD')
       return day
     },
+    fileIcon () {
+      let icon = 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-file.svg'
+
+      if (this.aircraftProceedingFile.proceedingFile?.proceedingFilePath) {
+        const splitted = `${this.aircraftProceedingFile.proceedingFile.proceedingFilePath}`.split('.')
+        const extension = splitted[splitted.length - 1]
+        const item = this.fileIcons.find(itemIcon => itemIcon.ext === extension)
+        icon = item ? item.icon : icon
+      }
+
+      return icon
+    }
   },
   mounted() {
     this.menuRef = this.$refs.menu

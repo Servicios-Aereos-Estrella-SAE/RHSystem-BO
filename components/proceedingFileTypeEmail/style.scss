@@ -1,0 +1,33 @@
+@import '/resources/styles/variables.scss';
+
+.proceeding-file-type-emails {
+  position: relative;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+  }
+
+  .head {
+    display: grid;
+    grid-template-columns: 15rem auto;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    @media screen and (max-width: $ipad) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+
+  .proceeding-file-type-emails-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
