@@ -20,7 +20,8 @@ export default defineComponent({
   },
   name: 'employeeShiftCalendarControl',
   props: {
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    canManageVacation: { type: Boolean, required: true }
   },
   data: () => ({
     isReady: false,

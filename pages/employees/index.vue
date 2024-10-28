@@ -85,7 +85,7 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
-          <employeeShift :employee="employee" />
+          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"/>
         </Sidebar>
         
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee proceeding files" position="right" class="proceeding-file-sidebar">

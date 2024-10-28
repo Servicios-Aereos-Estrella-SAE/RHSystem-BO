@@ -276,9 +276,11 @@ export default class EmployeeService {
   }
 
   async getYearsWorked(employeeId: number, year: number | null) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-years-worked`, {
+        headers,
         query: { year: year },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
@@ -289,9 +291,11 @@ export default class EmployeeService {
   }
 
   async getVacationsByPeriod(employeeId: number, vacationSettingId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-by-period`, {
+        headers,
         query: { vacationSettingId: vacationSettingId },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
