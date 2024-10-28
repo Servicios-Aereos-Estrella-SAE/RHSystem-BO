@@ -207,6 +207,62 @@ export default defineComponent({
         },
         onCancelEmployeeDelete () {
             this.drawerEmployeeDelete = false
-        }
+        },
+        async getExcel() {
+            const myGeneralStore = useMyGeneralStore();
+            myGeneralStore.setFullLoader(true);
+          
+            // Captura los parámetros necesarios para el reporte
+            const filterDepartmentId = 3; // Cambia esto según la selección real
+            const filterEmployeeId = 245;    // Cambia esto según la selección real
+            const filterStartDate = '2023-01-01'; 
+            const filterEndDate = '2024-12-31'; 
+          
+            // Realiza la llamada al servicio para obtener el Excel
+            try {
+              const employeeService = new EmployeeService();
+              const assistResponse = await employeeService.getExcelAll(filterEmployeeId, filterDepartmentId, filterStartDate, filterEndDate);
+              
+              // Verifica si la respuesta es exitosa
+              if (assistResponse) {
+                const blob = await assistResponse._data; // Asegúrate de que _data contenga el blob
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Employee_Report.xlsx'); // Nombre del archivo
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Muestra un mensaje de éxito
+                this.$toast.add({
+                  severity: 'success',
+                  summary: 'Excel Report',
+                  detail: 'Excel file created successfully',
+                  life: 5000,
+                });
+              } else {
+                const msgError = assistResponse?._data?.error || assistResponse?._data?.message || 'Unknown error';
+                this.$toast.add({
+                  severity: 'error',
+                  summary: 'Excel Report',
+                  detail: msgError,
+                  life: 5000,
+                });
+              }
+            } catch (error) {
+              console.error('Error generating Excel file:', error); // Log del error
+              this.$toast.add({
+                severity: 'error',
+                summary: 'Excel Report',
+                detail: 'Error generating Excel file',
+                life: 5000,
+              });
+            } finally {
+              myGeneralStore.setFullLoader(false);
+            }
+          }
+          
+          
     }
 });

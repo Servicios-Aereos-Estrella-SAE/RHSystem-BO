@@ -300,4 +300,29 @@ export default class EmployeeService {
     }
     return responseRequest
   }
+
+  async getExcelAll (
+    employeeId: number, departmentId: number, startDate: string, endDate: string
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = {
+
+      };
+            await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  
 }
