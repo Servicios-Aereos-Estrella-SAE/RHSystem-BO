@@ -58,7 +58,7 @@ export default defineComponent({
       }
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
+      const timeCST = time.setZone('America/Mexico_city')
       return timeCST.setLocale('en').toFormat('tt')
     },
     chekEatInTime () {
@@ -67,7 +67,7 @@ export default defineComponent({
       }
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
+      const timeCST = time.setZone('America/Mexico_city')
       return timeCST.setLocale('en').toFormat('tt')
     },
     chekEatOutTime () {
@@ -76,12 +76,12 @@ export default defineComponent({
       }
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
+      const timeCST = time.setZone('America/Mexico_city')
       return timeCST.setLocale('en').toFormat('tt')
     },
     chekOutTime () {
-      const now = DateTime.now().setZone('UTC-5')
-      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('UTC-5')
+      const now = DateTime.now().setZone('America/Mexico_city')
+      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('America/Mexico_city')
 
       if (timeToCheckOut > now && this.checkAssist.assist.shiftCalculateFlag !== 'doble-12x48') {
         this.checkAssist.assist.checkOutStatus = ''
@@ -93,7 +93,7 @@ export default defineComponent({
       }
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('UTC-5')
+      const timeCST = time.setZone('America/Mexico_city')
       const timeFormatted = timeCST.setLocale('en').toFormat('tt')
       return timeFormatted
     }
