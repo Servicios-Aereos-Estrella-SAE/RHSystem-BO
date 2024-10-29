@@ -212,29 +212,25 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore();
             myGeneralStore.setFullLoader(true);
           
-            // Captura los parámetros necesarios para el reporte
-            const filterDepartmentId = 3; // Cambia esto según la selección real
-            const filterEmployeeId = 245;    // Cambia esto según la selección real
-            const filterStartDate = '2023-01-01'; 
-            const filterEndDate = '2024-12-31'; 
-          
-            // Realiza la llamada al servicio para obtener el Excel
+            const filterDepartmentId = 3; 
+            const filterEmployeeId = 245;  
+            const currentYear = new Date().getFullYear();
+            const filterStartDate = `${currentYear}-01-01`;
+            const filterEndDate = new Date().toISOString().split('T')[0];
             try {
               const employeeService = new EmployeeService();
               const assistResponse = await employeeService.getExcelAll(filterEmployeeId, filterDepartmentId, filterStartDate, filterEndDate);
               
-              // Verifica si la respuesta es exitosa
               if (assistResponse) {
-                const blob = await assistResponse._data; // Asegúrate de que _data contenga el blob
+                const blob = await assistResponse._data; 
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'Employee_Report.xlsx'); // Nombre del archivo
+                link.setAttribute('download', 'Employee_Report.xlsx'); 
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 
-                // Muestra un mensaje de éxito
                 this.$toast.add({
                   severity: 'success',
                   summary: 'Excel Report',
@@ -251,7 +247,7 @@ export default defineComponent({
                 });
               }
             } catch (error) {
-              console.error('Error generating Excel file:', error); // Log del error
+              console.error('Error generating Excel file:', error);
               this.$toast.add({
                 severity: 'error',
                 summary: 'Excel Report',

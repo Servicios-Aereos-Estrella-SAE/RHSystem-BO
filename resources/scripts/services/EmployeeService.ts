@@ -307,7 +307,8 @@ export default class EmployeeService {
     let responseRequest: any = null
     try {
       const query = {
-
+        startDate,
+        endDate 
       };
             await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
         method: 'GET',
