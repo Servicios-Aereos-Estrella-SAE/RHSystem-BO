@@ -329,5 +329,27 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getVacationExcel (
+    startDate: string | Date,
+    endDate: string | Date
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { 'startDate': startDate, 'endDate': endDate }
+      await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   
 }
