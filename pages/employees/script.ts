@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { defineComponent } from 'vue'
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface";
@@ -27,12 +28,13 @@ export default defineComponent({
         canCreate: false,
         canUpdate: false,
         canDelete: false,
+        canManageVacation: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
         hasAccessToManageShifts: false
     }),
     computed: {},
-    created () {},
+    created() { },
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -42,11 +44,13 @@ export default defineComponent({
             this.canCreate = true
             this.canUpdate = true
             this.canDelete = true
-          } else {
+            this.canManageVacation = true
+        } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
-          }
+            this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
+        }
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
         await this.handlerSearchEmployee()
@@ -171,41 +175,41 @@ export default defineComponent({
             this.drawerEmployeePhotoForm = false;
         },
         async syncEmployees() {
-          this.drawerEmployeeSync = true
+            this.drawerEmployeeSync = true
         },
         async confirmSync() {
-          this.drawerEmployeeSync = false
+            this.drawerEmployeeSync = false
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const employeeService = new EmployeeService()
             const employeeResponse = await employeeService.synchronization()
             if (employeeResponse.status === 201) {
                 this.$toast.add({
-                  severity: 'success',
-                  summary: 'Synchronization employees',
-                  detail: employeeResponse._data.message,
-                  life: 5000,
+                    severity: 'success',
+                    summary: 'Synchronization employees',
+                    detail: employeeResponse._data.message,
+                    life: 5000,
                 })
                 await this.handlerSearchEmployee();
             } else {
-              this.$toast.add({
-                severity: 'error',
-                summary: 'Synchronization employees',
-                detail: employeeResponse._data.message,
-                life: 5000,
-              })
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Synchronization employees',
+                    detail: employeeResponse._data.message,
+                    life: 5000,
+                })
             }
             myGeneralStore.setFullLoader(false)
         },
-        handlerOpenShifts (employee: EmployeeInterface) {
+        handlerOpenShifts(employee: EmployeeInterface) {
             this.employee = employee
             this.drawerShifts = true
         },
-        onProceedingFiles (employee: EmployeeInterface) {
+        onProceedingFiles(employee: EmployeeInterface) {
             this.employee = employee
             this.drawerProceedingFiles = true
         },
-        onCancelEmployeeDelete () {
+        onCancelEmployeeDelete() {
             this.drawerEmployeeDelete = false
         },
         async getExcel() {
@@ -256,6 +260,40 @@ export default defineComponent({
               });
             } finally {
               myGeneralStore.setFullLoader(false);
+            }
+          },
+          async getVacationExcel() {
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const dateNow = new Date()
+            const dateNowFormat = DateTime.fromJSDate(dateNow).plus({ years: 1 }).toFormat('yyyy-MM-dd')
+            const assistService = new EmployeeService()
+            const assistResponse = await assistService.getVacationExcel('2022-01-01', dateNowFormat)
+            if (assistResponse.status === 201) {
+              const blob = await assistResponse._data
+              const url = window.URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.href = url
+              link.setAttribute('download', 'All Employees Vacation Report.xlsx')
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              this.$toast.add({
+                severity: 'success',
+                summary: 'Excel vacation',
+                detail: 'Excel was created successfully',
+                  life: 5000,
+              })
+              myGeneralStore.setFullLoader(false)
+            } else {
+              const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+              this.$toast.add({
+                severity: 'error',
+                summary: 'Excel vacation',
+                detail: msgError,
+                  life: 5000,
+              })
+              myGeneralStore.setFullLoader(false)
             }
           }
           

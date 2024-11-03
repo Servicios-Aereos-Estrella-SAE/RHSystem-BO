@@ -9,7 +9,8 @@
         <div v-for="(vacationPeriod, index) in vacationPeriods" :key="`vacation-period-${index}`">
           <vacationsPeriodCard
             :vacation-period="vacationPeriod"
-            @manageVacations="handlerClickManage(vacationPeriod)" />
+            @manageVacations="handlerClickManage(vacationPeriod)"
+            :can-manage-vacation="canManageVacation" />
         </div>
 
       </div>
