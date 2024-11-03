@@ -12,7 +12,8 @@ export default defineComponent({
   name: 'employeeVacations',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    statusForm: { type: Boolean, required: false, default: false }
+    statusForm: { type: Boolean, required: false, default: false },
+    canManageVacation: { type: Boolean, required: true }
   },
   data: () => ({
     isReady: false as boolean,
