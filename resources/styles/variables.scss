@@ -46,4 +46,11 @@ $radius: 0.75rem;
   text-align: center;
   border-radius: $radius;
   background-color: transparentize($color: $gray, $amount: 0.5);
+  
+  .icon {
+      
+    svg {
+      width: 4rem;
+    }
+  }
 }

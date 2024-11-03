@@ -483,7 +483,7 @@ export default defineComponent({
     async setPositionDepartment () {
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
       const positionId = parseInt(`${this.$route.params.position || 0}`)
-      const response = await new PositionService().show(departmentId, positionId)
+      const response = await new PositionService().show(positionId)
       this.position = response.status === 200 ? response._data.data.position : null
     },
     async setDepartmentPositionEmployeeList () {

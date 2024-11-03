@@ -8,27 +8,31 @@
       <div class='pilot-wrapper'>
         <div class='box head-page'>
           <div class='departments-chart-page'>
-            <h3>Organization Chart</h3>
-            <div class='box'>
+            <h3>
+              Organization Chart
+            </h3>
 
+            <div class='box'>
               <OrganizationChart :value='data' collapsible>
-              <template #person='slotProps'>
-                <div>
+                <template #organization='slotProps'>
                   <div>
-                    <span>
-                      {{ slotProps.node.data.name }}
-                    </span>
-                  </div>
-                  <div class='department-positions'>
-                    <div v-if='slotProps.node.data'>
-                      <p v-for='(position, index) in slotProps.node.data.positions' :key='index' class='position-name'>
-                        - {{ position.position.positionName }}
-                      </p>
+                    <div>
+                      <span>
+                        {{ slotProps.node.data.departmentName }}
+                      </span>
                     </div>
                   </div>
-                </div>
-              </template>
-            </OrganizationChart>
+                </template>
+                <template #positions='slotProps'>
+                  <div>
+                    <div>
+                      <span>
+                        {{ slotProps.node.data.positionName }}
+                      </span>
+                    </div>
+                  </div>
+                </template>
+              </OrganizationChart>
             </div>
           </div>
         </div>
@@ -42,6 +46,15 @@ import { ref, onMounted } from 'vue'
 import Toast from 'primevue/toast'
 import OrganizationChart from 'primevue/organizationchart'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
+
+// interface chartNode {
+//   key: string
+//   type: string
+//   label: string
+//   styleClass: string
+//   data: any
+//   children: chartNode[]
+// }
 
 const data = ref([])
 
@@ -64,47 +77,55 @@ const fetchData = async () => {
 }
 
 const mapDepartments = (departments) => {
-  const departmentMap = {}
-  let keyCounter = 0 
+  const departmentList = JSON.parse(JSON.stringify(departments))
 
-  departments.forEach(dept => {
-    departmentMap[dept.departmentId] = {
-      key: keyCounter.toString(),
-      type: 'person',
-      styleClass: getDepartmentStyle(dept),
-      data: {
-        name: dept.departmentName,
-        positions: dept.departmentsPositions
-      },
-      children: []
-    }
+  for (let index = 0; index < departmentList.length; index++) {
+    const department = departmentList[index];
+    departmentList[index] = makeNodeFormat(department)
+  }
 
-    keyCounter++ 
-  })
+  return departmentList
+}
 
-  departments.forEach(dept => {
-    if (dept.parentDepartmentId) {
-      const parentKey = departmentMap[dept.parentDepartmentId].key 
-      const childCount = departmentMap[dept.parentDepartmentId].children.length 
-      const childKey = `${parentKey}_${childCount}` 
+const makeNodeFormat = (department) => {
+  const nodeSkull = {
+    key: Math.round(Math.random() * new Date().getTime()),
+    type: 'organization',
+    styleClass: getDepartmentStyle(department),
+    data: { ...department },
+    children: department.subDepartments.map(sub => makeNodeFormat(sub))
+  }
 
-      departmentMap[dept.departmentId].key = childKey
+  if (department.departmentsPositions) {
+    const pos = department.departmentsPositions.map(position => makeNodeFormatPosition(position.position))
+    nodeSkull.children.push(...pos)
+  }
 
-      departmentMap[dept.parentDepartmentId].children.push(departmentMap[dept.departmentId])
-    }
-  })
+  return nodeSkull
+}
 
+const makeNodeFormatPosition = (position) => {
+  const nodeSkull = {
+    key: Math.round(Math.random() * new Date().getTime()),
+    type: 'positions',
+    styleClass: getPositionStyle(position),
+    data: { ...position },
+    children: position.subPositions.map(sub => makeNodeFormatPosition(sub))
+  }
 
-  const cleanedDepartments = Object.values(departmentMap).filter(dept => !dept.parentDepartmentId)
-
-  return cleanedDepartments
+  return nodeSkull
 }
 
 const getDepartmentStyle = (node) => {
   const styles = {
     'Dirección General': 'ceo',
   }
-  return styles[node.departmentName] || ''
+
+  return styles[node.departmentName] || 'department'
+}
+
+const getPositionStyle = (node) => {
+  return node.parentPositionId ? 'subposition' : 'position'
 }
 
 const getUniquePositions = (positions) => {
@@ -132,20 +153,28 @@ onMounted(fetchData)
   font-size: 0.75rem;
   font-weight: 500;
 
-  // &.ceo {
-  //   background-color: #33D4AD;
-  //   color: white;
-  // }
+  &.ceo {
+    background-color: #3787d8;
+    color: #ffffff;
+    width: 10rem;
+  }
 
-  // &:has(.level-2) {
-  //   background-color: #3CB4E5;
-  //   color: white;
-  // }
+  &.department {
+    background-color: #54789c;
+    color: #fff;
+    width: 10rem;
+  }
 
-  // &:has(.level-3) {
-  //   background-color: #88a4bf;
-  //   color: white;
-  // }
+  &.position {
+    background-color: #f1f5f9;
+    color: #88a4bf;
+    width: 10rem;
+  }
+
+  &.subposition {
+    background-color: #f1f5f9;
+    color: #88a4bf;
+  }
 }
 
 
