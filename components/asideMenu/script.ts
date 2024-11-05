@@ -97,7 +97,7 @@ export default defineComponent({
             label: group.systemModuleGroup,
             name: group.systemModuleGroup,
             path: '',
-            icon: `<svg fill="none" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7 14.204a1 1 0 0 0 1.628.778l4.723-3.815a1.5 1.5 0 0 0 0-2.334L8.628 5.02A1 1 0 0 0 7 5.797v8.407Z" fill="#ffffff" class="fill-212121"></path></svg>`,
+            icon: `<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>`,
             items: []
           }
         )
