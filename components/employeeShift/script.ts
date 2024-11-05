@@ -32,6 +32,7 @@ export default defineComponent({
     displayInputCalendar: false as boolean,
     displayCalendar: false,
     drawerShiftExceptions: false,
+    drawerShiftException: false,
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
     displaySidebarVacationsManager: false as boolean
@@ -188,6 +189,10 @@ export default defineComponent({
     onClickExceptions (employeeCalendar: AssistDayInterface) {
       this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
       this.drawerShiftExceptions = true
+    },
+    onClickException(){
+      this.drawerShiftException = true
+
     },
     onClickVacations () {
       this.displaySidebarVacations = true
