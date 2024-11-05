@@ -5,11 +5,8 @@
     </transition>
     <div v-if="authAccess">
       <dashboardHeader />
-      <div class="default-layout-wrapper" :class="{ 'hide-aside': !asideVisibilityStatus }">
-        <div class="aside-menu-wrapper">
-          <aside-menu />
-        </div>
-        <div></div>
+      <aside-menu />
+      <div class="default-layout-wrapper">
         <div class="modules-wrapper">
           <div v-if="displayContent" class="modules-content-wrepper">
             <!-- <div class="box">

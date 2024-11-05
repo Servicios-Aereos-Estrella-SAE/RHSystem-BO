@@ -27,51 +27,60 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const backgroundColorDark = myGeneralStore.backgroundColorDark
       return backgroundColorDark
-    }
+    },
+    getBackgroundImage(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImage = myGeneralStore.backgroundImage
+      return backgroundImage
+    },
+    visible() {
+      const myGeneralStore = useMyGeneralStore()
+      const displayAside = myGeneralStore.displayAside
+      return displayAside
+    },
   },
   async mounted() {
-    const myGeneralStore = useMyGeneralStore()
-    myGeneralStore.displayContent = false
+    await setTimeout(async () => {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.displayContent = false
 
-    let hasAccess = false
+      const fullPath = this.$route.path;
+      const firstSegment = fullPath.split('/')[1];
+      const systemModuleSlug = firstSegment
+      const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
 
-    const fullPath = this.$route.path;
-    const firstSegment = fullPath.split('/')[1];
-    const systemModuleSlug = firstSegment
-
-    hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
-
-    await this.getGroupMenu()
-
-    if (!hasAccess) {
-      console.log('hasAccess error')
-      throw showError({
-        statusCode: 403,
-        fatal: true,
-        message: 'You don´t have access'
-      })
-    }
-
-    if (
-      (systemModuleSlug === 'departments' || systemModuleSlug === 'departments-attendance-monitor') &&
-      fullPath.split('/')[2] &&
-      !myGeneralStore.isRoot
-    ) {
-      const departmentId = fullPath.split('/')[2]
-      let hasAccessDepartment = false
-      hasAccessDepartment = await myGeneralStore.hasAccessDepartment(parseInt(departmentId))
-
-      if (!hasAccessDepartment) {
-        console.log('systemModuleSlug error')
+      if (!hasAccess) {
         throw showError({
           statusCode: 403,
           fatal: true,
-          message: 'You don´t have access to this department'
-       })
+          message: 'You don´t have access'
+        })
       }
-    }
 
-    myGeneralStore.displayContent = true
+      if (
+        (systemModuleSlug === 'departments' || systemModuleSlug === 'departments-attendance-monitor') &&
+        fullPath.split('/')[2] &&
+        !myGeneralStore.isRoot
+      ) {
+        const departmentId = fullPath.split('/')[2]
+        let hasAccessDepartment = false
+
+        hasAccessDepartment = await myGeneralStore.hasAccessDepartment(parseInt(departmentId))
+
+        if (!hasAccessDepartment) {
+          console.log('systemModuleSlug error')
+          throw showError({
+            statusCode: 403,
+            fatal: true,
+            message: 'You don´t have access to this department'
+        })
+        }
+      }
+
+      await this.getGroupMenu()
+
+      myGeneralStore.displayContent = true
+    }, 1000);
   },
   methods: {
     async getGroupMenu() {
@@ -162,6 +171,10 @@ export default defineComponent({
       const path = this.$route.path
       // return !!path.includes(link.path)
       return false
+    },
+    async closeCallback () {
+      const myGeneralStore = useMyGeneralStore()
+      await myGeneralStore.toggleDisplayAside()
     }
   }
 })
