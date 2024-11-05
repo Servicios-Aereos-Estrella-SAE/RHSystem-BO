@@ -110,7 +110,7 @@ const makeNodeFormatPosition = (position) => {
     type: 'positions',
     styleClass: getPositionStyle(position),
     data: { ...position },
-    children: position.subPositions.map(sub => makeNodeFormatPosition(sub))
+    children: (position && position.subPositions) ? position.subPositions.map(sub => makeNodeFormatPosition(sub)) : []
   }
 
   return nodeSkull
@@ -125,7 +125,7 @@ const getDepartmentStyle = (node) => {
 }
 
 const getPositionStyle = (node) => {
-  return node.parentPositionId ? 'subposition' : 'position'
+  return (node && node.parentPositionId) ? node.parentPositionId ? 'subposition' : 'position' : 'subposition'
 }
 
 const getUniquePositions = (positions) => {
