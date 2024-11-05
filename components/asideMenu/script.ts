@@ -137,7 +137,7 @@ export default defineComponent({
         const items = systemModules.filter((a: SystemModuleInterface) => a.systemModuleGroup === group)
 
         for await (const item of items) {
-          const isItemActive = systemModulesActive.find(a => a.systemModuleId === item.systemModuleId)
+          const isItemActive = systemModulesActive.find(a => a && a.systemModuleId === item.systemModuleId)
 
           if (isItemActive || item.systemModuleSlug === 'users' || item.systemModuleSlug === 'system-settings' || item.systemModuleSlug === 'roles-and-permissions') {
             if (!item.systemModulePath.toString().includes('#')) {
