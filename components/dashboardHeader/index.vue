@@ -1,23 +1,28 @@
 <template>
   <div class="header">
     <div class="header-wrapper">
-      <div class="logo">
-        <img :src="getBackgroundImage" alt="SAE" class="img">
-      </div>
       <div class="aside-button">
-        <Button class="btn-aside" @click="toggleAside">
-          <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 5.995c0-.55.446-.995.995-.995h8.01a.995.995 0 0 1 0 1.99h-8.01A.995.995 0 0 1 2 5.995ZM2 12c0-.55.446-.995.995-.995h18.01a.995.995 0 1 1 0 1.99H2.995A.995.995 0 0 1 2 12ZM2.995 17.01a.995.995 0 0 0 0 1.99h12.01a.995.995 0 0 0 0-1.99H2.995Z" fill="#8193a9" class="fill-000000"></path></svg>
+        <Button class="btn btn-block" @click="toggleAside">
+          <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a1 1 0 0 1 1-1h15a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1ZM2 18a1 1 0 0 1 1-1h11a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1ZM3 11a1 1 0 1 0 0 2h18a1 1 0 1 0 0-2H3Z" fill="#88a4bf" class="fill-212121"></path></svg>
         </Button>
       </div>
       <div class="back-button">
-        <Button v-show="displayBackButton" class="btn-back" @click="handlerBack">
-          <svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M447.1 256c0 17.7-13.4 32-31.1 32H109.3l105.4 105.4c12.5 12.5 12.5 32.75 0 45.25-6.3 6.25-14.5 9.35-22.7 9.35s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25L109.3 224H416c17.7 0 31.1 14.3 31.1 32z" fill="#8193a9" class="fill-000000"></path></svg>
-          Back
+        <Button v-show="displayBackButton" class="btn btn-block" @click="handlerBack">
+          <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.295 19.716a1 1 0 0 0 1.404-1.425l-5.37-5.29h13.67a1 1 0 1 0 0-2H6.336L11.7 5.714a1 1 0 0 0-1.404-1.424l-6.924 6.822a1.25 1.25 0 0 0 0 1.78l6.924 6.823Z" fill="#88a4bf" class="fill-212121"></path></svg>
         </Button>
       </div>
+      <div class="logo">
+        <img :src="getBackgroundImage" alt="SAE" class="img">
+      </div>
       <div class="header-content">
-        <div class="notifications-badge">
+        <!-- <div class="notifications-badge">
           <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.042 19.003h5.916a3 3 0 0 1-5.916 0Zm2.958-17a7.5 7.5 0 0 1 7.5 7.5v4l1.418 3.16A.95.95 0 0 1 20.052 18h-16.1a.95.95 0 0 1-.867-1.338l1.415-3.16V9.49l.005-.25A7.5 7.5 0 0 1 12 2.004Z" fill="#88a4bf" class="fill-212121"></path></svg>
+        </div> -->
+        <div class="logout-box">
+          <Button class="btn btn-block" @click="handlerLogout">
+            <svg data-name="Layer 2" viewBox="0 0 35 35" xmlns="http://www.w3.org/2000/svg"><path d="M17.54 34.75a17.25 17.25 0 0 1 0-34.5 1.25 1.25 0 0 1 0 2.5 14.75 14.75 0 0 0 0 29.5 1.25 1.25 0 0 1 0 2.5Z" fill="#88a4bf" class="fill-000000"></path><path d="M32.927 18.75H15.25a1.25 1.25 0 0 1 0-2.5h17.677a1.25 1.25 0 0 1 0 2.5Z" fill="#88a4bf" class="fill-000000"></path><path d="M26.536 26.438a1.25 1.25 0 0 1-.884-2.134l6.384-6.385a.6.6 0 0 0 0-.839l-6.384-6.38a1.25 1.25 0 1 1 1.768-1.771l6.38 6.384a3.1 3.1 0 0 1 0 4.374l-6.38 6.385a1.246 1.246 0 0 1-.884.366Z" fill="#88a4bf" class="fill-000000"></path></svg>
+            Sign Out
+          </Button>
         </div>
         <div class="avatar">
           <div>
@@ -27,10 +32,21 @@
               {{ authUser?.person?.personSecondLastname || '' }}
             </div>
             <div class="avatar-description">
-              {{ authUser?.userEmail || '' }}
+              {{ authUser?.role?.roleName || '' }}
             </div>
           </div>
-          <Avatar :label="avatarLetter" size="large" class="avatar-thumbnail" />
+          <Avatar
+            v-if="avatarImage"
+            :image="avatarImage"
+            size="large"
+            class="avatar-thumbnail"
+          />
+          <Avatar
+            v-else
+            :label="avatarLetter"
+            size="large"
+            class="avatar-thumbnail"
+          />
         </div>
       </div>
     </div>
@@ -42,6 +58,15 @@
   export default Script
 </script>
 
+<style lang="scss" scoped>
+  @import './style';
+</style>
+
 <style lang="scss">
-@import './style';
+  .header .header-wrapper .header-content .avatar .avatar-thumbnail {
+    img {
+      object-fit: cover;
+      border-radius: 0.5rem;
+    }
+  }
 </style>

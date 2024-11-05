@@ -82,12 +82,14 @@ export default class RoleService {
   async hasAccess(roleId: number, systemModuleSlug: string, systemPermissionSlug: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
+
     try {
       await $fetch(`${this.API_PATH}/roles/has-access/${roleId}/${systemModuleSlug}/${systemPermissionSlug}`, {
         headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
+
       const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
 
       return {

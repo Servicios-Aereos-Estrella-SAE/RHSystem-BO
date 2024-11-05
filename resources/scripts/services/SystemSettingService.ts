@@ -91,12 +91,14 @@ export default class SystemSettingService {
   async show(id: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
+
     try {
       await $fetch(`${this.API_PATH}/system-settings/${id}`, {
         headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
+
       const systemSetting = responseRequest.status === 200 ? responseRequest._data.data.systemSetting : null
 
       return {
