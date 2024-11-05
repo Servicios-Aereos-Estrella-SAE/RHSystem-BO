@@ -461,13 +461,6 @@ export default defineComponent({
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-      
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Excel assist',
-          detail: 'Excel was created successfully',
-            life: 5000,
-        })
         myGeneralStore.setFullLoader(false)
       } else {
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
