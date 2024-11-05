@@ -1,3 +1,5 @@
+import type { EmployeeInterface } from "./EmployeeInterface"
+
 interface PeopleInterface {
   personId: number | null,
   personFirstname: string,
@@ -12,6 +14,8 @@ interface PeopleInterface {
   personCreatedAt: Date | string | null,
   personUpdatedAt: Date | string | null,
   personDeletedAt: Date | string | null
+
+  employee?: EmployeeInterface
 }
 
 export type { PeopleInterface }

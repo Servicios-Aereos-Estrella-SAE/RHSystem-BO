@@ -70,6 +70,7 @@ export default defineComponent({
         departmentIsDefault: "",
         departmentDeletedAt: null,
         parentDepartmentId: null,
+        businessUnitId: 1,
         departmentLastSynchronizationAt: null,
         departmentActive: "1",
         departmentSyncId: "",

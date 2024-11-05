@@ -9,7 +9,7 @@ import SystemSettingService from '~/resources/scripts/services/SystemSettingServ
 export const useMyGeneralStore = defineStore({
   id: 'myGeneralStore',
   state: () => ({
-    displayAside: true as boolean,
+    displayAside: false as boolean,
     fullLoader: false as boolean,
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
@@ -50,7 +50,7 @@ export const useMyGeneralStore = defineStore({
         if (systemSettingResponse.systemSettingLogo) {
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
         }
-        this.getSystemModules()
+        await this.getSystemModules()
       }
     },
 
@@ -88,31 +88,36 @@ export const useMyGeneralStore = defineStore({
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface
-      let hasAccess = false
-      if (authUser && authUser.roleId) {
-        if (authUser.role) {
-          if (this.systemModules.length === 0) {
-            await this.getSystemModules()
-          }
-          const isModuleActive = this.systemModules.find(a => a.systemModuleSlug === systemModuleSlug)
-          if (!isModuleActive && systemModuleSlug !== 'users' && systemModuleSlug !== 'system-settings' && systemModuleSlug !== 'roles-and-permissions') {
-            return false
-          }
-          if (authUser.role.roleSlug === 'root') {
-            this.isRoot = true
-            return true
-          } else {
-            this.isRoot = false
-          }
-        }
-        const roleService = new RoleService()
-        const roleResponse = await roleService.hasAccess(authUser.roleId, systemModuleSlug, systemPermissionSlug)
-        if (roleResponse && roleResponse.status === 200) {
-          hasAccess = roleResponse._data.data.roleHasAccess
-        }
-      } else {
-        this.isRoot = false
+
+      if (authUser && authUser.roleId && authUser.role && authUser.role.roleSlug === 'root') {
+        this.isRoot = true
+        return true
       }
+
+      if (!authUser || !authUser.roleId) {
+        return false
+      }
+
+      this.isRoot = false
+      let hasAccess = false
+
+      if (this.systemModules.length === 0) {
+        await this.getSystemModules()
+      }
+
+      const isModuleActive = this.systemModules.find(a => a.systemModuleSlug === systemModuleSlug)
+
+      if (!isModuleActive && (systemModuleSlug !== 'users' && systemModuleSlug !== 'system-settings' && systemModuleSlug !== 'roles-and-permissions')) {
+        return false
+      }
+
+      const roleService = new RoleService()
+      const roleResponse = await roleService.hasAccess(authUser.roleId, systemModuleSlug, systemPermissionSlug)
+
+      if (roleResponse && roleResponse.status === 200) {
+        hasAccess = roleResponse._data.data.roleHasAccess
+      }
+
       return hasAccess
     },
 
@@ -161,8 +166,10 @@ export const useMyGeneralStore = defineStore({
       if (this.systemSettingId) {
         const systemSettingService = new SystemSettingService()
         const systemSettimgResponse = await systemSettingService.show(this.systemSettingId)
+
         if (systemSettimgResponse && systemSettimgResponse.status === 200) {
           const systemSettingSystemModules = systemSettimgResponse._data.data.systemSetting.systemSettingSystemModules
+
           for await (const systemModule of systemSettingSystemModules) {
             this.systemModules.push(systemModule.systemModule)
           }

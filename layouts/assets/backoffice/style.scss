@@ -22,30 +22,6 @@ body, html {
   display: grid;
   grid-template-columns: 1fr;
   transition: all 0.4s;
-  padding-left: 22rem;
-
-  @media screen and (max-width: $desktop) {
-    padding-left: 17rem;
-  }
-
-  @media screen and (max-width: $ipad) {
-    padding-left: 0rem;
-  }
-
-  &.hide-aside {
-    transition: all 0.4s;
-    padding-left: 0rem;
-
-    .aside-menu-wrapper {
-      transition: all 0.4s;
-      transform: translate(-110%);
-
-      @media screen and (max-width: $ipad) {
-        transform: translate(0%);
-        width: 100%;
-      }
-    }
-  }
 
   .aside-menu-wrapper {
     width: 22rem;
