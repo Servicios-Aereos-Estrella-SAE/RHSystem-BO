@@ -216,10 +216,9 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore();
             myGeneralStore.setFullLoader(true);
           
-            const filterDepartmentId = 3; 
-            const filterEmployeeId = 245;  
-            const currentYear = new Date().getFullYear();
-            const filterStartDate = `${currentYear}-01-01`;
+            const filterDepartmentId = 3;
+            const filterEmployeeId = 245;
+            const filterStartDate = `2000-01-01`;
             const filterEndDate = new Date().toISOString().split('T')[0];
             try {
               const employeeService = new EmployeeService();
