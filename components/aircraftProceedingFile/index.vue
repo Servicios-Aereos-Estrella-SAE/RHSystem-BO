@@ -91,6 +91,10 @@
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6a2 2 0 0 0 2 2h6v10a2 2 0 0 1-2 2h-6.81A6.5 6.5 0 0 0 4 11.498V4a2 2 0 0 1 2-2h6Z" fill="#fff" class="fill-212121"></path><path d="M13.5 2.5V8a.5.5 0 0 0 .5.5h5.5l-6-6ZM12 17.5a5.5 5.5 0 1 0-11 0 5.5 5.5 0 0 0 11 0ZM7 18l.001 2.503a.5.5 0 1 1-1 0V18H3.496a.5.5 0 0 1 0-1H6v-2.5a.5.5 0 1 1 1 0V17h2.497a.5.5 0 0 1 0 1H7Z" fill="#fff" class="fill-212121"></path></svg>
                   Add file
                 </Button>
+                <Button class="btn btn-primary btn-block" @click="addEmails">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v6a2 2 0 0 0 2 2h6v10a2 2 0 0 1-2 2h-6.81A6.5 6.5 0 0 0 4 11.498V4a2 2 0 0 1 2-2h6Z" fill="#fff" class="fill-212121"></path><path d="M13.5 2.5V8a.5.5 0 0 0 .5.5h5.5l-6-6ZM12 17.5a5.5 5.5 0 1 0-11 0 5.5 5.5 0 0 0 11 0ZM7 18l.001 2.503a.5.5 0 1 1-1 0V18H3.496a.5.5 0 0 1 0-1H6v-2.5a.5.5 0 1 1 1 0V17h2.497a.5.5 0 0 1 0 1H7Z" fill="#fff" class="fill-212121"></path></svg>
+                  Emails file
+                </Button>
               </div>
 
               <div v-if="folderSelected.children && folderSelected.children.length > 0" class="proceeding-file-wrapper children">
@@ -135,6 +139,21 @@
                 @onAircraftProceedingFileSave="onSave" />
             </Sidebar>
           </div>
+           <!-- Aircraft Proceeding File Type Email form -->
+           <div class="card flex justify-content-center">
+            <Sidebar
+              v-model:visible="drawerProceedingFileTypeEmailForm"
+              position="right"
+              class="proceeding-file-type-email-form-sidebar"
+              :blockScroll="true"
+              :closeOnEscape="false"
+              :dismissable="false"
+              :showCloseIcon="true"
+              header="emails"
+            >
+              <proceedingFileTypeEmail :proceedingFileType="folderSelected"/>
+            </Sidebar>
+          </div>
         </div>
 
         <transition name="page">
@@ -164,6 +183,14 @@
 .aircraft-proceeding-file-form-sidebar {
     width: 100% !important;
     max-width: 45rem !important;
+
+    @media screen and (max-width: $sm) {
+        width: 100% !important;
+    }
+}
+.proceeding-file-type-email-form-sidebar {
+    width: 100% !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
         width: 100% !important;

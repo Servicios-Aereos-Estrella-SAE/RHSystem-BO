@@ -1,18 +1,26 @@
 
 import type { EmployeeShiftInterface } from "../interfaces/EmployeeShiftInterface"
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class EmployeeShiftService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
   async getByEmployee(employeeId: number, shiftId: number | null, dateStart: string | null, dateEnd: string | null) {
     const query = { 'shiftId': shiftId, 'dateStart': dateStart,  'dateEnd': dateEnd }
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-shifts-employee/${employeeId}`, {
+      headers,
       query: query,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -24,8 +32,10 @@ export default class EmployeeShiftService {
 
   async getShiftActiveByEmployee(employeeId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-shifts-active-shift-employee/${employeeId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -36,9 +46,11 @@ export default class EmployeeShiftService {
 
 
   async store (employeeShift: EmployeeShiftInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee_shifts`, {
+        headers,
         method: 'POST',
         query: { ...employeeShift },
         onResponse ({ response }) { responseRequest = response },
@@ -50,9 +62,11 @@ export default class EmployeeShiftService {
   }
 
   async update (employeeShift: EmployeeShiftInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee_shifts/${employeeShift.employeeShiftId}`, {
+        headers,
         method: 'PUT',
         query: { ...employeeShift },
         onResponse ({ response }) { responseRequest = response },
@@ -65,8 +79,10 @@ export default class EmployeeShiftService {
 
   async delete (employeeShift: EmployeeShiftInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee_shifts/${employeeShift.employeeShiftId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -77,8 +93,10 @@ export default class EmployeeShiftService {
 
   async show (employeeShiftId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee_shifts/${employeeShiftId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })

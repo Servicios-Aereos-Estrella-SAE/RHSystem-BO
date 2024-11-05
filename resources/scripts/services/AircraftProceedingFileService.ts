@@ -16,8 +16,10 @@ export default class AircraftProceedingFileService {
 
   async getByAircraft(aircraftId: number, fileTypeId?: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/aircraft-proceeding-files/${aircraftId}/proceeding-files`, {
+      headers,
       query: { type: fileTypeId },
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -28,9 +30,11 @@ export default class AircraftProceedingFileService {
   }
 
   async store (aircraftProceedingFile: AircraftProceedingFileInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/aircraft-proceeding-files`, {
+        headers,
         method: 'POST',
         query: { ...aircraftProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -42,9 +46,11 @@ export default class AircraftProceedingFileService {
   }
 
   async update (aircraftProceedingFile: AircraftProceedingFileInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/aircraft-proceeding-files/${aircraftProceedingFile.aircraftProceedingFileId}`, {
+        headers,
         method: 'PUT',
         query: { ...aircraftProceedingFile },
         onResponse ({ response }) { responseRequest = response },
@@ -57,8 +63,10 @@ export default class AircraftProceedingFileService {
 
   async delete (aircraftProceedingFile: AircraftProceedingFileInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/aircraft-proceeding-files/${aircraftProceedingFile.aircraftProceedingFileId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -68,9 +76,11 @@ export default class AircraftProceedingFileService {
   }
 
   async show (aircraftProceedingFileId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/aircraft-proceeding-files/${aircraftProceedingFileId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })

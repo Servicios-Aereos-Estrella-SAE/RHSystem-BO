@@ -35,9 +35,11 @@ export default class EmployeeService {
   }
 
   async store(employee: EmployeeInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees`, {
+        headers,
         method: 'POST',
         query: { ...employee },
         onResponse ({ response }) { responseRequest = response },
@@ -49,9 +51,11 @@ export default class EmployeeService {
   }
 
   async update(employee: EmployeeInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employee.employeeId}`, {
+        headers,
         method: 'PUT',
         query: { ...employee },
         onResponse ({ response }) { responseRequest = response },
@@ -63,9 +67,11 @@ export default class EmployeeService {
   }
 
   async show(id: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${id}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -130,8 +136,10 @@ export default class EmployeeService {
 
   async getOnlyWithOutUser (searchText: string, department: number | null, position: number | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/without-user`, {
+      headers,
       query: {
         search: searchText,
         department,
@@ -148,8 +156,10 @@ export default class EmployeeService {
 
   async delete(employee: EmployeeInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/${employee.employeeId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
@@ -159,9 +169,11 @@ export default class EmployeeService {
   }
 
   async storePerson(person: PeopleInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/persons`, {
+        headers,
         method: 'POST',
         query: { ...person },
         onResponse ({ response }) { responseRequest = response },
@@ -173,9 +185,11 @@ export default class EmployeeService {
   }
 
   async updatePerson(person: PeopleInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/persons/${person.personId}`, {
+        headers,
         method: 'PUT',
         query: { ...person },
         onResponse ({ response }) { responseRequest = response },
@@ -187,11 +201,13 @@ export default class EmployeeService {
   }
   async updatePhoto(employeeId: number, photo: any) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
     // send request to send photo like multipart/form-data
     const formData = new FormData()
     formData.append('photo', photo)
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/photo`, {
+        headers,
         method: 'PUT',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -203,9 +219,11 @@ export default class EmployeeService {
   }
 
   async synchronization() {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/synchronization/employees`, {
+        headers,
         method: 'POST',
         query: { },
         onResponse ({ response }) { responseRequest = response },
@@ -218,8 +236,10 @@ export default class EmployeeService {
 
   async getWorkSchedules () {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/get-work-schedules`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -228,9 +248,11 @@ export default class EmployeeService {
   }
 
   async getVacationsUsed(employeeId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-used`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -240,9 +262,11 @@ export default class EmployeeService {
   }
 
   async getVacationsCorresponding(employeeId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-corresponding`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -252,9 +276,11 @@ export default class EmployeeService {
   }
 
   async getYearsWorked(employeeId: number, year: number | null) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-years-worked`, {
+        headers,
         query: { year: year },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
@@ -265,9 +291,11 @@ export default class EmployeeService {
   }
 
   async getVacationsByPeriod(employeeId: number, vacationSettingId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-by-period`, {
+        headers,
         query: { vacationSettingId: vacationSettingId },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
@@ -276,4 +304,52 @@ export default class EmployeeService {
     }
     return responseRequest
   }
+
+  async getExcelAll (
+    employeeId: number, departmentId: number, startDate: string, endDate: string
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = {
+        startDate,
+        endDate 
+      };
+            await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationExcel (
+    startDate: string | Date,
+    endDate: string | Date
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { 'startDate': startDate, 'endDate': endDate }
+      await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  
 }

@@ -73,6 +73,7 @@
         :employee="employee"
         @manageVacations="handlerVacationsManager"
         :status-form="statusForm"
+        :can-manage-vacation="canManageVacation"
       />
     </Sidebar>
 
@@ -89,7 +90,7 @@
       <employeeVacationsControl
         :employee="employee"
         :vacation-period="vacationPeriod"
-        @closeVacations="handlerVacationsClose"
+        :can-manage-vacation="canManageVacation"
       />
     </Sidebar>
   </div>

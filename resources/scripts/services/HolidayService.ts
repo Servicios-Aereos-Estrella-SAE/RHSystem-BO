@@ -1,15 +1,24 @@
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+
 export default class HolidayService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getFilteredList (searchText: string,firstDate:string | null, lastDate: string | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/holidays`, {
+      headers,
       query: {
         search: searchText,
         firstDate,
@@ -27,7 +36,10 @@ export default class HolidayService {
    async show(id: number) {
     let responseRequest: any = null
     try {
+      const headers = { ...this.GENERAL_HEADERS }
+
       await $fetch(`${this.API_PATH}/holidays/${id}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -48,7 +60,10 @@ export default class HolidayService {
   async update(holiday: HolidayInterface, iconId: number = 0) {
     let responseRequest: any = null
     try {
+      const headers = { ...this.GENERAL_HEADERS }
+
       await $fetch(`${this.API_PATH}/holidays/${holiday.holidayId}`, {
+        headers,
         method: 'PUT',
         query: { ...holiday },
         onResponse ({ response }) { responseRequest = response },
@@ -61,8 +76,11 @@ export default class HolidayService {
 
   async store(holiday: HolidayInterface, iconId: number = 0) {
     let responseRequest: any = null
+    
     try {
+      const headers = { ...this.GENERAL_HEADERS }
       await $fetch(`${this.API_PATH}/holidays`, {
+        headers,
         method: 'POST',
         query: { ...holiday },
         onResponse ({ response }) { responseRequest = response },
@@ -75,8 +93,10 @@ export default class HolidayService {
 
   async getIconList() {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/icons`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -86,8 +106,10 @@ export default class HolidayService {
 
   async delete(holiday: HolidayInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/holidays/${holiday.holidayId}`, {
+      headers,
       method: 'DELETE',
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }

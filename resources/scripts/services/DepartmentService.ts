@@ -1,6 +1,5 @@
-import { tr } from "date-fns/locale";
 import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
-import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class DepartmentService {
  
@@ -36,44 +35,19 @@ export default class DepartmentService {
 
     return responseRequest;
   }
-  async getAllDepartmentList () {
+
+  async getAllDepartmentList (filters?: Object) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/departments`, {
       headers,
+      query: filters,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
 
     return responseRequest
-  }
-  async getSearchDepartmentList(search: string, currentPage: number, rowsPerPage: number) {
-    const headers = { ...this.GENERAL_HEADERS }
-    let responseRequest: any = null
-  
-    await $fetch(`${this.API_PATH}/departments/search`, {
-      headers,
-      query: {
-        departmentName: search,
-        currentPage,
-        rowsPerPage
-      },
-      onResponse({ response }) {
-        responseRequest = response
-      },
-      onRequestError({ response }) {
-        responseRequest = response
-      }
-    })
-
-    if (responseRequest?.data) {
-      return {
-        data: responseRequest.data.data,
-        meta: responseRequest.data.meta
-      }
-    }
-    return responseRequest  
   }
 
   async getSearchOrganization(search: string, currentPage: number, rowsPerPage: number) {
@@ -106,8 +80,10 @@ export default class DepartmentService {
 
   async getDepartmentPositions (departmentId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -117,30 +93,24 @@ export default class DepartmentService {
 
   async show (departmentId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/departments/`, {
+    await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
 
-    const list = responseRequest.status === 200 ? responseRequest._data.data.departments : []
-    const department = list.find((item: DepartmentInterface) => item.departmentId === departmentId)
-
-    return {
-      status: responseRequest.status,
-      _data: {
-        data: {
-          department: department
-        }
-      }
-    }
+    return responseRequest
   }
 
   async assignShift (departmentId: number, shiftId: number, applySince: string) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const query = { 'shiftId': shiftId,  'applySince': applySince }
     try {
       await $fetch(`${this.API_PATH}/department/assign-shift/${departmentId}`, {
+        headers,
         method: 'POST',
         query: { ...query },
         onResponse ({ response }) { responseRequest = response },
@@ -153,8 +123,10 @@ export default class DepartmentService {
 
   async update(data: DepartmentInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${data.departmentId}`, {
+      headers,
       method: 'PUT',
       body: JSON.stringify(data),
       onResponse ({ response }) { responseRequest = response },
@@ -166,8 +138,10 @@ export default class DepartmentService {
 
   async store(data: DepartmentInterface) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments`, {
+      headers,
       method: 'POST',
       body: JSON.stringify(data),
       onResponse ({ response }) { responseRequest = response },
@@ -183,8 +157,10 @@ export default class DepartmentService {
 
   async showOnSave (departmentId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -201,9 +177,11 @@ export default class DepartmentService {
   }
 
   async assignDepartment(positionId: number, departmentId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/departments-positions`, {
+        headers,
         method: 'POST',
         body: JSON.stringify({ positionId, departmentId }),
         onResponse ({ response }) { responseRequest = response },
@@ -220,9 +198,11 @@ export default class DepartmentService {
   }
 
   async unAssignDepartment(positionId: number, departmentId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/departments-positions/${departmentId}/${positionId}`, {
+        headers,
         method: 'DELETE',
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) {
@@ -238,9 +218,11 @@ export default class DepartmentService {
   }
 
   async softDeleteDepartmentPosition(positionId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null;
     try {
       await $fetch(`${this.API_PATH}/positions/${positionId}`, {
+        headers,
         method: 'DELETE',
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) {
@@ -257,8 +239,10 @@ export default class DepartmentService {
   
   async delete(department: DepartmentInterface) {
     let responseRequest: any = null;
-  
+    const headers = { ...this.GENERAL_HEADERS }
+
     await $fetch(`${this.API_PATH}/departments/${department.departmentId}`, {
+      headers,
       method: 'DELETE',
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
@@ -269,8 +253,10 @@ export default class DepartmentService {
 
   async forceDelete(department: DepartmentInterface) {
     let responseRequest: any = null;
-  
+    const headers = { ...this.GENERAL_HEADERS }
+
     await $fetch(`${this.API_PATH}/departments/${department.departmentId}/force-delete`, {
+      headers,
       method: 'DELETE',
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }

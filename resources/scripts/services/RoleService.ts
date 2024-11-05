@@ -1,16 +1,25 @@
 
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+
 export default class RoleService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
   async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/roles`, {
+      headers,
       query: {
         search: searchText,
         page,
@@ -24,6 +33,7 @@ export default class RoleService {
   }
 
   async assign(roleId: number, permissions: Array<any>, departments: Array<any>) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const formData = new FormData()
     permissions.forEach((systemPermissionId) => {
@@ -34,6 +44,7 @@ export default class RoleService {
     })
     try {
       await $fetch(`${this.API_PATH}/roles/assign/${roleId}`, {
+        headers,
         method: 'POST',
         body: formData,
         onResponse ({ response }) { responseRequest = response },
@@ -46,9 +57,11 @@ export default class RoleService {
 
 
   async show(roleId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/roles/${roleId}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -67,9 +80,11 @@ export default class RoleService {
   }
 
   async hasAccess(roleId: number, systemModuleSlug: string, systemPermissionSlug: string) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/roles/has-access/${roleId}/${systemModuleSlug}/${systemPermissionSlug}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -88,9 +103,11 @@ export default class RoleService {
   }
 
   async hasAccessDepartment(roleId: number, departmentId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/roles/has-access-department/${roleId}/${departmentId}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -110,8 +127,11 @@ export default class RoleService {
 
   async getAccessByModule(roleId: number, systemModuleSlug: string) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/roles/get-access-by-module/${roleId}/${systemModuleSlug}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -131,8 +151,11 @@ export default class RoleService {
 
   async getAccess(roleId: number) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/roles/get-access/${roleId}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

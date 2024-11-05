@@ -1,16 +1,24 @@
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class SystemModuleService {
   protected API_PATH: string
+  protected GENERAL_HEADERS: GeneralHeadersInterface
 
   constructor () {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
+    const { token } = useAuth()
+    this.GENERAL_HEADERS = {
+      Authorization: `${token.value}`
+    }
   }
 
   async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/system-modules`, {
+      headers,
       query: {
         search: searchText,
         page,
@@ -25,8 +33,10 @@ export default class SystemModuleService {
 
   async getGroups () {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/system-modules/get-groups`, {
+      headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -36,8 +46,11 @@ export default class SystemModuleService {
 
   async show(systemModuleSlug: string) {
     let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
     try {
       await $fetch(`${this.API_PATH}/system-modules/${systemModuleSlug}`, {
+        headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
