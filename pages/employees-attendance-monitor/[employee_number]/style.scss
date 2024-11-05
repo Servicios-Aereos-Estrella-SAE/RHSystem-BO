@@ -83,7 +83,7 @@
       }
 
       &.sync {
-        grid-template-columns: auto 4rem 4rem 4rem;
+        grid-template-columns: 30rem auto;
         padding: 1rem;
         border-radius: calc($radius / 2);
 
@@ -99,6 +99,12 @@
             display: block;
             margin-top: 0.25rem;
           }
+        }
+
+        .subhead-tools {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: flex-end;
         }
       }
     }

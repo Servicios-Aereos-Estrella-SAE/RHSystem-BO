@@ -105,7 +105,7 @@ export const useMyGeneralStore = defineStore({
         await this.getSystemModules()
       }
 
-      const isModuleActive = this.systemModules.find(a => a.systemModuleSlug === systemModuleSlug)
+      const isModuleActive = this.systemModules.find(a => a && a.systemModuleSlug === systemModuleSlug)
 
       if (!isModuleActive && (systemModuleSlug !== 'users' && systemModuleSlug !== 'system-settings' && systemModuleSlug !== 'roles-and-permissions')) {
         return false
