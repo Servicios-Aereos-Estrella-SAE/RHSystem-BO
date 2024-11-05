@@ -41,7 +41,7 @@
                 </template>
               </AutoComplete>
             </div>
-            <button class="btn btn-block" @click="handlerSearchEmployee">
+            <button class="btn btn-block">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
@@ -131,8 +131,7 @@
           </h6>
           <div v-if="visualizationMode" class="input-box">
             <Button class="btn btn-block" @click="getExcel">
-              <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 20.5h13.498a.75.75 0 0 1 .101 1.493l-.101.007H5.25a.75.75 0 0 1-.102-1.494l.102-.006h13.498H5.25Zm6.633-18.498L12 1.995a1 1 0 0 1 .993.883l.007.117v12.59l3.294-3.293a1 1 0 0 1 1.32-.083l.094.084a1 1 0 0 1 .083 1.32l-.083.094-4.997 4.996a1 1 0 0 1-1.32.084l-.094-.083-5.004-4.997a1 1 0 0 1 1.32-1.498l.094.083L11 15.58V2.995a1 1 0 0 1 .883-.993L12 1.995l-.117.007Z" fill="#88a4bf" class="fill-212121"></path></svg></svg>
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5.25 20.5h13.498a.75.75 0 0 1 .101 1.493l-.101.007H5.25a.75.75 0 0 1-.102-1.494l.102-.006h13.498H5.25Zm6.633-18.498L12 1.995a1 1 0 0 1 .993.883l.007.117v12.59l3.294-3.293a1 1 0 0 1 1.32-.083l.094.084a1 1 0 0 1 .083 1.32l-.083.094-4.997 4.996a1 1 0 0 1-1.32.084l-.094-.083-5.004-4.997a1 1 0 0 1 1.32-1.498l.094.083L11 15.58V2.995a1 1 0 0 1 .883-.993L12 1.995l-.117.007Z" fill="#88a4bf" class="fill-212121"></path></svg>
             </Button>
           </div>
         </div>
@@ -181,15 +180,5 @@
 </script>
 
 <style lang="scss" scoped>
-@import './style';
-//  .p-dropdown {
-//     width: 100%;
-//     max-height: 2.8rem;
-//   }
-
-//   .p-dropdown-label {
-//       height: 2rem!important;
-//     }
-
-  
+  @import './style';
 </style>

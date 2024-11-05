@@ -25,7 +25,9 @@
                   {{ item.label }}
                 </nuxt-link>
                 <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }" :style="{ backgroundColor: getBackgroundColor }">
-                  <div class="icon" v-html="item.icon"></div>
+                  <div class="icon">
+                    <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>
+                  </div>
                   {{ item.label }}
                 </div>
             </template>
@@ -46,7 +48,32 @@
 </style>
 
 <style lang="scss">
+  @import '/resources/styles/variables.scss';
+
   .aside-menu {
+    .menu {
+      .menu-link {
+        .icon {
+          width: 1.25rem;
+          height: 3rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          @media screen and (max-width: $desktop) {
+            width: 2rem;
+          }
+
+          svg {
+            width: 1.25rem;
+
+            @media screen and (max-width: $desktop) {
+              width: 1rem;
+            }
+          }
+        }
+      }
+    }
 
     .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
       background: transparent;
