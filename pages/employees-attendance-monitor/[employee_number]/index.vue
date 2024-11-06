@@ -141,24 +141,24 @@
           </h6>
           <div class="subhead-tools">
             <div v-if="visualizationMode && isRoot" class="input-box">
-              <Button v-if="employee.employeeAssistDiscriminator === 0" class="btn btn-block" severity="success" @click="addNewAssist">
+              <Button class="btn btn-block" severity="success" @click="addNewAssist">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM21 8.5l.001 3.523a6.5 6.5 0 0 0-8.979 8.979L6.25 21A3.25 3.25 0 0 1 3 17.75V8.5h18ZM17.5 14l-.09.008a.5.5 0 0 0-.402.402L17 14.5V17h-2.5l-.09.008a.5.5 0 0 0-.402.402L14 17.5l.008.09a.5.5 0 0 0 .402.402l.09.008H17v2.5l.008.09a.5.5 0 0 0 .402.402l.09.008.09-.008a.5.5 0 0 0 .402-.402L18 20.5V18h2.5l.09-.008a.5.5 0 0 0 .402-.402L21 17.5l-.008-.09a.5.5 0 0 0-.402-.402L20.5 17H18v-2.5l-.008-.09a.5.5 0 0 0-.402-.402L17.5 14Zm.25-11A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </Button>
             </div>
             <div v-if="visualizationMode" class="input-box">
-              <Button v-if="employee.employeeAssistDiscriminator === 0" class="btn btn-block" severity="success" @click="syncEmployee">
+              <Button class="btn btn-block" severity="success" @click="syncEmployee">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16.052 5.029a1 1 0 0 0 .189 1.401 7.002 7.002 0 0 1-3.157 12.487l.709-.71a1 1 0 0 0-1.414-1.414l-2.5 2.5a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 1.414-1.414l-.843-.842A9.001 9.001 0 0 0 17.453 4.84a1 1 0 0 0-1.401.189Zm-1.93-1.736-2.5-2.5a1 1 0 0 0-1.498 1.32l.083.094.843.843a9.001 9.001 0 0 0-4.778 15.892A1 1 0 0 0 7.545 17.4a7.002 7.002 0 0 1 3.37-12.316l-.708.709a1 1 0 0 0 1.32 1.497l.094-.083 2.5-2.5a1 1 0 0 0 .083-1.32l-.083-.094Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </Button>
             </div>
             <div v-if="visualizationMode" class="input-box">
-              <Button v-if="employee.employeeAssistDiscriminator === 0" class="btn btn-block" severity="success" @click="getExcel">
+              <Button class="btn btn-block" severity="success" @click="getExcel">
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z" fill="#88a4bf" class="fill-000000"></path></svg>
               </Button>
             </div>
           </div>
         </div>
         
-        <div v-if="employee.employeeAssistDiscriminator === 0">
+        <div>
           <div v-if="employeeCalendar.length > 0" class="general-graphs">
             <div class="box">
               <div class="pay-chart">
@@ -201,11 +201,11 @@
             </div>
           </div>
         </div>
-        <div v-else class="general-graphs">
+        <!-- <div v-else class="general-graphs">
           <div class="jumbotron">
             <div>
               <div class="icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 2.051V11h8.949c-.47-4.717-4.232-8.479-8.949-8.949zm4.969 17.953c2.189-1.637 3.694-4.14 3.98-7.004h-8.183l4.203 7.004z" fill="#303e67" class="fill-000000"></path><path d="M11 12V2.051C5.954 2.555 2 6.824 2 12c0 5.514 4.486 10 10 10a9.93 9.93 0 0 0 4.255-.964s-5.253-8.915-5.254-9.031A.02.02 0 0 0 11 12z" fill="#303e67" class="fill-000000"></path></svg>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm-.004 8.25a1 1 0 0 0-.992.885l-.007.116.003 5.502.007.117a1 1 0 0 0 1.987-.002L13 16.75l-.003-5.501-.007-.117a1 1 0 0 0-.994-.882ZM12 6.5a1.251 1.251 0 1 0 0 2.503A1.251 1.251 0 0 0 12 6.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </div>
               <span>
                 This employee does not have
@@ -217,7 +217,7 @@
           <div class="jumbotron">
             <div>
               <div class="icon">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 2v3h8V2h2v3h1.436c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v11.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267H4.563c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.16-.301-.252-.6-.265-1.345L2 7.564c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.301-.16.6-.252 1.345-.265L6 5V2h2Zm5 16h-2v2h2v-2Zm.2-6h-2.4l.2 4.5h2l.2-4.5ZM19 7H5a1 1 0 0 0-1 1v2h16V8a1 1 0 0 0-1-1Z" fill="#303e67" fill-rule="nonzero" class="fill-000000"></path></svg>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm-.004 8.25a1 1 0 0 0-.992.885l-.007.116.003 5.502.007.117a1 1 0 0 0 1.987-.002L13 16.75l-.003-5.501-.007-.117a1 1 0 0 0-.994-.882ZM12 6.5a1.251 1.251 0 1 0 0 2.503A1.251 1.251 0 0 0 12 6.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </div>
               <span>
                 This employee does not have 
@@ -226,7 +226,7 @@
               </span>
             </div>
           </div>
-        </div>
+        </div> -->
         <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
           <EmployeeAssistInfoForm
             :assist="assist"
