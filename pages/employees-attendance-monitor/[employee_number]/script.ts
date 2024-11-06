@@ -376,7 +376,7 @@ export default defineComponent({
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
     async handlerVisualizationModeChange () {
-      if (this.employee && this.employee.employeeAssistDiscriminator === 0) {
+      if (this.employee) {
         const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
         this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
