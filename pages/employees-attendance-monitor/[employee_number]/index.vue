@@ -77,7 +77,6 @@
               optionLabel="name"
               aria-labelledby="basic"
               optionDisabled="selected"
-              :disabled="employee.employeeAssistDiscriminator === 1"
               @change="handlerVisualizationModeChange"
             />
           </div>
@@ -92,7 +91,6 @@
               :dateFormat="visualizationMode.calendar_format.format"
               :minDate="minDate"
               :maxDate="maxDate"
-              :disabled="employee.employeeAssistDiscriminator === 1"
               showWeek
               @update:modelValue="handlerPeriodChange"
             />
