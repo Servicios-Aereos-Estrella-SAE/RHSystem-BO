@@ -197,11 +197,9 @@ export default defineComponent({
           
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-          console.log('thursday', thursday);
 
           // Establecer el inicio del periodo como el jueves de dos semanas atrás
           let startDate = thursday.minus({ days: 24 }) // Jueves de dos semanas atrás
-          console.log('startDate', startDate);  
 
           // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
           for (let index = 0; index < 14; index++) {
@@ -306,7 +304,6 @@ export default defineComponent({
       } 
     },
     isThursday(dateObject: any, addOneMonth = true) {
-      console.log(dateObject);
       const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
       const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
@@ -338,21 +335,10 @@ export default defineComponent({
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
-      // console log all data
-      console.log('assists', assists);
-      console.log('tolerances', tolerances);
-      console.log('delays', delays);
-      console.log('faults', faults);
-      console.log('totalAvailable', totalAvailable);
-      // console log all data
       const assist = totalAvailable > 0 ? Math.round((assists / totalAvailable) * 100) : 0;
       const tolerance = totalAvailable > 0 ? Math.round((tolerances / totalAvailable) * 100) : 0;
       const delay = totalAvailable > 0 ? Math.round((delays / totalAvailable) * 100) : 0;
       const fault = totalAvailable > 0 ? Math.round((faults / totalAvailable) * 100) : 0;
-      console.log('assist', assist);
-      console.log('tolerance', tolerance);
-      console.log('delay', delay);
-      console.log('fault', fault);
 
       this.onTimePercentage = assist
       this.onTolerancePercentage = tolerance
@@ -424,7 +410,6 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-      console.log('employeeCalendar', employeeCalendar);
       this.employeeCalendar = employeeCalendar
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
@@ -437,8 +422,7 @@ export default defineComponent({
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeCode = this.employee?.employeeCode || "0"
-      const assistReq = await new AssistService().syncEmployee(startDay, endDay, employeeCode)
-      console.log('assistReq', assistReq);
+      await new AssistService().syncEmployee(startDay, endDay, employeeCode)
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },

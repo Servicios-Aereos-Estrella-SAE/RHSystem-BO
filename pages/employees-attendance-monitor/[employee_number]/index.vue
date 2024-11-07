@@ -157,8 +157,8 @@
         </div>
         
         <div>
-          <div v-if="employeeCalendar.length > 0" class="general-graphs">
-            <div class="box">
+          <div v-if="employeeCalendar.length > 0" class="general-graphs" :class="{ 'only-calendar': employee.employeeAssistDiscriminator === 1 }">
+            <div v-if="employee.employeeAssistDiscriminator !== 1" class="box">
               <div class="pay-chart">
                 <h2>
                   General behavior into period
