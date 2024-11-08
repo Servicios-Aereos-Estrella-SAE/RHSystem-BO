@@ -33,11 +33,11 @@ export default defineComponent({
     hasCompletedYear: false,
     minDate:  DateTime.fromISO('2000-10-10').toJSDate(),
     statusOptions: [
-        { label: 'Requested', value: 'requested' },
-        { label: 'Pending', value: 'pending' },
-        { label: 'Accepted', value: 'accepted' },
-        { label: 'Refused', value: 'refused' },
-      ],
+      { label: 'Requested', value: 'requested' },
+      { label: 'Pending', value: 'pending' },
+      { label: 'Accepted', value: 'accepted' },
+      { label: 'Refused', value: 'refused' },
+    ],
   }),
   computed: {
   },
@@ -46,7 +46,6 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     this.isNewShiftException = !this.shiftException.exceptionRequestId ? true : false
-
     if (this.shiftException.exceptionRequestId) {
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await  shiftExceptionService.showException(this.shiftException.exceptionRequestId)
@@ -54,15 +53,23 @@ export default defineComponent({
       if (shiftExceptionResponse.status === 200) {
         this.currentShiftException = shiftExceptionResponse._data.data.shiftException
       }
-
-      if (this.currentShiftException && this.currentShiftException.requestedDate) {
-        this.currentDate = `${this.currentShiftException.requestedDate}`
-        const newDate = DateTime.fromISO(this.currentShiftException.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
-        this.shiftException.requestedDate = newDate ? newDate.toString() : ''
-      }
+      
+      if (this.currentShiftException && this.currentShiftException.data.requestedDate) {      
+        const isoDate = this.currentShiftException.data.requestedDate.toString();
+        const newDate = DateTime.fromISO(isoDate).toUTC().toFormat('yyyy-MM-dd HH:mm')
+      
+        if (newDate) {
+          this.shiftException.requestedDate = newDate;
+        } else {
+          this.shiftException.requestedDate = '';
+        }
+            }
     } else {
+
       this.shiftException.requestedDate = this.date
       this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      console.log(this.shiftException.requestedDate)
+
     }
 
     let hasAccess = false
@@ -153,6 +160,7 @@ export default defineComponent({
         this.dateWasChange = true
       }
     },
+    
     handleTypeChange() {
       if (this.isReady) {
         let isVacation = false

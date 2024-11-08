@@ -13,7 +13,7 @@
                         Exception Status
                     </label>
                     <Dropdown v-model="shiftException.exceptionRequestStatus" :options="statusOptions"
-                        optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem" />
+                        optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem" :disabled="true"/>
                     <small class="p-error" v-if="submitted && !shiftException.exceptionRequestStatus">
                         Exception status is required.
                     </small>
