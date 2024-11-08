@@ -5,6 +5,7 @@ import type { SystemModuleInterface } from '~/resources/scripts/interfaces/Syste
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
 import SystemModuleService from '~/resources/scripts/services/SystemModuleService'
+import LogService from '~/resources/scripts/services/mongo-db/LogService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -47,6 +48,7 @@ export default defineComponent({
       const fullPath = this.$route.path;
       const firstSegment = fullPath.split('/')[1];
       const systemModuleSlug = firstSegment
+      console.log(systemModuleSlug)
       const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
 
       if (!hasAccess) {
@@ -76,7 +78,8 @@ export default defineComponent({
         })
         }
       }
-
+      const logService = new LogService()
+      await logService.store(systemModuleSlug)
       await this.getGroupMenu()
 
       myGeneralStore.displayContent = true
