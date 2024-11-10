@@ -1,5 +1,6 @@
 import type { ShiftExceptionInterface } from "../interfaces/ShiftExceptionInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+import type { ExceptionRequestInterface } from "../interfaces/ExceptionRequestInterface"
 
 export default class ShiftExceptionService {
   protected API_PATH: string
@@ -13,6 +14,23 @@ export default class ShiftExceptionService {
       Authorization: `${token.value}`
     }
   }
+
+  async getByEmployeeException(employeeId: number) {
+    const query = { 'employeeId': employeeId }
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/exception-requests`, {
+      headers,
+      query: query,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    const list = responseRequest.status === 200 ? responseRequest._data.data.data : []
+    return list
+  }
+
   async getByEmployee(employeeId: number, exceptionTypeId: number | null, dateStart: string | null, dateEnd: string | null) {
     const query = { 'exceptionTypeId': exceptionTypeId, 'dateStart': dateStart,  'dateEnd': dateEnd }
     let responseRequest: any = null
@@ -104,6 +122,91 @@ export default class ShiftExceptionService {
       return false;
     }
     if (!shiftException.shiftExceptionsDescription) {
+      console.error('Wrong description');
+      return false;
+    }
+    if (!shiftException.exceptionTypeId) {
+      console.error('Wrong type id');
+      return false;
+    }
+    return true;
+  }
+  
+  async showException (shiftExceptionId: number) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/exception-requests/${shiftExceptionId}`, {
+      headers,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+    const shiftException = responseRequest.status === 200 ? responseRequest._data.data : null
+
+    return {
+      status: responseRequest.status,
+      _data: {
+        data: {
+          shiftException: shiftException
+        }
+      }
+    }
+  }
+
+  async storeException (shiftException: ExceptionRequestInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    try {
+      await $fetch(`${this.API_PATH}/exception-requests`, {
+        headers,
+        method: 'POST',
+        body: { ...shiftException },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async updateException (shiftException: ExceptionRequestInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    try {
+      await $fetch(`${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}`, {
+        headers,
+        method: 'PUT',
+        body: { ...shiftException },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async deleteException (shiftException: ExceptionRequestInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}`, {
+      headers,
+      method: 'DELETE',
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
+  validateInfoException(shiftException: ExceptionRequestInterface): boolean {
+    if (!shiftException.requestedDate) {
+      console.error('Wrong date');
+      return false;
+    }
+    if (!shiftException.exceptionRequestDescription) {
       console.error('Wrong description');
       return false;
     }
