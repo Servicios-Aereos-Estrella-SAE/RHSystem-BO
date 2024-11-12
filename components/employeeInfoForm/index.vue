@@ -109,6 +109,11 @@
           <Dropdown v-model="employee.employeeAssistDiscriminator" :options="assistDiscriminatorOptions" optionLabel="label" optionValue="value"
             placeholder="Select" class="w-full md:w-14rem" />
         </div>
+        <div class="input-box">
+          <label for="typeOfContract">Contract Type</label>
+          <Dropdown v-model="employee.employeeTypeOfContract" :options="typesOfContract" optionLabel="label" optionValue="value"
+            placeholder="Select Type of Contract" class="w-full md:w-14rem" />
+        </div>
         <div class="box-tools-footer">
           <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->
           <!-- <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" /> -->

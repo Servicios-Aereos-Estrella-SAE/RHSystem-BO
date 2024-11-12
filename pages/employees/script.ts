@@ -1,10 +1,14 @@
 import { DateTime } from 'luxon';
 import { defineComponent } from 'vue'
+import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface';
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface';
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
+import DepartmentService from '~/resources/scripts/services/DepartmentService';
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
+import PositionService from '~/resources/scripts/services/PositionService';
 import { useMyGeneralStore } from "~/store/general";
 
 export default defineComponent({
@@ -31,10 +35,27 @@ export default defineComponent({
         canManageVacation: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
-        hasAccessToManageShifts: false
+        hasAccessToManageShifts: false,
+        positions: [] as PositionInterface[],
+        departments: [] as DepartmentInterface[],
+        departmentId: null as number | null,
+        positionId: null as number | null,
     }),
     computed: {},
     created() { },
+    watch: {
+        'departmentId': function(newVal) {
+            this.positionId = null
+            this.positions = []
+            this.handlerSearchEmployee()
+          if (newVal) {
+            this.getPositions(newVal);
+          }
+        },
+        'positionId': function() {
+         this.handlerSearchEmployee()
+        },
+    },
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -54,14 +75,25 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
         await this.handlerSearchEmployee()
+        await  this.getDepartments()
         this.hasAccessToManageShifts = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift')
     },
     methods: {
+        async getPositions(departmentId: number) {
+            const positionService = new PositionService()
+            this.positions = await positionService.getPositionsDepartment(departmentId)
+          },
+          async getDepartments() {
+            let response = null
+            const departmentService = new DepartmentService()
+            response = await departmentService.getAllDepartmentList()
+            this.departments = response._data.data.departments
+          },
         async handlerSearchEmployee() {
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
-            const response = await new EmployeeService().getFilteredList(this.search, null, null, workSchedule, this.currentPage, this.rowsPerPage);
+            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.employees.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
@@ -120,6 +152,7 @@ export default defineComponent({
                 person: person,
                 businessUnitId: 1,
                 employeeAssistDiscriminator: 0,
+                employeeTypeOfContract: "Internal",
             }
             this.employee = newEmployee
             this.drawerEmployeeForm = true

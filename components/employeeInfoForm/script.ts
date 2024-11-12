@@ -53,7 +53,11 @@ export default defineComponent({
     employeeHireDate: '' as string,
     personBirthday: '' as string,
     displayHireDateCalendar: false as boolean,
-    displayBirthDateCalendar: false as boolean
+    displayBirthDateCalendar: false as boolean,
+    typesOfContract: [
+        { label: 'Internal', value: 'Internal' },
+        { label: 'External', value: 'External' },
+    ],
   }),
   computed: {
   },

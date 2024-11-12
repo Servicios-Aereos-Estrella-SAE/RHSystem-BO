@@ -22,6 +22,7 @@ interface EmployeeInterface {
   businessUnitId: number,
   employeeAssistDiscriminator: number,
   employeeLastSynchronizationAt: Date | string | null,
+  employeeTypeOfContract: string | null,
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
   employeeDeletedAt: Date | string | null,

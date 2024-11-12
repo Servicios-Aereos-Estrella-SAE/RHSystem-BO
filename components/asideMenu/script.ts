@@ -48,7 +48,6 @@ export default defineComponent({
       const fullPath = this.$route.path;
       const firstSegment = fullPath.split('/')[1];
       const systemModuleSlug = firstSegment
-      console.log(systemModuleSlug)
       const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
 
       if (!hasAccess) {
