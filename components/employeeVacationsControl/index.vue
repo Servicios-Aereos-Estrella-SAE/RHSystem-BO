@@ -1,11 +1,9 @@
 <template>
   <div v-if="isReady" class="employee-shift-vacations">
+    <employeeModalInfoCard :employee="employee"/>
     <h1>
       Manage vacations
     </h1>
-    <h1>{{
-      `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
-      }}</h1>
     <vacationsPeriodCard :vacation-period="currentVacationPeriod" hideManager class="period-info" :can-manage-vacation="canManageVacation" />
 
     <div class="head">

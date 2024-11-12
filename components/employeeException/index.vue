@@ -1,7 +1,7 @@
 <template>
     <div v-if="isReady" class="employee-shift-exceptions">
       <Toast />
-  
+      <employeeModalInfoCard :employee="employee"/>
       <h1>
         Exceptions to
         {{ selectedExceptionDate }}
