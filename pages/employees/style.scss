@@ -15,7 +15,7 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 60rem auto 10rem 15rem 10rem 5rem;
+      grid-template-columns: auto auto 10rem 15rem 10rem 5rem;
       gap: 0.5rem;
 
       .btn-add {
@@ -51,7 +51,7 @@
       }
       .input-search {
         display: grid;
-        grid-template-columns: 30rem auto auto 5rem;
+        grid-template-columns: 30rem auto auto 5rem auto;
         gap: 0.5rem;
       }
     }

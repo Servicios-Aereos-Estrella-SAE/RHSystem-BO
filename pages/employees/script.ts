@@ -40,6 +40,8 @@ export default defineComponent({
         departments: [] as DepartmentInterface[],
         departmentId: null as number | null,
         positionId: null as number | null,
+        optionsActive: ref(['Active', 'Terminated']),
+        status: 'Active'
     }),
     computed: {},
     created() { },
@@ -53,6 +55,9 @@ export default defineComponent({
           }
         },
         'positionId': function() {
+         this.handlerSearchEmployee()
+        },
+        'status': function() {
          this.handlerSearchEmployee()
         },
     },
@@ -93,7 +98,8 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
-            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage);
+            const onlyInactive = this.status === 'Terminated' ? true : false
+            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive);
             const list = response.status === 200 ? response._data.data.employees.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;

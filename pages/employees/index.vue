@@ -37,6 +37,8 @@
                     fill="#88a4bf" class="fill-212121"></path>
                 </svg>
               </button>
+              <SelectButton v-model="status" :options="optionsActive" aria-labelledby="basic" />
+            
             </div>
             <div>
 
