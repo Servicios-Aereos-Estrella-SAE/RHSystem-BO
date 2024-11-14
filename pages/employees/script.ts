@@ -159,6 +159,7 @@ export default defineComponent({
                 businessUnitId: 1,
                 employeeAssistDiscriminator: 0,
                 employeeTypeOfContract: "Internal",
+                employeeTerminatedDate: new Date(),
             }
             this.employee = newEmployee
             this.drawerEmployeeForm = true
@@ -198,7 +199,6 @@ export default defineComponent({
                     });
                 }
             }
-            alert('eliminado')
         },
         onSave(employee: EmployeeInterface) {
             this.employee = { ...employee };

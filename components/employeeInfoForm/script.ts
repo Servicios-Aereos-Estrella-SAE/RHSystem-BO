@@ -51,13 +51,16 @@ export default defineComponent({
     isValidRFC: true,
     businessUnits: [] as BusinessUnitInterface[],
     employeeHireDate: '' as string,
-    personBirthday: '' as string,
     displayHireDateCalendar: false as boolean,
+    employeeTerminatedDate: '' as string,
+    displayTerminatedDateCalendar: false as boolean,
+    personBirthday: '' as string,
     displayBirthDateCalendar: false as boolean,
     typesOfContract: [
         { label: 'Internal', value: 'Internal' },
         { label: 'External', value: 'External' },
     ],
+    isDeleted: false,
   }),
   computed: {
   },
@@ -72,6 +75,9 @@ export default defineComponent({
     },
     'employee.employeeHireDate' (val: Date) {
       this.employeeHireDate = this.getHireDateFormatted(val)
+    },
+    'employee.employeeTerminatedDate' (val: Date) {
+      this.employeeTerminatedDate = this.getTerminatedDateFormatted(val)
     },
     'employee.person.personBirthday' (val: Date) {
       this.personBirthday = this.getBirthdayFormatted(val)
@@ -99,6 +105,15 @@ export default defineComponent({
         this.employeeHireDate = this.getHireDateFormatted(this.employee.employeeHireDate as Date)
       }
 
+      if (this.employee.employeeTerminatedDate) {
+        const terminatedDate = DateTime.fromISO(`${this.employee.employeeTerminatedDate.toString().split('T')[0] + 'T00:00:00.000-06:00'}`, { setZone: true })
+          .setZone('America/Mexico_City')
+          .setLocale('en')
+          .toJSDate()
+        this.employee.employeeTerminatedDate = terminatedDate
+        this.employeeTerminatedDate = this.getTerminatedDateFormatted(this.employee.employeeTerminatedDate as Date)
+      }
+
       if (this.employee?.person?.personBirthday) {
         const year = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[0]
         const month = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[1]
@@ -111,6 +126,9 @@ export default defineComponent({
 
         this.employee.person.personBirthday = birthDay
         this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
+      }
+      if (this.employee.deletedAt) {
+        this.isDeleted = true
       }
 
       await this.getPositions(this.employee.departmentId)
@@ -221,6 +239,7 @@ export default defineComponent({
       
 
       let employeeResponse = null
+      const terminatedDateTemp = this.employee.employeeTerminatedDate
       if (!this.employee.employeeId) {
         employeeResponse = await employeeService.store(this.employee)
       } else {
@@ -247,6 +266,7 @@ export default defineComponent({
             life: 5000,
         })
       }
+      this.employee.employeeTerminatedDate = terminatedDateTemp
     },
     convertToDateTime(birthday: string | Date | null): Date | null {
       if (birthday === '' || birthday === null || birthday === undefined) {
@@ -280,7 +300,17 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('America/Mexico_City')
-        .setLocale('es')
+        .setLocale('en')
+        .toFormat('DDDD')
+    },
+    getTerminatedDateFormatted (date: Date) {
+      if (!this.employee.employeeTerminatedDate) {
+        return ''
+      }
+
+      return DateTime.fromJSDate(date)
+        .setZone('America/Mexico_City')
+        .setLocale('en')
         .toFormat('DDDD')
     },
     getBirthdayFormatted (date: Date) {
@@ -290,11 +320,14 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('America/Mexico_City')
-        .setLocale('es')
+        .setLocale('en')
         .toFormat('DDD')
     },
     handlerDisplayHireDate () {
       this.displayHireDateCalendar = true
+    },
+    handlerDisplayTerminatedDate () {
+      this.displayTerminatedDateCalendar = true
     },
     handlerDisplayBirthDate () {
       this.displayBirthDateCalendar = true

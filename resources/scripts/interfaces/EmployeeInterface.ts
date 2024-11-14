@@ -1,3 +1,4 @@
+import type { DateTime } from "luxon"
 import type { BusinessUnitInterface } from "./BusinessUnitInterface"
 import type { DepartmentInterface } from "./DepartmentInterface"
 import type { PeopleInterface } from "./PeopleInterface"
@@ -23,9 +24,11 @@ interface EmployeeInterface {
   employeeAssistDiscriminator: number,
   employeeLastSynchronizationAt: Date | string | null,
   employeeTypeOfContract: string | null,
+  employeeTerminatedDate: string | null | DateTime | Date
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
   employeeDeletedAt: Date | string | null,
+  deletedAt?: Date | string | null,
 
   person?: PeopleInterface,
   department?: DepartmentInterface,
