@@ -1,0 +1,68 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.shift-exception-page {
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .shift-exception-wrapper {
+    min-height: 100dvh;
+    box-sizing: border-box;
+
+    .head-page {
+      display: grid;
+      grid-template-columns: 20rem 20rem 20rem auto auto;
+      gap: 0.5rem;
+
+      .btn-add {
+        margin-top: -10%;
+        width: fit-content;
+      }
+
+      @media screen and (max-width: $desktop) {
+        grid-template-columns: 15rem auto auto auto 10rem;
+      }
+
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: 1fr auto auto auto auto;
+      }
+
+      @media screen and (max-width: $phone) {
+        grid-template-columns: 1fr auto auto auto auto;
+      }
+    }
+
+    .shift-exception-card-wrapper {
+      box-sizing: border-box;
+      display: grid;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+      gap: .5rem;
+      margin-top: 0.5rem;
+    }
+
+    .paginator {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  .shift-exception-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+}
+
+// Si necesitas agregar un fondo específico para la sidebar:
+.side {
+  background-color: blue !important;
+}

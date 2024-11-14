@@ -2,6 +2,7 @@ import type { DateTime } from "luxon"
 import type { ExceptionTypeInterface } from "./ExceptionTypeInterface"
 
 interface ShiftExceptionInterface {
+  requestedDate: string
   shiftExceptionId: number | null
   employeeId: number | null
   exceptionTypeId: number | null
