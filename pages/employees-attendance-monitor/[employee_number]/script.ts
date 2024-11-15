@@ -193,7 +193,7 @@ export default defineComponent({
         }  
       case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
-          const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
+          const startOfWeek = date.startOf('week').minus( { days: 1 } ) // Inicio de la semana seleccionada
           
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
@@ -236,7 +236,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -244,7 +244,7 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }

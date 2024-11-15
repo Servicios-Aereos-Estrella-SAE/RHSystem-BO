@@ -244,7 +244,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -252,7 +252,7 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
@@ -425,7 +425,11 @@ export default defineComponent({
 
       if (start) {
         for (let index = 0; index < periodLenght; index++) {
-          const currentDay = start.plus({ days: index })
+          let currentDay = start.plus({ days: index })
+          switch (this.visualizationMode?.value) {
+            case 'fourteen':
+              currentDay = currentDay.minus( { days: 1 })
+          }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
