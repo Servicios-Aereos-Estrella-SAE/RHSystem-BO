@@ -40,7 +40,7 @@
                 </h2>
                 <div class="input-box">
                   <br>
-                  <Button v-if="canCreate" class="btn btn-block">
+                  <Button v-if="canCreate" class="btn btn-block" @click="newDepartment">
                     <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" fill="#88a4bf" class="fill-212121"></path></svg>
                     Add department
                   </Button>
@@ -50,6 +50,7 @@
                 <div v-for="(department, index) in subdepartmentList" :key="`department-${department.departmentId}-${index}`">
                   <DepartmentInfoCard
                     :department="department"
+                    :click-on-edit="() => { onEditDepartment(department) }"  :click-on-delete="() => { onDeleteDepartment(department) }"
                     :can-update="canUpdate"
                     :can-delete="canDelete"
                   />
@@ -114,6 +115,13 @@
             />
           </Sidebar>
 
+          <Sidebar v-model:visible="drawerNewDepartmentForm" header="Department Detail" position="right" class="department-detail-sidebar">
+            <DepartmentInfoForm
+              :department="subDepartment"
+              @save="onSave"
+            />
+          </Sidebar>
+
           <transition name="page">
             <confirmDelete
               v-if="drawerPositionDelete"
@@ -143,6 +151,25 @@
               <Button label="OK" text @click="alertDeletePosition = false" />
             </template>
           </Dialog>
+
+          <transition name="page">
+            <confirmDelete
+              v-if="drawerDepartmentDelete"
+              @confirmDelete="confirmDeleteDepartment"
+              @cancelDelete="drawerDepartmentDelete = false"
+            />
+          </transition>
+    
+          <Dialog v-model:visible="drawerDepartmentForceDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
+            <div class="confirmation-content">
+              <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+              <span v-if="department">There are department related employees. Are you sure you want to delete this department?</span>
+            </div>
+            <template #footer>
+              <Button label="No" icon="pi pi-times" text @click="drawerDepartmentForceDelete = false" />
+              <Button label="Yes" icon="pi pi-check" text @click="confirmForceDelete()" />
+            </template>
+          </Dialog>
         </div>
       </div>
     </NuxtLayout>
@@ -164,6 +191,14 @@
   .sidebar-form-position {
     width: 100% !important;
     max-width: 25rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+  .department-detail-sidebar {
+    width: 100% !important;
+    max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

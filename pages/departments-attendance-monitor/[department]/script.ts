@@ -308,7 +308,7 @@ export default defineComponent({
   },
   methods: {
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -317,8 +317,8 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },

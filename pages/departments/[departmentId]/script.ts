@@ -9,17 +9,23 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 export default defineComponent({
   name: 'DepartmentDetail',
   setup() {
+    const toast = useToast()
     const route = useRoute()
     const department = ref<DepartmentInterface | null>(null)
+    const subDepartment = ref<DepartmentInterface | null>(null)
     const positions = ref<PositionInterface[]>([])
     const position = ref<PositionInterface | null>(null)
     const drawerPositionDelete = ref<boolean>(false)
     const search = ref<string>('')
+    const drawerNewDepartmentForm = ref<boolean>(false)
     const drawerNewPositionForm = ref<boolean>(false)
+    const drawerDepartmentDelete = ref<boolean>(false)
+    const drawerDepartmentForceDelete = ref<boolean>(false)
     const drawerSoftPositionDelete = ref<boolean>(false)
     const alertDeletePosition = ref<boolean>(false)
     const messagePosition = ref<string>('')
     const subdepartmentList = ref<DepartmentInterface[]>([])
+
 
     let canRead = ref<boolean>(false)
     let canCreate = ref<boolean>(false)
@@ -97,6 +103,115 @@ export default defineComponent({
     }
 
     const handleSaveSuccess = () => {
+    }
+
+    const onSave = (department: DepartmentInterface) => {
+      const index = subdepartmentList.value.findIndex((s: DepartmentInterface) => s.departmentId === department?.departmentId)
+      if (index !== -1) {
+        subdepartmentList.value[index] = department
+      } else {
+        subdepartmentList.value.push(department)
+      }
+      drawerNewDepartmentForm.value = false
+    }
+
+    const onEditDepartment = (department: DepartmentInterface) => {
+      subDepartment.value = { ...department }
+      drawerNewDepartmentForm.value = true
+    }
+
+    const onDeleteDepartment = (department: DepartmentInterface) => {
+      subDepartment.value = { ...department }
+      drawerDepartmentDelete.value = true
+    }
+
+    const newDepartment = () =>{
+      const departmentIds = route.params.departmentId
+      const newDepartment: DepartmentInterface = {
+        departmentId: null,
+        departmentCode: "",
+        departmentName: "",
+        departmentAlias: "",
+        departmentIsDefault: "",
+        departmentDeletedAt: null,
+        parentDepartmentId: parseInt(departmentIds.toString()),
+        businessUnitId: 1,
+        departmentLastSynchronizationAt: null,
+        departmentActive: "1",
+        departmentSyncId: "",
+        parentDepartmentSyncId: "",
+        companyId: 1,
+        departmentCreatedAt: new Date(),
+        departmentUpdatedAt: new Date(),
+      }
+
+      subDepartment.value = newDepartment
+      drawerNewDepartmentForm.value = true
+    }
+
+    const confirmDeleteDepartment = async () => {
+      if (subDepartment.value) {
+        const departmentService = new DepartmentService()
+        drawerDepartmentDelete.value = false 
+        const departmentResponse = await departmentService.delete(subDepartment.value) 
+    
+        if (departmentResponse.status === 201 || departmentResponse.status === 200) {
+          const index = subdepartmentList.value.findIndex((department: DepartmentInterface) => department.departmentId === subDepartment.value?.departmentId)
+          if (index !== -1) {
+            subdepartmentList.value.splice(index, 1)
+          }
+          toast.add({
+            severity: 'success',
+            summary: 'Delete department',
+            detail: departmentResponse._data.message, 
+            life: 5000,
+          })
+        } 
+        else if (departmentResponse.status === 206) {
+          // Mostrar la alerta de confirmación cuando haya empleados relacionados
+          drawerDepartmentForceDelete.value = true
+        } 
+        else {
+          toast.add({
+            severity: 'error',
+            summary: 'Delete department',
+            detail: departmentResponse._data.message, 
+            life: 5000,
+          })
+        }
+      }
+    }
+     const confirmForceDelete = async () => {
+      if (subDepartment.value) {
+        const departmentService = new DepartmentService()
+        const forceDeleteResponse = await departmentService.forceDelete(subDepartment.value)
+        if (forceDeleteResponse.status === 201 || forceDeleteResponse.status === 200) {
+          // Eliminar el departamento de la lista
+          removeDepartmentFromList()
+          toast.add({
+            severity: 'success',
+            summary: 'Department Force Deleted',
+            detail: forceDeleteResponse._data.message,
+            life: 5000,
+          })
+        } else {
+          toast.add({
+            severity: 'error',
+            summary: 'Error Force Deleting Department',
+            detail: forceDeleteResponse._data.message,
+            life: 5000,
+          })
+        }
+        drawerDepartmentForceDelete.value = false // Cerrar el diálogo de eliminación forzada
+      }
+    }
+    const removeDepartmentFromList = () => {
+      const index = subdepartmentList.value.findIndex(
+        (department: DepartmentInterface) => department.departmentId === subDepartment.value?.departmentId
+      )
+      if (index !== -1) {
+        subdepartmentList.value.splice(index, 1)
+      }
     }
 
     const newPositionDepartment = () =>{
@@ -198,7 +313,9 @@ export default defineComponent({
     }
 
     return {
+      toast,
       department,
+      subDepartment,
       positions,
       search,
       position,
@@ -210,8 +327,12 @@ export default defineComponent({
       canCreate,
       canUpdate,
       canDelete,
+      drawerNewDepartmentForm,
+      drawerDepartmentDelete,
+      drawerDepartmentForceDelete,
       drawerNewPositionForm,
       subdepartmentList,
+      newDepartment,
       newPositionDepartment,
       onEdit,
       onPositionSaved,
@@ -219,7 +340,12 @@ export default defineComponent({
       handlerSearchPosition,
       onDeletePosition,
       handleSaveSuccess,
-      confirmSoftDelete
+      confirmSoftDelete,
+      onSave,
+      onEditDepartment,
+      onDeleteDepartment,
+      confirmDeleteDepartment,
+      confirmForceDelete,
     }
   }
 })

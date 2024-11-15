@@ -108,7 +108,7 @@ export default defineComponent({
     visualizationModeOptions: [
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1  },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -297,7 +297,7 @@ export default defineComponent({
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
-
+   
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -308,7 +308,7 @@ export default defineComponent({
       return weekDayName === 'Thursday';
     },
     async setDefaultVisualizationMode() {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -317,8 +317,8 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },

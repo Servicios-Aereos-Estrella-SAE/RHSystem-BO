@@ -28,6 +28,7 @@ export default defineComponent({
     ],
     isNewUser: false,
     isReady: false,
+    isSubDeparment: false
   }),
   computed: {
     departmentsWithNone() {
@@ -42,6 +43,11 @@ export default defineComponent({
     this.isNewUser = !this.department.departmentId ? true : false
     this.isReady = true
     this.getDepartments()
+    const route = useRoute()
+    const departmentId = route.params.departmentId
+    if (departmentId && parseInt(departmentId.toString()) > 0) {
+      this.isSubDeparment = true
+    }
   },
   methods: {
     async getDepartments() {

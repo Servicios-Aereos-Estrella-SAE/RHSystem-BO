@@ -290,7 +290,7 @@ export default defineComponent({
   },
   methods: {
     async setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]

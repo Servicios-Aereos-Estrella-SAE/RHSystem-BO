@@ -308,7 +308,7 @@ export default defineComponent({
   },
   methods: {
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -323,8 +323,8 @@ export default defineComponent({
       return weekDayName === 'Thursday';
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -568,7 +568,7 @@ export default defineComponent({
       }
     },
     getDepartmentPositionAssistStatistics () {
-      const departmentListStatistics: any[] = []
+      let departmentListStatistics: any[] = []
 
       this.departmentCollection.forEach((department: DepartmentInterface) => {
         const departmentId = department.departmentId
@@ -582,13 +582,14 @@ export default defineComponent({
 
         
         if(this.isShowByStatusSelected(statistics)) {
-          departmentListStatistics.push({
-            department: department,
-            statistics
-          })
+          if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
+            departmentListStatistics.push({
+              department: department,
+              statistics
+            })
+          }
         }
       })
-      
       return departmentListStatistics
     },
      isShowByStatusSelected(statistics: any) {
