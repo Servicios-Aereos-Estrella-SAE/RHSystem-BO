@@ -13,49 +13,49 @@ export default class PositionService {
       Authorization: `${token.value}`
     }
   }
-    // Función para almacenar una nueva posición
-    async store(position: PositionInterface) {
-      let responseRequest: any = null;
-      const headers = { ...this.GENERAL_HEADERS }
 
-      try {
-        await $fetch(`${this.API_PATH}/positions`, {
-          headers,
-          method: 'POST',
-          body: position,
-          onResponse({ response }) {
-            responseRequest = response;
-          },
-          onRequestError({ response }) {
-            responseRequest = response;
-          }
-        });
-      } catch (error) {
-        console.error("Error al crear la posición:", error);
-      }
-      return responseRequest;
+  async store(position: PositionInterface) {
+    let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS }
+
+    try {
+      await $fetch(`${this.API_PATH}/positions`, {
+        headers,
+        method: 'POST',
+        body: position,
+        onResponse({ response }) {
+          responseRequest = response;
+        },
+        onRequestError({ response }) {
+          responseRequest = response;
+        }
+      });
+    } catch (error) {
+      console.error("Error al crear la posición:", error);
     }
-  
-    async update(position: PositionInterface) {
-      const headers = { ...this.GENERAL_HEADERS }
-      let responseRequest: any = null;
-      try {
-        await $fetch(`${this.API_PATH}/positions/${position.positionId}`, {
-          headers,
-          method: 'PUT',
-          body: position,
-          onResponse({ response }) {
-            responseRequest = response;
-          },
-          onRequestError({ response }) {
-            responseRequest = response;
-          }
-        });
-      } catch (error) {
-        console.error("Error al actualizar la posición:", error);
-      }
-      return responseRequest;
+    return responseRequest;
+  }
+
+  async update(position: PositionInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null;
+    try {
+      await $fetch(`${this.API_PATH}/positions/${position.positionId}`, {
+        headers,
+        method: 'PUT',
+        body: position,
+        onResponse({ response }) {
+          responseRequest = response;
+        },
+        onRequestError({ response }) {
+          responseRequest = response;
+        }
+      });
+    } catch (error) {
+      console.error("Error al actualizar la posición:", error);
     }
+    return responseRequest;
+  }
     
   async getPositionsDepartment(departmentId: number): Promise<PositionInterface[]> {
     let responseRequest: any = null
@@ -72,27 +72,17 @@ export default class PositionService {
     return list.map((item: any) => item.position)
   }
 
-  async show (departmentId: number, positionId: number) {
+  async show (positionId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+    await $fetch(`${this.API_PATH}/positions/${positionId}`, {
       headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
 
-    const list = responseRequest.status === 200 ? responseRequest._data.data.positions : []
-    const position = list.find((item: PositionInterface) => item.positionId === positionId)
-
-    return {
-      status: responseRequest.status,
-      _data: {
-        data: {
-          position: position.position
-        }
-      }
-    }
+    return responseRequest
   }
 
   async assignShift (departmentId: number, positionId: number, shiftId: number, applySince: string) {

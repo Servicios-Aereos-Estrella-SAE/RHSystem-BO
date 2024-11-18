@@ -14,7 +14,7 @@ export default class EmployeeService {
       Authorization: `${token.value}`
     }
   }
-  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees`, {
@@ -24,6 +24,7 @@ export default class EmployeeService {
         departmentId,
         positionId,
         employeeWorkSchedule: employeeWorkSchedule,
+        onlyInactive: onlyInactive,
         page,
         limit
       },
@@ -276,9 +277,11 @@ export default class EmployeeService {
   }
 
   async getYearsWorked(employeeId: number, year: number | null) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-years-worked`, {
+        headers,
         query: { year: year },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
@@ -289,9 +292,11 @@ export default class EmployeeService {
   }
 
   async getVacationsByPeriod(employeeId: number, vacationSettingId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-by-period`, {
+        headers,
         query: { vacationSettingId: vacationSettingId },
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
@@ -311,6 +316,28 @@ export default class EmployeeService {
         endDate 
       };
             await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationExcel (
+    startDate: string | Date,
+    endDate: string | Date
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = { 'startDate': startDate, 'endDate': endDate }
+      await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

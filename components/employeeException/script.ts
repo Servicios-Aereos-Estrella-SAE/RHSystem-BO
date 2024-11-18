@@ -4,7 +4,6 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import Toast from 'primevue/toast'
 import ToastService from 'primevue/toastservice'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
-import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService'
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
@@ -32,6 +31,7 @@ export default defineComponent({
     drawerShiftExceptionForm: false,
     drawerShiftExceptionDelete: false,
     selectedDateTimeDeleted: '' as string | null,
+    isDeleted: false,
   }),
   computed: {
     selectedExceptionDate () {
@@ -48,7 +48,9 @@ export default defineComponent({
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftEmployee()
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    
@@ -61,7 +63,6 @@ export default defineComponent({
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await shiftExceptionService.getByEmployeeException(employeeId)
-      console.log(shiftExceptionResponse)
       this.shiftExceptionsList = shiftExceptionResponse
       myGeneralStore.setFullLoader(false)
     },

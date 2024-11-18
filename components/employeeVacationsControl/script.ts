@@ -7,8 +7,6 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService'
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface'
-import { ConfirmDelete } from '#build/components'
-import ShiftException from '../../../API-SAE/app/models/shift_exception'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { useMyGeneralStore } from '~/store/general'
 
@@ -18,7 +16,8 @@ export default defineComponent({
   name: 'employeeVacationsControl',
   props: {
     vacationPeriod: { type: Object as PropType<VacationPeriodInterface>, required: true },
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    canManageVacation: { type: Boolean, required: true }
   },
   data: () => ({
     shiftExceptions: [] as Array<ShiftExceptionInterface>,
@@ -32,6 +31,7 @@ export default defineComponent({
     currentIndex: -1,
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
+    isDeleted: false,
   }),
   computed: {
   },
@@ -45,11 +45,22 @@ export default defineComponent({
         this.shiftExceptions = employeeResponse._data.data.vacations
       }
     }
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     this.isReady = true
   },
   methods: {
     async addNewVacation() {
+      if (!this.canManageVacation) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'You do not have permission to manage vacations',
+          life: 5000,
+        })
+        return
+      }
       if (this.currentVacationPeriod) {
         const availableDays = this.currentVacationPeriod.vacationPeriodAvailableDays - this.countsNewVacation
         if (availableDays <= 0) {
@@ -60,6 +71,17 @@ export default defineComponent({
             life: 5000,
           })
           return
+        }
+        for await (const shiftException of this.shiftExceptions) {
+          if (!shiftException.shiftExceptionId) {
+            this.$toast.add({
+              severity: 'warn',
+              summary: 'Validation data',
+              detail: 'Cannot add another. Save first.',
+              life: 5000,
+            })
+            return
+          }
         }
         const exceptionTypeService = new ExceptionTypeService()
         const exceptionTypeResponse = await exceptionTypeService.getFilteredList('vacation')
@@ -148,8 +170,24 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
     },
-    onSave() {
+    onSave(shiftException: ShiftExceptionInterface, index: number) {
+      if (shiftException.shiftExceptionsDate) {
+        const shiftExceptionsDate = DateTime.fromISO(shiftException.shiftExceptionsDate.toString(), { setZone: true })
+          .setZone('America/Mexico_City')
+          .setLocale('en')
+          .toJSDate()
+        shiftException.shiftExceptionsDate = shiftExceptionsDate
+      }
+      this.shiftExceptions[index] = shiftException
       this.getCurrentInfo()
+      this.$forceUpdate()
+    },
+    onCancel(index: number) {
+      if (index !== -1) {
+        this.shiftExceptions.splice(index, 1)
+        this.countsNewVacation--
+        this.$forceUpdate()
+      }
     },
     formatDateWithYearDifference(date: string) {
       const originalDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
@@ -189,6 +227,15 @@ export default defineComponent({
           }
         }
       }
-    }
+    },
+    getDateFormatted(date: Date) {
+      if (!date) {
+        return ''
+      }
+      return DateTime.fromJSDate(date)
+        .setZone('America/Mexico_City')
+        .setLocale('en')
+        .toFormat('DDD')
+    },
   }
 })

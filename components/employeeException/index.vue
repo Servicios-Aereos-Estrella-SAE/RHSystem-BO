@@ -1,7 +1,7 @@
 <template>
     <div v-if="isReady" class="employee-shift-exceptions">
       <Toast />
-  
+      <employeeModalInfoCard :employee="employee"/>
       <h1>
         Exceptions to
         {{ selectedExceptionDate }}
@@ -9,7 +9,7 @@
   
       <div v-if="isReady" class="employee">
         <div class="">
-          <div class="shift-exception-wrapper">
+          <div v-if="!isDeleted" class="shift-exception-wrapper">
             <div class="head-page">
               <div class="input-box">
                 <Button class="btn btn-block" @click="addNew">
@@ -23,6 +23,7 @@
             <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
               <employeeShiftExceptionCard
                 :shiftException="shiftException"
+                :isDeleted="isDeleted"
                 :click-on-edit-exception="() => { onEdit(shiftException) }"
                 :click-on-delete-exception="() => { onDelete(shiftException) }" 
               />

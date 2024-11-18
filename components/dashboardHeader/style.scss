@@ -15,16 +15,16 @@
 
   .header-wrapper {
     display: grid;
-    grid-template-columns: 20rem 3rem 8rem auto;
+    grid-template-columns: 3rem 3rem 15rem auto;
     gap: 0.5rem;
     width: 100%;
 
     @media screen and (max-width: $desktop) {
-      grid-template-columns: 17rem 3rem 8rem auto;
+      grid-template-columns: 3rem 3rem 8rem auto;
     }
 
     @media screen and (max-width: $ipad) {
-      grid-template-columns: 3rem 8rem auto;
+      grid-template-columns: 3rem 3rem auto;
     }
 
     .logo {
@@ -39,16 +39,12 @@
       
       img {
         width: 100%;
-        max-width: 8rem;
+        max-width: 7rem;
+        object-fit: contain;
 
         @media screen and (max-width: $desktop) {
           max-width: 7rem;
         }
-      }
-      .img {
-        height: 76%;
-        width: auto;
-        object-fit: contain;
       }
     }
 
@@ -168,6 +164,14 @@
         svg {
           width: 1.75rem;
         }
+      }
+
+      .logout-box {
+        width: 10rem;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }

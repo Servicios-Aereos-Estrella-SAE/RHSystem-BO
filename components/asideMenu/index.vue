@@ -1,26 +1,41 @@
 <template>
-  <div v-if="isReady" class="aside-menu">
-    <div class="menu" :style="{ backgroundColor: getBackgroundColor }">
-      <PanelMenu :model="menu">
-        <template #item="{ item }">
-            <nuxt-link v-if="item.path" :to="item.path" class="menu-link" :class="{ 'active': setLinkActive(item) }" :style="{ backgroundColor: getBackgroundColorDark }">
-              <div class="icon" v-html="item.icon"></div>
-              {{ item.label }}
-            </nuxt-link>
-            <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }" :style="{ backgroundColor: getBackgroundColor }">
-              <div class="icon" v-html="item.icon"></div>
-              {{ item.label }}
-            </div>
-        </template>
-      </PanelMenu>
-    </div>
-    <div class="footer" :style="{ backgroundColor: getBackgroundColor }">
-      <button class="btn-block" @click="handlerLogout">
-        <svg data-name="Layer 2" viewBox="0 0 35 35" xmlns="http://www.w3.org/2000/svg"><path d="M17.54 34.75a17.25 17.25 0 0 1 0-34.5 1.25 1.25 0 0 1 0 2.5 14.75 14.75 0 0 0 0 29.5 1.25 1.25 0 0 1 0 2.5Z" fill="#ffffff" class="fill-000000"></path><path d="M32.927 18.75H15.25a1.25 1.25 0 0 1 0-2.5h17.677a1.25 1.25 0 0 1 0 2.5Z" fill="#ffffff" class="fill-000000"></path><path d="M26.536 26.438a1.25 1.25 0 0 1-.884-2.134l6.384-6.385a.6.6 0 0 0 0-.839l-6.384-6.38a1.25 1.25 0 1 1 1.768-1.771l6.38 6.384a3.1 3.1 0 0 1 0 4.374l-6.38 6.385a1.246 1.246 0 0 1-.884.366Z" fill="#ffffff" class="fill-000000"></path></svg>
-        Log Out
-      </button>
-    </div>
-  </div>
+  <Sidebar v-model:visible="visible" dismissable>
+    <template #container>
+      <div v-if="isReady" class="aside-menu">
+        <div class="header-menu-box">
+          <Button type="button" class="btn btn-block" @click="closeCallback">
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 6a1 1 0 0 1 1-1h15a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1ZM9 18a1 1 0 0 1 1-1h11a1 1 0 1 1 0 2H10a1 1 0 0 1-1-1ZM3 11a1 1 0 1 0 0 2h18a1 1 0 1 0 0-2H3Z" fill="#88a4bf" class="fill-212121"></path></svg>
+          </Button>
+          <div class="sidebar-logo-container">
+            <img :src="getBackgroundImage" alt="SAE" class="sidebar-logo">
+          </div>
+        </div>
+        <div class="menu" :style="{ backgroundColor: getBackgroundColor }">
+          <PanelMenu :model="menu">
+            <template #item="{ item }">
+                <nuxt-link
+                  v-if="item.path"
+                  :to="item.path"
+                  class="menu-link"
+                  :class="{ 'active': setLinkActive(item) }"
+                  :style="{ backgroundColor: getBackgroundColorDark }"
+                  @click="closeCallback"
+                >
+                  <div class="icon" v-html="item.icon"></div>
+                  {{ item.label }}
+                </nuxt-link>
+                <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }" :style="{ backgroundColor: getBackgroundColor }">
+                  <div class="icon">
+                    <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>
+                  </div>
+                  {{ item.label }}
+                </div>
+            </template>
+          </PanelMenu>
+        </div>
+      </div>
+    </template>
+  </Sidebar>
 </template>
 
 <script>
@@ -28,6 +43,63 @@
   export default Script
 </script>
 
+<style lang="scss" scoped>
+  @import './style';
+</style>
+
 <style lang="scss">
-@import './style';
+  @import '/resources/styles/variables.scss';
+
+  .aside-menu {
+    .menu {
+      .menu-link {
+        .icon {
+          width: 1.25rem;
+          height: 3rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          @media screen and (max-width: $desktop) {
+            width: 2rem;
+          }
+
+          svg {
+            width: 1.25rem;
+
+            @media screen and (max-width: $desktop) {
+              width: 1rem;
+            }
+          }
+        }
+      }
+    }
+
+    .p-panelmenu .p-panelmenu-header .p-panelmenu-header-content {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .p-panelmenu .p-panelmenu-content {
+      background: transparent;
+      border: none;
+
+      .menu-link {
+        padding-left: 2rem;
+      }
+    }
+
+    .p-panelmenu .p-panelmenu-content .p-menuitem:not(.p-highlight):not(.p-disabled) > .p-menuitem-content {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .p-toggleable-content {
+      padding-left: 1rem;
+    }
+    .p-panelmenu-content {
+      margin-left: -1rem;
+    }
+  }
 </style>
