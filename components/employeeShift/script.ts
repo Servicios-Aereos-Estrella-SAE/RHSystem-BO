@@ -36,8 +36,13 @@ export default defineComponent({
     drawerShiftException: false,
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
-    displaySidebarVacationsManager: false as boolean
+    displaySidebarVacationsManager: false as boolean,
+    isDeleted: false as boolean,
   }),
+  setup() {
+    const router = useRouter()
+    return { router }
+  },
   computed: {
     monthName () {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
@@ -80,7 +85,9 @@ export default defineComponent({
       this.getShifts(),
       this.getEmployeeCalendar()
     ])
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    
@@ -205,6 +212,9 @@ export default defineComponent({
     handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
+    },
+    goReport () {
+      window.open(`/employees-attendance-monitor/${this.employee.employeeCode}`, '_blank');
     }
   }
 })

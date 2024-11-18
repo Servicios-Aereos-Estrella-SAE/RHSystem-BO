@@ -1,5 +1,6 @@
 <template>
   <div v-if="isReady" class="employee-shift-vacations">
+    <employeeModalInfoCard :employee="employee"/>
     <h1>
       Employee Vacations
     </h1>

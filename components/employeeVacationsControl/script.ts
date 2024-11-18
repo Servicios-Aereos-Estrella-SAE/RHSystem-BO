@@ -31,6 +31,7 @@ export default defineComponent({
     currentIndex: -1,
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
+    isDeleted: false,
   }),
   computed: {
   },
@@ -44,7 +45,9 @@ export default defineComponent({
         this.shiftExceptions = employeeResponse._data.data.vacations
       }
     }
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     this.isReady = true
   },
   methods: {

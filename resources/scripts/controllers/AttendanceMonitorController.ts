@@ -72,7 +72,7 @@ export default class AttendanceMonitorController {
       }
       case 'fourteen': {
         const date = DateTime.fromJSDate(periodDate)
-        const start = date.startOf('week')
+        const start = date.startOf('week').minus({ days: 1 })
         let thursday = start.plus({ days: 3 })
         let startDate = thursday.minus({ days: 24 })
         const daysList =[]

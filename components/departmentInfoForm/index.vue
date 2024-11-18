@@ -12,15 +12,11 @@
           <small class="p-error" v-if="submitted && !department.departmentName">First Name is required.</small>
         </div>
         <div class="input-box">
-          <label for="departmentAlias">Department Alias</label>
-          <InputText v-model="department.departmentAlias" placeholder="Enter Department Alias" />
-        </div>
-        <div class="input-box">
           <label for="parentDepartmentId">
             Parent Department
           </label>
           <Dropdown v-model="department.parentDepartmentId" :options="departmentsWithNone" optionLabel="departmentName" optionValue="departmentId"
-            placeholder="Select a Department" filter class="w-full md:w-14rem"/>
+            placeholder="Select a Department" filter class="w-full md:w-14rem" :disabled="isSubDeparment"/>
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />

@@ -19,6 +19,8 @@ export default defineComponent({
     const router = useRouter()
     return { router }
   },
+  mounted() {
+  },
   methods: {
     
     handlerClickOnDetail(ids: any) {

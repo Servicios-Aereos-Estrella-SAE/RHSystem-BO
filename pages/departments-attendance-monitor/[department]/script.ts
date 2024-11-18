@@ -242,7 +242,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -250,7 +250,7 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en');
 
         return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
@@ -308,7 +308,7 @@ export default defineComponent({
   },
   methods: {
     setDefaultVisualizationMode () {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -317,8 +317,8 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -453,7 +453,11 @@ export default defineComponent({
 
       if (start) {
         for (let index = 0; index < periodLenght; index++) {
-          const currentDay = start.plus({ days: index })
+          let currentDay = start.plus({ days: index })
+          switch (this.visualizationMode?.value) {
+            case 'fourteen':
+              currentDay = currentDay.minus( { days: 1 })
+          }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))

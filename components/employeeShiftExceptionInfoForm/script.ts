@@ -173,6 +173,7 @@ export default defineComponent({
             }
           }
         }
+        
         this.setMinDate(isVacation)
       }
     },
