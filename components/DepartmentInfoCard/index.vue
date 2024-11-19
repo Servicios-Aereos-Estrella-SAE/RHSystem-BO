@@ -4,7 +4,9 @@
       {{ `${department.departmentName}` }}
     </div>
     <div class="department-alias">
-      {{ `${department.departmentAlias ? `Alias: ${department.departmentAlias}` : 'Without Alias'}` }}
+
+      <span v-if="department.parentDepartment"> Dependence: {{ department.parentDepartment.departmentName }}</span>
+      <span v-else> Dependence: None</span>
     </div>
 
     <div class="box-tools-footer">

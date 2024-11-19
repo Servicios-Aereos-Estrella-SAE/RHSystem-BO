@@ -56,4 +56,23 @@
     grid-template-columns: auto 4rem;
     gap: 0.5rem;
   }
+
+  .terminated-date-box-container {
+    width: 100%;
+    display: block;
+  }
+
+  .terminated-date-box {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
+
+  .terminated-date-box-controller {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
 }

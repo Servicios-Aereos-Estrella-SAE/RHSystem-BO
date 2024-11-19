@@ -13,6 +13,7 @@ import ProceedingFileService from '~/resources/scripts/services/ProceedingFilleS
 import { DateTime } from 'luxon';
 import type { ProceedingFileStatusInterface } from '~/resources/scripts/interfaces/ProceedingFileStatusInterface';
 import ProceedingFileStatusService from '~/resources/scripts/services/ProceedingFileStatusService';
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -23,6 +24,7 @@ export default defineComponent({
   name: 'employeeProceedingFileForm',
   props: {
     employeeProceedingFile: { type: Object as PropType<EmployeeProceedingFileInterface>, required: true },
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({

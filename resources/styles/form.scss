@@ -6,7 +6,7 @@
   width: 100%;
 }
 
-:deep(.p-inputtext) {
+:deep(.p-inputtext), :deep(.p-selectbutton) {
   color: $text;
   border-color: $border-color;
   box-sizing: border-box;
@@ -17,6 +17,17 @@
 
   @media screen and (max-width: $phone) {
     height: 36.69px;
+  }
+}
+
+:deep(.p-selectbutton) {
+
+  .p-button {
+    height: 45.5px;
+
+    @media screen and (max-width: $phone) {
+      height: 36.69px;
+    }
   }
 }
 

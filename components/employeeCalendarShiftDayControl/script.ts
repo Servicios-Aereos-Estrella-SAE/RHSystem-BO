@@ -15,7 +15,8 @@ export default defineComponent({
   props: {
     employeeCalendarAssist: { type: Object as PropType<AssistDayInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    shiftsList: { type: Array as PropType<ShiftInterface[]>, required: true }
+    shiftsList: { type: Array as PropType<ShiftInterface[]>, required: true },
+    isDeleted: { type: Boolean, required: true },
   },
   data: () => ({
     employeeCalendar: null as AssistDayInterface | null,

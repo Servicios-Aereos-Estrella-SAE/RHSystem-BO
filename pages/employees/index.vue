@@ -26,7 +26,24 @@
                 </svg>
               </button>
             </div>
+            <div class="input-box">
+              <label for="role">
+                Department
+              </label>
+              <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName" optionValue="departmentId"
+                placeholder="Select a Department" filter class="w-full md:w-14rem" showClear/>
+            </div>
+            <div class="input-box">
+              <label for="positionId">Position</label>
+              <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
+                placeholder="Select a Position" filter class="w-full md:w-14rem" showClear/>
+            </div>
+            <div class="input-box">
+              <SelectButton v-model="status" :options="optionsActive" aria-labelledby="basic" class="emp-status-control" />
+            </div>
+
             <div></div>
+
             <div class="input-box">
               <Button v-if="canCreate" class="btn btn-block" @click="addNew">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

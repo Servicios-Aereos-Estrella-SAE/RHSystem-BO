@@ -1,5 +1,7 @@
 <template>
   <div v-if="isReady" class="employee-shift-vacations">
+    <employeeModalInfoCard :employee="employee"/>
+
     <h1>
       Employee Vacations
     </h1>
@@ -12,9 +14,9 @@
             @manageVacations="handlerClickManage(vacationPeriod)"
             :can-manage-vacation="canManageVacation" />
         </div>
-
       </div>
     </div>
+
     <ProgressSpinner v-else />
   </div>
 </template>

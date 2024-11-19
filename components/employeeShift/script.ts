@@ -33,11 +33,21 @@ export default defineComponent({
     displayInputCalendar: false as boolean,
     displayCalendar: false,
     drawerShiftExceptions: false,
+    drawerShiftException: false,
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
-    displaySidebarVacationsManager: false as boolean
+    displaySidebarVacationsManager: false as boolean,
+    isDeleted: false as boolean,
   }),
+  setup() {
+    const router = useRouter()
+    return { router }
+  },
   computed: {
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     monthName () {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
@@ -79,7 +89,9 @@ export default defineComponent({
       this.getShifts(),
       this.getEmployeeCalendar()
     ])
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    
@@ -189,6 +201,10 @@ export default defineComponent({
     onClickExceptions (employeeCalendar: AssistDayInterface) {
       this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
       this.drawerShiftExceptions = true
+    },
+    onClickException(){
+      this.drawerShiftException = true
+
     },
     onClickVacations () {
       this.displaySidebarVacations = true

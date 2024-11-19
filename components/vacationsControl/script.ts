@@ -12,7 +12,8 @@ export default defineComponent({
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
     clickOnDelete: { type: Function, default: null },
     canManageVacation: { type: Boolean, required: true },
-    indexCard: { type: Number, required: true }
+    indexCard: { type: Number, required: true },
+    isDeleted: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptionsDate: '',
