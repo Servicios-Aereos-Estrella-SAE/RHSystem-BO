@@ -96,6 +96,60 @@ export default defineComponent({
       const timeCST = time.setZone('America/Mexico_city')
       const timeFormatted = timeCST.setLocale('en').toFormat('tt')
       return timeFormatted
+    },
+    headIconIsException () {
+      const valid = this.checkAssist.assist.hasExceptions && !this.checkAssist.assist.isVacationDate && !this.checkAssist.assist.isRestDay
+      return valid
+    },
+    headIconIsHoliday () {
+      const valid = (this.checkAssist.assist.isHoliday && this.chekInTime)
+      return valid
+    },
+    headIconIsRestDay () {
+      const valid = (this.checkAssist.assist.isRestDay && this.chekInTime) ||
+        (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'working') ||
+        (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'rest-working-out') ||
+        (this.checkAssist.assist.isRestDay && this.checkAssist.assist.isHoliday)
+      return valid
+    },
+    headIconIsVacationDay () {
+      const valid = this.checkAssist.assist.isVacationDate && this.chekInTime
+      return valid
+    },
+    calendarIsHoliday () {
+      const valid = this.checkAssist.assist.isHoliday
+        && this.checkAssist.assist.holiday
+        && !this.checkAssist.assist.checkIn
+      return valid
+    },
+    calendarIsVacationDay () {
+      const valid = this.checkAssist.assist.isVacationDate && !this.chekInTime && !this.calendarIsHoliday
+      return valid
+    },
+    calendarIsRestDay () {
+      const valid = (this.checkAssist.assist.isRestDay && !this.chekInTime && this.checkAssist.assist.checkInStatus !== 'working' && !this.chekInTime && this.checkAssist.assist.checkInStatus !== 'rest-working-out')
+        && !this.calendarIsHoliday
+        && !this.calendarIsVacationDay
+      return valid
+    },
+    calendarIsNextDay () {
+      const valid = this.checkAssist.assist.isFutureDay
+        && !this.calendarIsHoliday
+        && !this.calendarIsVacationDay
+        && !this.calendarIsRestDay
+      return valid
+    },
+    calendarHasnotIncidences () {
+      const valid = !this.calendarIsHoliday && !this.calendarIsVacationDay && !this.calendarIsRestDay && !this.calendarIsNextDay
+      return valid
+    },
+    cardIsFuture () {
+      const valid = this.calendarIsNextDay && !this.calendarIsVacationDay && !this.calendarIsHoliday && !this.calendarIsRestDay
+      return valid
+    },
+    cardIsRest () {
+      const valid = this.calendarIsRestDay && !this.chekInTime && this.checkAssist.assist.checkInStatus !== 'working' && this.checkAssist.assist.checkInStatus !== 'rest-working-out'
+      return valid
     }
   },
   mounted() {
