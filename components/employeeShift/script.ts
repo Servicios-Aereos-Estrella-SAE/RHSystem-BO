@@ -44,6 +44,10 @@ export default defineComponent({
     return { router }
   },
   computed: {
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     monthName () {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
@@ -212,9 +216,6 @@ export default defineComponent({
     handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
-    },
-    goReport () {
-      window.open(`/employees-attendance-monitor/${this.employee.employeeCode}`, '_blank');
     }
   }
 })
