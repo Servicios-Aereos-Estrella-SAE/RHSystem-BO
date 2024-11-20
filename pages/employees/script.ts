@@ -254,21 +254,20 @@ export default defineComponent({
         async getExcel() {
             const myGeneralStore = useMyGeneralStore();
             myGeneralStore.setFullLoader(true);
-          
-            const filterDepartmentId = 3;
-            const filterEmployeeId = 245;
             const filterStartDate = `2000-01-01`;
             const filterEndDate = new Date().toISOString().split('T')[0];
+            const onlyInactive = this.status === 'Terminated' ? true : false
             try {
               const employeeService = new EmployeeService();
-              const assistResponse = await employeeService.getExcelAll(filterEmployeeId, filterDepartmentId, filterStartDate, filterEndDate);
+              const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive);
               
               if (assistResponse) {
+                const reportDesc = onlyInactive ? '_terminated' : ''
                 const blob = await assistResponse._data; 
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'Employee_Report.xlsx'); 
+                link.setAttribute('download', `Employee_Report${reportDesc}.xlsx`); 
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -306,13 +305,15 @@ export default defineComponent({
             const dateNow = new Date()
             const dateNowFormat = DateTime.fromJSDate(dateNow).plus({ years: 1 }).toFormat('yyyy-MM-dd')
             const assistService = new EmployeeService()
-            const assistResponse = await assistService.getVacationExcel('2022-01-01', dateNowFormat)
+            const onlyInactive = this.status === 'Terminated' ? true : false
+            const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, '2022-01-01', dateNowFormat, onlyInactive)
             if (assistResponse.status === 201) {
+              const reportDesc = onlyInactive ? '_terminated' : ''
               const blob = await assistResponse._data
               const url = window.URL.createObjectURL(blob)
               const link = document.createElement('a')
               link.href = url
-              link.setAttribute('download', 'All Employees Vacation Report.xlsx')
+              link.setAttribute('download', `All Employees Vacation Report${reportDesc}.xlsx`)
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)

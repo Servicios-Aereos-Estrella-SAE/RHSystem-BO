@@ -11,6 +11,7 @@ import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
+import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 
 export default defineComponent({
   components: {
@@ -216,6 +217,13 @@ export default defineComponent({
     handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
+    },
+    async onSave () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.getShifts()
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
