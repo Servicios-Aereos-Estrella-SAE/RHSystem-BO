@@ -61,6 +61,7 @@ export default defineComponent({
         { label: 'External', value: 'External' },
     ],
     isDeleted: false,
+    drawerEmployeeReactivate: false
   }),
   computed: {
   },
@@ -268,6 +269,9 @@ export default defineComponent({
       }
       this.employee.employeeTerminatedDate = terminatedDateTemp
     },
+    async onReactivate () {
+      this.drawerEmployeeReactivate = true
+    },
     convertToDateTime(birthday: string | Date | null): Date | null {
       if (birthday === '' || birthday === null || birthday === undefined) {
         return null;
@@ -331,6 +335,36 @@ export default defineComponent({
     },
     handlerDisplayBirthDate () {
       this.displayBirthDateCalendar = true
+    },
+    onCancelEmployeeReactivate () {
+      this.drawerEmployeeReactivate = false
+    },
+    async confirmReactivate () {
+      const employeeService = new EmployeeService()
+      let employeeResponse = await employeeService.reactivate(this.employee)
+      if (employeeResponse.status === 200) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Employee Reactivate',
+          detail: employeeResponse._data.message,
+            life: 5000,
+        })
+        employeeResponse = await employeeService.show(employeeResponse._data.data.employee.employeeId)
+        if (employeeResponse?.status === 200) {
+          const employee = employeeResponse._data.data.employee
+          this.drawerEmployeeReactivate = false
+          this.$emit('save', employee as EmployeeInterface)
+        }
+      } else {
+        const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Employee Reactivate',
+          detail: msgError,
+            life: 5000,
+        })
+        return
+      }
     }
   }
 })

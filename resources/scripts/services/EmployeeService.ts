@@ -90,6 +90,22 @@ export default class EmployeeService {
     }
   }
 
+  async reactivate(employee: EmployeeInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employee.employeeId}/reactivate`, {
+        headers,
+        method: 'PUT',
+        query: { ...employee },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   validateEmployeeInfo(employee: EmployeeInterface): boolean {
     if (!employee.employeeCode) {
       console.error('Wrong employee code');
@@ -307,13 +323,22 @@ export default class EmployeeService {
   }
 
   async getExcelAll (
-    employeeId: number, departmentId: number, startDate: string, endDate: string
+    searchText: string,
+    departmentId: number | null,
+    positionId: number | null,
+    startDate: string,
+    endDate: string,
+    onlyInactive: boolean
   ) {
     let responseRequest: any = null
     try {
       const query = {
+        search: searchText,
         startDate,
-        endDate 
+        endDate,
+        departmentId: departmentId,
+        positionId: positionId,
+        onlyInactive: onlyInactive
       };
             await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
         method: 'GET',
@@ -330,13 +355,21 @@ export default class EmployeeService {
     return responseRequest
   }
 
-  async getVacationExcel (
+  async getVacationExcel (searchText: string, departmentId: number | null, positionId: number | null,
     startDate: string | Date,
-    endDate: string | Date
+    endDate: string | Date,
+    onlyInactive: boolean
   ) {
     let responseRequest: any = null
     try {
-      const query = { 'startDate': startDate, 'endDate': endDate }
+      const query = { 
+        search: searchText,
+        startDate: startDate,
+        endDate: endDate,
+        departmentId: departmentId,
+        positionId: positionId,
+        onlyInactive: onlyInactive
+       }
       await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
         method: 'GET',
         headers: {

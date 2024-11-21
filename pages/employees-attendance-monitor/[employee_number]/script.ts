@@ -292,15 +292,19 @@ export default defineComponent({
       const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, null ,1, 1)
       const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
       this.employee = employee
-
       if (!this.employee) {
-        const myGeneralStore = useMyGeneralStore()
-        myGeneralStore.setFullLoader(false)
-        throw showError({
-          statusCode: 404,
-          fatal: true,
-          message: 'Employee not found'
-       })
+        const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, null ,1, 1, true)
+        const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
+        this.employee = employee
+        if (!this.employee) {
+          const myGeneralStore = useMyGeneralStore()
+          myGeneralStore.setFullLoader(false)
+          throw showError({
+            statusCode: 404,
+            fatal: true,
+            message: 'Employee not found'
+          })
+        }
       } 
     },
     isThursday(dateObject: any, addOneMonth = true) {
