@@ -32,6 +32,9 @@
         </div>
       </div>
     </div>
+    <div v-else class="loader">
+      <ProgressSpinner />
+    </div>
   </div>
 </template>
 

@@ -99,7 +99,7 @@ export default defineComponent({
         })
         return
       }
-
+      this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
@@ -134,6 +134,7 @@ export default defineComponent({
       }
 
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     handleDateChange() {
