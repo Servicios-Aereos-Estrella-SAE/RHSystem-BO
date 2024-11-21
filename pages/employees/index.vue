@@ -87,12 +87,20 @@
             <h2>
               Employees
             </h2>
-            <div class="shift-card-wrapper">
+            <div v-if="filteredEmployees.length > 0" class="shift-card-wrapper">
               <div v-for="(employee, index) in filteredEmployees" :key="`employee-${employee.employeeId}-${index}`">
                 <EmployeeInfoCard :click-on-photo="() => { onPhoto(employee) }" :employee="employee"
                   :can-manage-shifts="hasAccessToManageShifts" :can-update="canUpdate" :can-delete="canDelete"
                   :click-on-edit="() => { onEdit(employee) }" :click-on-delete="() => { onDelete(employee) }"
                   @clickShifts="handlerOpenShifts" @clickProceedingFiles="onProceedingFiles" />
+              </div>
+            </div>
+            <div v-else class="empty">
+              <div>
+                <div class="icon">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.25 10a7.25 7.25 0 1 0-2.681 5.63l4.9 4.9.085.073a.75.75 0 0 0 .976-1.133l-4.9-4.901A7.22 7.22 0 0 0 17.25 10ZM11 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1 2a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 9Z" fill="#88a4bf" class="fill-212121"></path></svg>
+                </div>
+                No employee results
               </div>
             </div>
 
@@ -116,7 +124,7 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
-          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"/>
+          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation" :can-manage-exception-request="canManageExceptionRequest"/>
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"

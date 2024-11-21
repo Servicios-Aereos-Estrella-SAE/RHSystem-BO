@@ -90,6 +90,22 @@ export default class EmployeeService {
     }
   }
 
+  async reactivate(employee: EmployeeInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employee.employeeId}/reactivate`, {
+        headers,
+        method: 'PUT',
+        query: { ...employee },
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   validateEmployeeInfo(employee: EmployeeInterface): boolean {
     if (!employee.employeeCode) {
       console.error('Wrong employee code');

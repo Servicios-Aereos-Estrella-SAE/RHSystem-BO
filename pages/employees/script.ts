@@ -33,6 +33,7 @@ export default defineComponent({
         canUpdate: false,
         canDelete: false,
         canManageVacation: false,
+        canManageExceptionRequest: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
         hasAccessToManageShifts: false,
@@ -71,11 +72,13 @@ export default defineComponent({
             this.canUpdate = true
             this.canDelete = true
             this.canManageVacation = true
+            this.canManageExceptionRequest = true
         } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
             this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
+            this.canManageExceptionRequest = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'exception-request') ? true : false
         }
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
@@ -204,7 +207,11 @@ export default defineComponent({
             this.employee = { ...employee };
             const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId);
             if (index !== -1) {
-                this.filteredEmployees[index] = employee;
+                if (this.status === 'Terminated' && !this.employee.deletedAt) {
+                    this.filteredEmployees.splice(index, 1)
+                } else {
+                    this.filteredEmployees[index] = employee;
+                }
                 this.$forceUpdate();
             } else {
                 this.filteredEmployees.push(employee);
