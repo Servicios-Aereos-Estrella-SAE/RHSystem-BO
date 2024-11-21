@@ -123,18 +123,11 @@ export default defineComponent({
           this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
         }
       } else {
-        let msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
-        if (msgError.length > 0) {
-          let newMesageError = ''
-          for await (const msg of msgError) {
-            newMesageError = `${newMesageError}\n${msg.message}`
-          }
-          msgError = newMesageError
-        }
+        const msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
         const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'updated' : 'created'}`,
+          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
           detail: msgError,
             life: 5000,
         })
