@@ -64,7 +64,7 @@ export default defineComponent({
     const firstSegment = fullPath.split('/')[1]
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
-    const exceptionType = hasAccess ? '' : 'rest-day'
+    const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     await this.getExceptionTypes(exceptionType)
 
     let isVacation = false
