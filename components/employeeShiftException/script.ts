@@ -83,6 +83,7 @@ export default defineComponent({
       this.drawerShiftExceptionForm = true
     },
     onSave(shiftException: ShiftExceptionInterface) {
+      this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.shiftException = {...shiftException}
@@ -100,6 +101,7 @@ export default defineComponent({
       }
       this.$emit('save')
       this.drawerShiftExceptionForm = false
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     onEdit(shiftException: ShiftExceptionInterface) {

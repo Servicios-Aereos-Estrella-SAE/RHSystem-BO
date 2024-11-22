@@ -120,6 +120,9 @@
       />
     </Sidebar>
   </div>
+  <div v-else class="loader">
+    <ProgressSpinner />
+  </div>
 </template>
 
 <script>

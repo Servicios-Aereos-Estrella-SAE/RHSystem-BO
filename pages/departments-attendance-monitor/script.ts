@@ -579,12 +579,12 @@ export default defineComponent({
           onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
         }
 
-        
-        if(this.isShowByStatusSelected(statistics)) {
-          if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
+        if (list.length > 0) {
+          if(this.isShowByStatusSelected(statistics)) {
             departmentListStatistics.push({
               department: department,
-              statistics
+              statistics,
+              employeesCount: list.length
             })
           }
         }

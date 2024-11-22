@@ -90,6 +90,29 @@ export default class EmployeeService {
     }
   }
 
+  async getByCode(code: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/get-by-code/${code}`, {
+        headers,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const employee = responseRequest.status === 200 ? responseRequest._data.data.employee : null
+
+      return {
+          status: responseRequest.status,
+          _data: {
+            data: {
+              employee: employee
+            }
+          }
+        }
+    } catch (error) {
+    }
+  }
+
   async reactivate(employee: EmployeeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null

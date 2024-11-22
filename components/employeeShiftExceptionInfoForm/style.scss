@@ -23,4 +23,11 @@
     gap: .5rem;
     margin-top: 0.5rem;
   }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+  }
 }

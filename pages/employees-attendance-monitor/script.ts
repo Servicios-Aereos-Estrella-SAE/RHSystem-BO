@@ -538,14 +538,11 @@ export default defineComponent({
           onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length) || 0,
           onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
         }
-        
-        if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
-          departmentListStatistics.push({
-            department: department,
-            statistics,
-            employees: list
-          })
-        }
+        departmentListStatistics.push({
+          department: department,
+          statistics,
+          employees: list
+        })
       })
       
       return departmentListStatistics

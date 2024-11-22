@@ -220,11 +220,13 @@ export default defineComponent({
       myGeneralStore.setUserVacationFormStatus(true)
     },
     async onSave () {
+      this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       await this.getShifts()
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
+      this.isReady = true
     }
   }
 })
