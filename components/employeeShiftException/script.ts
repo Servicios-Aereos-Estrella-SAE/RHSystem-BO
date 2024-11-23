@@ -83,6 +83,7 @@ export default defineComponent({
       this.drawerShiftExceptionForm = true
     },
     onSave(shiftException: ShiftExceptionInterface) {
+      this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.shiftException = {...shiftException}
@@ -98,7 +99,9 @@ export default defineComponent({
         this.shiftExceptionsList.push(shiftException)
         this.$forceUpdate()
       }
+      this.$emit('save')
       this.drawerShiftExceptionForm = false
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     onEdit(shiftException: ShiftExceptionInterface) {
@@ -127,6 +130,7 @@ export default defineComponent({
             this.shiftExceptionsList.splice(index, 1)
             this.$forceUpdate()
           }
+          this.$emit('save')
         } else {
           this.$toast.add({
             severity: 'error',

@@ -36,6 +36,9 @@
         </div>
       </div>
     </div>
+    <div v-else class="loader">
+      <ProgressSpinner />
+    </div>
 
     <Sidebar v-model:visible="drawerShiftExceptionForm" header="form" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
       <employeeShiftExceptionInfoForm

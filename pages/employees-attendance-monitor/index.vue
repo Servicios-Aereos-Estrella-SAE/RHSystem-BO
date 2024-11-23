@@ -151,7 +151,7 @@
           </div>
         </div>
         <div v-for="(item, index) in getDepartmentPositionAssistStatistics()" :key="`position-${item.department.departmentId}-${index}`">
-          <div v-if="!!(item.department)">
+          <div v-if="!!(item.department) && filtersEmployeesByStatus(item.employees).length > 0">
             <h2>
               Employees into
               {{ item.department.departmentAlias || item.department.departmentName }}
