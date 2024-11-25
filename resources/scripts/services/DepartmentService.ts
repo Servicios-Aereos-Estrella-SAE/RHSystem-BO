@@ -264,5 +264,19 @@ export default class DepartmentService {
   
     return responseRequest;
   }
+
+  async getRotationIndex (departmentId: number,dateStart: string, dateEnd: string) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    await $fetch(`${this.API_PATH}/departments/${departmentId}/get-rotation-index`, {
+      query,
+      headers,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
   
 }
