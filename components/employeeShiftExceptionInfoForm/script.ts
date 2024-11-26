@@ -64,7 +64,7 @@ export default defineComponent({
     const firstSegment = fullPath.split('/')[1]
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
-    const exceptionType = hasAccess ? '' : 'rest-day'
+    const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     await this.getExceptionTypes(exceptionType)
 
     let isVacation = false
@@ -99,7 +99,7 @@ export default defineComponent({
         })
         return
       }
-
+      this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
@@ -123,24 +123,18 @@ export default defineComponent({
           this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
         }
       } else {
-        let msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
-        if (msgError.length > 0) {
-          let newMesageError = ''
-          for await (const msg of msgError) {
-            newMesageError = `${newMesageError}\n${msg.message}`
-          }
-          msgError = newMesageError
-        }
+        const msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
         const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'updated' : 'created'}`,
+          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
           detail: msgError,
             life: 5000,
         })
       }
 
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     handleDateChange() {

@@ -11,6 +11,7 @@ import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
+import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 
 export default defineComponent({
   components: {
@@ -21,7 +22,8 @@ export default defineComponent({
   name: 'employeeShiftCalendarControl',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    canManageVacation: { type: Boolean, required: true }
+    canManageVacation: { type: Boolean, required: true },
+    canManageExceptionRequest: { type: Boolean, required: true }
   },
   data: () => ({
     isReady: false,
@@ -44,6 +46,10 @@ export default defineComponent({
     return { router }
   },
   computed: {
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
     monthName () {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
@@ -213,8 +219,14 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
     },
-    goReport () {
-      window.open(`/employees-attendance-monitor/${this.employee.employeeCode}`, '_blank');
+    async onSave () {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.getShifts()
+      await this.getEmployeeCalendar()
+      myGeneralStore.setFullLoader(false)
+      this.isReady = true
     }
   }
 })

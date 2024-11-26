@@ -60,6 +60,12 @@
     color: white !important;
   }
 
+  &.btn-info {
+    background-color: $info !important;
+    border-color: $info !important;
+    color: white !important;
+  }
+
   &.btn-gray {
     background-color: $gray !important;
     border-color: $gray !important;

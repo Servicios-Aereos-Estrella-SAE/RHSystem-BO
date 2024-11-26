@@ -79,6 +79,10 @@
               display: none;
             }
           }
+
+          .deleted {
+            color: $danger;;
+          }
         }
       }
 

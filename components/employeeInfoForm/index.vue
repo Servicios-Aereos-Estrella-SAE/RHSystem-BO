@@ -135,8 +135,13 @@
         <div class="box-tools-footer">
           <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->
           <!-- <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" /> -->
+          <Button v-if="employee.deletedAt" label="Reactivate" severity="primary" @click="onReactivate()" />
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
+        <transition name="page">
+          <confirmReactivate v-if="drawerEmployeeReactivate" @confirmReactivate="confirmReactivate"
+            @cancelReactivate="onCancelEmployeeReactivate" />
+        </transition>
       </div>
     </div>
     <div v-else class="loader">

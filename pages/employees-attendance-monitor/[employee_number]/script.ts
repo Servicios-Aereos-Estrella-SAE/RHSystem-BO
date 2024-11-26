@@ -289,18 +289,25 @@ export default defineComponent({
   methods: {
     async getEmployee () {
       const employeCode = this.$route.params.employee_number
-      const response = await new EmployeeService().getFilteredList(employeCode.toString(), null, null, null ,1, 1)
-      const employee = response.status === 200 ? (response._data.data.employees.meta.total >= 1 ? response._data.data.employees.data[0] : null) : null
-      this.employee = employee
-
+      if (employeCode) {
+        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
+        if (employeeResponse?.status === 200) {
+          const employee = employeeResponse._data.data.employee
+          this.employee = employee
+        }
+      }
+     
       if (!this.employee) {
-        const myGeneralStore = useMyGeneralStore()
-        myGeneralStore.setFullLoader(false)
-        throw showError({
-          statusCode: 404,
-          fatal: true,
-          message: 'Employee not found'
-       })
+     
+        if (!this.employee) {
+          const myGeneralStore = useMyGeneralStore()
+          myGeneralStore.setFullLoader(false)
+          throw showError({
+            statusCode: 404,
+            fatal: true,
+            message: 'Employee not found'
+          })
+        }
       } 
     },
     isThursday(dateObject: any, addOneMonth = true) {

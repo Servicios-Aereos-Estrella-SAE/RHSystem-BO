@@ -33,6 +33,7 @@ export default defineComponent({
         canUpdate: false,
         canDelete: false,
         canManageVacation: false,
+        canManageExceptionRequest: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
         hasAccessToManageShifts: false,
@@ -71,11 +72,13 @@ export default defineComponent({
             this.canUpdate = true
             this.canDelete = true
             this.canManageVacation = true
+            this.canManageExceptionRequest = true
         } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
             this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
+            this.canManageExceptionRequest = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'exception-request') ? true : false
         }
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
@@ -204,7 +207,11 @@ export default defineComponent({
             this.employee = { ...employee };
             const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId);
             if (index !== -1) {
-                this.filteredEmployees[index] = employee;
+                if (this.status === 'Terminated' && !this.employee.deletedAt) {
+                    this.filteredEmployees.splice(index, 1)
+                } else {
+                    this.filteredEmployees[index] = employee;
+                }
                 this.$forceUpdate();
             } else {
                 this.filteredEmployees.push(employee);
@@ -254,21 +261,20 @@ export default defineComponent({
         async getExcel() {
             const myGeneralStore = useMyGeneralStore();
             myGeneralStore.setFullLoader(true);
-          
-            const filterDepartmentId = 3;
-            const filterEmployeeId = 245;
             const filterStartDate = `2000-01-01`;
             const filterEndDate = new Date().toISOString().split('T')[0];
+            const onlyInactive = this.status === 'Terminated' ? true : false
             try {
               const employeeService = new EmployeeService();
-              const assistResponse = await employeeService.getExcelAll(filterEmployeeId, filterDepartmentId, filterStartDate, filterEndDate);
+              const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive);
               
               if (assistResponse) {
+                const reportDesc = onlyInactive ? '_terminated' : ''
                 const blob = await assistResponse._data; 
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'Employee_Report.xlsx'); 
+                link.setAttribute('download', `Employee_Report${reportDesc}.xlsx`); 
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -306,13 +312,15 @@ export default defineComponent({
             const dateNow = new Date()
             const dateNowFormat = DateTime.fromJSDate(dateNow).plus({ years: 1 }).toFormat('yyyy-MM-dd')
             const assistService = new EmployeeService()
-            const assistResponse = await assistService.getVacationExcel('2022-01-01', dateNowFormat)
+            const onlyInactive = this.status === 'Terminated' ? true : false
+            const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, '2022-01-01', dateNowFormat, onlyInactive)
             if (assistResponse.status === 201) {
+              const reportDesc = onlyInactive ? '_terminated' : ''
               const blob = await assistResponse._data
               const url = window.URL.createObjectURL(blob)
               const link = document.createElement('a')
               link.href = url
-              link.setAttribute('download', 'All Employees Vacation Report.xlsx')
+              link.setAttribute('download', `All Employees Vacation Report${reportDesc}.xlsx`)
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)

@@ -1,8 +1,10 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 .user-info-card {
   position: relative;
-
+  margin-bottom: 1rem;
+  border-bottom: $border-dashed;
+  padding-bottom: 1.25rem;
 
   .employee-number {
     text-align: left;

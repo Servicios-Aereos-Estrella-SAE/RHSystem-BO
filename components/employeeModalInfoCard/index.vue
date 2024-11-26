@@ -1,5 +1,5 @@
 <template>
-  <div class="box user-info-card">
+  <div class="user-info-card">
     <div class="name">
       {{ 
         `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
