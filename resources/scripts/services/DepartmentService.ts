@@ -1,6 +1,5 @@
-import { tr } from "date-fns/locale";
 import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
-import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
+import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class DepartmentService {
  
@@ -36,44 +35,19 @@ export default class DepartmentService {
 
     return responseRequest;
   }
-  async getAllDepartmentList () {
+
+  async getAllDepartmentList (filters?: Object) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/departments`, {
       headers,
+      query: filters,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
 
     return responseRequest
-  }
-  async getSearchDepartmentList(search: string, currentPage: number, rowsPerPage: number) {
-    const headers = { ...this.GENERAL_HEADERS }
-    let responseRequest: any = null
-  
-    await $fetch(`${this.API_PATH}/departments/search`, {
-      headers,
-      query: {
-        departmentName: search,
-        currentPage,
-        rowsPerPage
-      },
-      onResponse({ response }) {
-        responseRequest = response
-      },
-      onRequestError({ response }) {
-        responseRequest = response
-      }
-    })
-
-    if (responseRequest?.data) {
-      return {
-        data: responseRequest.data.data,
-        meta: responseRequest.data.meta
-      }
-    }
-    return responseRequest  
   }
 
   async getSearchOrganization(search: string, currentPage: number, rowsPerPage: number) {
@@ -121,23 +95,13 @@ export default class DepartmentService {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/departments/`, {
+    await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
       headers,
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
 
-    const list = responseRequest.status === 200 ? responseRequest._data.data.departments : []
-    const department = list.find((item: DepartmentInterface) => item.departmentId === departmentId)
-
-    return {
-      status: responseRequest.status,
-      _data: {
-        data: {
-          department: department
-        }
-      }
-    }
+    return responseRequest
   }
 
   async assignShift (departmentId: number, shiftId: number, applySince: string) {

@@ -3,7 +3,6 @@ import { defineComponent } from 'vue'
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { useMyGeneralStore } from '~/store/general'
-import ShiftException from '../../../API-SAE/app/models/shift_exception'
 
 export default defineComponent({
   components: {
@@ -12,6 +11,9 @@ export default defineComponent({
   props: {
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
     clickOnDelete: { type: Function, default: null },
+    canManageVacation: { type: Boolean, required: true },
+    indexCard: { type: Number, required: true },
+    isDeleted: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptionsDate: '',
@@ -49,13 +51,30 @@ export default defineComponent({
         .toFormat('DDD')
     },
     handlerClickOnDelete() {
+      if (!this.canManageVacation) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'You do not have permission to manage vacations',
+          life: 5000,
+        })
+        return
+      }
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
     },
     async handlerClickOnSave() {
+      if (!this.canManageVacation) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'You do not have permission to manage vacations',
+          life: 5000,
+        })
+        return
+      }
       const shiftExceptionService = new ShiftExceptionService()
-
       if (!shiftExceptionService.validateInfo(this.shiftException)) {
         this.$toast.add({
           severity: 'warn',
@@ -82,7 +101,7 @@ export default defineComponent({
         shiftExceptionResponse = await shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
         if (shiftExceptionResponse.status === 200) {
           const shiftException = shiftExceptionResponse._data.data.shiftException
-          this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
+          this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface, this.indexCard)
           this.displayForm = false
         }
       } else {
@@ -99,6 +118,24 @@ export default defineComponent({
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
 
       myGeneralStore.setFullLoader(false)
+    },
+    onEdit() {
+      if (!this.canManageVacation) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'You do not have permission to manage vacations',
+          life: 5000,
+        })
+        return
+      }
+      this.displayForm = true
+    },
+    cancelEdit() {
+      if (!this.shiftException.shiftExceptionId) {
+        this.$emit('onShiftExceptionCancel')
+      }
+      this.displayForm = false
     }
   }
 })

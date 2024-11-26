@@ -1,7 +1,7 @@
 <template>
   <div class="shift-exception-info-form">
     <Toast />
-    
+    <employeeModalInfoCard :employee="employee"/>
     <h1>
       {{ isNewShiftException ? 'Add shift exception' : 'Update shift exception' }}
     </h1>

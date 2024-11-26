@@ -1,6 +1,7 @@
 <template>
   <div class="box user-info-form">
     <Toast />
+    <employeeModalInfoCard :employee="employee"/>
     <div v-if="isReady" class="user-form">
       <div class="form-container">
         <div v-if="currentPhotoUrl">

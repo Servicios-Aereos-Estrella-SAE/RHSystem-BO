@@ -1,12 +1,17 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
 
 .department-page {
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+  }
+
   h2 {
     font-size: 1rem;
     font-weight: 500;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
   }
 
   .department-wrapper {
@@ -15,55 +20,72 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 20rem auto 20rem 25rem 5rem;
-      gap: 0.2rem;
-      justify-items: stretch;
-
-      // .input-box {
-      //   display: grid;
-      //   align-items: center;
-      //   gap: 0.1rem; 
-      // }
-
-      .btn-add {
-        width: fit-content;
-        width: auto;
-        margin-top: 2rem;
-      }
-
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: 20rem auto 20rem 25rem 5rem;
-      }
+      grid-template-columns: 30rem auto 15rem 15rem;
+      gap: 0.5rem;
 
       @media screen and (max-width: $tablet) {
-        grid-template-columns: 13rem auto 18rem 20rem 5rem;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .page-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      box-sizing: border-box;
+
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: 1fr;
       }
 
-      @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr;
-        .btn-add {
-          margin-top: .4rem;
+      .container-wrapper {
+        box-sizing: border-box;
+        background-color: white;
+        padding: 2rem;
+        border-radius: $radius;
+        min-height: 100dvh;
+
+        @media screen and (max-width: $tablet) {
+          min-height: initial;
+        }
+
+        .section-head {
+          margin-bottom: 2rem;
+          border-bottom: $border-dashed;
+          padding-bottom: 2rem;
+          display: grid;
+          grid-template-columns: auto 15rem;
+
+          @media screen and (max-width: $ipad) {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .subdepartment-wrapper {
+          box-sizing: border-box;
+          display: grid;
+          grid-auto-flow: dense;
+          grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+          gap: .5rem;
+
+          @media screen and (max-width: $tablet) {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .department-card-wrapper {
+          box-sizing: border-box;
+          display: grid;
+          grid-auto-flow: dense;
+          grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+          gap: .5rem;
+
+          @media screen and (max-width: $tablet) {
+            grid-template-columns: 1fr;
+          }
         }
       }
     }
-
-    .department-card-wrapper {
-      box-sizing: border-box;
-      display: grid;
-      grid-auto-flow: dense;
-      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-      gap: .5rem;
-      margin-top: 0.5rem;
-    }
-
-    .paginator {
-      margin-top: 0.5rem;
-      width: 100%;
-    }
   }
   
-}
-
-.side {
-  background-color: blue !important;
 }

@@ -33,6 +33,7 @@ export default defineComponent({
     drawerShiftExceptionForm: false,
     drawerShiftExceptionDelete: false,
     selectedDateTimeDeleted: '' as string | null,
+    isDeleted: false,
   }),
   computed: {
     selectedExceptionDate () {
@@ -49,7 +50,9 @@ export default defineComponent({
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftEmployee()
-
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
    

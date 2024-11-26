@@ -39,9 +39,9 @@ export default defineComponent({
     })
   },
   mounted() {
-    window.addEventListener('focus', async () => {
-      await this.validateSession()
-    })
+    // window.addEventListener('focus', async () => {
+    //   await this.validateSession()
+    // })
   },
   methods: {
     // setcolor () {

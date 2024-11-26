@@ -108,7 +108,7 @@ export default defineComponent({
     visualizationModeOptions: [
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1  },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -201,10 +201,10 @@ export default defineComponent({
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
           // Establecer el inicio del periodo como el jueves de dos semanas atrás
-          let startDate = thursday.minus({ weeks: 2 }) // Jueves de dos semanas atrás
+          let startDate = thursday.minus({ days: 24 }) // Jueves de dos semanas atrás
 
           // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
-          for (let index = 0; index < 15; index++) {
+          for (let index = 0; index < 14; index++) {
             const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
@@ -240,8 +240,21 @@ export default defineComponent({
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Behavior in fourteen to ${date.toFormat('DDD')}`
+        const startDate = DateTime.fromObject({
+          year: this.weeklyStartDay[0].year,
+          month: this.weeklyStartDay[0].month,
+          day: this.weeklyStartDay[0].day
+        }).minus({ days: 1 }).setLocale('en');
+
+        // Convertimos la fecha fin desde weeklyStartDay[1]
+        const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+        const endDate = DateTime.fromObject({
+          year: endDateObject.year,
+          month: endDateObject.month,
+          day: endDateObject.day
+        }).minus({ days: 1 }).setLocale('en');
+
+        return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
@@ -284,7 +297,7 @@ export default defineComponent({
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
-
+   
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -295,7 +308,7 @@ export default defineComponent({
       return weekDayName === 'Thursday';
     },
     async setDefaultVisualizationMode() {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'weekly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
@@ -304,8 +317,8 @@ export default defineComponent({
       await this.handlerVisualizationModeChange()
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('week').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('week').toJSDate()
+      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },
@@ -398,9 +411,9 @@ export default defineComponent({
             // Encontrar el jueves de la semana seleccionada
             let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
             // Establecer el inicio del periodo como el jueves de dos semanas atrás
-            start = thursday.minus({ weeks: 2 }) // El jueves dos semanas atrás
+            start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
             // El periodo es de 14 días (dos semanas completas)
-            periodLenght = 15
+            periodLenght = 14
           break
         }
         default:
@@ -412,7 +425,11 @@ export default defineComponent({
 
       if (start) {
         for (let index = 0; index < periodLenght; index++) {
-          const currentDay = start.plus({ days: index })
+          let currentDay = start.plus({ days: index })
+          switch (this.visualizationMode?.value) {
+            case 'fourteen':
+              currentDay = currentDay.minus( { days: 1 })
+          }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))

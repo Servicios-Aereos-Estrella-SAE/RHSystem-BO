@@ -23,6 +23,10 @@ export default defineComponent({
     avatarLetter () {
       const initial = `${this.authUser?.userEmail?.charAt(0) || ''}`.toLocaleUpperCase()
       return initial
+    },
+    avatarImage () {
+      const initial = `${this.authUser?.person?.employee?.employeePhoto || ''}`
+      return initial
     }
   },
   created () {
@@ -45,6 +49,16 @@ export default defineComponent({
     },
     handlerBack () {
       this.$router.go(-1)
-    }
+    },
+    async handlerLogout() {
+      try {
+        const { signOut } = useAuth()
+        await signOut({ callbackUrl: '/' })
+      } catch (error) {
+        console.error('🚀 ---------------------------------🚀')
+        console.error('🚀 ~ handlerLogout ~ error:', error)
+        console.error('🚀 ---------------------------------🚀')
+      }
+    },
   }
 })

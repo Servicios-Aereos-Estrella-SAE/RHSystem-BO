@@ -1,6 +1,7 @@
 <template>
   <div v-if="isReady" class="box employee-shifts">
     <Toast />
+    <employeeModalInfoCard :employee="employee"/>
     <div class="month-year-mobile">
       <span v-show="!displayInputCalendar" class="text">
         Shifts on
@@ -15,8 +16,8 @@
       <Button class="btn btn-block" :disabled="displayInputCalendar" @click="handlerNextMonth">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 17.898c0 1.074 1.265 1.648 2.073.941l6.31-5.522a1.75 1.75 0 0 0 0-2.634l-6.31-5.522C10.265 4.454 9 5.028 9 6.102v11.796Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
-
       <div class="month-year">
+        
         <span v-show="!displayInputCalendar" class="text">
           Shifts on
           {{ monthName }}
@@ -25,6 +26,9 @@
       </div>
 
       <Button title="Select month" v-if="!displayInputCalendar" class="btn btn-block" @click="handlerDisplayInputDate">
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
+      </Button>
+      <Button title="Assist report" class="btn btn-block" @click="goReport">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
       <Button v-if="displayInputCalendar" class="btn btn-block" @click="handlerCalendarCancel">
@@ -50,6 +54,7 @@
         :employee="employee"
         :employeeCalendarAssist="item"
         :shiftsList="shiftsList"
+        :isDeleted="isDeleted"
         @successShiftAssigned="onSuccessShiftAssigned"
         @clickExceptions="onClickExceptions"
       />
@@ -87,6 +92,7 @@
         :employee="employee"
         @manageVacations="handlerVacationsManager"
         :status-form="statusForm"
+        :can-manage-vacation="canManageVacation"
       />
     </Sidebar>
 
@@ -103,7 +109,7 @@
       <employeeVacationsControl
         :employee="employee"
         :vacation-period="vacationPeriod"
-        @closeVacations="handlerVacationsClose"
+        :can-manage-vacation="canManageVacation"
       />
     </Sidebar>
   </div>

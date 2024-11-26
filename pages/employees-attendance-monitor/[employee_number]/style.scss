@@ -83,9 +83,13 @@
       }
 
       &.sync {
-        grid-template-columns: auto 4rem 4rem 4rem;
+        grid-template-columns: 30rem auto;
         padding: 1rem;
         border-radius: calc($radius / 2);
+
+        @media screen and (max-width: $phone) {
+          grid-template-columns: 1fr;
+        }
 
         h6 {
           margin: 0;
@@ -100,12 +104,23 @@
             margin-top: 0.25rem;
           }
         }
+
+        .subhead-tools {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: flex-end;
+          
+          @media screen and (max-width: $phone) {
+            justify-content: flex-start;
+            margin-top: 1rem;
+          }
+        }
       }
     }
 
     .general-graphs {
       display: grid;
-      grid-template-columns: 30rem auto;
+      grid-template-columns: 20rem auto;
       gap: 0.5rem;
       box-sizing: border-box;
       min-height: 100vh;
@@ -120,6 +135,10 @@
 
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
+      }
+
+      &.only-calendar {
+        grid-template-columns: 1fr !important;
       }
 
       h2 {
@@ -141,7 +160,7 @@
 
       .jumbotron {
         background-color: white;
-        color: $text;
+        color: $icon;
 
         .icon {
           height: 5rem;
@@ -180,7 +199,7 @@
         box-sizing: border-box;
         display: grid;
         grid-auto-flow: dense;
-        grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
         gap: .5rem;
       }
     }

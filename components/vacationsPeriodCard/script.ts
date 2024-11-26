@@ -8,7 +8,8 @@ export default defineComponent({
   name: 'vacationsPeriodCard',
   props: {
     vacationPeriod: { type: Object as PropType<VacationPeriodInterface>, required: true },
-    hideManager: { type: Boolean, default: false }
+    hideManager: { type: Boolean, default: false },
+    canManageVacation: { type: Boolean, required: true }
   },
   data: () => ({
   }),

@@ -12,7 +12,8 @@ export default defineComponent({
   name: 'employeeVacations',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    statusForm: { type: Boolean, required: false, default: false }
+    statusForm: { type: Boolean, required: false, default: false },
+    canManageVacation: { type: Boolean, required: true }
   },
   data: () => ({
     isReady: false as boolean,
@@ -70,7 +71,8 @@ export default defineComponent({
     },
     formatDateWithYearDifference(date: string) {
       const originalDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
-      const nextYearDate = originalDate.plus({ years: 1 })
+      let nextYearDate = originalDate.plus({ years: 1 })
+      nextYearDate = originalDate.plus({ days: -1 })
 
       const formattedOriginalDate = originalDate.toFormat('MMMM dd, yyyy')
       const formattedNextYearDate = nextYearDate.toFormat('MMMM dd, yyyy')

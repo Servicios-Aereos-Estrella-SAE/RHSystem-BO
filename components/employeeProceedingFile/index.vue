@@ -1,6 +1,7 @@
 <template>
   <div v-if="isReady" class="employee-proceeding-files">
     <Toast />
+    <employeeModalInfoCard :employee="employee"/>
     <div v-if="isReady" class="employee">
       <div class="form-container">
         <div class="employee-proceeding-file-wrapper">
@@ -27,7 +28,9 @@
         <div class="card flex justify-content-center">
           <Sidebar v-model:visible="drawerEmployeeProceedingFileForm" header="Files" position="right"
             class="employee-proceeding-file-form-sidebar" :showCloseIcon="true">
-            <employeeProceedingFileInfoForm :employeeProceedingFile="employeeProceedingFile"
+            <employeeProceedingFileInfoForm
+              :employeeProceedingFile="employeeProceedingFile"
+              :employee="employee"
               @onEmployeeProceedingFileSave="onSave" />
           </Sidebar>
         </div>
