@@ -12,6 +12,13 @@
     overflow: hidden;
   }
 
+  .line {
+    border-top: $border-dashed;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
   .department-alias {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
@@ -21,6 +28,20 @@
     overflow: hidden;
     margin-top: 0.5rem;
   }
+
+
+  .department-rotation-index {
+    font-size: .5rem;
+    font-weight: normal;
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+  }
+  .property-value {
+    text-align: right;
+    margin-left: auto;
+}
 
   .box-tools-footer {
     box-sizing: border-box;
