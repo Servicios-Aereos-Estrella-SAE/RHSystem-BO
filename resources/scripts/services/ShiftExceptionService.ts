@@ -155,18 +155,17 @@ export default class ShiftExceptionService {
     return responseRequest;
   }
 
-  async updateStatus(shiftException: ShiftExceptionRequestInterface, status: string) {
+  async updateStatus(shiftException: ShiftExceptionRequestInterface, status: string, description?: string) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
   
     try {
-      // Enviar la solicitud PUT con el estado actualizado
       await $fetch(
         `${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}/status`,
         {
           headers,
           method: "POST",
-          body: { status: status }, // Enviar solo el estado actualizado
+          body: { status: status, description: description }, 
           onResponse({ response }) {
             responseRequest = response;
           },

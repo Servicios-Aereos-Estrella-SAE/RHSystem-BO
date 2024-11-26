@@ -66,7 +66,6 @@ export default defineComponent({
         }
             }
     } else {
-
       this.shiftException.requestedDate = this.date
       this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
       console.log(this.shiftException.requestedDate)
