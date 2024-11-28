@@ -57,7 +57,6 @@ export default defineComponent({
 
     myGeneralStore.setFullLoader(false);
     this.handlerSearchShiftException();
-
     await Promise.all([
         this.getDepartments()
       ])

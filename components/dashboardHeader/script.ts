@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import { useMyGeneralStore } from '~/store/general'
+import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService";
 
 export default defineComponent({
   name: 'dashboardHeader',
@@ -8,6 +9,14 @@ export default defineComponent({
   },
   data: () => ({
     authUser: null as UserInterface | null,
+    drawerNotifications: false,
+    notifications: [], 
+    totalNotifications: 0,
+    search: '',
+    selectedDepartmentId: null,
+    selectedPositionId: null,
+    currentPage: 1,
+    rowsPerPage: 10,
   }),
   computed: {
     getBackgroundImage(){
@@ -32,9 +41,11 @@ export default defineComponent({
   created () {
   },
   mounted() {
+    this.handlerFetchNotifications();
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
     this.setAuthUser()
+
   },
   methods: {
     async setAuthUser () {
@@ -49,6 +60,47 @@ export default defineComponent({
     },
     handlerBack () {
       this.$router.go(-1)
+    },
+    toggleNotification(){
+      this.drawerNotifications = true
+    },
+    async handlerFetchNotifications() {
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+    
+      try {
+        const response = await new ShiftExceptionRequestService().getFilteredList({
+          search: '',
+          departmentId: null,
+          positionId: null,
+          status: 'pending',
+          page: this.currentPage || 1, 
+          limit: this.rowsPerPage || 30,
+        });
+        this.notifications = response.data; 
+        this.notifications = response.data.map((item: any) => ({
+          exceptionRequestId: item.exceptionRequestId,
+          type: item.exceptionType?.exceptionTypeTypeName || 'Unknown',
+          department: item.employee?.department?.departmentName || 'Unknown',
+          handling: item.employee?.department?.departmentAlias || 'N/A',
+          position: item.employee?.position?.positionName || 'Unknown',
+          employeeName: `${item.employee?.employeeFirstName || ''} ${item.employee?.employeeLastName || ''}`.trim(),
+          dateRequested: item.requestedDate,
+          description: item.exceptionRequestDescription || '',
+          status: item.exceptionRequestStatus || 'unknown',
+          read: item.exceptionRequestRhRead || 0,
+        }));
+        if (response) {
+          this.notifications = response.data; 
+        } else {
+          console.error('Error fetching notifications:', response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+        this.notifications = [];
+      } finally {
+        myGeneralStore.setFullLoader(false);
+      }
     },
     async handlerLogout() {
       try {
