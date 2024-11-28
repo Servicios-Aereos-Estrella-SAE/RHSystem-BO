@@ -3,15 +3,15 @@
         <div class="notification-card" v-for="request in filteredNotifications" :key="request.exceptionRequestId"
             @click="redirectToModule(request.exceptionRequestId)">
             <div class="notification-header">
-                <h3>{{ request.exceptionType.exceptionTypeTypeName }}</h3>
+                <h3>{{ request.type }}</h3>
             </div>
             <div class="notification-body">
-                <p><strong>Department:</strong> {{ request.employee.department.departmentName }}</p>
-                <p><strong>Position:</strong> {{ request.employee.position.positionName }}</p>
-                <p><strong>Employee Name:</strong> {{ request.employee.employeeFirstName }} {{ request.employee.employeeLastName }}</p>
-                <p><strong>Date Requested:</strong> {{ formatDate(request.requestedDate) }}</p>
-                <p><strong>Description:</strong> {{ request.exceptionRequestDescription }}</p>
-                <p><strong>Status:</strong> <span :class="statusClass(request.exceptionRequestStatus)">{{ request.exceptionRequestStatus }}</span></p>
+                <p><strong>Department:</strong> {{ request.department }}</p>
+                <p><strong>Position:</strong> {{ request.position }}</p>
+                <p><strong>Employee Name:</strong> {{ request.employeeName }} </p>
+                <p><strong>Date Requested:</strong> {{ formatDate(request.dateRequested) }}</p>
+                <p><strong>Description:</strong> {{ request.description }}</p>
+                <p><strong>Status:</strong> <span :class="statusClass(request.status)">{{ request.status }}</span></p>
             </div>
         </div>
     </div>

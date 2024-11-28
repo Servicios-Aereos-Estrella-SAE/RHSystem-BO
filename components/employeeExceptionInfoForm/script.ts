@@ -9,6 +9,7 @@ import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionSe
 import { DateTime } from 'luxon';
 import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -38,11 +39,17 @@ export default defineComponent({
       { label: 'Accepted', value: 'accepted' },
       { label: 'Refused', value: 'refused' },
     ],
-  }),
+    authUser: null as UserInterface | null,
+    }),
   
   computed: {
   },
   async mounted() {
+    const { getSession } = useAuth()
+
+    const session: unknown = await getSession()
+    this.authUser = session as UserInterface
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
@@ -125,9 +132,9 @@ export default defineComponent({
       }
 
       if (!this.shiftException.exceptionRequestId) {
-        shiftExceptionResponse = await shiftExceptionService.storeException(this.shiftException)
+        shiftExceptionResponse = await shiftExceptionService.storeException(this.shiftException, this.authUser)
       } else {
-        shiftExceptionResponse = await shiftExceptionService.updateException(this.shiftException)
+        shiftExceptionResponse = await shiftExceptionService.updateException(this.shiftException, this.authUser)
       }
 
       if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {

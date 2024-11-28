@@ -35,7 +35,6 @@ export default class ShiftExceptionService {
       limit: filters.limit,
     };
 
-    // Remover cualquier propiedad `undefined`
     const cleanQuery = Object.fromEntries(
       Object.entries(query).filter(([_, v]) => v !== undefined)
     );
@@ -269,7 +268,7 @@ export default class ShiftExceptionService {
     };
   }
 
-  async storeException(shiftException: ExceptionRequestInterface) {
+  async storeException(shiftException: ExceptionRequestInterface, role?: any) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
@@ -277,7 +276,7 @@ export default class ShiftExceptionService {
       await $fetch(`${this.API_PATH}/exception-requests`, {
         headers,
         method: "POST",
-        body: { ...shiftException },
+        body: { ...shiftException, ...(role && { role }) },
         onResponse({ response }) {
           responseRequest = response;
         },
@@ -289,7 +288,7 @@ export default class ShiftExceptionService {
     return responseRequest;
   }
 
-  async updateException(shiftException: ExceptionRequestInterface) {
+  async updateException(shiftException: ExceptionRequestInterface, role?: any) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
@@ -299,7 +298,7 @@ export default class ShiftExceptionService {
         {
           headers,
           method: "PUT",
-          body: { ...shiftException },
+          body: { ...shiftException, ...(role && { role }) },
           onResponse({ response }) {
             responseRequest = response;
           },

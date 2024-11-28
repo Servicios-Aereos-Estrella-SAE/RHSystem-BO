@@ -8,6 +8,7 @@ export interface NotificationInterface {
     dateRequested: string
     description: string
     status: string
-    read: number
+    readRh: number
+    readGerencial: number
   }
   

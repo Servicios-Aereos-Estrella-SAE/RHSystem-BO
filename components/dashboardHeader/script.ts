@@ -40,11 +40,15 @@ export default defineComponent({
   },
   created () {
   },
-  mounted() {
-    this.handlerFetchNotifications();
+ async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
-    this.setAuthUser()
+    // this.setAuthUser()
+    const { getSession } = useAuth()
+
+    const session: unknown = await getSession()
+    this.authUser = session as UserInterface
+    this.handlerFetchNotifications();
 
   },
   methods: {
@@ -67,7 +71,6 @@ export default defineComponent({
     async handlerFetchNotifications() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
-    
       try {
         const response = await new ShiftExceptionRequestService().getFilteredList({
           search: '',
@@ -78,7 +81,7 @@ export default defineComponent({
           limit: this.rowsPerPage || 30,
         });
         this.notifications = response.data; 
-        this.notifications = response.data.map((item: any) => ({
+        const rawNotifications = response.data.map((item: any) => ({
           exceptionRequestId: item.exceptionRequestId,
           type: item.exceptionType?.exceptionTypeTypeName || 'Unknown',
           department: item.employee?.department?.departmentName || 'Unknown',
@@ -88,13 +91,22 @@ export default defineComponent({
           dateRequested: item.requestedDate,
           description: item.exceptionRequestDescription || '',
           status: item.exceptionRequestStatus || 'unknown',
-          read: item.exceptionRequestRhRead || 0,
+          readRh: item.exceptionRequestRhRead || 0,
+          readGerencial: item.exceptionRequestGerencialRead || 0,
         }));
-        if (response) {
-          this.notifications = response.data; 
-        } else {
-          console.error('Error fetching notifications:', response.data);
-        }
+  
+        this.notifications = rawNotifications.filter((item: { readGerencial: number; }) => {
+          const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1;
+          const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0;
+  
+          if (excludeByManager || excludeByRH) {
+            return false; // Excluir el elemento
+          }
+  
+          return true; // Incluir el elemento
+        });
+  
+        
       } catch (error) {
         console.error('Error fetching notifications:', error);
         this.notifications = [];

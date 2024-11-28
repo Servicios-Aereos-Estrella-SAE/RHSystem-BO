@@ -11,7 +11,7 @@ export default defineComponent({
   computed: {
     filteredNotifications() {
       return this.notifications.filter(
-        (item) => item.read === 0 || item.status !== '01'
+        (item) =>  item.status !== '01'
       )
     }
   },
