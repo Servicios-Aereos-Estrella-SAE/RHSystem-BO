@@ -25,6 +25,24 @@
             Descritpion is required.
           </small>
         </div>
+        <div v-if="needCheckInTime" class="input-box">
+          <label for="check-in-time">
+            Check in time
+          </label>
+          <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly />
+          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckInTime">
+            Check in time is required.
+          </small>
+        </div>
+        <div v-if="needCheckOutTime" class="input-box">
+          <label for="check-out-time">
+            Check out time
+          </label>
+          <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly />
+          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
+            Check out time is required.
+          </small>
+        </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
             Save exception

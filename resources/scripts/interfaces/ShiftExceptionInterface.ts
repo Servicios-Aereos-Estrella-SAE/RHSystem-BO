@@ -8,6 +8,8 @@ interface ShiftExceptionInterface {
   exceptionTypeId: number | null
   shiftExceptionsDescription: string
   shiftExceptionsDate: string | null | DateTime | Date
+  shiftExceptionCheckInTime: string | null
+  shiftExceptionCheckOutTime: string | null
   shiftExceptionsCreatedAt?: Date | string | null
   shiftExceptionsUpdatedAt?: Date | string | null
   shiftExceptionsDeletedAt?: Date | string | null
