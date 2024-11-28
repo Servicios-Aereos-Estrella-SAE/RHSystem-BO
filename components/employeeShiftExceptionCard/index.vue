@@ -22,7 +22,12 @@
         <div v-if="shiftException.exceptionRequestStatus">
           {{ shiftException.exceptionRequestStatus }}
         </div>
-
+        <div v-if="shiftException.shiftExceptionCheckInTime" class="time">
+          Check In Time: {{ shiftException.shiftExceptionCheckInTime }}
+        </div>
+        <div v-if="shiftException.shiftExceptionCheckOutTime" class="time">
+          Check Out Time: {{ shiftException.shiftExceptionCheckOutTime }}
+        </div>
       </div>
     </div>
 
