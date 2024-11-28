@@ -32,6 +32,10 @@
           </div>
         </div>
 
+        <span class="shift">
+          {{ checkAssist.assist?.dateShift?.shiftName || '---' }}
+        </span>
+
         <!-- Es dia festivo -->
         <div v-if="calendarIsHoliday" class="no-work-day">
           <div>
@@ -112,6 +116,7 @@
             </div>
             <div class="time" :class="checkAssist.assist.checkOutStatus">
               {{ chekOutTime || (checkAssist.assist.checkOutStatus === 'working' ? 'Working' : '---')}}
+              {{ (chekOutTime && checkAssist.assist.isCheckOutNextDay) ? '->' : '' }}
             </div>
           </div>
           <div class="check info check-notes" :class="{ inactive: !checkAssist.assist.hasExceptions }" @click="displayExceptionComments(checkAssist)">

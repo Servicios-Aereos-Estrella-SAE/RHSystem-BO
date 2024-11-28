@@ -59,7 +59,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekEatInTime () {
       if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeOrigin) {
@@ -68,7 +68,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekEatOutTime () {
       if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeOrigin) {
@@ -77,7 +77,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekOutTime () {
       const now = DateTime.now().setZone('America/Mexico_city')
@@ -94,7 +94,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
       const timeCST = time.setZone('America/Mexico_city')
-      const timeFormatted = timeCST.setLocale('en').toFormat('tt')
+      const timeFormatted = timeCST.setLocale('en').toFormat('TT')
       return timeFormatted
     },
     headIconIsException () {
