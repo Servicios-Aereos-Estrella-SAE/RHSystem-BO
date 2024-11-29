@@ -2,16 +2,19 @@
     <div class="notifications-container">
         <div class="notification-card" v-for="request in filteredNotifications" :key="request.exceptionRequestId"
             @click="redirectToModule(request.exceptionRequestId)">
+            <div class="notification-title">
+                <h3>Shift Exception Request</h3>
+            </div>
             <div class="notification-header">
                 <h3>{{ request.type }}</h3>
             </div>
             <div class="notification-body">
-                <p><strong>Department:</strong> {{ request.department }}</p>
-                <p><strong>Position:</strong> {{ request.position }}</p>
-                <p><strong>Employee Name:</strong> {{ request.employeeName }} </p>
-                <p><strong>Date Requested:</strong> {{ formatDate(request.dateRequested) }}</p>
-                <p><strong>Description:</strong> {{ request.description }}</p>
-                <p><strong>Status:</strong> <span :class="statusClass(request.status)">{{ request.status }}</span></p>
+                <p><strong class="s-title">Department:</strong> {{ request.department }}</p>
+                <p><strong class="s-title">Position:</strong> {{ request.position }}</p>
+                <p><strong class="s-title">Employee Name:</strong> {{ request.employeeName }} </p>
+                <p><strong class="s-title">Date Requested:</strong> {{ formatDate(request.dateRequested) }}</p>
+                <p><strong class="s-title">Description:</strong> {{ request.description }}</p>
+                <p><strong class="s-title">Status:</strong> <span :class="statusClass(request.status)">{{ request.status }}</span></p>
             </div>
         </div>
     </div>
@@ -33,7 +36,7 @@
 
 .notification-card {
     background-color: white;
-    border: 1px solid gray;
+    border: 1px solid $border;
     border-radius: 0.5rem;
     padding: 1rem;
     cursor: pointer;
@@ -44,11 +47,22 @@
     }
 }
 
-.notification-header {
-    font-size: 1.25rem;
-    font-weight: bold;
+.s-title{
+    font-size: 0.8 rem;
+    font-weight: 500;
 }
-
+.notification-header {
+    font-size: 1rem;
+    font-weight: 500;
+}
+.notification-title{
+    border-bottom: 1px dashed #ccc; 
+    padding-bottom: 0.3rem; 
+    margin-bottom: 1rem; 
+}
+.p{
+    font-weight: normal;
+}
 .notification-body p {
     margin: 0.5rem 0;
 }

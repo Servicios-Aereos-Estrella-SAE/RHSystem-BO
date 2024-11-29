@@ -1,7 +1,7 @@
 <template>
     <div class="box shift-exception-info-card">
         <!-- Nombre del empleado -->
-        <div class="employee-name">
+        <div class="property-row-title employee-name">
             {{ `${shiftException?.exceptionType.exceptionTypeTypeName}` }}
         </div>
 
@@ -80,7 +80,14 @@ export default Script
         justify-content: space-between;
         margin-bottom: 0.25rem;
     }
-
+    .property-row-title {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+        border-bottom: 1px dashed #ccc; 
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem; 
+    }
     .property-value {
         text-align: right;
         margin-left: auto;

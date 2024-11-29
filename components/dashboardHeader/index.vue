@@ -95,7 +95,7 @@ export default Script
 
 .notification-form-sidebar {
   width: 100% !important;
-  max-width: 50rem !important;
+  max-width: 30rem !important;
 
   @media screen and (max-width: $sm) {
     width: 100% !important;

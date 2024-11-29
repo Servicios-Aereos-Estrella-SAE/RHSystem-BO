@@ -98,7 +98,6 @@ export default defineComponent({
         this.notifications = rawNotifications.filter((item: { readGerencial: number; }) => {
           const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1;
           const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0;
-  
           if (excludeByManager || excludeByRH) {
             return false; // Excluir el elemento
           }

@@ -138,7 +138,6 @@ export default defineComponent({
         }
         this.description = '';
         myGeneralStore.setFullLoader(false)
-
       } else {
         console.error('Error updating status');
       }
@@ -163,7 +162,6 @@ export default defineComponent({
           this.filteredShiftExceptionRequests[index] = { ...this.shiftExceptionRequest };
         }
         myGeneralStore.setFullLoader(false)
-
       } else {
         console.error('Error updating status');
       }

@@ -109,7 +109,6 @@ export default defineComponent({
     async onSave() {
       this.submitted = true
       const shiftExceptionService = new ShiftExceptionService()
-
       if (!shiftExceptionService.validateInfoException(this.shiftException)) {
         this.$toast.add({
           severity: 'warn',

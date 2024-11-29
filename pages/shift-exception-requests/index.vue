@@ -38,7 +38,7 @@
                 </div>
                 <div>
                     <h2>Shift Exception Requests</h2>
-                    <div class="shift-exception-card-wrapper">
+                    <div v-if="filteredShiftExceptionRequests.length > 0" class="shift-exception-card-wrapper">
                         <div v-for="(shiftException, index) in filteredShiftExceptionRequests"
                             :key="`shiftException-${shiftException.id}-${index}`">
                             <shiftExceptionInfoForm :shiftException="shiftException" :can-update="canUpdate"
@@ -47,6 +47,18 @@
                         </div>
                     </div>
 
+                    <div v-else class="empty">
+                        <div>
+                            <div class="icon">
+                                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M17.25 10a7.25 7.25 0 1 0-2.681 5.63l4.9 4.9.085.073a.75.75 0 0 0 .976-1.133l-4.9-4.901A7.22 7.22 0 0 0 17.25 10ZM11 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1 2a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 9Z"
+                                        fill="#88a4bf" class="fill-212121"></path>
+                                </svg>
+                            </div>
+                            No Shift Exception Requests results
+                        </div>
+                    </div>
                     <div></div>
                     <Paginator v-if="first > 1" class="paginator" :first="first" :rows="rowsPerPage"
                         :totalRecords="totalRecords" @page="onPageChange" />
@@ -70,7 +82,7 @@
                         <Button label="Cancel" class="btn btn-cancel" @click="drawerShiftExceptionDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"
                             :disabled="currentAction === 'refuse' && !description.trim()"
-                            @click="currentAction === 'refuse' ? (drawerShiftExceptionDelete = true, drawerShiftExceptionDeletes = false):  confirmAccept()" />
+                            @click="currentAction === 'refuse' ? (drawerShiftExceptionDelete = true, drawerShiftExceptionDeletes = false) : confirmAccept()" />
                     </div>
                 </div>
             </div>
@@ -105,6 +117,24 @@ export default Script
 <style lang="scss">
 @import '/resources/styles/variables.scss';
 
+.empty {
+    background-color: $gray;
+    color: $icon;
+    padding: 1rem;
+    height: 15rem;
+    border: solid 1rem white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .icon {
+
+        svg {
+            width: 4rem;
+        }
+    }
+}
+
 :deep(.graph-label) {
     color: red;
 }
@@ -119,51 +149,50 @@ export default Script
 }
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 400px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .textarea {
-  width: 100%;
-  height: 100px;
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: none;
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .btn-cancel {
-  background: #f5f5f5;
-  color: #333;
+    background: #f5f5f5;
+    color: #333;
 }
 
 .btn-confirm {
-  background: #007bff;
-  color: white;
+    background: #007bff;
+    color: white;
 }
-
 </style>
