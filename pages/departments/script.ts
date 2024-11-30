@@ -2,6 +2,7 @@ import type { DepartmentInterface } from "~/resources/scripts/interfaces/Departm
 import DepartmentService from "~/resources/scripts/services/DepartmentService"
 import { useMyGeneralStore } from "~/store/general"
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface"
+import { DateTime } from "luxon"
 
 export default defineComponent({
   name: 'Departments',
@@ -20,12 +21,18 @@ export default defineComponent({
     drawerDepartmentForceDelete: false as boolean,
     canCreate: false as boolean,
     canUpdate: false as boolean,
-    canDelete: false as boolean
+    canDelete: false as boolean,
+    periodSelected: new Date() as Date,
+    minDate: new Date() as Date,
+    maxDate: new Date() as Date,
   }),
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-
+    this.periodSelected = new Date()
+    const minDateString = '2001-01-01T00:00:00'
+    const minDate = new Date(minDateString)
+    this.minDate = minDate
     await this.setPrivileges()
     await this.handlerSearchDepartment()
 
@@ -104,7 +111,6 @@ export default defineComponent({
     },
     async confirmDelete() {
       if (this.department) {
-        console.log(this.department)
         this.drawerDepartmentDelete = false 
         const departmentResponse = await this.departmentService.delete(this.department) 
     
@@ -166,6 +172,6 @@ export default defineComponent({
         this.filteredDepartments.splice(index, 1)
         this.$forceUpdate() // Forzar actualización de la lista
       }
-    },
+    }
   }
 })
