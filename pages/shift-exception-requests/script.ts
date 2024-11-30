@@ -6,6 +6,7 @@ import PositionService from '~/resources/scripts/services/PositionService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import { ConfirmDelete } from "#build/components";
 
 export default defineComponent({
   name: 'ShiftExceptionRequest',
@@ -22,6 +23,7 @@ export default defineComponent({
     rowsPerPage: 30,
     drawerShiftExceptionForm: false,
     drawerShiftExceptionDelete: false,
+    drawerShiftExceptionDeletes: false,
     canCreate: false,
     canUpdate: false,
     canDelete: false,
@@ -29,6 +31,8 @@ export default defineComponent({
     selectedPositionId: null as number | null,    
     selectedStatus: '' as string,                
     employeeName: '' as string,
+    currentAction: '' as string,
+    description: '' as string,
     statusOptions: [
         { label: 'Requested', value: 'requested' },
         { label: 'Pending', value: 'pending' },
@@ -41,7 +45,6 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true);
     const systemModuleSlug = this.$route.path.replaceAll('/', '');
     const permissions = await myGeneralStore.getAccess(systemModuleSlug);
-    
     if (myGeneralStore.isRoot) {
       this.canCreate = true;
       this.canUpdate = true;
@@ -54,7 +57,6 @@ export default defineComponent({
 
     myGeneralStore.setFullLoader(false);
     this.handlerSearchShiftException();
-
     await Promise.all([
         this.getDepartments()
       ])
@@ -92,7 +94,58 @@ export default defineComponent({
       this.handlerSearchShiftException();
     },
     async onEdit(shiftExceptionRequest: ShiftExceptionRequestInterface) {
+      const myGeneralStore = useMyGeneralStore()
       this.shiftExceptionRequest = { ...shiftExceptionRequest };
+      this.drawerShiftExceptionDelete = true
+      this.currentAction = "accept"
+    },
+    async onDelete(shiftExceptionRequest: ShiftExceptionRequestInterface){
+      const myGeneralStore = useMyGeneralStore()
+      this.shiftExceptionRequest = { ...shiftExceptionRequest };
+      this.drawerShiftExceptionDeletes = true
+      this.currentAction = "refuse"
+    },
+    async confirmDelets(){
+
+      if (!this.description.trim()) {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Description is required for refusal',
+          life: 3000,
+        });
+        return;
+      }
+    },
+    async confirmDelete(){
+      const myGeneralStore = useMyGeneralStore()
+      this.drawerShiftExceptionDelete = false
+      myGeneralStore.setFullLoader(true)
+      const response = await new ShiftExceptionRequestService().updateStatus( this.shiftExceptionRequest ,'refused', this.description.trim())
+      if (response) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Change Status',
+          detail: 'Refused',
+          life: 5000,
+      });
+        this.shiftExceptionRequest.exceptionRequestStatus = 'refused';
+        const index = this.filteredShiftExceptionRequests.findIndex(
+          (item) => item.exceptionRequestId === this.shiftExceptionRequest.exceptionRequestId
+        );
+        if (index !== -1) {
+          this.filteredShiftExceptionRequests[index] = { ...this.shiftExceptionRequest };
+        }
+        this.description = '';
+        myGeneralStore.setFullLoader(false)
+      } else {
+        console.error('Error updating status');
+      }
+    },
+    async confirmAccept(){
+      const myGeneralStore = useMyGeneralStore()
+      this.drawerShiftExceptionDelete = false
+      myGeneralStore.setFullLoader(true)
       const response = await new ShiftExceptionRequestService().updateStatus( this.shiftExceptionRequest ,'accepted')
       if (response) {
         this.$toast.add({
@@ -108,27 +161,7 @@ export default defineComponent({
         if (index !== -1) {
           this.filteredShiftExceptionRequests[index] = { ...this.shiftExceptionRequest };
         }
-      } else {
-        console.error('Error updating status');
-      }
-    },
-    async onDelete(shiftExceptionRequest: ShiftExceptionRequestInterface){
-      this.shiftExceptionRequest = { ...shiftExceptionRequest };
-      const response = await new ShiftExceptionRequestService().updateStatus( this.shiftExceptionRequest ,'refused')
-      if (response) {
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Change Status',
-          detail: 'Refused',
-          life: 5000,
-      });
-        this.shiftExceptionRequest.exceptionRequestStatus = 'refused';
-        const index = this.filteredShiftExceptionRequests.findIndex(
-          (item) => item.exceptionRequestId === this.shiftExceptionRequest.exceptionRequestId
-        );
-        if (index !== -1) {
-          this.filteredShiftExceptionRequests[index] = { ...this.shiftExceptionRequest };
-        }
+        myGeneralStore.setFullLoader(false)
       } else {
         console.error('Error updating status');
       }
