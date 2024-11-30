@@ -50,6 +50,20 @@ export default class DepartmentService {
     return responseRequest
   }
 
+  async getOnlyWithEmployees (filters?: Object) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+
+    await $fetch(`${this.API_PATH}/departments/get-only-with-employees`, {
+      headers,
+      query: filters,
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
   async getSearchOrganization(search: string, currentPage: number, rowsPerPage: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
