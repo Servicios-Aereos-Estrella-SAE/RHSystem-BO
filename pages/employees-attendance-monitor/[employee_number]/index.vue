@@ -181,7 +181,10 @@
             <div v-if="visualizationMode" class="box report-wrapper">
               <div class="head">
                 <h2>
-                  {{ calendarTitle }}
+                  {{ calendarTitle }} 
+                </h2>
+                <h2 class="align-right">
+                  Faults from delays: {{ `${faultsDelays}`.padStart(2, '0') }}
                 </h2>
               </div>
               <div class="days-wrapper">
