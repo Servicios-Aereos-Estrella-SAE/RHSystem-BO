@@ -29,7 +29,7 @@
     cursor: pointer;
     transition: all 0.4s;
     height: 100%;
-    height: 19rem;
+    height: 21rem;
     font-size: 0.8rem;
 
     &:hover {
@@ -58,7 +58,7 @@
     }
 
     .date {
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
       font-weight: 500;
       border-bottom: $border-dashed;
       padding-bottom: 1rem;
@@ -80,6 +80,14 @@
         width: 100%;
         gap: 0.25rem;
       }
+    }
+
+    .shift {
+      font-size: 0.6rem;
+      display: block;
+      margin-bottom: 1rem;
+      border-bottom: $border-dashed;
+      padding-bottom: 0.7rem;
     }
 
     .no-work-day {
@@ -142,7 +150,7 @@
       }
 
       .time {
-        background-color: $gray;
+        // background-color: $gray;
         padding: 0.35rem;
         width: 100%;
         padding-left: 0.5rem;
@@ -177,6 +185,11 @@
 
         &.eat-time {
           background-color: transparent;
+        }
+
+        span {
+          float: right;
+          width: 1.15rem;
         }
       }
 

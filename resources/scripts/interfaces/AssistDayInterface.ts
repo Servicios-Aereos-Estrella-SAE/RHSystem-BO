@@ -23,8 +23,11 @@ interface AssistDayInterface {
     checkOutDateTime: Date | string
     holiday: HolidayInterface | null
     hasExceptions: boolean
-    exceptions: ShiftExceptionInterface[],
+    exceptions: ShiftExceptionInterface[]
     assitFlatList: AssistInterface[]
+    isCheckOutNextDay?: boolean
+    isCheckOutEatNextDay?: boolean
+    isCheckInEatNextDay?: boolean
   }
 }
 

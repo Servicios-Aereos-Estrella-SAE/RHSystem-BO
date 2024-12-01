@@ -53,48 +53,48 @@ export default defineComponent({
       return day
     },
     chekInTime () {
-      if (!this.checkAssist?.assist?.checkIn?.assistPunchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkIn?.assistPunchTimeUtc) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-6')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekEatInTime () {
-      if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeUtc) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-6')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekEatOutTime () {
-      if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeUtc) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('America/Mexico_city')
-      return timeCST.setLocale('en').toFormat('tt')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-6')
+      return timeCST.setLocale('en').toFormat('TT')
     },
     chekOutTime () {
-      const now = DateTime.now().setZone('America/Mexico_city')
-      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('America/Mexico_city')
+      const now = DateTime.now().setZone('UTC-6')
+      const timeToCheckOut = DateTime.fromISO(this.checkAssist.assist.checkOutDateTime.toString(), { setZone: true }).setZone('UTC-6')
 
       if (timeToCheckOut > now && this.checkAssist.assist.shiftCalculateFlag !== 'doble-12x48') {
         this.checkAssist.assist.checkOutStatus = ''
         return ''
       }
 
-      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeOrigin) {
+      if (!this.checkAssist?.assist?.checkOut?.assistPunchTimeUtc) {
         return ''
       }
 
-      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeOrigin.toString(), { setZone: true })
-      const timeCST = time.setZone('America/Mexico_city')
-      const timeFormatted = timeCST.setLocale('en').toFormat('tt')
+      const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeUtc.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-6')
+      const timeFormatted = timeCST.setLocale('en').toFormat('TT')
       return timeFormatted
     },
     headIconIsException () {
