@@ -31,9 +31,26 @@ export default defineComponent({
     dateWasChange: false,
     isReady: false,
     hasCompletedYear: false,
-    minDate:  DateTime.fromISO('2000-10-10').toJSDate()
+    minDate:  DateTime.fromISO('2000-10-10').toJSDate(),
+    needCheckInTime: false,
+    needCheckOutTime: false,
+    formattedShiftExceptionInTime: '' as string | null,
+    formattedShiftExceptionOutTime: '' as string | null,
   }),
   computed: {
+  },
+  watch: {
+    // Convierte automáticamente el objeto Date a una cadena de hora cuando cambia
+    "shiftException.shiftExceptionCheckInTime"(newValue) {
+      this.formattedShiftExceptionInTime = newValue
+        ? DateTime.fromJSDate(newValue).toFormat("HH:mm")
+        : null
+    },
+    "shiftException.shiftExceptionCheckOutTime"(newValue) {
+      this.formattedShiftExceptionOutTime = newValue
+        ? DateTime.fromJSDate(newValue).toFormat("HH:mm")
+        : null
+    },
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -54,6 +71,7 @@ export default defineComponent({
         const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
+     
     } else {
       this.shiftException.shiftExceptionsDate = this.date
       this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
@@ -79,6 +97,9 @@ export default defineComponent({
     this.setMinDate(isVacation)
     myGeneralStore.setFullLoader(false)
     this.isReady = true
+    if (this.shiftException.shiftExceptionId) {
+      this.handleTypeChange()
+    }
   },
   methods: {
     async getExceptionTypes(search: string) {
@@ -99,6 +120,32 @@ export default defineComponent({
         })
         return
       }
+
+      if (this.needCheckInTime && !this.shiftException.shiftExceptionCheckInTime) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+            life: 5000,
+        })
+        return
+      }
+
+      if (this.needCheckOutTime && !this.shiftException.shiftExceptionCheckOutTime) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+            life: 5000,
+        })
+        return
+      }
+
+     
+
+      const shiftExceptionCheckInTimeTemp = this.shiftException.shiftExceptionCheckInTime
+      const shiftExceptionCheckOutTimeTemp = this.shiftException.shiftExceptionCheckOutTime
+      
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -109,7 +156,14 @@ export default defineComponent({
       if (!this.dateWasChange) {
         this.shiftException.shiftExceptionsDate = this.currentDate
       }
-
+      this.shiftException.shiftExceptionCheckInTime = this.formattedShiftExceptionInTime
+      this.shiftException.shiftExceptionCheckOutTime = this.formattedShiftExceptionOutTime
+      if (!this.needCheckInTime) {
+        this.shiftException.shiftExceptionCheckInTime = null
+      }
+      if (!this.needCheckOutTime) {
+        this.shiftException.shiftExceptionCheckOutTime = null
+      }
       if (!this.shiftException.shiftExceptionId) {
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)
       } else {
@@ -132,7 +186,8 @@ export default defineComponent({
             life: 5000,
         })
       }
-
+      this.shiftException.shiftExceptionCheckInTime = shiftExceptionCheckInTimeTemp
+      this.shiftException.shiftExceptionCheckOutTime = shiftExceptionCheckOutTimeTemp
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
       this.isReady = true
       myGeneralStore.setFullLoader(false)
@@ -144,9 +199,17 @@ export default defineComponent({
     },
     handleTypeChange() {
       if (this.isReady) {
+        this.needCheckInTime = false
+        this.needCheckOutTime = false
         let isVacation = false
         const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
         if (index >= 0) {
+          if (this.exceptionTypeList[index].exceptionTypeNeedCheckInTime) {
+            this.needCheckInTime = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeNeedCheckOutTime) {
+            this.needCheckOutTime = true
+          }
           if (this.exceptionTypeList[index].exceptionTypeSlug === 'vacation') {
             isVacation = true
             if (this.employee.employeeHireDate && this.shiftException.shiftExceptionsDate) {

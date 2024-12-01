@@ -1,7 +1,7 @@
 <template>
     <div class="box shift-exception-info-card">
         <!-- Nombre del empleado -->
-        <div class="employee-name">
+        <div class="property-row-title employee-name">
             {{ `${shiftException?.exceptionType.exceptionTypeTypeName}` }}
         </div>
 
@@ -21,7 +21,8 @@
             <!-- Tipo de Excepción -->
             <div class="property-row">
                 <span>Employee Name</span>
-                <span class="property-value">{{ shiftException.employee.employeeFirstName }} {{ shiftException.employee.employeeLastName }}</span>
+                <span class="property-value">{{ shiftException.employee.employeeFirstName }} {{
+                    shiftException.employee.employeeLastName }}</span>
 
             </div>
 
@@ -42,11 +43,18 @@
                 <span class="property-value">{{ shiftException.exceptionRequestStatus }}</span>
             </div>
         </div>
+        <div class="role assist capitalize" v-if="shiftException.exceptionRequestStatus === 'accepted'">
+            {{ `${shiftException.exceptionRequestStatus}` }}
+        </div>
+        <div class="role no-assist capitalize" v-if="shiftException.exceptionRequestStatus === 'refused'">
+            {{ `${shiftException.exceptionRequestStatus}` }}
+        </div>
 
-        <div class="box-tools-footer" v-if="showEditButton">
+        <div class="box-tools-footer" v-if="showEditButton && shiftException.exceptionRequestStatus === 'pending'">
             <Button v-if="canUpdate" icon="pi pi-check" class="box-btn" @click="handlerClickOnEdit()" />
             <Button v-if="canDelete" icon="pi pi-times" class="box-btn" @click="handlerClickOnDecline()" />
         </div>
+
     </div>
 </template>
 
@@ -72,7 +80,14 @@ export default Script
         justify-content: space-between;
         margin-bottom: 0.25rem;
     }
-
+    .property-row-title {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+        border-bottom: 1px dashed #ccc; 
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem; 
+    }
     .property-value {
         text-align: right;
         margin-left: auto;
@@ -128,6 +143,27 @@ export default Script
         text-decoration: none;
     }
 
+    .role {
+        text-align: center;
+        font-weight: 400;
+        border-radius: calc($radius / 2);
+        box-sizing: border-box;
+        padding: 1rem;
+    }
+
+    .assist {
+        font-size: 1.25rem;
+        color: $success;
+        margin-bottom: 0.75rem;
+        background-color: transparentize($color: $success, $amount: 0.95);
+    }
+    .no-assist
+    {
+        font-size: 1.25rem;
+        color: $danger;
+        margin-bottom: 0.75rem;
+        background-color: transparentize($color: $danger, $amount: 0.95);
+    }
     .btn-red {
         color: red;
     }

@@ -12,6 +12,7 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface';
+import ToleranceService from '~/resources/scripts/services/ToleranceService';
 
 export default defineComponent({
   components: {
@@ -118,7 +119,9 @@ export default defineComponent({
     onFaultPercentage: 0 as number,
     statusInfo: null as AssistSyncStatus | null,
     assist: null as AssistInterface | null,
-    drawerAssistForm: false as boolean
+    drawerAssistForm: false as boolean,
+    tardies: 3,
+    faultsDelays: 0,
   }),
   computed: {
     isRoot () {
@@ -193,7 +196,7 @@ export default defineComponent({
         }  
       case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
-          const startOfWeek = date.startOf('week').minus( { days: 1 } ) // Inicio de la semana seleccionada
+          const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
           
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
@@ -410,6 +413,17 @@ export default defineComponent({
     async getEmployeeCalendar () {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      const toleranceService = new ToleranceService()
+      const toleranceResponse = await toleranceService.getTardinessTolerance()
+      if (toleranceResponse.status === 200) {
+        const tolerance = toleranceResponse._data.data.tardinessTolerance
+        if (tolerance) {
+          this.tardies = tolerance.toleranceMinutes
+        }
+        if (this.tardies === 0) {
+          this.tardies = 3
+        }
+      }
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
@@ -418,8 +432,19 @@ export default defineComponent({
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar
+      let delays = 0
+      for await (const day of this.employeeCalendar) {
+        if (day.assist.checkInStatus === 'delay') {
+          delays += 1
+        }
+      }
+      this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
+    },
+    async getFaultsFromDelays(delays: number) {
+      const faults = Math.floor(delays / this.tardies) // Cada 3 retardos es 1 falta
+      return faults
     },
     async syncEmployee() {
       const myGeneralStore = useMyGeneralStore()
@@ -438,8 +463,28 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      let startDay = ''
+      let endDay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+        
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate.minus({ days: 1 })
+         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+      } else {
+         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      }
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, employeeID)

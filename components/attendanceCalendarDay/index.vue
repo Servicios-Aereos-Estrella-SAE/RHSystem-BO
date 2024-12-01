@@ -178,6 +178,12 @@
         <div class="exception-description">
           {{ item.shiftExceptionsDescription }}
         </div>
+        <div v-if="item.shiftExceptionCheckInTime" class="exception-time">
+          Check In Time: {{ item.shiftExceptionCheckInTime }}
+        </div>
+        <div v-if="item.shiftExceptionCheckOutTime" class="exception-time">
+          Check Out Time: {{ item.shiftExceptionCheckOutTime }}
+        </div>
       </div>
     </Sidebar>
   </div>

@@ -211,6 +211,7 @@
   border: $border;
   padding: 1rem;
   box-sizing: border-box;
+  margin-top: 1.20rem;
   margin-bottom: 0.25rem;
 
   .day {
@@ -246,6 +247,13 @@
     margin-top: 0.5rem;
     padding-left: 1.25rem;
     font-size: 0.9rem;
+    text-wrap: pretty;
+  }
+
+  .exception-time {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    font-size: 0.8rem;
     text-wrap: pretty;
   }
 }
