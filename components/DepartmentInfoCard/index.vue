@@ -9,16 +9,16 @@
       <span v-else> Dependence: None</span>
     </div>
 
-    <div class="line"></div>
-    <div class="department-rotation-index">
+    <div v-if="canReadRotation" class="line"></div>
+    <div v-if="canReadRotation" class="department-rotation-index">
       <span>Rotation "General": </span>
       <span class="property-value">{{ rotationIndexGeneral }}%</span>
     </div>
-    <div class="department-rotation-index">
+    <div v-if="canReadRotation" class="department-rotation-index">
       <span>Rotation "Current year": </span>
       <span class="property-value">{{ rotationIndexCurrentYear }}%</span>
     </div>
-    <div class="department-rotation-index">
+    <div v-if="canReadRotation" class="department-rotation-index">
       <span>Rotation index "On month": </span>
       <span class="property-value">{{ rotationIndexMonth }}%</span>
     </div>

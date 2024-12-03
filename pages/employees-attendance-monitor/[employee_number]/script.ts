@@ -470,6 +470,7 @@ export default defineComponent({
         checkOut: { assistPunchTime?: string | null }
       }>
       for await (const day of this.employeeCalendar) {
+        //console.log(day.assist)
         if (day.assist.checkIn && day.assist.checkOut) {
           assistArray.push({
             checkIn: {

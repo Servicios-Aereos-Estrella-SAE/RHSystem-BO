@@ -64,7 +64,8 @@
           <div v-if="filteredDepartments.length > 0" class="department-card-wrapper">
             <div v-for="(department, index) in filteredDepartments"
               :key="`department-${department.departmentId}-${index}`">
-              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" :period-selected="periodSelected" />
+              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" :period-selected="periodSelected" 
+                :can-read-rotation="canReadRotation"/>
             </div>
           </div>
           <div v-else class="empty">
