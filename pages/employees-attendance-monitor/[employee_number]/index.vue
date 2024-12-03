@@ -187,6 +187,13 @@
                   Faults from delays: {{ `${faultsDelays}`.padStart(2, '0') }}
                 </h2>
               </div>
+              <div v-if="canReadTimeWorked" class="head-worked">
+                <h2>
+                </h2>
+                <h2 class="align-right">
+                  Worked: {{ workedTime }}
+                </h2>
+              </div>
               <div class="days-wrapper">
                 <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
                   <attendanceCalendarDay
