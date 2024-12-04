@@ -452,25 +452,33 @@ export default defineComponent({
         })
         
         const startDayMinusOne = startDate.minus({ days: 1 })
-        const endDayMinusOne = endDate.minus({ days: 1 })
+        const endDayMinusOne = endDate//.minus({ days: 1 })
          startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
          endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        }).plus({ days: 1 })
          startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+         
+         endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
       }
+      
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar
-    
+      if (this.employeeCalendar.length > 0) {
+        this.employeeCalendar.pop()
+      }
       let delays = 0
       const assistArray = [] as Array<{
         checkIn: { assistPunchTime?: string | null }
         checkOut: { assistPunchTime?: string | null }
       }>
       for await (const day of this.employeeCalendar) {
-        //console.log(day.assist)
         if (day.assist.checkIn && day.assist.checkOut) {
           assistArray.push({
             checkIn: {
@@ -522,11 +530,6 @@ export default defineComponent({
       checkOut?: { assistPunchTime?: string | null }
     }>): Promise<string> {
       let totalMinutes = 0
-      for await (const item of dataList) {
-        if (item.checkIn === item.checkOut) {
-
-        }
-      }
       // Ordenar la lista por fechas de check-in para asegurar la secuencia
       const sortedList = dataList.sort((a, b) => {
         const checkInA = a.checkIn?.assistPunchTime || ''
