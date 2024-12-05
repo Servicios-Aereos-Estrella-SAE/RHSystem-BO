@@ -566,29 +566,55 @@ export default defineComponent({
       } catch (error) {
       }
     },
-    getDepartmentPositionAssistStatistics () {
-      let departmentListStatistics: any[] = []
-
-      this.departmentCollection.forEach((department: DepartmentInterface) => {
-        const departmentId = department.departmentId
-        const list = this.employeeDepartmentList.filter(item => item.employee.departmentId === departmentId)
-        const statistics = {
-          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length) || 0,
-          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length) || 0,
-          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length) || 0,
-          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
+    getDepartmentPositionAssistStatistics() {
+      const departmentListStatistics: Array<{
+        department: DepartmentInterface
+        statistics: {
+          onTimePercentage: number
+          onTolerancePercentage: number
+          onDelayPercentage: number
+          onFaultPercentage: number
         }
-
-        if (list.length > 0) {
-          if(this.isShowByStatusSelected(statistics)) {
+        employeesCount: number
+      }> = []
+    
+      this.departmentCollection.forEach(async (department: DepartmentInterface) => {
+        const departmentId = department.departmentId
+        const list = this.employeeDepartmentList.filter(item => 
+          item?.employee?.departmentId === departmentId
+        )
+    
+        if (list.length === 0) return
+    
+        const totals = list.reduce(
+          (acc, val) => {
+            acc.onTime += val.assistStatistics.onTimePercentage || 0
+            acc.onTolerance += val.assistStatistics.onTolerancePercentage || 0
+            acc.onDelay += val.assistStatistics.onDelayPercentage || 0
+            acc.onFault += val.assistStatistics.onFaultPercentage || 0
+            return acc
+          },
+          { onTime: 0, onTolerance: 0, onDelay: 0, onFault: 0 }
+        )
+    
+        const listLength = list.length
+        const statistics = {
+          onTimePercentage: Math.round(totals.onTime / listLength),
+          onTolerancePercentage: Math.round(totals.onTolerance / listLength),
+          onDelayPercentage: Math.round(totals.onDelay / listLength),
+          onFaultPercentage: Math.round(totals.onFault / listLength),
+        }
+        if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
+          if (this.isShowByStatusSelected(statistics)) {
             departmentListStatistics.push({
-              department: department,
+              department,
               statistics,
-              employeesCount: list.length
+              employeesCount: listLength,
             })
           }
         }
       })
+    
       return departmentListStatistics
     },
      isShowByStatusSelected(statistics: any) {

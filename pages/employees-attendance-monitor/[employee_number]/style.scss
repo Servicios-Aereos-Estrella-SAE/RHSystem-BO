@@ -190,17 +190,31 @@
     .report-wrapper {
 
       .head {
-        margin-bottom: 2rem;
         display: flex;
-        justify-content: space-between; /* Espacio entre los elementos */
-        align-items: center; /* Alinear verticalmente si es necesario */
+        justify-content: space-between;
+        align-items: center;
         h2 {
           font-size: 1rem;
           font-weight: 550;
           text-align: left;
         }
         .align-right {
-          margin-left: auto; /* Empuja este elemento hacia la derecha */
+          margin-left: auto;
+        }
+      }
+
+      .head-worked {
+        margin-top: -2.5rem;
+        display: flex;
+        justify-content: space-between; 
+        align-items: center; 
+        h2 {
+          font-size: 1rem;
+          font-weight: 550;
+          text-align: left;
+        }
+        .align-right {
+          margin-left: auto; 
         }
       }
 

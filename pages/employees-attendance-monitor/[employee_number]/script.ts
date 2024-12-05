@@ -13,6 +13,7 @@ import ToastService from 'primevue/toastservice';
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface';
 import ToleranceService from '~/resources/scripts/services/ToleranceService';
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
 
 export default defineComponent({
   components: {
@@ -122,6 +123,8 @@ export default defineComponent({
     drawerAssistForm: false as boolean,
     tardies: 3,
     faultsDelays: 0,
+    workedTime: '',
+    canReadTimeWorked: false,
   }),
   computed: {
     isRoot () {
@@ -282,6 +285,14 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    const fullPath = this.$route.path;
+    const firstSegment = fullPath.split('/')[1];
+    const permissions = await myGeneralStore.getAccess(firstSegment)
+    if (myGeneralStore.isRoot) {
+      this.canReadTimeWorked = true
+    } else {
+      this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
+    }
     this.periodSelected = new Date()
     await this.setAssistSyncStatus()
     this.datesSelected = this.getDefaultDatesRange()
@@ -426,21 +437,135 @@ export default defineComponent({
       }
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      let startDay = ''
+      let endDay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+        
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate//.minus({ days: 1 })
+         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+      } else {
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        }).plus({ days: 1 })
+         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+         
+         endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
+      }
+      
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar
+      if (this.employeeCalendar.length > 0) {
+        this.employeeCalendar.pop()
+      }
       let delays = 0
+      const assistArray = [] as Array<{
+        checkIn: { assistPunchTime?: string | null }
+        checkOut: { assistPunchTime?: string | null }
+      }>
       for await (const day of this.employeeCalendar) {
+        if (day.assist.checkIn && day.assist.checkOut) {
+          assistArray.push({
+            checkIn: {
+              assistPunchTime: day.assist.checkIn.assistPunchTime.toString(),
+            },
+            checkOut: {
+              assistPunchTime:day.assist.checkOut.assistPunchTime.toString(),
+            }
+          })
+        }
         if (day.assist.checkInStatus === 'delay') {
           delays += 1
-        }
+        } 
       }
+      this.workedTime = await this.calculateTotalElapsedTimeWithCrossing(assistArray)
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.setGeneralData()
       myGeneralStore.setFullLoader(false)
+    },
+    /* calculateTotalElapsedTime(dataList: Array<{
+      checkIn?: { assistPunchTime?: string | null }
+      checkOut?: { assistPunchTime?: string | null }
+    }>): string {
+      let totalMinutes = 0
+    
+      dataList.forEach(data => {
+        const checkIn = data.checkIn?.assistPunchTime || null
+        const checkOut = data.checkOut?.assistPunchTime || null
+    
+        if (checkIn && checkOut) {
+          const checkInDateTime = DateTime.fromISO(checkIn)
+          const checkOutDateTime = DateTime.fromISO(checkOut)
+    
+          if (checkOutDateTime >= checkInDateTime) {
+            const duration = checkOutDateTime.diff(checkInDateTime, ['minutes'])
+            totalMinutes += Math.floor(duration.minutes)
+          }
+        }
+      })
+    
+      // Convertir minutos acumulados a horas y minutos
+      const totalHours = Math.floor(totalMinutes / 60)
+      const remainingMinutes = totalMinutes % 60
+    
+      return `${totalHours.toString().padStart(2, '0')} hours ${remainingMinutes.toString().padStart(2, '0')} minutes`
+    }, */
+    async calculateTotalElapsedTimeWithCrossing(dataList: Array<{
+      checkIn?: { assistPunchTime?: string | null }
+      checkOut?: { assistPunchTime?: string | null }
+    }>): Promise<string> {
+      let totalMinutes = 0
+      // Ordenar la lista por fechas de check-in para asegurar la secuencia
+      const sortedList = dataList.sort((a, b) => {
+        const checkInA = a.checkIn?.assistPunchTime || ''
+        const checkInB = b.checkIn?.assistPunchTime || ''
+        return DateTime.fromISO(checkInA).toMillis() - DateTime.fromISO(checkInB).toMillis()
+      })
+    
+      let lastCheckOut: DateTime | null = null
+    
+      sortedList.forEach(data => {
+        // Determinar las fechas de check-in y check-out
+        const checkIn = data.checkIn?.assistPunchTime || null
+        const checkOut = data.checkOut?.assistPunchTime || null
+    
+        if (checkIn || checkOut) {
+          // Parsear las fechas
+          const checkInDateTime = checkIn ? DateTime.fromISO(checkIn) : null
+          const checkOutDateTime = checkOut ? DateTime.fromISO(checkOut) : null
+    
+          const start = checkInDateTime || lastCheckOut
+          const end = checkOutDateTime
+          if (start && end && end >= start) {
+            const duration = end.diff(start, ['minutes'])
+            totalMinutes += Math.floor(duration.minutes)
+          }
+    
+          // Actualizar el último check-out
+          lastCheckOut = checkOutDateTime || lastCheckOut
+        }
+      })
+    
+      // Convertir minutos acumulados a horas y minutos
+      const totalHours = Math.floor(totalMinutes / 60)
+      const remainingMinutes = totalMinutes % 60
+    
+      return `${totalHours} horas ${remainingMinutes} minutos`
     },
     async getFaultsFromDelays(delays: number) {
       const faults = Math.floor(delays / this.tardies) // Cada 3 retardos es 1 falta

@@ -22,6 +22,7 @@ export default defineComponent({
     canCreate: false as boolean,
     canUpdate: false as boolean,
     canDelete: false as boolean,
+    canReadRotation: false as boolean,
     periodSelected: new Date() as Date,
     minDate: new Date() as Date,
     maxDate: new Date() as Date,
@@ -50,10 +51,12 @@ export default defineComponent({
         this.canCreate = true
         this.canUpdate = true
         this.canDelete = true
+        this.canReadRotation = true
       } else {
         this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
         this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
         this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+        this.canReadRotation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-rotation-index') ? true : false
       }
     },
     async handlerSearchDepartment() {

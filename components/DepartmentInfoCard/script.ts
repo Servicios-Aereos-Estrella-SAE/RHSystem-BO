@@ -16,7 +16,8 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
     clickOnDelete: { type: Function, default: null, required: false },
-    periodSelected: { type: Date, default: null, required: true }
+    periodSelected: { type: Date, default: null, required: true },
+    canReadRotation: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     rotationIndexGeneral: '0.00',
