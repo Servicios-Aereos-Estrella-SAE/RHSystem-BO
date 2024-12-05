@@ -7,6 +7,8 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
 import { ConfirmDelete } from "#build/components";
+import EmployeeService from "~/resources/scripts/services/EmployeeService";
+import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 
 export default defineComponent({
   name: 'ShiftExceptionRequest',
@@ -34,11 +36,14 @@ export default defineComponent({
     currentAction: '' as string,
     description: '' as string,
     statusOptions: [
+        { label: 'All', value: 'all' },
         { label: 'Requested', value: 'requested' },
         { label: 'Pending', value: 'pending' },
         { label: 'Accepted', value: 'accepted' },
         { label: 'Refused', value: 'refused' }
       ],
+      filteredEmployees: [] as EmployeeInterface[],
+      selectedEmployee: '' as string,          
   }),
   async mounted() {
     const myGeneralStore = useMyGeneralStore();
@@ -69,6 +74,19 @@ export default defineComponent({
       },
   },
   methods: {
+    async handlerSearchEmployee(event: any) {
+      if (event.query.trim().length) {
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30)
+        const list = response.status === 200 ? response._data.data.employees.data : []
+        this.filteredEmployees = list
+      }
+    },
+    onEmployeeSelect(employee: any) {
+      this.employeeName = employee.value.employeeId;
+      console.log('Selected Employee ID:', this.employeeName);
+      this.handlerSearchShiftException()
+
+    },
     async handlerSearchShiftException() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
@@ -106,7 +124,6 @@ export default defineComponent({
       this.currentAction = "refuse"
     },
     async confirmDelets(){
-
       if (!this.description.trim()) {
         this.$toast.add({
           severity: 'error',
@@ -168,20 +185,41 @@ export default defineComponent({
     },
     async getPositions(departmentId: number) {
         const positionService = new PositionService()
-        this.positions = await positionService.getPositionsDepartment(departmentId)
+        this.positions = [{
+          positionId: 9999, positionName: 'All',
+          positionSyncId: "",
+          positionCode: "",
+          positionAlias: "",
+          positionIsDefault: 0,
+          positionActive: 0,
+          parentPositionId: null,
+          parentPositionSyncId: "",
+          companyId: null,
+          businessUnitId: null,
+          departmentId: undefined,
+          positionLastSynchronizationAt: null,
+          positionCreatedAt: null,
+          positionUpdatedAt: null,
+          positionDeletedAt: null
+        }, ... await positionService.getPositionsDepartment(departmentId)]
       },
       async getDepartments() {
         let response = null
         const departmentService = new DepartmentService()
         response = await departmentService.getAllDepartmentList()
-        this.departments = response._data.data.departments
+        this.departments = [
+          { departmentId: 9999, departmentName: 'All' },
+          ...response._data.data.departments,
+        ]
       },
       clearFilters() {
         this.selectedDepartmentId = null;
         this.selectedPositionId = null;
         this.selectedStatus = '';
         this.search = '';
-        this.handlerSearchShiftException(); 
+        this.employeeName = ''
+        this.selectedEmployee = null;
+        this.handlerSearchShiftException();
       }
   }
 });

@@ -28,10 +28,28 @@
                             @change="handlerSearchShiftException" />
                     </div>
                     <div class="input-box">
-                        <label for="search">Name Employee</label>
-                        <InputText v-model="search" aria-describedby="search" @input="handlerSearchShiftException"
-                            @keyup.delete="handlerSearchShiftException" />
+                        <label for="search">Search employee</label>
+                        <AutoComplete v-model="selectedEmployee"
+                            :optionLabel="(employee) => `${employee.employeeFirstName} ${employee.employeeLastName}`"
+                            :suggestions="filteredEmployees" @complete="handlerSearchEmployee"
+                            @item-select="onEmployeeSelect">
+                            <template #option="employee">
+                                <div class="item-employee-filter-attendance-monitor">
+                                    <div class="name">
+                                        {{ employee.option.employeeFirstName }} {{ employee.option.employeeLastName }}
+                                    </div>
+                                    <div class="position-department">
+                                        {{ employee.option.department?.departmentAlias ||
+                                        employee.option.department?.departmentName }}
+                                        /
+                                        {{ employee.option.position?.positionAlias ||
+                                        employee.option.position?.positionName }}
+                                    </div>
+                                </div>
+                            </template>
+                        </AutoComplete>
                     </div>
+
                     <div class="input-box">
                         <Button label="Clear Filters " class="btn btn-block" icon="pi pi-times" @click="clearFilters" />
                     </div>
