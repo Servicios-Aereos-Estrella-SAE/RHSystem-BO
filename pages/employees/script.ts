@@ -8,6 +8,7 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import DepartmentService from '~/resources/scripts/services/DepartmentService';
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
+import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
 import PositionService from '~/resources/scripts/services/PositionService';
 import { useMyGeneralStore } from "~/store/general";
 
@@ -42,7 +43,9 @@ export default defineComponent({
         departmentId: null as number | null,
         positionId: null as number | null,
         optionsActive: ref(['Active', 'Terminated']),
-        status: 'Active'
+        status: 'Active',
+        employeeTypes: [] as EmployeeTypeService[],
+        employeeTypeId: null as number | null,
     }),
     computed: {},
     created() { },
@@ -61,6 +64,9 @@ export default defineComponent({
         'status': function() {
          this.handlerSearchEmployee()
         },
+        'employeeTypeId': function() {
+         this.handlerSearchEmployee()
+        }
     },
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
@@ -84,6 +90,7 @@ export default defineComponent({
         await this.getWorkSchedules()
         await this.handlerSearchEmployee()
         await  this.getDepartments()
+        await this.getEmployeeTypes()
         this.hasAccessToManageShifts = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift')
     },
     methods: {
@@ -97,12 +104,19 @@ export default defineComponent({
             response = await departmentService.getAllDepartmentList()
             this.departments = response._data.data.departments
           },
+          async getEmployeeTypes() {
+            let response = null
+            const employeeTypeService = new EmployeeTypeService()
+            response = await employeeTypeService.getFilteredList('')
+            console.log(response)
+            this.employeeTypes = response._data.data.employeeTypes.data
+          },
         async handlerSearchEmployee() {
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
             const onlyInactive = this.status === 'Terminated' ? true : false
-            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive);
+            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId);
             const list = response.status === 200 ? response._data.data.employees.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
@@ -154,6 +168,7 @@ export default defineComponent({
                 positionId: 0,
                 employeeWorkSchedule: "Onsite",
                 personId: 0,
+                employeeTypeId: 0,
                 employeePhoto: null,
                 employeeLastSynchronizationAt: new Date(),
                 employeeCreatedAt: new Date(),
