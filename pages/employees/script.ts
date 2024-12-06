@@ -108,7 +108,6 @@ export default defineComponent({
             let response = null
             const employeeTypeService = new EmployeeTypeService()
             response = await employeeTypeService.getFilteredList('')
-            console.log(response)
             this.employeeTypes = response._data.data.employeeTypes.data
           },
         async handlerSearchEmployee() {
