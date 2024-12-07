@@ -32,7 +32,7 @@
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
               <div class="badge-container">
-                <Badge :value="notifications.length" severity="warning"></Badge>
+                <Badge v-if="notifications.length > 0" :value="notifications.length" severity="warning"></Badge>
               </div>
             </div>
           </Button>

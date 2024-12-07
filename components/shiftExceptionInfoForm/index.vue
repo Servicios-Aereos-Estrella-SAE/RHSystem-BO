@@ -51,133 +51,142 @@
         </div>
 
         <div class="box-tools-footer" v-if="showEditButton && shiftException.exceptionRequestStatus === 'pending'">
-            <Button v-if="canUpdate" icon="pi pi-check" class="box-btn" @click="handlerClickOnEdit()" />
-            <Button v-if="canDelete" icon="pi pi-times" class="box-btn" @click="handlerClickOnDecline()" />
+            <Button class="btn btn-block btn-text-black" @click="handlerClickOnEdit()">
+                See details
+                <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+            </Button>
         </div>
 
     </div>
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+    import Script from './script.ts'
+    export default Script
 </script>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+    @import './style';
+    @import '/resources/styles/variables.scss';
+    @import 'primeicons/primeicons.css';
 
-.shift-exception-info-card {
-    position: relative;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid #e3ebf6;
-    background-color: white;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-
-    .property-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.25rem;
-    }
-    .property-row-title {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.25rem;
-        border-bottom: 1px dashed #ccc; 
-        padding-bottom: 0.5rem;
-        margin-bottom: 0.5rem; 
-    }
-    .property-value {
-        text-align: right;
-        margin-left: auto;
-    }
-
-    .employee-name {
-        text-align: left;
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-        font-size: 14px;
-    }
-
-    .image-employee {
-        width: 100%;
-        height: 150px;
-        overflow: hidden;
+    .shift-exception-info-card {
+        position: relative;
+        padding: 1rem;
         border-radius: 0.5rem;
-        margin-bottom: 1rem;
+        border: 1px solid #e3ebf6;
+        background-color: white;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 0.5rem;
-        }
-    }
-
-    .shift-exception-details {
-        text-align: left;
-        font-weight: 400;
-        margin-bottom: 1rem;
-
-        div {
+        .property-row {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 0.25rem;
         }
-    }
 
-    .box-btn {
-        padding: 1rem;
-        box-sizing: border-box;
-        border-radius: 0.375rem;
-        border: none;
-        background-color: white;
-        color: #303e67;
-        font-size: 0.7rem;
-        cursor: pointer;
-        transition: all 0.4s;
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        align-items: center;
-        border: 1px solid #e3ebf6;
-        text-decoration: none;
-    }
+        .property-row-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
 
-    .role {
-        text-align: center;
-        font-weight: 400;
-        border-radius: calc($radius / 2);
-        box-sizing: border-box;
-        padding: 1rem;
-    }
+        .property-value {
+            text-align: right;
+            margin-left: auto;
+        }
 
-    .assist {
-        font-size: 1.25rem;
-        color: $success;
-        margin-bottom: 0.75rem;
-        background-color: transparentize($color: $success, $amount: 0.95);
-    }
-    .no-assist
-    {
-        font-size: 1.25rem;
-        color: $danger;
-        margin-bottom: 0.75rem;
-        background-color: transparentize($color: $danger, $amount: 0.95);
-    }
-    .btn-red {
-        color: red;
-    }
+        .employee-name {
+            text-align: left;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 14px;
+        }
 
-    .box-tools-footer {
-        box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-
-        button {
+        .image-employee {
             width: 100%;
+            height: 150px;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 0.5rem;
+            }
+        }
+
+        .shift-exception-details {
+            text-align: left;
+            font-weight: 400;
+            margin-bottom: 1rem;
+
+            div {
+                margin-bottom: 0.25rem;
+            }
+        }
+
+        .box-btn {
+            padding: 1rem;
+            box-sizing: border-box;
+            border-radius: 0.375rem;
+            border: none;
+            background-color: white;
+            color: #303e67;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #e3ebf6;
+            text-decoration: none;
+        }
+
+        .role {
+            text-align: center;
+            font-weight: 400;
+            border-radius: calc($radius / 2);
+            box-sizing: border-box;
+            padding: 1rem;
+        }
+
+        .assist {
+            font-size: 1.25rem;
+            color: $success;
+            margin-bottom: 0.75rem;
+            background-color: transparentize($color: $success, $amount: 0.95);
+        }
+
+        .no-assist {
+            font-size: 1.25rem;
+            color: $danger;
+            margin-bottom: 0.75rem;
+            background-color: transparentize($color: $danger, $amount: 0.95);
+        }
+
+        .btn-red {
+            color: red;
+        }
+
+        .box-tools-footer {
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+
+            button {
+                width: 100%;
+            }
         }
     }
-}
 </style>

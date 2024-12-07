@@ -75,7 +75,9 @@ export default defineComponent({
         exceptionRequestCreatedAt: null,
         exceptionRequestUpdatedAt: null,
         exceptionTypeId: null,
-        exceptionRequestStatus: 'pending'
+        exceptionRequestStatus: 'pending',
+        exceptionRequestCheckInTime: null,
+        exceptionRequestCheckOutTime: null,
       }
       this.shiftException = newShiftException
       this.drawerShiftExceptionForm = true
