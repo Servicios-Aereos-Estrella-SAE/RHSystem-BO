@@ -56,12 +56,12 @@
                 </div>
                 <div>
                     <h2>Shift Exception Requests</h2>
-                    <div v-if="filteredShiftExceptionRequests.length > 0" class="shift-exception-card-wrapper">
-                        <div v-for="(shiftException, index) in filteredShiftExceptionRequests"
-                            :key="`shiftException-${shiftException.id}-${index}`">
-                            <shiftExceptionInfoForm :shiftException="shiftException" :can-update="canUpdate"
-                                :can-delete="canDelete" :click-on-edit="() => { onEdit(shiftException) }"
-                                :click-on-delete="() => { onDelete(shiftException) }" />
+                    <div v-if="filteredExceptionRequests.length > 0" class="shift-exception-card-wrapper">
+                        <div v-for="(exceptionRequest, index) in filteredExceptionRequests"
+                            :key="`exceptionRequest-${exceptionRequest.id}-${index}`">
+                            <shiftExceptionInfoForm :shiftException="exceptionRequest" :can-update="canUpdate"
+                                :can-delete="canDelete" :click-on-edit="() => { onEdit(exceptionRequest) }"
+                                :click-on-delete="() => { onDelete(exceptionRequest) }" />
                         </div>
                     </div>
 
@@ -85,22 +85,28 @@
             </div>
 
         </NuxtLayout>
+        <Sidebar v-model:visible="drawerExceptionForm" header="form" position="right"
+            class="shift-exception-form-sidebar" :showCloseIcon="true">
+            <employeeExceptionInfoForm :exceptionRequest="exceptionRequest" :employee="employee"
+                :date="selectedExceptionDate" :changeStatus="true" :can-update="canUpdate" :can-delete="canDelete"
+                @onExceptionAccept="onExceptionAccept" @onExceptionDecline="onExceptionDecline" />
+        </Sidebar>
         <transition name="page">
-            <confirmRefuse v-if="drawerShiftExceptionDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
-                @confirmAccept="confirmAccept" @cancelRefused="drawerShiftExceptionDelete = false" />
+            <confirmRefuse v-if="drawerExceptionDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
+                @confirmAccept="confirmAccept" @cancelRefused="drawerExceptionDelete = false" />
         </transition>
         <transition name="page">
-            <div v-if="drawerShiftExceptionDeletes" class="modal-overlay">
+            <div v-if="drawerExceptionDeletes" class="modal-overlay">
                 <div class="modal-content">
                     <h3>{{ currentAction === 'refuse' ? 'Refuse Shift Exception' : 'Accept Shift Exception' }}</h3>
                     <p v-if="currentAction === 'refuse'">Please provide a reason for refusal:</p>
                     <textarea v-if="currentAction === 'refuse'" v-model="description"
                         placeholder="Enter the reason for refusal..." class="textarea"></textarea>
                     <div class="modal-actions">
-                        <Button label="Cancel" class="btn btn-cancel" @click="drawerShiftExceptionDeletes = false" />
+                        <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"
                             :disabled="currentAction === 'refuse' && !description.trim()"
-                            @click="currentAction === 'refuse' ? (drawerShiftExceptionDelete = true, drawerShiftExceptionDeletes = false) : confirmAccept()" />
+                            @click="currentAction === 'refuse' ? (drawerExceptionDelete = true, drawerExceptionDeletes = false) : confirmAccept()" />
                     </div>
                 </div>
             </div>
@@ -110,107 +116,107 @@
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+    import Script from './script.ts'
+    export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+    @import './style';
 
-.shift-exception-card-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.shift-exception-form-sidebar {
-    width: 100% !important;
-    max-width: 50rem !important;
-
-    @media screen and (max-width: $sm) {
-        width: 100% !important;
+    .shift-exception-card-wrapper {
+        display: flex;
+        flex-wrap: wrap;
     }
-}
+
+    .shift-exception-form-sidebar {
+        width: 100% !important;
+        max-width: 50rem !important;
+
+        @media screen and (max-width: $sm) {
+            width: 100% !important;
+        }
+    }
 </style>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
+    @import '/resources/styles/variables.scss';
 
-.empty {
-    background-color: $gray;
-    color: $icon;
-    padding: 1rem;
-    height: 15rem;
-    border: solid 1rem white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    .empty {
+        background-color: $gray;
+        color: $icon;
+        padding: 1rem;
+        height: 15rem;
+        border: solid 1rem white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-    .icon {
+        .icon {
 
-        svg {
-            width: 4rem;
+            svg {
+                width: 4rem;
+            }
         }
     }
-}
 
-:deep(.graph-label) {
-    color: red;
-}
+    :deep(.graph-label) {
+        color: red;
+    }
 
-.graph-label {
-    color: red;
-}
+    .graph-label {
+        color: red;
+    }
 
-.shift-exception-form-sidebar {
-    width: 100% !important;
-    max-width: 35rem !important;
-}
+    .shift-exception-form-sidebar {
+        width: 100% !important;
+        max-width: 35rem !important;
+    }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-.textarea {
-    width: 100%;
-    height: 100px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: none;
-}
+    .textarea {
+        width: 100%;
+        height: 100px;
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: none;
+    }
 
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
 
-.btn-cancel {
-    background: #f5f5f5;
-    color: #333;
-}
+    .btn-cancel {
+        background: #f5f5f5;
+        color: #333;
+    }
 
-.btn-confirm {
-    background: #007bff;
-    color: white;
-}
+    .btn-confirm {
+        background: #007bff;
+        color: white;
+    }
 </style>

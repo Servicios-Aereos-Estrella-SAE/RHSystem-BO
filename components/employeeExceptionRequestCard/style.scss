@@ -1,0 +1,39 @@
+@import '/resources/styles/variables.scss';
+
+.exception-request-info-card {
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  position: relative;
+  box-sizing: border-box;
+
+  .shift-name {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .description {
+    text-align: left;
+    font-weight: 300;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    padding-bottom: 1rem;
+  }
+
+  .time {
+    text-align: left;
+    font-weight: 300;
+    margin-top: 0.5rem;
+    font-size: 0.80rem;
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border-top: $border-dashed;
+    padding-top: 1.5rem;
+  }
+}

@@ -13,6 +13,7 @@ import PersonService from '~/resources/scripts/services/PersonService';
 import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
 import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
 import { DateTime } from 'luxon';
+import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
 
 export default defineComponent({
   components: {
@@ -61,7 +62,8 @@ export default defineComponent({
         { label: 'External', value: 'External' },
     ],
     isDeleted: false,
-    drawerEmployeeReactivate: false
+    drawerEmployeeReactivate: false,
+    employeeTypes: [] as EmployeeTypeService[],
   }),
   computed: {
   },
@@ -90,7 +92,8 @@ export default defineComponent({
 
     await Promise.all([
       this.getBusinessUnits(),
-      this.getDepartments()
+      this.getDepartments(),
+      this.getEmployeeTypes()
     ])
 
     if (!this.isNewUser) {
@@ -153,6 +156,13 @@ export default defineComponent({
       const departmentService = new DepartmentService()
       response = await departmentService.getAllDepartmentList()
       this.departments = response._data.data.departments
+    },
+    async getEmployeeTypes() {
+      let response = null
+      const employeeTypeService = new EmployeeTypeService()
+      response = await employeeTypeService.getFilteredList('')
+      console.log(response)
+      this.employeeTypes = response._data.data.employeeTypes.data
     },
     onUpload(event: any) {
       this.employee.employeePhoto = event.files[0];

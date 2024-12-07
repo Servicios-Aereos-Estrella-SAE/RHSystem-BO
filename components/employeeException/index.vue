@@ -21,8 +21,8 @@
           </div>
           <div v-if="shiftExceptionsList.length > 0" class="shift-exception-wrapper">
             <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
-              <employeeShiftExceptionCard
-                :shiftException="shiftException"
+              <employeeExceptionRequestCard
+                :exceptionRequest="shiftException"
                 :isDeleted="isDeleted"
                 :click-on-edit-exception="() => { onEdit(shiftException) }"
                 :click-on-delete-exception="() => { onDelete(shiftException) }" 
@@ -39,7 +39,7 @@
   
       <Sidebar v-model:visible="drawerShiftExceptionForm" header="form" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
         <employeeExceptionInfoForm
-          :shiftException="shiftException"
+          :exception-request="shiftException"
           :employee="employee"
           :date="date"
           @onShiftExceptionSave="onSave"

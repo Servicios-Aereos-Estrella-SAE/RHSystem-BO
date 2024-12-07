@@ -18,27 +18,40 @@ export default defineComponent({
       type: Boolean,
       default: true
     },
-    clickOnDelete: { 
-      type: Function, 
-      default: null 
+    clickOnDelete: {
+      type: Function,
+      default: null
     },
-    clickOnEdit: { 
-      type: Function, 
-      default: null 
+    clickOnEdit: {
+      type: Function,
+      default: null
     },
-    canUpdate: { 
-      type: Boolean, 
-      default: false, 
-      required: true 
+    canUpdate: {
+      type: Boolean,
+      default: false,
+      required: true
     },
-    canDelete: { 
-      type: Boolean, 
-      default: false, 
-      required: true 
+    canDelete: {
+      type: Boolean,
+      default: false,
+      required: true
     }
   },
-  computed:{
-    calendarDay () {
+  data: () => ({
+    selectedExceptionDate: new Date() as Date,
+    drawerShiftExceptionForm: false,
+    employee: null as EmployeeInterface | null
+  }),
+  mounted() {
+    if (this.shiftException) {
+      if (this.shiftException.employee) {
+        this.employee = this.shiftException.employee
+        this.selectedExceptionDate = DateTime.fromISO(`${this.shiftException.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      }
+    }
+  },
+  computed: {
+    calendarDay() {
       const dateToException = DateTime.fromISO(this.shiftException.requestedDate, { zone: 'utc' })
 
       return dateToException.setLocale('en').toFormat('DDDD HH:mm')
@@ -55,5 +68,8 @@ export default defineComponent({
         this.clickOnDelete();
       }
     },
+    onSave() {
+
+    }
   }
 });
