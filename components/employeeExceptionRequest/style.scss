@@ -1,10 +1,18 @@
 @import '/resources/styles/variables.scss';
 
-.employee-shifts {
+.employee-exception-request {
   margin-top: 2.25rem;
   position: relative;
 
-  .employee-shift-wrapper {
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+  }
+
+  .employee-exception-request-wrapper {
     box-sizing: border-box;
     display: grid;
     grid-auto-flow: dense;
@@ -118,7 +126,7 @@
   }
 }
 
-.no-shifts {
+.no-exception-request {
   text-align: center;
   background-color: $gray;
   padding: 2rem;

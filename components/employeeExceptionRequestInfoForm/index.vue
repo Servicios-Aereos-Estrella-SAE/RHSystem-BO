@@ -1,32 +1,32 @@
 <template>
-    <div class="shift-exception-info-form">
+    <div class="exception-request-info-form">
         <Toast />
         <employeeModalInfoCard :employee="employee" />
         <h1>
-            {{ isNewExceptionRequest ? 'Add exception' : 'Update exception' }}
+            {{ isNewExceptionRequest ? 'Add exception request' : 'Update exception request' }}
         </h1>
 
-        <div v-if="isReady" class="shift-exception-form">
+        <div v-if="isReady" class="exception-request-form">
             <div class="form-container">
                 <div class="input-box">
                     <label for="exception-type">
-                        Exception Status
+                        Status
                     </label>
                     <Dropdown v-model="exceptionRequest.exceptionRequestStatus" :options="statusOptions"
                         optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem"
                         :disabled="true" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestStatus">
-                        Exception status is required.
+                       Status is required.
                     </small>
                 </div>
                 <div class="input-box">
                     <label for="exception-type">
-                        Exception type
+                        Type
                     </label>
                     <Dropdown v-model="exceptionRequest.exceptionTypeId" :options="exceptionTypeList"
                         optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
                         class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="changeStatus" />
-                    <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Exception type is
+                    <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Type is
                         required.</small>
                 </div>
                 <div class="input-box">
@@ -71,7 +71,7 @@
                 </div>
                 <div class="box-tools-footer">
                     <Button v-if="!changeStatus" class="btn btn-block btn-primary" @click="onSave">
-                        Save exception
+                        Save
                     </Button>
                     <Button v-if="changeStatus && canUpdate" icon="pi pi-check" class="box-btn"
                         @click="handlerClickOnEdit()" />
@@ -81,21 +81,21 @@
             </div>
         </div>
         <transition name="page">
-            <confirmRefuse v-if="drawerShiftExceptionDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
-                @confirmAccept="confirmAccept" @cancelRefused="drawerShiftExceptionDelete = false" />
+            <confirmRefuse v-if="drawerExceptionRequestDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
+                @confirmAccept="confirmAccept" @cancelRefused="drawerExceptionRequestDelete = false" />
         </transition>
         <transition name="page">
-            <div v-if="drawerShiftExceptionDeletes" class="modal-overlay">
+            <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
                 <div class="modal-content">
-                    <h3>{{ currentAction === 'refuse' ? 'Refuse Shift Exception' : 'Accept Shift Exception' }}</h3>
+                    <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
                     <p v-if="currentAction === 'refuse'">Please provide a reason for refusal:</p>
                     <textarea v-if="currentAction === 'refuse'" v-model="description"
                         placeholder="Enter the reason for refusal..." class="textarea"></textarea>
                     <div class="modal-actions">
-                        <Button label="Cancel" class="btn btn-cancel" @click="drawerShiftExceptionDeletes = false" />
+                        <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"
                             :disabled="currentAction === 'refuse' && !description.trim()"
-                            @click="currentAction === 'refuse' ? (drawerShiftExceptionDelete = true, drawerShiftExceptionDeletes = false) : confirmAccept()" />
+                            @click="currentAction === 'refuse' ? (drawerExceptionRequestDelete = true, drawerExceptionRequestDeletes = false) : confirmAccept()" />
                     </div>
                 </div>
             </div>

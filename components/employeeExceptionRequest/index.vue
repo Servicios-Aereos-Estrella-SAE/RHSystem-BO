@@ -1,15 +1,15 @@
 <template>
-    <div v-if="isReady" class="employee-shift-exceptions">
+    <div v-if="isReady" class="employee-exception-request">
       <Toast />
       <employeeModalInfoCard :employee="employee"/>
       <h1>
-        Exceptions to
+        Exception requests to
         {{ selectedExceptionDate }}
       </h1>
   
       <div v-if="isReady" class="employee">
         <div class="">
-          <div v-if="!isDeleted" class="shift-exception-wrapper">
+          <div v-if="!isDeleted" class="employee-exception-request-wrapper">
             <div class="head-page">
               <div class="input-box">
                 <Button class="btn btn-block" @click="addNew">
@@ -19,17 +19,17 @@
               </div>
             </div>
           </div>
-          <div v-if="shiftExceptionsList.length > 0" class="shift-exception-wrapper">
-            <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
+          <div v-if="exceptionRequestsList.length > 0" class="employee-exception-request-wrapper">
+            <div v-for="(exceptionRequest, index) in exceptionRequestsList" :key="`exception-${index}`">
               <employeeExceptionRequestCard
-                :exceptionRequest="shiftException"
+                :exceptionRequest="exceptionRequest"
                 :isDeleted="isDeleted"
-                :click-on-edit-exception="() => { onEdit(shiftException) }"
-                :click-on-delete-exception="() => { onDelete(shiftException) }" 
+                :click-on-edit-exception="() => { onEdit(exceptionRequest) }"
+                :click-on-delete-exception="() => { onDelete(exceptionRequest) }" 
               />
             </div>
           </div>
-          <div v-else class="shift-exception-wrapper">
+          <div v-else class="employee-exception-request-wrapper">
             <div class="empty-data">
               No exceptions
             </div>
@@ -37,20 +37,20 @@
         </div>
       </div>
   
-      <Sidebar v-model:visible="drawerShiftExceptionForm" header="form" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
-        <employeeExceptionInfoForm
-          :exception-request="shiftException"
+      <Sidebar v-model:visible="drawerExceptionRequestForm" header="form" position="right" class="exception-request-form-sidebar" :showCloseIcon="true">
+        <employeeExceptionRequestInfoForm
+          :exception-request="exceptionRequest"
           :employee="employee"
           :date="date"
-          @onShiftExceptionSave="onSave"
+          @onExceptionRequestSave="onSave"
         />
       </Sidebar>
   
       <transition name="page">
         <confirmDelete
-          v-if="drawerShiftExceptionDelete"
+          v-if="drawerExceptionRequestDelete"
           @confirmDelete="confirmDelete"
-          @cancelDelete="drawerShiftExceptionDelete = false"
+          @cancelDelete="drawerExceptionRequestDelete = false"
         />
       </transition>
     </div>
@@ -66,7 +66,7 @@
     @import './style';
     @import '/resources/styles/variables.scss';
   
-    .shift-exception-form-sidebar {
+    .exception-request-form-sidebar {
       width: 100% !important;
       max-width: 30rem !important;
   

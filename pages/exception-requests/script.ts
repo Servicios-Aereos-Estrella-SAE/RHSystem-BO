@@ -1,19 +1,18 @@
-import type { ShiftExceptionRequestInterface } from "~/resources/scripts/interfaces/ShiftExceptionRequestInterface";
+
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
-import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService";
 import { useMyGeneralStore } from "~/store/general";
 import PositionService from '~/resources/scripts/services/PositionService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import { ConfirmDelete } from "#build/components";
 import EmployeeService from "~/resources/scripts/services/EmployeeService";
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { ExceptionRequestInterface } from "~/resources/scripts/interfaces/ExceptionRequestInterface";
 import { DateTime } from "luxon";
+import ExceptionRequestService from "~/resources/scripts/services/ExceptionRequestService";
 
 export default defineComponent({
-  name: 'ShiftExceptionRequest',
+  name: 'ExceptionRequests',
   props: {},
   data: () => ({
     positions: [] as PositionInterface[],
@@ -25,9 +24,9 @@ export default defineComponent({
     totalRecords: 0,
     first: 0,
     rowsPerPage: 30,
-    drawerShiftExceptionForm: false,
-    drawerExceptionDelete: false,
-    drawerExceptionDeletes: false,
+    drawerExceptionRequestForm: false,
+    drawerExceptionRequestDelete: false,
+    drawerExceptionRequestDeletes: false,
     canCreate: false,
     canUpdate: false,
     canDelete: false,
@@ -46,7 +45,6 @@ export default defineComponent({
     ],
     filteredEmployees: [] as EmployeeInterface[],
     selectedEmployee: '' as string | null,
-    drawerExceptionForm: false,
     selectedExceptionDate: new Date() as Date,
     employee: null as EmployeeInterface | null
   }),
@@ -66,7 +64,7 @@ export default defineComponent({
     }
 
     myGeneralStore.setFullLoader(false);
-    this.handlerSearchShiftException();
+    this.handlerSearchExceptionRequest();
     await Promise.all([
       this.getDepartments()
     ])
@@ -88,13 +86,13 @@ export default defineComponent({
     },
     onEmployeeSelect(employee: any) {
       this.employeeName = employee.value.employeeId;
-      this.handlerSearchShiftException()
+      this.handlerSearchExceptionRequest()
 
     },
-    async handlerSearchShiftException() {
+    async handlerSearchExceptionRequest() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
-      const response = await new ShiftExceptionRequestService().getFilteredList({
+      const response = await new ExceptionRequestService().getFilteredList({
         search: this.search,
         departmentId: this.selectedDepartmentId,
         positionId: this.selectedPositionId,
@@ -112,7 +110,7 @@ export default defineComponent({
     onPageChange(event: any) {
       this.currentPage = event.page + 1;
       this.rowsPerPage = event.rows;
-      this.handlerSearchShiftException();
+      this.handlerSearchExceptionRequest();
     },
     onEdit(exceptionRequest: ExceptionRequestInterface) {
       this.exceptionRequest = { ...exceptionRequest }
@@ -122,16 +120,16 @@ export default defineComponent({
           this.selectedExceptionDate = DateTime.fromISO(`${this.exceptionRequest.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
         }
       }
-      this.drawerExceptionForm = true
+      this.drawerExceptionRequestForm = true
     },
-    onExceptionAccept() {
-      this.drawerExceptionForm = false
-      this.drawerExceptionDelete = true
+    onExceptionRequestAccept() {
+      this.drawerExceptionRequestForm = false
+      this.drawerExceptionRequestDelete = true
       this.currentAction = "accept"
     },
-    onExceptionDecline() {
-      this.drawerExceptionForm = false
-      this.drawerExceptionDeletes = true
+    onExceptionRequestDecline() {
+      this.drawerExceptionRequestForm = false
+      this.drawerExceptionRequestDeletes = true
       this.currentAction = "refuse"
     },
     async confirmDelets() {
@@ -148,9 +146,9 @@ export default defineComponent({
     async confirmDelete() {
       if (this.exceptionRequest) {
         const myGeneralStore = useMyGeneralStore()
-        this.drawerExceptionDelete = false
+        this.drawerExceptionRequestDelete = false
         myGeneralStore.setFullLoader(true)
-        const response = await new ShiftExceptionRequestService().updateStatus(this.exceptionRequest, 'refused', this.description.trim())
+        const response = await new ExceptionRequestService().updateStatus(this.exceptionRequest, 'refused', this.description.trim())
         if (response) {
           this.$toast.add({
             severity: 'success',
@@ -176,9 +174,9 @@ export default defineComponent({
     async confirmAccept() {
       if (this.exceptionRequest) {
         const myGeneralStore = useMyGeneralStore()
-        this.drawerExceptionDelete = false
+        this.drawerExceptionRequestDelete = false
         myGeneralStore.setFullLoader(true)
-        const response = await new ShiftExceptionRequestService().updateStatus(this.exceptionRequest, 'accepted')
+        const response = await new ExceptionRequestService().updateStatus(this.exceptionRequest, 'accepted')
         if (response) {
           this.$toast.add({
             severity: 'success',
@@ -236,7 +234,7 @@ export default defineComponent({
       this.search = '';
       this.employeeName = ''
       this.selectedEmployee = null;
-      this.handlerSearchShiftException();
+      this.handlerSearchExceptionRequest();
     }
   }
 });
