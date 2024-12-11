@@ -25,7 +25,7 @@
                     </label>
                     <Dropdown v-model="exceptionRequest.exceptionTypeId" :options="exceptionTypeList"
                         optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
-                        class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="changeStatus" />
+                        class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Type is
                         required.</small>
                 </div>
@@ -34,7 +34,7 @@
                         Description
                     </label>
                     <Textarea v-model="exceptionRequest.exceptionRequestDescription" rows="5" cols="30"
-                        :disabled="changeStatus" />
+                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'"/>
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestDescription">
                         Description is required.
                     </small>
@@ -44,7 +44,7 @@
                         Requested Date
                     </label>
                     <Calendar v-model="exceptionRequest.requestedDate" dateFormat="yy-mm-dd" placeholder="Select date"
-                        class="w-full md:w-14rem" :disabled="changeStatus" />
+                        class="w-full md:w-14rem" :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.requestedDate">
                         Requested date is required.
                     </small>
@@ -54,7 +54,7 @@
                         Check in time
                     </label>
                     <Calendar v-model="exceptionRequest.exceptionRequestCheckInTime" timeOnly
-                        :disabled="changeStatus" />
+                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckInTime">
                         Check in time is required.
                     </small>
@@ -64,13 +64,13 @@
                         Check out time
                     </label>
                     <Calendar v-model="exceptionRequest.exceptionRequestCheckOutTime" timeOnly
-                        :disabled="changeStatus" />
+                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckOutTime">
                         Check out time is required.
                     </small>
                 </div>
                 <div class="box-tools-footer">
-                    <Button v-if="!changeStatus" class="btn btn-block btn-primary" @click="onSave">
+                    <Button v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending'" class="btn btn-block btn-primary" @click="onSave">
                         Save
                     </Button>
                     <Button v-if="changeStatus && canUpdate" icon="pi pi-check" class="box-btn"
@@ -88,9 +88,9 @@
             <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
                 <div class="modal-content">
                     <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
-                    <p v-if="currentAction === 'refuse'">Please provide a reason for refusal:</p>
+                    <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
                     <textarea v-if="currentAction === 'refuse'" v-model="description"
-                        placeholder="Enter the reason for refusal..." class="textarea"></textarea>
+                        placeholder="Enter the reason for refuse..." class="textarea"></textarea>
                     <div class="modal-actions">
                         <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"

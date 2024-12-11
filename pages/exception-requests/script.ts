@@ -137,7 +137,7 @@ export default defineComponent({
         this.$toast.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Description is required for refusal',
+          detail: 'Description is required for refuse',
           life: 3000,
         });
         return;
@@ -151,7 +151,7 @@ export default defineComponent({
         const response = await new ExceptionRequestService().updateStatus(this.exceptionRequest, 'refused', this.description.trim())
         if (response) {
           this.$toast.add({
-            severity: 'success',
+            severity: 'info',
             summary: 'Change Status',
             detail: 'Refused',
             life: 5000,
@@ -179,7 +179,7 @@ export default defineComponent({
         const response = await new ExceptionRequestService().updateStatus(this.exceptionRequest, 'accepted')
         if (response) {
           this.$toast.add({
-            severity: 'success',
+            severity: 'info',
             summary: 'Change Status',
             detail: 'Accepted',
             life: 5000,

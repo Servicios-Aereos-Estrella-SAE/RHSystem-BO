@@ -6,41 +6,25 @@
         </div>
 
         <div class="exception-request-details">
-            <!-- Departamento -->
+            <div class="property-row">
+                <span>Employee Name</span>
+                <span class="property-value">{{ exceptionRequest.employee.employeeFirstName }} {{
+                    exceptionRequest.employee.employeeLastName }}</span>
+            </div>
+
             <div class="property-row">
                 <span>Department</span>
                 <span class="property-value">{{ exceptionRequest.employee.department.departmentName }}</span>
             </div>
 
-            <!-- Puesto -->
             <div class="property-row">
                 <span>Position</span>
                 <span class="property-value">{{ exceptionRequest.employee.position.positionName }}</span>
             </div>
 
-            <!-- Tipo de Excepción -->
-            <div class="property-row">
-                <span>Employee Name</span>
-                <span class="property-value">{{ exceptionRequest.employee.employeeFirstName }} {{
-                    exceptionRequest.employee.employeeLastName }}</span>
-
-            </div>
-
-            <!-- Motivo de la excepción -->
             <div class="property-row">
                 <span>Date Requests</span>
                 <span class="property-value"> {{ calendarDay }}</span>
-            </div>
-
-            <div class="property-row">
-                <span>Description</span>
-                <span class="property-value">{{ exceptionRequest.exceptionRequestDescription }}</span>
-            </div>
-
-            <!-- Estado de la solicitud -->
-            <div class="property-row">
-                <span>Status</span>
-                <span class="property-value">{{ exceptionRequest.exceptionRequestStatus }}</span>
             </div>
         </div>
         <div class="role assist capitalize" v-if="exceptionRequest.exceptionRequestStatus === 'accepted'">

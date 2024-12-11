@@ -2,12 +2,14 @@ import { defineComponent } from 'vue'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import { useMyGeneralStore } from '~/store/general'
 import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService";
+import { io } from 'socket.io-client'
 
 export default defineComponent({
   name: 'dashboardHeader',
   props: {
   },
   data: () => ({
+    socketIO: null as any,
     authUser: null as UserInterface | null,
     drawerNotifications: false,
     notifications: [], 
@@ -48,6 +50,18 @@ export default defineComponent({
 
     const session: unknown = await getSession()
     this.authUser = session as UserInterface
+    this.socketIO = io(this.$config.public.SOCKET)
+    if (this.authUser?.role?.roleSlug === 'rh-manager') {
+      this.socketIO.on('new-exception-request', async () => {
+        this.handlerFetchNotifications();
+        this.$toast.add({
+          severity: 'info',
+          summary: 'Exception request',
+          detail: 'There is a new exception request',
+          life: 5000,
+        });
+      })
+    }
     this.handlerFetchNotifications();
 
   },

@@ -197,14 +197,7 @@ export default defineComponent({
         this.$emit('onExceptionRequestSave', exceptionRequest as ExceptionRequestInterface)
 
       } else {
-        let msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
-        if (msgError.length > 0) {
-          let newMesageError = ''
-          for await (const msg of msgError) {
-            newMesageError = `${newMesageError}\n${msg.message}`
-          }
-          msgError = newMesageError
-        }
+        const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
         const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,

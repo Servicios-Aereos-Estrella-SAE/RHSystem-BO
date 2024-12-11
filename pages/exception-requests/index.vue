@@ -100,9 +100,9 @@
             <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
                 <div class="modal-content">
                     <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
-                    <p v-if="currentAction === 'refuse'">Please provide a reason for refusal:</p>
+                    <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
                     <textarea v-if="currentAction === 'refuse'" v-model="description"
-                        placeholder="Enter the reason for refusal..." class="textarea"></textarea>
+                        placeholder="Enter the reason for refuse..." class="textarea"></textarea>
                     <div class="modal-actions">
                         <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"
