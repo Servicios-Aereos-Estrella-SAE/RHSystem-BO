@@ -3,6 +3,7 @@ import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface
 import { useMyGeneralStore } from '~/store/general'
 import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService";
 import { io } from 'socket.io-client'
+import type { NotificationInterface } from '~/resources/scripts/interfaces/NotificationInterface';
 
 export default defineComponent({
   name: 'dashboardHeader',
@@ -12,13 +13,14 @@ export default defineComponent({
     socketIO: null as any,
     authUser: null as UserInterface | null,
     drawerNotifications: false,
-    notifications: [], 
+    notifications: [] as Array<NotificationInterface>, 
     totalNotifications: 0,
     search: '',
     selectedDepartmentId: null,
     selectedPositionId: null,
     currentPage: 1,
     rowsPerPage: 10,
+    notificationAudio: null as HTMLAudioElement | null,
   }),
   computed: {
     getBackgroundImage(){
@@ -43,6 +45,7 @@ export default defineComponent({
   created () {
   },
  async mounted() {
+  this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
     // this.setAuthUser()
@@ -53,7 +56,14 @@ export default defineComponent({
     this.socketIO = io(this.$config.public.SOCKET)
     if (this.authUser?.role?.roleSlug === 'rh-manager') {
       this.socketIO.on('new-exception-request', async () => {
-        this.handlerFetchNotifications();
+        await this.handlerFetchNotifications()
+        this.playNotificationSound()
+        let message = 'There is a new exception request'
+        if (this.notifications.length > 0) {
+          const lastNotification = this.notifications[this.notifications.length - 1]
+          message = `${lastNotification.personWhoCreatesIt} request a new shift exception to ${lastNotification.employeeName}`
+        }
+        this.notificationDesktop('SAE, New exception request', message)
         this.$toast.add({
           severity: 'info',
           summary: 'Exception request',
@@ -94,7 +104,7 @@ export default defineComponent({
           page: this.currentPage || 1, 
           limit: this.rowsPerPage || 30,
         });
-        this.notifications = response.data; 
+        this.notifications = response.data
         const rawNotifications = response.data.map((item: any) => ({
           exceptionRequestId: item.exceptionRequestId,
           type: item.exceptionType?.exceptionTypeTypeName || 'Unknown',
@@ -107,6 +117,7 @@ export default defineComponent({
           status: item.exceptionRequestStatus || 'unknown',
           readRh: item.exceptionRequestRhRead || 0,
           readGerencial: item.exceptionRequestGerencialRead || 0,
+          personWhoCreatesIt: `${item.user.person.personFirstname || ''} ${item.user.person.personLastname || ''} ${item.user.person.personSecondLastname || ''}`.trim(),
         }));
   
         this.notifications = rawNotifications.filter((item: { readGerencial: number; }) => {
@@ -135,6 +146,40 @@ export default defineComponent({
         console.error('🚀 ---------------------------------🚀')
         console.error('🚀 ~ handlerLogout ~ error:', error)
         console.error('🚀 ---------------------------------🚀')
+      }
+    },
+    notificationDesktop(title: string, text: string) {
+      const options = {
+        body: text,
+        icon: '/isotipo-v1-loader.png',
+      }
+      if (!("Notification" in window)) {
+      } else if (Notification.permission === "granted") {
+        const notification = new Notification(title, options)
+        notification.onclick = () => {
+          const baseUrl = '/exception-requests'
+          window.location.href = `${baseUrl}`
+          notification.close()
+        }
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            const notification = new Notification(title, options)
+            notification.onclick = () => {
+              const baseUrl = '/exception-requests'
+              window.location.href = `${baseUrl}`
+              notification.close()
+            }
+          }
+        })
+      }
+    },
+    playNotificationSound() {
+      if (this.notificationAudio) {
+        this.notificationAudio.currentTime = 0
+        this.notificationAudio.play()
+          .then()
+          .catch(error => console.error('Error play sound sonido:', error));
       }
     },
   }

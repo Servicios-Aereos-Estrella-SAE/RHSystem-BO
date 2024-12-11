@@ -10,5 +10,6 @@ export interface NotificationInterface {
     status: string
     readRh: number
     readGerencial: number
+    personWhoCreatesIt: string
   }
   
