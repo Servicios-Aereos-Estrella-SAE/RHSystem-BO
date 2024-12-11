@@ -11,7 +11,8 @@ export default defineComponent({
     tooltip: Tooltip
   },
   props: {
-    checkAssist: { type: Object as PropType<AssistDayInterface>, required: true }
+    checkAssist: { type: Object as PropType<AssistDayInterface>, required: true },
+    discriminated: { type: Boolean, required: false }
   },
   data: () => ({
     commentsSidebar: false as boolean,
