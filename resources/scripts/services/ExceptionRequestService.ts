@@ -78,8 +78,7 @@ export default class ExceptionRequestService {
     return list;
   }
 
-
-  async updateStatus(exceptionRequest: ShiftExceptionRequestInterface, status: string, description?: string) {
+  async updateStatus(exceptionRequest: ExceptionRequestInterface, status: string, description?: string) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 

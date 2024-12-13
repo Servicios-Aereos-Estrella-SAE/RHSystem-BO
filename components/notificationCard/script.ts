@@ -21,7 +21,7 @@ export default defineComponent({
       return dateObject.toLocaleString(DateTime.DATE_FULL)
     },
     redirectToModule(id: number): void {
-        const baseUrl = '/shift-exception-requests';
+        const baseUrl = '/exception-requests';
         window.location.href = `${baseUrl}`;
       },
     statusClass(status: string): string {
