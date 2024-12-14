@@ -65,7 +65,7 @@ export default defineComponent({
       if (this.isNewUser || !this.hasEmployee) {
         response = await new EmployeeService().getOnlyWithOutUser('',null,null)
       } else {
-        response = await new EmployeeService().getFilteredList('',null, null, null)
+        response = await new EmployeeService().getFilteredList('',null, null, null, 1, 9999999, false, null)
       }
       const list = response.status === 200 ? response._data.data.employees.data : []
       for await (const employee of list) {

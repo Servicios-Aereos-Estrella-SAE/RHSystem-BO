@@ -15,6 +15,9 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0',
+      htmlAttrs: {
+        lang: 'en'
+      },
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'https://sae.com.mx/wp-content/uploads/2023/03/cropped-Favicon-Servicios-Aereos-Estrella-SAE-Renta-Avion-Privado-FBO-Handling.webp' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -99,7 +102,5 @@ export default defineNuxtConfig({
   devServer: {
     host: process.env.HOST || '127.0.0.1',
     port: parseInt(`${process.env.PORT}`) || 3000
-  },
-
-  compatibilityDate: '2024-09-09',
+  }
 })
