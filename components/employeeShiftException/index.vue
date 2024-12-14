@@ -46,6 +46,7 @@
         :employee="employee"
         :date="date"
         @onShiftExceptionSave="onSave"
+        @onShiftExceptionSaveAll="onSaveAll"
       />
     </Sidebar>
 
@@ -56,6 +57,8 @@
         @cancelDelete="drawerShiftExceptionDelete = false"
       />
     </transition>
+
+ 
   </div>
 </template>
 

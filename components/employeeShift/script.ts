@@ -12,6 +12,7 @@ import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 
 export default defineComponent({
   components: {
@@ -40,6 +41,8 @@ export default defineComponent({
     displaySidebarVacations: false as boolean,
     displaySidebarVacationsManager: false as boolean,
     isDeleted: false as boolean,
+    drawershiftExceptionsError: false,
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
   }),
   setup() {
     const router = useRouter()
@@ -219,14 +222,23 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
     },
-    async onSave () {
+    async onSave (shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       await this.getShifts()
       await this.getEmployeeCalendar()
+      if (shiftExceptionsError.length > 0) {
+        this.shiftExceptionsError = shiftExceptionsError
+        this.drawershiftExceptionsError = true
+      }
+      this.drawerShiftExceptions = false
       myGeneralStore.setFullLoader(false)
+      
       this.isReady = true
+    },
+    confirm() {
+      this.drawershiftExceptionsError = false
     }
   }
 })

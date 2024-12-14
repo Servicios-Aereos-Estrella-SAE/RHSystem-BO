@@ -10,6 +10,7 @@ import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/Exce
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 
 export default defineComponent({
   components: {
@@ -34,6 +35,8 @@ export default defineComponent({
     drawerShiftExceptionDelete: false,
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
+    drawershiftExceptionsError: false,
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
   }),
   computed: {
     selectedExceptionDate () {
@@ -77,7 +80,10 @@ export default defineComponent({
         shiftExceptionsDate: '',
         shiftExceptionsCreatedAt: null,
         shiftExceptionsUpdatedAt: null,
-        shiftExceptionsDeletedAt: null
+        shiftExceptionsDeletedAt: null,
+        shiftExceptionCheckInTime: null,
+        shiftExceptionCheckOutTime: null,
+        daysToApply: 0,
       }
       this.shiftException = newShiftException
       this.drawerShiftExceptionForm = true
@@ -99,8 +105,33 @@ export default defineComponent({
         this.shiftExceptionsList.push(shiftException)
         this.$forceUpdate()
       }
-      this.$emit('save')
+      this.$emit('save', [])
       this.drawerShiftExceptionForm = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
+    async onSaveAll(shiftExceptions: Array<ShiftExceptionInterface>, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      for await (const shiftException of shiftExceptions) {
+        this.shiftException = {...shiftException}
+        if (this.shiftException.shiftExceptionsDate) {
+          const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+          this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
+        }
+        const index = this.shiftExceptionsList.findIndex((shiftException: ShiftExceptionInterface) => shiftException.shiftExceptionId === this.shiftException?.shiftExceptionId)
+        if (index !== -1) {
+          this.shiftExceptionsList[index] = shiftException
+          this.$forceUpdate()
+        } else {
+          this.shiftExceptionsList.push(shiftException)
+          this.$forceUpdate()
+        }
+       
+        this.drawerShiftExceptionForm = false
+      }
+      this.$emit('save', shiftExceptionsError)
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
