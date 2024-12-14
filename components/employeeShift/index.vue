@@ -123,6 +123,14 @@
   <div v-else class="loader">
     <ProgressSpinner />
   </div>
+  <transition name="page">
+    <shiftExceptionsError
+      v-if="drawershiftExceptionsError"
+      :shiftExceptions="shiftExceptionsError"
+      @confirm="drawershiftExceptionsError = false"
+      @cancel="drawershiftExceptionsError = false"
+    />
+  </transition>
 </template>
 
 <script>

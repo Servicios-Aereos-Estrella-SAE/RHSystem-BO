@@ -3,7 +3,7 @@ import type { ExceptionTypeInterface } from "./ExceptionTypeInterface"
 import type { EmployeeInterface } from "./EmployeeInterface"
 
 interface ShiftExceptionInterface {
-  requestedDate: string
+  requestedDate?: string
   shiftExceptionId: number | null
   employeeId: number | null
   exceptionTypeId: number | null
@@ -16,6 +16,7 @@ interface ShiftExceptionInterface {
   shiftExceptionsDeletedAt?: Date | string | null
   exceptionType?: ExceptionTypeInterface
   employee?: EmployeeInterface
+  daysToApply: number | null
 }
 
 export type { ShiftExceptionInterface }
