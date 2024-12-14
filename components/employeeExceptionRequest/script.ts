@@ -3,7 +3,7 @@ import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import Toast from 'primevue/toast'
 import ToastService from 'primevue/toastservice'
-import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
+import ExceptionRequestService from '~/resources/scripts/services/ExceptionRequestService'
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
@@ -15,21 +15,21 @@ export default defineComponent({
     ToastService,
     Calendar
   },
-  name: 'employeeException',
+  name: 'employeeExceptionRequest',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true }
   },
   data: () => ({
     isReady: false,
-    shiftExceptionsList: [] as ExceptionRequestInterface[],
+    exceptionRequestsList: [] as ExceptionRequestInterface[],
     exceptionTypesList: [] as ExceptionRequestInterface[],
     selectedExceptionTypeId: null as number | null,
     selectedDateStart: '' as string,
     selectedDateEnd: '' as string,
-    shiftException: null as ExceptionRequestInterface | null,
-    drawerShiftExceptionForm: false,
-    drawerShiftExceptionDelete: false,
+    exceptionRequest: null as ExceptionRequestInterface | null,
+    drawerExceptionRequestForm: false,
+    drawerExceptionRequestDelete: false,
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
   }),
@@ -47,7 +47,7 @@ export default defineComponent({
     this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
-    await this.getShiftEmployee()
+    await this.getExceptionRequestEmployee()
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
@@ -56,18 +56,18 @@ export default defineComponent({
    
   },
   methods: {
-    async getShiftEmployee() {
+    async getExceptionRequestEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.shiftExceptionsList = []
+      this.exceptionRequestsList = []
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-      const shiftExceptionService = new ShiftExceptionService()
-      const shiftExceptionResponse = await shiftExceptionService.getByEmployeeException(employeeId)
-      this.shiftExceptionsList = shiftExceptionResponse
+      const exceptionRequestService = new ExceptionRequestService()
+      const exceptionRequestResponse = await exceptionRequestService.getByEmployeeException(employeeId)
+      this.exceptionRequestsList = exceptionRequestResponse
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
-      const newShiftException: ExceptionRequestInterface = {
+      const newExceptionRequest: ExceptionRequestInterface = {
         exceptionRequestId: null,
         employeeId: this.employee.employeeId,
         exceptionRequestDescription: '',
@@ -75,61 +75,63 @@ export default defineComponent({
         exceptionRequestCreatedAt: null,
         exceptionRequestUpdatedAt: null,
         exceptionTypeId: null,
-        exceptionRequestStatus: 'pending'
+        exceptionRequestStatus: 'pending',
+        exceptionRequestCheckInTime: null,
+        exceptionRequestCheckOutTime: null,
       }
-      this.shiftException = newShiftException
-      this.drawerShiftExceptionForm = true
+      this.exceptionRequest = newExceptionRequest
+      this.drawerExceptionRequestForm = true
     },
-    onSave(shiftException: ExceptionRequestInterface) {
+    onSave(exceptionRequest: ExceptionRequestInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.shiftException = {...shiftException}
-      if (this.shiftException.requestedDate) {
-        const newDate = DateTime.fromISO(this.shiftException.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
-        this.shiftException.requestedDate = newDate ? newDate.toString() : ''
+      this.exceptionRequest = {...exceptionRequest}
+      if (this.exceptionRequest.requestedDate) {
+        const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+        this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
       }
-      const index = this.shiftExceptionsList.findIndex((shiftException: ExceptionRequestInterface) => shiftException.exceptionRequestId === this.shiftException?.exceptionRequestId)
+      const index = this.exceptionRequestsList.findIndex((exceptionRequest: ExceptionRequestInterface) => exceptionRequest.exceptionRequestId === this.exceptionRequest?.exceptionRequestId)
       if (index !== -1) {
-        this.shiftExceptionsList[index] = shiftException
+        this.exceptionRequestsList[index] = exceptionRequest
         this.$forceUpdate()
       } else {
-        this.shiftExceptionsList.push(shiftException)
+        this.exceptionRequestsList.push(exceptionRequest)
         this.$forceUpdate()
       }
-      this.drawerShiftExceptionForm = false
+      this.drawerExceptionRequestForm = false
       myGeneralStore.setFullLoader(false)
     },
-    onEdit(shiftException: ExceptionRequestInterface) {
-      this.shiftException = {...shiftException}
-      this.drawerShiftExceptionForm = true
+    onEdit(exceptionRequest: ExceptionRequestInterface) {
+      this.exceptionRequest = {...exceptionRequest}
+      this.drawerExceptionRequestForm = true
     },
-    onDelete(shiftException: ExceptionRequestInterface) {
-      this.shiftException = {...shiftException}
+    onDelete(exceptionRequest: ExceptionRequestInterface) {
+      this.exceptionRequest = {...exceptionRequest}
       this.selectedDateTimeDeleted = ''
-      if (this.shiftException.requestedDate) {
-        this.selectedDateTimeDeleted = DateTime.fromISO(this.shiftException.requestedDate.toString()).toHTTP()
+      if (this.exceptionRequest.requestedDate) {
+        this.selectedDateTimeDeleted = DateTime.fromISO(this.exceptionRequest.requestedDate.toString()).toHTTP()
       }
-      this.drawerShiftExceptionDelete = true
+      this.drawerExceptionRequestDelete = true
     },
     
     async confirmDelete() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      if (this.shiftException) {
-        this.drawerShiftExceptionDelete = false
-        const shiftExceptionService = new ShiftExceptionService()
-        const shiftExceptionResponse = await shiftExceptionService.deleteException(this.shiftException)
-        if (shiftExceptionResponse.status === 200) {
-          const index = this.shiftExceptionsList.findIndex((shiftException: ExceptionRequestInterface) => shiftException.exceptionRequestId === this.shiftException?.exceptionRequestId)
+      if (this.exceptionRequest) {
+        this.drawerExceptionRequestDelete = false
+        const exceptionRequestService = new ExceptionRequestService()
+        const exceptionRequestResponse = await exceptionRequestService.delete(this.exceptionRequest)
+        if (exceptionRequestResponse.status === 200) {
+          const index = this.exceptionRequestsList.findIndex((exceptionRequest: ExceptionRequestInterface) => exceptionRequest.exceptionRequestId === this.exceptionRequest?.exceptionRequestId)
           if (index !== -1) {
-            this.shiftExceptionsList.splice(index, 1)
+            this.exceptionRequestsList.splice(index, 1)
             this.$forceUpdate()
           }
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete shift exception',
-            detail: shiftExceptionResponse._data.message,
+            summary: 'Delete exception request',
+            detail: exceptionRequestResponse._data.message,
               life: 5000,
           })
         }

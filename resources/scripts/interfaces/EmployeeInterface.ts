@@ -25,6 +25,7 @@ interface EmployeeInterface {
   employeeLastSynchronizationAt: Date | string | null,
   employeeTypeOfContract: string | null,
   employeeTerminatedDate: string | null | DateTime | Date
+  employeeTypeId: number,
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
   employeeDeletedAt: Date | string | null,

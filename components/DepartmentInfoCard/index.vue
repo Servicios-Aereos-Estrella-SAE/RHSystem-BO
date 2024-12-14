@@ -9,6 +9,20 @@
       <span v-else> Dependence: None</span>
     </div>
 
+    <div v-if="canReadRotation" class="line"></div>
+    <div v-if="canReadRotation" class="department-rotation-index">
+      <span>Rotation "General": </span>
+      <span class="property-value">{{ rotationIndexGeneral }}%</span>
+    </div>
+    <div v-if="canReadRotation" class="department-rotation-index">
+      <span>Rotation "Current year": </span>
+      <span class="property-value">{{ rotationIndexCurrentYear }}%</span>
+    </div>
+    <div v-if="canReadRotation" class="department-rotation-index">
+      <span>Rotation index "On month": </span>
+      <span class="property-value">{{ rotationIndexMonth }}%</span>
+    </div>
+
     <div class="box-tools-footer">
       <Button v-if="canUpdate" class="btn btn-block" @click="handlerClickOnDetail(department.departmentId)">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2.997 5.245a2.25 2.25 0 0 1 2.25-2.25h2.507a2.25 2.25 0 0 1 2.25 2.25v2.507a2.25 2.25 0 0 1-2.25 2.25H7.25v3.707c.046.035.09.073.133.116l2.79 2.791c.043.043.082.087.117.134h3.714v-.5a2.25 2.25 0 0 1 2.25-2.25h2.494a2.25 2.25 0 0 1 2.25 2.25v2.504a2.25 2.25 0 0 1-2.25 2.25h-2.494a2.25 2.25 0 0 1-2.25-2.25v-.504H10.29a1.273 1.273 0 0 1-.116.134l-2.79 2.791a1.25 1.25 0 0 1-1.769 0l-2.792-2.791a1.25 1.25 0 0 1 0-1.768l2.792-2.791c.043-.043.088-.082.135-.117v-3.706h-.503a2.25 2.25 0 0 1-2.25-2.25V5.245Z" fill="#88a4bf" class="fill-212121"></path></svg>

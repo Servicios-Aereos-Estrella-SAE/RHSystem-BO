@@ -132,6 +132,14 @@
             </div>
           </div>
         </div>
+        <div class="input-box">
+          <label for="employee-type">
+            Employee type
+          </label>
+          <Dropdown v-model="employee.employeeTypeId" :options="employeeTypes" optionLabel="employeeTypeName" optionValue="employeeTypeId"
+            placeholder="Select a Employee Type" filter class="w-full md:w-14rem" :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted"/>
+          <small class="p-error" v-if="submitted && !employee.employeeTypeId">Employee type is required.</small>
+        </div>
         <div class="box-tools-footer">
           <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->
           <!-- <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" /> -->

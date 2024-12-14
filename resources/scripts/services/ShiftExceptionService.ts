@@ -1,7 +1,6 @@
 import type { ShiftExceptionInterface } from "../interfaces/ShiftExceptionInterface";
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
 import type { ExceptionRequestInterface } from "../interfaces/ExceptionRequestInterface";
-import type { ShiftExceptionRequestInterface } from "../interfaces/ShiftExceptionRequestInterface";
 
 export default class ShiftExceptionService {
   protected API_PATH: string;
@@ -35,7 +34,6 @@ export default class ShiftExceptionService {
       limit: filters.limit,
     };
 
-    // Remover cualquier propiedad `undefined`
     const cleanQuery = Object.fromEntries(
       Object.entries(query).filter(([_, v]) => v !== undefined)
     );
@@ -128,7 +126,7 @@ export default class ShiftExceptionService {
           responseRequest = response;
         },
       });
-    } catch (error) {}
+    } catch (error) { }
     return responseRequest;
   }
 
@@ -151,22 +149,21 @@ export default class ShiftExceptionService {
           },
         }
       );
-    } catch (error) {}
+    } catch (error) { }
     return responseRequest;
   }
 
-  async updateStatus(shiftException: ShiftExceptionRequestInterface, status: string) {
+  async updateStatus(exceptionRequest: ExceptionRequestInterface, status: string, description?: string) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
-  
+
     try {
-      // Enviar la solicitud PUT con el estado actualizado
       await $fetch(
-        `${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}/status`,
+        `${this.API_PATH}/exception-requests/${exceptionRequest.exceptionRequestId}/status`,
         {
           headers,
           method: "POST",
-          body: { status: status }, // Enviar solo el estado actualizado
+          body: { status: status, description: description },
           onResponse({ response }) {
             responseRequest = response;
           },
@@ -180,7 +177,7 @@ export default class ShiftExceptionService {
     }
     return responseRequest;
   }
-  
+
   async delete(shiftException: ShiftExceptionInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
@@ -244,109 +241,5 @@ export default class ShiftExceptionService {
     return true;
   }
 
-  async showException(shiftExceptionId: number) {
-    let responseRequest: any = null;
-    const headers = { ...this.GENERAL_HEADERS };
 
-    await $fetch(`${this.API_PATH}/exception-requests/${shiftExceptionId}`, {
-      headers,
-      onResponse({ response }) {
-        responseRequest = response;
-      },
-      onRequestError({ response }) {
-        responseRequest = response;
-      },
-    });
-    const shiftException =
-      responseRequest.status === 200 ? responseRequest._data.data : null;
-
-    return {
-      status: responseRequest.status,
-      _data: {
-        data: {
-          shiftException: shiftException,
-        },
-      },
-    };
-  }
-
-  async storeException(shiftException: ExceptionRequestInterface) {
-    let responseRequest: any = null;
-    const headers = { ...this.GENERAL_HEADERS };
-
-    try {
-      await $fetch(`${this.API_PATH}/exception-requests`, {
-        headers,
-        method: "POST",
-        body: { ...shiftException },
-        onResponse({ response }) {
-          responseRequest = response;
-        },
-        onRequestError({ response }) {
-          responseRequest = response;
-        },
-      });
-    } catch (error) {}
-    return responseRequest;
-  }
-
-  async updateException(shiftException: ExceptionRequestInterface) {
-    let responseRequest: any = null;
-    const headers = { ...this.GENERAL_HEADERS };
-
-    try {
-      await $fetch(
-        `${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}`,
-        {
-          headers,
-          method: "PUT",
-          body: { ...shiftException },
-          onResponse({ response }) {
-            responseRequest = response;
-          },
-          onRequestError({ response }) {
-            responseRequest = response;
-          },
-        }
-      );
-    } catch (error) {}
-    return responseRequest;
-  }
-
-  async deleteException(shiftException: ExceptionRequestInterface) {
-    let responseRequest: any = null;
-    const headers = { ...this.GENERAL_HEADERS };
-
-    await $fetch(
-      `${this.API_PATH}/exception-requests/${shiftException.exceptionRequestId}`,
-      {
-        headers,
-        method: "DELETE",
-        onResponse({ response }) {
-          responseRequest = response;
-        },
-        onRequestError({ response }) {
-          responseRequest = response;
-        },
-      }
-    );
-
-    return responseRequest;
-  }
-
-  validateInfoException(shiftException: ExceptionRequestInterface): boolean {
-    if (!shiftException.requestedDate) {
-      console.error("Wrong date");
-      return false;
-    }
-    if (!shiftException.exceptionRequestDescription) {
-      console.error("Wrong description");
-      return false;
-    }
-    if (!shiftException.exceptionTypeId) {
-      console.error("Wrong type id");
-      return false;
-    }
-    return true;
-  }
 }

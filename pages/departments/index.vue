@@ -24,7 +24,21 @@
           </div>
 
           <div></div>
-
+          <div class="input-box">
+            <br /> <br />
+            <label for="departments">
+              Period
+            </label>
+            <Calendar
+            v-model="periodSelected"
+            :view="'month'"
+            :dateFormat="'mm/yy'"
+            :minDate="minDate"
+            :maxDate="maxDate"
+            hideOnRangeSelection
+            showWeek
+            />
+          </div>
           <div class="input-box">
             <br />
             <Button v-if="canCreate" class="btn btn-block" @click="addNew">
@@ -50,7 +64,8 @@
           <div v-if="filteredDepartments.length > 0" class="department-card-wrapper">
             <div v-for="(department, index) in filteredDepartments"
               :key="`department-${department.departmentId}-${index}`">
-              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" />
+              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" :period-selected="periodSelected" 
+                :can-read-rotation="canReadRotation"/>
             </div>
           </div>
           <div v-else class="empty">

@@ -8,11 +8,11 @@
 
     .head-page {
       display: grid;
-      grid-template-columns: 30rem auto 20rem 24.1rem 10rem;
+      grid-template-columns: 40rem auto 20rem 24.1rem 10rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
-        grid-template-columns: 30rem auto 20rem 24.1rem 10rem;
+        grid-template-columns: 40rem auto 20rem 24.1rem 10rem;
       }
 
       @media screen and (max-width: $ipad) {
@@ -160,6 +160,53 @@
         border-top: $border-dashed;
         padding-top: 1rem;
         margin-top: 1rem;
+
+        .indicators-extra-info {
+          border-top: $border-dashed;
+          text-align: left !important;
+          padding-top: 1.5rem;
+          padding-left: 1rem;
+          padding-right: 1rem;
+          box-sizing: border-box;
+
+          .indicator-prop-val {
+            display: grid;
+            grid-template-columns: 3rem auto;
+            gap: 0.5rem;
+
+            .prop-val {
+              height: 3rem;
+              border-radius: $radius;
+              box-sizing: border-box;
+              background-color: transparentize($color: $danger, $amount: 0.95);
+              color: $danger;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-bottom: 0.5rem;
+            }
+
+            .prop-label {
+              height: 3rem;
+              border-radius: $radius;
+              box-sizing: border-box;
+              display: flex;
+              align-items: center;
+            }
+          }
+
+          .indicator-prop-val-work {
+            height: 3rem;
+            border-radius: $radius;
+            box-sizing: border-box;
+            background-color: transparentize($color: $info, $amount: 0.95);
+            color: $info;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+          }
+        }
       }
 
       .jumbotron {
@@ -190,17 +237,16 @@
     .report-wrapper {
 
       .head {
-        margin-bottom: 2rem;
         display: flex;
-        justify-content: space-between; /* Espacio entre los elementos */
-        align-items: center; /* Alinear verticalmente si es necesario */
+        justify-content: space-between;
+        align-items: center;
         h2 {
           font-size: 1rem;
           font-weight: 550;
           text-align: left;
         }
         .align-right {
-          margin-left: auto; /* Empuja este elemento hacia la derecha */
+          margin-left: auto;
         }
       }
 

@@ -79,7 +79,7 @@
 
 
     <Sidebar v-model:visible="drawerShiftException" :blockScroll="true" :dismissable="false"  :closeOnEscape="false" header="Employee exceptions" position="right" class="shift-exception-sidebar">
-      <employeeException
+      <employeeExceptionRequest
         :employee="employee"
         :date="selectedExceptionDate"
       />
@@ -123,6 +123,14 @@
   <div v-else class="loader">
     <ProgressSpinner />
   </div>
+  <transition name="page">
+    <shiftExceptionsError
+      v-if="drawershiftExceptionsError"
+      :shiftExceptions="shiftExceptionsError"
+      @confirm="drawershiftExceptionsError = false"
+      @cancel="drawershiftExceptionsError = false"
+    />
+  </transition>
 </template>
 
 <script>
