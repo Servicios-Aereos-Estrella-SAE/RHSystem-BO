@@ -8,6 +8,7 @@ import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
 import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/ExceptionRequestInterface'
+import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface'
 
 export default defineComponent({
   components: {
@@ -78,6 +79,7 @@ export default defineComponent({
         exceptionRequestStatus: 'pending',
         exceptionRequestCheckInTime: null,
         exceptionRequestCheckOutTime: null,
+        daysToApply: 0
       }
       this.exceptionRequest = newExceptionRequest
       this.drawerExceptionRequestForm = true
@@ -98,6 +100,28 @@ export default defineComponent({
         this.exceptionRequestsList.push(exceptionRequest)
         this.$forceUpdate()
       }
+      this.drawerExceptionRequestForm = false
+      myGeneralStore.setFullLoader(false)
+    },
+    async onSaveAll(exceptionRequests: Array<ExceptionRequestInterface>, exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      for await (const exceptionRequest of exceptionRequests) {
+        this.exceptionRequest = {...exceptionRequest}
+        if (this.exceptionRequest.requestedDate) {
+          const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+          this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
+        }
+        const index = this.exceptionRequestsList.findIndex((exceptionRequest: ExceptionRequestInterface) => exceptionRequest.exceptionRequestId === this.exceptionRequest?.exceptionRequestId)
+        if (index !== -1) {
+          this.exceptionRequestsList[index] = exceptionRequest
+          this.$forceUpdate()
+        } else {
+          this.exceptionRequestsList.push(exceptionRequest)
+          this.$forceUpdate()
+        }
+      }
+      this.$emit('saveExceptionRequest', exceptionRequestsError)
       this.drawerExceptionRequestForm = false
       myGeneralStore.setFullLoader(false)
     },

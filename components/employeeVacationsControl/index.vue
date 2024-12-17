@@ -15,6 +15,25 @@
         </svg>
         Add vacation day
       </Button>
+      <div class="input-box">
+        <label for="exception-type">
+        </label>
+        <div class="checkbox-item">
+            <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay"
+                name="applyToMoreThanOneDay" :binary="true" />
+            <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+        </div>
+    </div>
+    <div v-if="applyToMoreThanOneDay" class="input-box">
+        <label for="description">
+            Days to apply
+        </label>
+        <InputNumber v-model="daysToApply" inputId="daysToApply" prefix="Apply to "
+            suffix=" days" />
+        <small class="p-error" v-if="!daysToApply">
+            Days to apply is required.
+        </small>
+    </div>
     </div>
 
     <div v-if="isReady">
@@ -25,7 +44,9 @@
             :click-on-delete="() => { onDelete(shiftException, index) }"
             :isDeleted="isDeleted"
             @onShiftExceptionSave="onSave"
+            @onShiftExceptionSaveAll="onSaveAll"
             @onShiftExceptionCancel="onCancel(index)"
+            :daysToApply="daysToApply"
             :can-manage-vacation="canManageVacation"
             :index-card="index"/>
         </div>

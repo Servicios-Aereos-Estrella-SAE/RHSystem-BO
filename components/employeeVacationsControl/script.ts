@@ -9,6 +9,7 @@ import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeServ
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { useMyGeneralStore } from '~/store/general'
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 
 export default defineComponent({
   components: {
@@ -32,25 +33,37 @@ export default defineComponent({
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
     isDeleted: false,
+    applyToMoreThanOneDay: false,
+    daysToApply: 0,
   }),
   computed: {
+  },
+  watch: {
+    "applyToMoreThanOneDay"() {
+      this.daysToApply = 0
+     }
   },
   async mounted() {
     this.isReady = false
     this.currentVacationPeriod = this.vacationPeriod
-    if (this.employee.employeeId) {
-      const employeeService = new EmployeeService()
-      const employeeResponse = await employeeService.getVacationsByPeriod(this.employee.employeeId, this.currentVacationPeriod.vacationSettingId)
-      if (employeeResponse.status === 200) {
-        this.shiftExceptions = employeeResponse._data.data.vacations
-      }
-    }
+    await this.getVacations()
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
     this.isReady = true
   },
   methods: {
+    async getVacations() {
+      this.shiftExceptions = []
+      if (this.employee.employeeId &&  this.currentVacationPeriod) {
+        const employeeService = new EmployeeService()
+        const employeeResponse = await employeeService.getVacationsByPeriod(this.employee.employeeId, this.currentVacationPeriod.vacationSettingId)
+        if (employeeResponse.status === 200) {
+          this.shiftExceptions = employeeResponse._data.data.vacations
+        }
+      }
+     
+    },
     async addNewVacation() {
       if (!this.canManageVacation) {
         this.$toast.add({
@@ -108,6 +121,9 @@ export default defineComponent({
           employeeId: this.employee.employeeId,
           shiftExceptionsDescription: 'vacation',
           shiftExceptionsDate: DateTime.fromJSDate(new Date).toFormat('yyyy-MM-dd'),
+          shiftExceptionCheckInTime: null,
+          shiftExceptionCheckOutTime: null,
+          daysToApply: 0,
         } as ShiftExceptionInterface
         this.countsNewVacation += 1
         this.shiftExceptions.push(newVacation)
@@ -180,6 +196,14 @@ export default defineComponent({
       }
       this.shiftExceptions[index] = shiftException
       this.getCurrentInfo()
+      this.$forceUpdate()
+    },
+    async onSaveAll(shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
+      await this.getVacations()
+      this.getCurrentInfo()
+      if (shiftExceptionsError.length > 0) {
+        this.$emit('save', shiftExceptionsError)
+      }
       this.$forceUpdate()
     },
     onCancel(index: number) {

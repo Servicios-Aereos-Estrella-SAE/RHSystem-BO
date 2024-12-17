@@ -32,7 +32,7 @@ export default defineComponent({
     dateWasChange: false,
     isReady: false,
     hasCompletedYear: false,
-    minDate:  DateTime.fromISO('2000-10-10').toJSDate(),
+    minDate: DateTime.fromISO('2000-10-10').toJSDate(),
     needCheckInTime: false,
     needCheckOutTime: false,
     formattedShiftExceptionInTime: '' as string | null,
@@ -55,7 +55,7 @@ export default defineComponent({
         : null
     },
     "applyToMoreThanOneDay"() {
-     this.shiftException.daysToApply = 0
+      this.shiftException.daysToApply = 0
     }
   },
   async mounted() {
@@ -66,7 +66,7 @@ export default defineComponent({
 
     if (this.shiftException.shiftExceptionId) {
       const shiftExceptionService = new ShiftExceptionService()
-      const shiftExceptionResponse = await  shiftExceptionService.show(this.shiftException.shiftExceptionId)
+      const shiftExceptionResponse = await shiftExceptionService.show(this.shiftException.shiftExceptionId)
 
       if (shiftExceptionResponse.status === 200) {
         this.currentShiftException = shiftExceptionResponse._data.data.shiftException
@@ -77,10 +77,10 @@ export default defineComponent({
         const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
-     
+
     } else {
       this.shiftException.shiftExceptionsDate = this.date
-      this.currentDate= DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
     }
 
     let hasAccess = false
@@ -122,7 +122,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -132,7 +132,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -142,7 +142,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -152,16 +152,16 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
 
-     
+
 
       const shiftExceptionCheckInTimeTemp = this.shiftException.shiftExceptionCheckInTime
       const shiftExceptionCheckOutTimeTemp = this.shiftException.shiftExceptionCheckOutTime
-      
+
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -201,12 +201,12 @@ export default defineComponent({
             severity: severityType,
             summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
             detail: msgError,
-              life: 5000,
+            life: 5000,
           })
-      }
+        }
       } else {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
-          shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
+          shiftExceptionResponse = await shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
           if (shiftExceptionResponse.status === 200) {
             const shiftException = shiftExceptionResponse._data.data.shiftException
             this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
@@ -218,10 +218,10 @@ export default defineComponent({
             severity: severityType,
             summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
             detail: msgError,
-              life: 5000,
+            life: 5000,
           })
-      }
-      
+        }
+
       }
       this.shiftException.shiftExceptionCheckInTime = shiftExceptionCheckInTimeTemp
       this.shiftException.shiftExceptionCheckOutTime = shiftExceptionCheckOutTimeTemp
@@ -260,14 +260,14 @@ export default defineComponent({
                 this.$toast.add({
                   severity: 'warn',
                   summary: 'Date invalid',
-                  detail: `When on vacation, the selected date cannot be earlier than ${dateNew.toFormat('DD')}` ,
-                    life: 5000,
+                  detail: `When on vacation, the selected date cannot be earlier than ${dateNew.toFormat('DD')}`,
+                  life: 5000,
                 })
               }
             }
           }
         }
-        
+
         this.setMinDate(isVacation)
       }
     },
@@ -276,11 +276,11 @@ export default defineComponent({
       if (this.employee.employeeHireDate && isVacation) {
         const now = DateTime.now();
         this.hasCompletedYear = now.diff(DateTime.fromISO(this.employee.employeeHireDate.toString()), 'years').years >= 1
-          const dateFirstYear = DateTime.fromISO(this.employee.employeeHireDate.toString()).plus({ years: 1 })
-          if (dateFirstYear) {
-            const dateMin = dateFirstYear.toISODate() ? dateFirstYear.toISODate() : ''
-            this.minDate = DateTime.fromISO(dateMin ? dateMin : '').toJSDate()
-          }
+        const dateFirstYear = DateTime.fromISO(this.employee.employeeHireDate.toString()).plus({ years: 1 })
+        if (dateFirstYear) {
+          const dateMin = dateFirstYear.toISODate() ? dateFirstYear.toISODate() : ''
+          this.minDate = DateTime.fromISO(dateMin ? dateMin : '').toJSDate()
+        }
       }
     }
   }

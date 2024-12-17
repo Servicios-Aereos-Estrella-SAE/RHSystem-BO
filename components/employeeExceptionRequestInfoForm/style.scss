@@ -62,5 +62,14 @@
     width: 400px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+  }
+  .checkbox-item {
+    display: flex;
+    align-items: center; /* Alinea el texto y el checkbox verticalmente */
+  }
+  .checkbox-item label {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem; /* Espacio entre el checkbox y el texto */
   }
 }
