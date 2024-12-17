@@ -176,22 +176,25 @@
                   :onDelayPercentage="onDelayPercentage"
                   :onFaultPercentage="onFaultPercentage"
                 />
+                <div class="indicators-extra-info">
+                  <div class="indicator-prop-val">
+                    <span class="prop-val">
+                      {{ `${faultsDelays}`.padStart(2, '0') }}
+                    </span>
+                    <span class="prop-label">
+                      Faults from delays
+                    </span>
+                  </div>
+                  <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
+                    {{ workedTime }} worked
+                  </div>
+                </div>
               </div>
             </div>
             <div v-if="visualizationMode" class="box report-wrapper">
               <div class="head">
                 <h2>
                   {{ calendarTitle }} 
-                </h2>
-                <h2 class="align-right">
-                  Faults from delays: {{ `${faultsDelays}`.padStart(2, '0') }}
-                </h2>
-              </div>
-              <div v-if="canReadTimeWorked" class="head-worked">
-                <h2>
-                </h2>
-                <h2 class="align-right">
-                  Worked: {{ workedTime }}
                 </h2>
               </div>
               <div class="days-wrapper">

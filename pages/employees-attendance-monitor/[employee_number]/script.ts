@@ -408,7 +408,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
@@ -567,7 +567,7 @@ export default defineComponent({
       const totalHours = Math.floor(totalMinutes / 60)
       const remainingMinutes = totalMinutes % 60
     
-      return `${totalHours} horas ${remainingMinutes} minutos`
+      return `${totalHours} hours ${remainingMinutes} minutes`
     },
     async getFaultsFromDelays(delays: number) {
       const faults = Math.floor(delays / this.tardies) // Cada 3 retardos es 1 falta

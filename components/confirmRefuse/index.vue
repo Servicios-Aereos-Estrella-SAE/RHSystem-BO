@@ -32,7 +32,7 @@
         </p>
         <div class="tools">
           <Button class="btn btn-block " :class="{ 'btn-danger': actionType === 'refuse', 'btn-success': actionType === 'accept' }" @click="handlerConfirmRefused">
-            Confirm {{ actionType === 'refuse' ? 'Refusal' : 'Accept' }}
+            Confirm {{ actionType === 'refuse' ? 'Refuse' : 'Accept' }}
           </Button>
           <Button class="btn btn-block" @click="handlerCancel">
             Cancel

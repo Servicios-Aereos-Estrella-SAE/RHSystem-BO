@@ -1,12 +1,12 @@
 <template>
-    <div class="shift-exception-page">
+    <div class="exception-request-page">
         <Toast />
 
         <Head>
-            <Title>Shift Exception Requests</Title>
+            <Title>Exception Requests</Title>
         </Head>
         <NuxtLayout name="backoffice">
-            <div class="shift-exception-wrapper">
+            <div class="exception-request-wrapper">
                 <div class="box head-page">
                     <div class="input-box">
                         <label for="role">
@@ -14,7 +14,7 @@
                         </label>
                         <Dropdown v-model="selectedDepartmentId" :options="departments" optionLabel="departmentName"
                             optionValue="departmentId" placeholder="Select a Department" filter
-                            class="w-full md:w-14rem" @change="handlerSearchShiftException" />
+                            class="w-full md:w-14rem" @change="handlerSearchExceptionRequest" />
                     </div>
                     <div class="input-box">
                         <label for="positionId">Position</label>
@@ -25,7 +25,7 @@
                         <label for="status">Status</label>
                         <Dropdown v-model="selectedStatus" :options="statusOptions" optionLabel="label"
                             optionValue="value" placeholder="Select a Status" filter class="w-full md:w-14rem"
-                            @change="handlerSearchShiftException" />
+                            @change="handlerSearchExceptionRequest" />
                     </div>
                     <div class="input-box">
                         <label for="search">Search employee</label>
@@ -55,11 +55,11 @@
                     </div>
                 </div>
                 <div>
-                    <h2>Shift Exception Requests</h2>
-                    <div v-if="filteredExceptionRequests.length > 0" class="shift-exception-card-wrapper">
+                    <h2>Exception Requests</h2>
+                    <div v-if="filteredExceptionRequests.length > 0" class="exception-request-card-wrapper">
                         <div v-for="(exceptionRequest, index) in filteredExceptionRequests"
                             :key="`exceptionRequest-${exceptionRequest.id}-${index}`">
-                            <shiftExceptionInfoForm :shiftException="exceptionRequest" :can-update="canUpdate"
+                            <exceptionRequestInfoCard :exceptionRequest="exceptionRequest" :can-update="canUpdate"
                                 :can-delete="canDelete" :click-on-edit="() => { onEdit(exceptionRequest) }"
                                 :click-on-delete="() => { onDelete(exceptionRequest) }" />
                         </div>
@@ -74,7 +74,7 @@
                                         fill="#88a4bf" class="fill-212121"></path>
                                 </svg>
                             </div>
-                            No Shift Exception Requests results
+                            No Exception Requests results
                         </div>
                     </div>
                     <div></div>
@@ -85,28 +85,29 @@
             </div>
 
         </NuxtLayout>
-        <Sidebar v-model:visible="drawerExceptionForm" header="form" position="right"
-            class="shift-exception-form-sidebar" :showCloseIcon="true">
-            <employeeExceptionInfoForm :exceptionRequest="exceptionRequest" :employee="employee"
+        <Sidebar v-model:visible="drawerExceptionRequestForm" header="form" position="right"
+            class="exception-request-form-sidebar" :showCloseIcon="true">
+            <employeeExceptionRequestInfoForm :exceptionRequest="exceptionRequest" :employee="employee"
                 :date="selectedExceptionDate" :changeStatus="true" :can-update="canUpdate" :can-delete="canDelete"
-                @onExceptionAccept="onExceptionAccept" @onExceptionDecline="onExceptionDecline" />
+                @onExceptionRequestAccept="onExceptionRequestAccept" @onExceptionRequestDecline="onExceptionRequestDecline" />
         </Sidebar>
         <transition name="page">
-            <confirmRefuse v-if="drawerExceptionDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
-                @confirmAccept="confirmAccept" @cancelRefused="drawerExceptionDelete = false" />
+            <confirmRefuse v-if="drawerExceptionRequestDelete" :actionType="currentAction"
+                @confirmRefuse="confirmDelete" @confirmAccept="confirmAccept"
+                @cancelRefused="drawerExceptionRequestDelete = false" />
         </transition>
         <transition name="page">
-            <div v-if="drawerExceptionDeletes" class="modal-overlay">
+            <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
                 <div class="modal-content">
-                    <h3>{{ currentAction === 'refuse' ? 'Refuse Shift Exception' : 'Accept Shift Exception' }}</h3>
-                    <p v-if="currentAction === 'refuse'">Please provide a reason for refusal:</p>
+                    <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
+                    <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
                     <textarea v-if="currentAction === 'refuse'" v-model="description"
-                        placeholder="Enter the reason for refusal..." class="textarea"></textarea>
+                        placeholder="Enter the reason for refuse..." class="textarea"></textarea>
                     <div class="modal-actions">
-                        <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionDeletes = false" />
+                        <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
                         <Button label="Confirm" class="btn btn-confirm"
                             :disabled="currentAction === 'refuse' && !description.trim()"
-                            @click="currentAction === 'refuse' ? (drawerExceptionDelete = true, drawerExceptionDeletes = false) : confirmAccept()" />
+                            @click="currentAction === 'refuse' ? (drawerExceptionRequestDelete = true, drawerExceptionRequestDeletes = false) : confirmAccept()" />
                     </div>
                 </div>
             </div>
@@ -120,17 +121,17 @@
     export default Script
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
     @import './style';
 
-    .shift-exception-card-wrapper {
+    .exception-request-card-wrapper {
         display: flex;
         flex-wrap: wrap;
     }
 
-    .shift-exception-form-sidebar {
+    .exception-request-form-sidebar {
         width: 100% !important;
-        max-width: 50rem !important;
+        max-width: 30rem !important;
 
         @media screen and (max-width: $sm) {
             width: 100% !important;
@@ -140,83 +141,4 @@
 
 <style lang="scss">
     @import '/resources/styles/variables.scss';
-
-    .empty {
-        background-color: $gray;
-        color: $icon;
-        padding: 1rem;
-        height: 15rem;
-        border: solid 1rem white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        .icon {
-
-            svg {
-                width: 4rem;
-            }
-        }
-    }
-
-    :deep(.graph-label) {
-        color: red;
-    }
-
-    .graph-label {
-        color: red;
-    }
-
-    .shift-exception-form-sidebar {
-        width: 100% !important;
-        max-width: 35rem !important;
-    }
-
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 400px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .textarea {
-        width: 100%;
-        height: 100px;
-        margin-top: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        resize: none;
-    }
-
-    .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .btn-cancel {
-        background: #f5f5f5;
-        color: #333;
-    }
-
-    .btn-confirm {
-        background: #007bff;
-        color: white;
-    }
 </style>

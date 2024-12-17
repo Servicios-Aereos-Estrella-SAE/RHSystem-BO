@@ -1,13 +1,13 @@
 import { defineComponent } from 'vue';
-import type { ShiftExceptionInterface } from "~/resources/scripts/interfaces/ShiftExceptionInterface";
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import { DateTime } from 'luxon';
+import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/ExceptionRequestInterface';
 
 export default defineComponent({
-  name: 'ShiftExceptionInfoCard',
+  name: 'ExceptionRequestInfoCard',
   props: {
-    shiftException: {
-      type: Object as () => ShiftExceptionInterface,
+    exceptionRequest: {
+      type: Object as () => ExceptionRequestInterface,
       required: true
     },
     showEditButton: {
@@ -39,20 +39,20 @@ export default defineComponent({
   },
   data: () => ({
     selectedExceptionDate: new Date() as Date,
-    drawerShiftExceptionForm: false,
+    drawerExceptionRequestForm: false,
     employee: null as EmployeeInterface | null
   }),
   mounted() {
-    if (this.shiftException) {
-      if (this.shiftException.employee) {
-        this.employee = this.shiftException.employee
-        this.selectedExceptionDate = DateTime.fromISO(`${this.shiftException.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+    if (this.exceptionRequest) {
+      if (this.exceptionRequest.employee) {
+        this.employee = this.exceptionRequest.employee
+        this.selectedExceptionDate = DateTime.fromISO(`${this.exceptionRequest.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
       }
     }
   },
   computed: {
     calendarDay() {
-      const dateToException = DateTime.fromISO(this.shiftException.requestedDate, { zone: 'utc' })
+      const dateToException = DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
 
       return dateToException.setLocale('en').toFormat('DDDD HH:mm')
     },

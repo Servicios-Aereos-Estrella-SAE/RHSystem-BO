@@ -9,6 +9,7 @@ import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionSe
 import { DateTime } from 'luxon';
 import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 
 export default defineComponent({
   components: {
@@ -36,6 +37,8 @@ export default defineComponent({
     needCheckOutTime: false,
     formattedShiftExceptionInTime: '' as string | null,
     formattedShiftExceptionOutTime: '' as string | null,
+    applyToMoreThanOneDay: false,
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
   }),
   computed: {
   },
@@ -51,6 +54,9 @@ export default defineComponent({
         ? DateTime.fromJSDate(newValue).toFormat("HH:mm")
         : null
     },
+    "applyToMoreThanOneDay"() {
+     this.shiftException.daysToApply = 0
+    }
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -141,6 +147,16 @@ export default defineComponent({
         return
       }
 
+      if (this.applyToMoreThanOneDay && !this.shiftException.daysToApply) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+            life: 5000,
+        })
+        return
+      }
+
      
 
       const shiftExceptionCheckInTimeTemp = this.shiftException.shiftExceptionCheckInTime
@@ -164,27 +180,48 @@ export default defineComponent({
       if (!this.needCheckOutTime) {
         this.shiftException.shiftExceptionCheckOutTime = null
       }
+      let isNew = false
       if (!this.shiftException.shiftExceptionId) {
+        isNew = true
         shiftExceptionResponse = await shiftExceptionService.store(this.shiftException)
       } else {
         shiftExceptionResponse = await shiftExceptionService.update(this.shiftException)
       }
-
-      if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
-        shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
-        if (shiftExceptionResponse.status === 200) {
-          const shiftException = shiftExceptionResponse._data.data.shiftException
-          this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
-        }
+      this.shiftExceptionsError = []
+      if (isNew) {
+        if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+          if (shiftExceptionResponse._data.data.shiftExceptionsError) {
+            this.shiftExceptionsError = shiftExceptionResponse._data.data.shiftExceptionsError
+          }
+          this.$emit('onShiftExceptionSaveAll', shiftExceptionResponse._data.data.shiftExceptionsSaved as Array<ShiftExceptionInterface>, this.shiftExceptionsError as Array<ShiftExceptionErrorInterface>)
+        } else {
+          const msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
+          const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
+          this.$toast.add({
+            severity: severityType,
+            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
+            detail: msgError,
+              life: 5000,
+          })
+      }
       } else {
-        const msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
-        const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
-        this.$toast.add({
-          severity: severityType,
-          summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
-          detail: msgError,
-            life: 5000,
-        })
+        if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+          shiftExceptionResponse = await  shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
+          if (shiftExceptionResponse.status === 200) {
+            const shiftException = shiftExceptionResponse._data.data.shiftException
+            this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
+          }
+        } else {
+          const msgError = shiftExceptionResponse._data.error ? shiftExceptionResponse._data.error : shiftExceptionResponse._data.message
+          const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
+          this.$toast.add({
+            severity: severityType,
+            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
+            detail: msgError,
+              life: 5000,
+          })
+      }
+      
       }
       this.shiftException.shiftExceptionCheckInTime = shiftExceptionCheckInTimeTemp
       this.shiftException.shiftExceptionCheckOutTime = shiftExceptionCheckOutTimeTemp

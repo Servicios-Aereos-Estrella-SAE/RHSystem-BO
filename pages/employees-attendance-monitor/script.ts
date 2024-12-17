@@ -494,7 +494,7 @@ export default defineComponent({
     async setDepartmentPositionEmployeeList () {
       const departmentId = null
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999)
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
@@ -626,7 +626,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }

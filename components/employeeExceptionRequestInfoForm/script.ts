@@ -16,7 +16,7 @@ export default defineComponent({
     Toast,
     ToastService,
   },
-  name: 'ExceptionForm',
+  name: 'ExceptionRequestForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -47,8 +47,8 @@ export default defineComponent({
     needCheckOutTime: false,
     formattedExceptionRequestInTime: '' as string | null,
     formattedExceptionRequestOutTime: '' as string | null,
-    drawerShiftExceptionDelete: false,
-    drawerShiftExceptionDeletes: false,
+    drawerExceptionRequestDelete: false,
+    drawerExceptionRequestDeletes: false,
     currentAction: '' as string,
     //exceptionRequest: null as ExceptionRequestInterface | null,
     description: '' as string,
@@ -194,21 +194,14 @@ export default defineComponent({
 
       if (exceptionRequestResponse.status === 201 || exceptionRequestResponse.status === 200) {
         const exceptionRequest = exceptionRequestResponse._data.data.data
-        this.$emit('onShiftExceptionSave', exceptionRequest as ExceptionRequestInterface)
+        this.$emit('onExceptionRequestSave', exceptionRequest as ExceptionRequestInterface)
 
       } else {
-        let msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
-        if (msgError.length > 0) {
-          let newMesageError = ''
-          for await (const msg of msgError) {
-            newMesageError = `${newMesageError}\n${msg.message}`
-          }
-          msgError = newMesageError
-        }
+        const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
         const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Shift exception ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
+          summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
           detail: msgError,
           life: 5000,
         })
@@ -273,10 +266,10 @@ export default defineComponent({
       }
     },
     async handlerClickOnEdit() {
-      this.$emit('onExceptionAccept')
+      this.$emit('onExceptionRequestAccept')
     },
     async handlerClickOnDecline() {
-      this.$emit('onExceptionDecline')
+      this.$emit('onExceptionRequestDecline')
     },
   }
 })
