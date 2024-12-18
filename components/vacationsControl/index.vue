@@ -19,6 +19,28 @@
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m4.21 4.387.083-.094a1 1 0 0 1 1.32-.083l.094.083L12 10.585l6.293-6.292a1 1 0 1 1 1.414 1.414L13.415 12l6.292 6.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083L12 13.415l-6.293 6.292a1 1 0 0 1-1.414-1.414L10.585 12 4.293 5.707a1 1 0 0 1-.083-1.32l.083-.094-.083.094Z" fill="#88a4bf" class="fill-212121"></path></svg>
       </Button>
     </div>
+    <div class="flex-container">
+      <div v-if="!shiftException.shiftExceptionId" class="input-box large-box">
+        <label for="more days">
+        </label>
+        <div class="checkbox-item">
+            <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay"
+                name="applyToMoreThanOneDay" :binary="true" />
+            <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+        </div>
+    </div>
+    <div v-if="applyToMoreThanOneDay" class="input-box small-box">
+        <label for="description">
+            Days to apply
+        </label>
+        <InputNumber v-model="shiftException.daysToApply" inputId="daysToApply"
+          />
+        <small class="p-error" v-if="submitted && !shiftException.daysToApply">
+            Days is required.
+        </small>
+    </div>
+    </div>
+    
  
   </div>
 </template>

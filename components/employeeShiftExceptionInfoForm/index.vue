@@ -20,7 +20,7 @@
           <label for="description">
             Days to apply
           </label>
-          <InputNumber v-model="shiftException.daysToApply" inputId="daysToApply" prefix="Apply to " suffix=" days" />
+          <InputNumber v-model="shiftException.daysToApply" inputId="daysToApply"/>
           <small class="p-error" v-if="submitted && !shiftException.daysToApply">
             Days to apply is required.
           </small>

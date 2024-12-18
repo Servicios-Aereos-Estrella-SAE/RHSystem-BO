@@ -42,4 +42,37 @@
       }
     }
   }
+  .flex-container {
+    display: flex; /* Activa Flexbox */
+    gap: 1rem; /* Espaciado entre los divs */
+    align-items: center; /* Alinea verticalmente */
+  }
+  
+  /* Opcional: Ajustar estilos de los divs si es necesario */
+  .input-box {
+    flex: 1; /* Hace que ambos divs ocupen el mismo espacio */
+    min-width: 200px; /* Establece un ancho mínimo */
+  }
+  /* Primer DIV: más grande */
+.large-box {
+  flex: 2; /* Ocupa más espacio proporcionalmente */
+  min-width: 200px;
+}
+
+/* Segundo DIV: más pequeño */
+.small-box {
+  margin-top: .5rem;
+  flex: 1; /* Ocupa menos espacio proporcionalmente */
+  min-width: 150px; /* Ancho mínimo */
+  box-sizing: border-box;
+}
+
+  .checkbox-item {
+    display: flex;
+    align-items: center; /* Alinea el texto y el checkbox verticalmente */
+  }
+  .checkbox-item label {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem; /* Espacio entre el checkbox y el texto */
+  }
 }
