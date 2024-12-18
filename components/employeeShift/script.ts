@@ -13,6 +13,7 @@ import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDa
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
+import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
 
 export default defineComponent({
   components: {
@@ -20,7 +21,7 @@ export default defineComponent({
     ToastService,
     Calendar
   },
-  name: 'employeeShiftCalendarControl',
+  name: 'employeeShift',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
@@ -42,7 +43,9 @@ export default defineComponent({
     displaySidebarVacationsManager: false as boolean,
     isDeleted: false as boolean,
     drawershiftExceptionsError: false,
-    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
+    drawerExceptionRequestsError: false,
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>
   }),
   setup() {
     const router = useRouter()
@@ -231,10 +234,26 @@ export default defineComponent({
       if (shiftExceptionsError.length > 0) {
         this.shiftExceptionsError = shiftExceptionsError
         this.drawershiftExceptionsError = true
+        this.drawerShiftExceptions = false
+        this.displaySidebarVacationsManager = false
+        this.displaySidebarVacations = false
       }
-      this.drawerShiftExceptions = false
       myGeneralStore.setFullLoader(false)
       
+      this.isReady = true
+    },
+    async onSaveExceptionRequest (exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.getShifts()
+      await this.getEmployeeCalendar()
+      if (exceptionRequestsError.length > 0) {
+        this.exceptionRequestsError = exceptionRequestsError
+        this.drawerExceptionRequestsError = true
+        this.drawerShiftException = false
+      }
+      myGeneralStore.setFullLoader(false)
       this.isReady = true
     },
     confirm() {

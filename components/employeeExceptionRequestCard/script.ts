@@ -22,7 +22,6 @@ export default defineComponent({
   computed: {
     calendarDay () {
       const dateToException = DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
-
       return dateToException.setLocale('en').toFormat('DDDD')
     },
     formattedRequestedDate() {

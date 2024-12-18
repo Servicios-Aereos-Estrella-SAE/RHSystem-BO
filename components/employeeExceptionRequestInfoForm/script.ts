@@ -10,6 +10,7 @@ import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import ExceptionRequestService from '~/resources/scripts/services/ExceptionRequestService';
+import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
 
 export default defineComponent({
   components: {
@@ -50,8 +51,9 @@ export default defineComponent({
     drawerExceptionRequestDelete: false,
     drawerExceptionRequestDeletes: false,
     currentAction: '' as string,
-    //exceptionRequest: null as ExceptionRequestInterface | null,
     description: '' as string,
+    applyToMoreThanOneDay: false,
+    ExceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>
   }),
 
   computed: {
@@ -68,6 +70,9 @@ export default defineComponent({
         ? DateTime.fromJSDate(newValue).toFormat("HH:mm")
         : null
     },
+    "applyToMoreThanOneDay"() {
+     this.exceptionRequest.daysToApply = 0
+    }
   },
   async mounted() {
     const { getSession } = useAuth()
@@ -166,6 +171,17 @@ export default defineComponent({
         return
       }
 
+      if (this.applyToMoreThanOneDay && !this.exceptionRequest.daysToApply) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+            life: 5000,
+        })
+        return
+      }
+
+
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
@@ -185,26 +201,46 @@ export default defineComponent({
         this.exceptionRequest.requestedDate = DateTime.fromJSDate(new Date(this.exceptionRequest.requestedDate))
           .toFormat('yyyy-MM-dd');
       }
-
+      let isNew = false
       if (!this.exceptionRequest.exceptionRequestId) {
+        isNew = true
         exceptionRequestResponse = await exceptionRequestService.store(this.exceptionRequest, this.authUser)
       } else {
         exceptionRequestResponse = await exceptionRequestService.update(this.exceptionRequest, this.authUser)
       }
-
-      if (exceptionRequestResponse.status === 201 || exceptionRequestResponse.status === 200) {
-        const exceptionRequest = exceptionRequestResponse._data.data.data
-        this.$emit('onExceptionRequestSave', exceptionRequest as ExceptionRequestInterface)
-
+      if (isNew) {
+        if (exceptionRequestResponse.status === 201 || exceptionRequestResponse.status === 200) {
+          const responseTemp = exceptionRequestResponse._data.data.data.data
+          if (responseTemp.exceptionRequestsError) {
+            this.ExceptionRequestsError = responseTemp.exceptionRequestsError
+          }
+          this.$emit('onExceptionRequestSaveAll', responseTemp.exceptionRequestsSaved as Array<ExceptionRequestInterface>, this.ExceptionRequestsError as Array<ExceptionRequestErrorInterface>)
+  
+        } else {
+          const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
+          const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
+          this.$toast.add({
+            severity: severityType,
+            summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
+            detail: msgError,
+            life: 5000,
+          })
+        }
       } else {
-        const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
-        const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
-        this.$toast.add({
-          severity: severityType,
-          summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
-          detail: msgError,
-          life: 5000,
-        })
+        if (exceptionRequestResponse.status === 201 || exceptionRequestResponse.status === 200) {
+          const exceptionRequest = exceptionRequestResponse._data.data.data
+          this.$emit('onExceptionRequestSave', exceptionRequest as ExceptionRequestInterface)
+  
+        } else {
+          const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
+          const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
+          this.$toast.add({
+            severity: severityType,
+            summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
+            detail: msgError,
+            life: 5000,
+          })
+        }
       }
       this.exceptionRequest.exceptionRequestCheckInTime = exceptionRequestCheckInTimeTemp
       this.exceptionRequest.exceptionRequestCheckOutTime = exceptionRequestCheckOutTimeTemp

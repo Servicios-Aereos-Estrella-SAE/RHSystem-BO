@@ -16,6 +16,7 @@ interface ExceptionRequestInterface {
   requestedDate?: any
   exceptionType?: ExceptionTypeInterface
   employee?: EmployeeInterface
+  daysToApply: number | null
 }
 
 export type { ExceptionRequestInterface }

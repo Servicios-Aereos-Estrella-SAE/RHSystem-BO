@@ -8,6 +8,25 @@
 
         <div v-if="isReady" class="exception-request-form">
             <div class="form-container">
+                <div v-if="!exceptionRequest.exceptionRequestId" class="input-box">
+                    <label for="exception-type">
+                    </label>
+                    <div class="checkbox-item">
+                        <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay"
+                            name="applyToMoreThanOneDay" :binary="true" />
+                        <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+                    </div>
+                </div>
+                <div v-if="applyToMoreThanOneDay" class="input-box">
+                    <label for="description">
+                        Days to apply
+                    </label>
+                    <InputNumber v-model="exceptionRequest.daysToApply" inputId="daysToApply"
+                         />
+                    <small class="p-error" v-if="submitted && !exceptionRequest.daysToApply">
+                        Days to apply is required.
+                    </small>
+                </div>
                 <div class="input-box">
                     <label for="exception-type">
                         Status
@@ -16,7 +35,7 @@
                         optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem"
                         :disabled="true" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestStatus">
-                       Status is required.
+                        Status is required.
                     </small>
                 </div>
                 <div class="input-box">
@@ -25,7 +44,8 @@
                     </label>
                     <Dropdown v-model="exceptionRequest.exceptionTypeId" :options="exceptionTypeList"
                         optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
-                        class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
+                        class="w-full md:w-14rem" @update:model-value="handleTypeChange"
+                        :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Type is
                         required.</small>
                 </div>
@@ -34,7 +54,7 @@
                         Description
                     </label>
                     <Textarea v-model="exceptionRequest.exceptionRequestDescription" rows="5" cols="30"
-                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'"/>
+                        :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestDescription">
                         Description is required.
                     </small>
@@ -44,7 +64,8 @@
                         Requested Date
                     </label>
                     <Calendar v-model="exceptionRequest.requestedDate" dateFormat="yy-mm-dd" placeholder="Select date"
-                        class="w-full md:w-14rem" :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
+                        class="w-full md:w-14rem"
+                        :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.requestedDate">
                         Requested date is required.
                     </small>
@@ -54,7 +75,7 @@
                         Check in time
                     </label>
                     <Calendar v-model="exceptionRequest.exceptionRequestCheckInTime" timeOnly
-                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
+                        :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckInTime">
                         Check in time is required.
                     </small>
@@ -64,13 +85,14 @@
                         Check out time
                     </label>
                     <Calendar v-model="exceptionRequest.exceptionRequestCheckOutTime" timeOnly
-                    :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
+                        :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending'" />
                     <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckOutTime">
                         Check out time is required.
                     </small>
                 </div>
                 <div class="box-tools-footer">
-                    <Button v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending'" class="btn btn-block btn-primary" @click="onSave">
+                    <Button v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending'"
+                        class="btn btn-block btn-primary" @click="onSave">
                         Save
                     </Button>
                     <Button v-if="changeStatus && canUpdate" icon="pi pi-check" class="box-btn"
@@ -81,8 +103,9 @@
             </div>
         </div>
         <transition name="page">
-            <confirmRefuse v-if="drawerExceptionRequestDelete" :actionType="currentAction" @confirmRefuse="confirmDelete"
-                @confirmAccept="confirmAccept" @cancelRefused="drawerExceptionRequestDelete = false" />
+            <confirmRefuse v-if="drawerExceptionRequestDelete" :actionType="currentAction"
+                @confirmRefuse="confirmDelete" @confirmAccept="confirmAccept"
+                @cancelRefused="drawerExceptionRequestDelete = false" />
         </transition>
         <transition name="page">
             <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">

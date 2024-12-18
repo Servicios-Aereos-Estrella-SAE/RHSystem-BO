@@ -25,7 +25,9 @@
             :click-on-delete="() => { onDelete(shiftException, index) }"
             :isDeleted="isDeleted"
             @onShiftExceptionSave="onSave"
+            @onShiftExceptionSaveAll="onSaveAll"
             @onShiftExceptionCancel="onCancel(index)"
+            :vacationPeriodAvailableDays="currentVacationPeriod.vacationPeriodAvailableDays"
             :can-manage-vacation="canManageVacation"
             :index-card="index"/>
         </div>

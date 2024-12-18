@@ -43,6 +43,7 @@
           :employee="employee"
           :date="date"
           @onExceptionRequestSave="onSave"
+          @onExceptionRequestSaveAll="onSaveAll"
         />
       </Sidebar>
   

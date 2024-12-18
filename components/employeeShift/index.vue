@@ -82,6 +82,7 @@
       <employeeExceptionRequest
         :employee="employee"
         :date="selectedExceptionDate"
+        @saveExceptionRequest="onSaveExceptionRequest"
       />
     </Sidebar>
 
@@ -117,6 +118,7 @@
         :employee="employee"
         :vacation-period="vacationPeriod"
         :can-manage-vacation="canManageVacation"
+        @save="onSave"
       />
     </Sidebar>
   </div>
@@ -129,6 +131,14 @@
       :shiftExceptions="shiftExceptionsError"
       @confirm="drawershiftExceptionsError = false"
       @cancel="drawershiftExceptionsError = false"
+    />
+  </transition>
+  <transition name="page">
+    <exceptionRequestsError
+      v-if="drawerExceptionRequestsError"
+      :exceptionRequests="exceptionRequestsError"
+      @confirm="drawerExceptionRequestsError = false"
+      @cancel="drawerExceptionRequestsError = false"
     />
   </transition>
 </template>
