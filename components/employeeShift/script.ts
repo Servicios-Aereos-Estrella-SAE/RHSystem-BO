@@ -235,6 +235,8 @@ export default defineComponent({
         this.shiftExceptionsError = shiftExceptionsError
         this.drawershiftExceptionsError = true
         this.drawerShiftExceptions = false
+        this.displaySidebarVacationsManager = false
+        this.displaySidebarVacations = false
       }
       myGeneralStore.setFullLoader(false)
       

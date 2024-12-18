@@ -32,16 +32,9 @@ export default defineComponent({
     currentIndex: -1,
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
-    isDeleted: false,
-    applyToMoreThanOneDay: false,
-    daysToApply: 0,
+    isDeleted: false
   }),
   computed: {
-  },
-  watch: {
-    "applyToMoreThanOneDay"() {
-      this.daysToApply = 0
-     }
   },
   async mounted() {
     this.isReady = false
@@ -55,14 +48,14 @@ export default defineComponent({
   methods: {
     async getVacations() {
       this.shiftExceptions = []
-      if (this.employee.employeeId &&  this.currentVacationPeriod) {
+      if (this.employee.employeeId && this.currentVacationPeriod) {
         const employeeService = new EmployeeService()
         const employeeResponse = await employeeService.getVacationsByPeriod(this.employee.employeeId, this.currentVacationPeriod.vacationSettingId)
         if (employeeResponse.status === 200) {
           this.shiftExceptions = employeeResponse._data.data.vacations
         }
       }
-     
+
     },
     async addNewVacation() {
       if (!this.canManageVacation) {

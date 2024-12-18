@@ -21,8 +21,8 @@
                     <label for="description">
                         Days to apply
                     </label>
-                    <InputNumber v-model="exceptionRequest.daysToApply" inputId="daysToApply" prefix="Apply to "
-                        suffix=" days" />
+                    <InputNumber v-model="exceptionRequest.daysToApply" inputId="daysToApply"
+                         />
                     <small class="p-error" v-if="submitted && !exceptionRequest.daysToApply">
                         Days to apply is required.
                     </small>
