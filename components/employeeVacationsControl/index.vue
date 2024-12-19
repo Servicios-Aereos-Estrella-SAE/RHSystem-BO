@@ -32,28 +32,16 @@
             :index-card="index"/>
         </div>
       </div>
-      <Dialog v-model:visible="drawerShiftExceptionDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
-        <div class="confirmation-content">
-          <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="shiftException"> Are you sure you want to delete vacation at
-            <b>{{ `${shiftExceptionsDate || ''}` }}</b>
-            ?</span>
-        </div>
-        <template #footer>
-          <Button label="No" icon="pi pi-times" text @click="drawerShiftExceptionDelete = false" />
-          <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-        </template>
-      </Dialog>
+      <transition name="page">
+        <confirmDelete
+          v-if="drawerShiftExceptionDelete"
+          @confirmDelete="confirmDelete"
+          @cancelDelete="drawerShiftExceptionDelete = false"
+        />
+      </transition>
     </div>
     <ProgressSpinner v-else />
 
-    <!-- <transition name="page">
-      <confirmDelete
-        v-if="drawerShiftExceptionDelete"
-        @confirmDelete="confirmDelete"
-        @cancelDelete="drawerShiftExceptionDelete = false"
-      />
-    </transition> -->
   </div>
 </template>
 
