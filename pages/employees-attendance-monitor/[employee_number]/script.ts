@@ -392,8 +392,11 @@ export default defineComponent({
         if (idx >= 0) {
           this.visualizationModeOptions[idx].selected =  true
         }
-
-        this.periodSelected = new Date()
+        if (this.visualizationMode?.value === 'fourteen') {
+          this.periodSelected = this.getNextPayThursday()
+        } else {
+          this.periodSelected = new Date()
+        }
 
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -656,6 +659,17 @@ export default defineComponent({
     onSaveAssist () {
       this.drawerAssistForm = false
       this.handlerPeriodChange()
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
     }
   }
 })

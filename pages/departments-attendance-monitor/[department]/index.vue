@@ -96,7 +96,7 @@
               :dateFormat="visualizationMode.calendar_format.format"
               :minDate="minDate"
               :maxDate="maxDate"
-              showWeek
+              :showWeek="false"
               @update:modelValue="handlerPeriodChange"
             />
             <Calendar
@@ -110,7 +110,7 @@
               selectionMode="range"
               :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange"
-              showWeek
+              :showWeek="false"
             />
             <Calendar
               v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
@@ -121,7 +121,7 @@
               hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange"
-              showWeek
+              :showWeek="false"
             >
               <template #date="slotProps">
                 <strong v-if="isThursday(slotProps.date)" >{{ slotProps.date.day }}</strong>

@@ -484,18 +484,6 @@ export default defineComponent({
         this.setPeriodCategories()
       }
     },
-
-    getNextPayThursday() {
-      const today = DateTime.now(); // Fecha actual
-      let nextPayDate = today.set({ weekday: 4 })
-      if (nextPayDate < today) {
-        nextPayDate = nextPayDate.plus({ weeks: 1 });
-      }
-      while (nextPayDate.weekNumber % 2 !== 0) {
-        nextPayDate = nextPayDate.plus({ weeks: 1 });
-      }
-      return nextPayDate.toJSDate()
-    },
     setPeriodCategories() {
       if (this.visualizationMode?.value === 'custom') {
         this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
@@ -714,6 +702,17 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
     }
   }
 })
