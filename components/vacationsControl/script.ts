@@ -15,14 +15,16 @@ export default defineComponent({
     canManageVacation: { type: Boolean, required: true },
     indexCard: { type: Number, required: true },
     isDeleted: { type: Boolean, required: true },
-    vacationPeriodAvailableDays: { type: Number, required: true },
+    vacationPeriodAvailableDays: { type: Number, required: true }
   },
   data: () => ({
     shiftExceptionsDate: '',
     displayForm: false as boolean,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
     applyToMoreThanOneDay: false,
-    submitted: false
+    submitted: false,
+    canManageToPreviousDays: false,
+    currentDate: null as string | null | DateTime | Date,
   }),
   watch: {
     'shiftException.shiftExceptionsDate'(val: Date) {
@@ -48,8 +50,71 @@ export default defineComponent({
     if (!this.shiftException.shiftExceptionId) {
       this.displayForm = true
     }
+    this.verifyPermissionManagePreviousDays()
   },
   methods: {
+    verifyPermissionManagePreviousDays() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.canManageToPreviousDays = false
+      if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
+        this.canManageToPreviousDays = true
+      } else {
+        if (myGeneralStore.isRh) {
+          this.canManageToPreviousDays = true
+        } else {
+          if (this.shiftException.shiftExceptionsDate) {
+            if (this.isDateGreaterOrEqualToToday(this.shiftException.shiftExceptionsDate.toString())) {
+              this.canManageToPreviousDays = true
+            }
+          }
+        }
+        if (myGeneralStore.isRh) {
+          if (this.isDateAfterOrEqualToFirstDayPeriod()) {
+            this.canManageToPreviousDays = true
+          } else {
+            this.canManageToPreviousDays = false
+          }
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    isDateAfterOrEqualToFirstDayPeriod() {
+      const datePay = this.getNextPayThursday()
+      const monthPerdiod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
+      let start
+      const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+      const startOfWeek = date.startOf('week')
+      let thursday = startOfWeek.plus({ days: 3 })
+      start = thursday.minus({ days: 24 })
+      let currentDay = start
+      currentDay = currentDay.minus({ days: 1 })
+      if (this.shiftException.shiftExceptionsDate) {
+        return this.shiftException.shiftExceptionsDate >= currentDay
+      } else {
+        return false
+      }
+
+    },
+    isDateGreaterOrEqualToToday(dateString: string) {
+      const inputDate = new Date(dateString)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      return inputDate >= today
+    },
     getDateFormatted(date: Date) {
       if (!date) {
         return ''
@@ -113,9 +178,17 @@ export default defineComponent({
           })
           return
         }
-       
       }
-
+      await this.verifyPermissionManagePreviousDays()
+      if (!this.canManageToPreviousDays) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: `The date: ${this.shiftExceptionsDate} is in the past and you do not have permission to save it `,
+          life: 5000,
+        })
+        return
+      }
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
@@ -182,12 +255,15 @@ export default defineComponent({
         })
         return
       }
+      this.currentDate = this.shiftException.shiftExceptionsDate
       this.displayForm = true
     },
     cancelEdit() {
       if (!this.shiftException.shiftExceptionId) {
         this.$emit('onShiftExceptionCancel')
       }
+      this.shiftException.shiftExceptionsDate = this.currentDate
+      this.canManageToPreviousDays = true
       this.displayForm = false
     }
   }
