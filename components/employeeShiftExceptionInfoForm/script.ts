@@ -35,10 +35,18 @@ export default defineComponent({
     minDate: DateTime.fromISO('2000-10-10').toJSDate(),
     needCheckInTime: false,
     needCheckOutTime: false,
+    needReason: false,
+    needEnjoymentOfSalary: false,
+    needPeriodDays: false,
+    needPeriodHours: false,
     formattedShiftExceptionInTime: '' as string | null,
     formattedShiftExceptionOutTime: '' as string | null,
     applyToMoreThanOneDay: false,
-    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    options: [
+      { label: 'Yes', value: 1 },
+      { label: 'No', value: 0 },
+    ],
   }),
   computed: {
   },
@@ -81,6 +89,7 @@ export default defineComponent({
     } else {
       this.shiftException.shiftExceptionsDate = this.date
       this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      this.shiftException.shiftExceptionEnjoymentOfSalary = null
     }
 
     let hasAccess = false
@@ -127,6 +136,16 @@ export default defineComponent({
         return
       }
 
+      if (this.needReason && !this.shiftException.shiftExceptionsDescription) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
       if (this.needCheckInTime && !this.shiftException.shiftExceptionCheckInTime) {
         this.$toast.add({
           severity: 'warn',
@@ -138,6 +157,36 @@ export default defineComponent({
       }
 
       if (this.needCheckOutTime && !this.shiftException.shiftExceptionCheckOutTime) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
+      if (this.needEnjoymentOfSalary && this.shiftException.shiftExceptionEnjoymentOfSalary === null) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
+      if (this.needPeriodDays && !this.shiftException.shiftExceptionPeriodInDays) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
+      if (this.needPeriodHours && !this.shiftException.shiftExceptionPeriodInHours) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -179,6 +228,15 @@ export default defineComponent({
       }
       if (!this.needCheckOutTime) {
         this.shiftException.shiftExceptionCheckOutTime = null
+      }
+      if (!this.needEnjoymentOfSalary) {
+        this.shiftException.shiftExceptionEnjoymentOfSalary = null
+      }
+      if (!this.needPeriodDays) {
+        this.shiftException.shiftExceptionPeriodInDays = null
+      }
+      if (!this.needPeriodHours) {
+        this.shiftException.shiftExceptionPeriodInHours = null
       }
       let isNew = false
       if (!this.shiftException.shiftExceptionId) {
@@ -238,6 +296,10 @@ export default defineComponent({
       if (this.isReady) {
         this.needCheckInTime = false
         this.needCheckOutTime = false
+        this.needReason = false
+        this.needEnjoymentOfSalary = false
+        this.needPeriodDays = false
+        this.needPeriodHours = false
         let isVacation = false
         const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
         if (index >= 0) {
@@ -246,6 +308,18 @@ export default defineComponent({
           }
           if (this.exceptionTypeList[index].exceptionTypeNeedCheckOutTime) {
             this.needCheckOutTime = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeNeedReason) {
+            this.needReason = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeNeedEnjoymentOfSalary) {
+            this.needEnjoymentOfSalary = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeNeedPeriodInDays) {
+            this.needPeriodDays = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeNeedPeriodInHours) {
+            this.needPeriodHours = true
           }
           if (this.exceptionTypeList[index].exceptionTypeSlug === 'vacation') {
             isVacation = true

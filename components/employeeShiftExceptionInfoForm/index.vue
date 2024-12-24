@@ -38,7 +38,7 @@
             Description
           </label>
           <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30" />
-          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionsDescription">
+          <small class="p-error" v-if="submitted && needReason && !shiftException.shiftExceptionsDescription">
             Descritpion is required.
           </small>
         </div>
@@ -58,6 +58,33 @@
           <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
             Check out time is required.
+          </small>
+        </div>
+        <div v-if="needEnjoymentOfSalary" class="input-box">
+          <label for="enjoyment-of-salary">
+            Enjoyment of salary
+          </label>
+          <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label" optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem" />
+          <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
+            Enjoyment of salary is required.
+          </small>
+        </div>
+        <div v-if="needPeriodDays" class="input-box">
+          <label for="period-in-days">
+            Period in days
+          </label>
+          <InputNumber v-model="shiftException.shiftExceptionPeriodInDays" />
+          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionPeriodInDays">
+            Period in days is required.
+          </small>
+        </div>
+        <div v-if="needPeriodHours" class="input-box">
+          <label for="period-in-hours">
+            Period in hours
+          </label>
+          <InputNumber v-model="shiftException.shiftExceptionPeriodInHours" />
+          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionPeriodInHours">
+            Period in hours is required.
           </small>
         </div>
         <div class="box-tools-footer">
