@@ -9,6 +9,7 @@ interface ExceptionTypeInterface {
   exceptionTypeNeedEnjoymentOfSalary: boolean,
   exceptionTypeNeedPeriodInDays: boolean,
   exceptionTypeNeedPeriodInHours: boolean,
+  exceptionTypeActive: boolean,
   exceptionTypeCreatedAt: Date | string | null,
   exceptionTypeUpdatedAt: Date | string | null,
   exceptionTypeDeletedAt: Date | string | null

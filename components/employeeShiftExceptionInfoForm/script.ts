@@ -49,6 +49,10 @@ export default defineComponent({
     ],
   }),
   computed: {
+    selectedExceptionDate() {
+      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      return day
+    }
   },
   watch: {
     // Convierte automáticamente el objeto Date a una cadena de hora cuando cambia
@@ -98,7 +102,18 @@ export default defineComponent({
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
-    await this.getExceptionTypes(exceptionType)
+    this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
+    if (this.shiftException.shiftExceptionId) {
+      let existCurrentExceptionType = this.exceptionTypeList.find(a => a.exceptionTypeId === this.shiftException.exceptionTypeId)
+      if (!existCurrentExceptionType) {
+        const exceptionTypeList = await this.getExceptionTypes(exceptionType, false)
+        existCurrentExceptionType = exceptionTypeList.find(a => a.exceptionTypeId === this.shiftException.exceptionTypeId)
+        if (existCurrentExceptionType) {
+          this.exceptionTypeList.push(existCurrentExceptionType)
+        }
+      }
+    }
+   
 
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
@@ -117,10 +132,13 @@ export default defineComponent({
     }
   },
   methods: {
-    async getExceptionTypes(search: string) {
-      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100)
+    isOptionDisabled(option: any) {
+      return option.exceptionTypeActive !== 1
+    },
+    async getExceptionTypes(search: string, onlyActive: boolean) {
+      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100, onlyActive)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      this.exceptionTypeList = list.filter(item => item.exceptionTypeSlug !== 'vacation')
+      return list.filter(item => item.exceptionTypeSlug !== 'vacation')
     },
     async onSave() {
       this.submitted = true
@@ -146,7 +164,7 @@ export default defineComponent({
         return
       }
 
-      if (this.needCheckInTime && !this.shiftException.shiftExceptionCheckInTime) {
+      if ((this.needCheckInTime || this.needPeriodHours) && !this.shiftException.shiftExceptionCheckInTime) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -156,7 +174,7 @@ export default defineComponent({
         return
       }
 
-      if (this.needCheckOutTime && !this.shiftException.shiftExceptionCheckOutTime) {
+      if ((this.needCheckOutTime || this.needPeriodHours) && !this.shiftException.shiftExceptionCheckOutTime) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -167,26 +185,6 @@ export default defineComponent({
       }
 
       if (this.needEnjoymentOfSalary && this.shiftException.shiftExceptionEnjoymentOfSalary === null) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-          life: 5000,
-        })
-        return
-      }
-
-      if (this.needPeriodDays && !this.shiftException.shiftExceptionPeriodInDays) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-          life: 5000,
-        })
-        return
-      }
-
-      if (this.needPeriodHours && !this.shiftException.shiftExceptionPeriodInHours) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -223,20 +221,17 @@ export default defineComponent({
       }
       this.shiftException.shiftExceptionCheckInTime = this.formattedShiftExceptionInTime
       this.shiftException.shiftExceptionCheckOutTime = this.formattedShiftExceptionOutTime
-      if (!this.needCheckInTime) {
+      if (!this.needCheckInTime && !this.needPeriodHours) {
         this.shiftException.shiftExceptionCheckInTime = null
       }
-      if (!this.needCheckOutTime) {
+      if (!this.needCheckOutTime && !this.needPeriodHours) {
         this.shiftException.shiftExceptionCheckOutTime = null
       }
       if (!this.needEnjoymentOfSalary) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
       }
       if (!this.needPeriodDays) {
-        this.shiftException.shiftExceptionPeriodInDays = null
-      }
-      if (!this.needPeriodHours) {
-        this.shiftException.shiftExceptionPeriodInHours = null
+        this.shiftException.daysToApply = 0
       }
       let isNew = false
       if (!this.shiftException.shiftExceptionId) {
@@ -341,7 +336,10 @@ export default defineComponent({
             }
           }
         }
-
+        if (this.needPeriodDays) {
+          this.applyToMoreThanOneDay = false
+          this.shiftException.daysToApply = 0
+        }
         this.setMinDate(isVacation)
       }
     },

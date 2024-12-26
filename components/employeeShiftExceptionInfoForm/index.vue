@@ -3,12 +3,15 @@
     <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <h1>
+      {{ selectedExceptionDate }}
+      <br/><br/>
       {{ isNewShiftException ? 'Add shift exception' : 'Update shift exception' }}
+     
     </h1>
     
     <div v-if="isReady" class="shift-exception-form">
       <div class="form-container">
-        <div v-if="!shiftException.shiftExceptionId" class="input-box">
+        <div v-if="!shiftException.shiftExceptionId && needPeriodDays" class="input-box">
           <label for="exception-type">
           </label>
           <div class="checkbox-item">
@@ -16,7 +19,7 @@
             <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
           </div>
         </div>
-        <div v-if="applyToMoreThanOneDay" class="input-box">
+        <div v-if="applyToMoreThanOneDay && needPeriodDays" class="input-box">
           <label for="description">
             Days to apply
           </label>
@@ -30,61 +33,44 @@
             Exception type
           </label>
           <Dropdown v-model="shiftException.exceptionTypeId" :options="exceptionTypeList" optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId"
-          placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange"/>
+          placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange"
+          />
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
         </div>
         <div class="input-box">
           <label for="description">
-            Description
+            Reason
           </label>
           <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30" />
           <small class="p-error" v-if="submitted && needReason && !shiftException.shiftExceptionsDescription">
-            Descritpion is required.
+            Reason is required.
           </small>
         </div>
-        <div v-if="needCheckInTime" class="input-box">
+        <div v-if="needCheckInTime || needPeriodHours" class="input-box">
           <label for="check-in-time">
-            Check in time
+            {{ needPeriodHours ? 'From' : 'Check in time' }}
           </label>
           <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckInTime">
-            Check in time is required.
+            {{ needPeriodHours ? 'From' : 'Check in time' }} is required
           </small>
         </div>
-        <div v-if="needCheckOutTime" class="input-box">
+        <div v-if="needCheckOutTime || needPeriodHours" class="input-box">
           <label for="check-out-time">
-            Check out time
+            {{ needPeriodHours ? 'To' : 'Check out time' }}
           </label>
           <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
-            Check out time is required.
+            {{ needPeriodHours ? 'To' : 'Check out time' }} is required
           </small>
         </div>
         <div v-if="needEnjoymentOfSalary" class="input-box">
           <label for="enjoyment-of-salary">
-            Enjoyment of salary
+            Salary enjoyment
           </label>
           <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label" optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem" />
           <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
-            Enjoyment of salary is required.
-          </small>
-        </div>
-        <div v-if="needPeriodDays" class="input-box">
-          <label for="period-in-days">
-            Period in days
-          </label>
-          <InputNumber v-model="shiftException.shiftExceptionPeriodInDays" />
-          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionPeriodInDays">
-            Period in days is required.
-          </small>
-        </div>
-        <div v-if="needPeriodHours" class="input-box">
-          <label for="period-in-hours">
-            Period in hours
-          </label>
-          <InputNumber v-model="shiftException.shiftExceptionPeriodInHours" />
-          <small class="p-error" v-if="submitted && !shiftException.shiftExceptionPeriodInHours">
-            Period in hours is required.
+            Salary enjoyment is required.
           </small>
         </div>
         <div class="box-tools-footer">

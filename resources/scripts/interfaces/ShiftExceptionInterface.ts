@@ -12,8 +12,6 @@ interface ShiftExceptionInterface {
   shiftExceptionCheckInTime: string | null
   shiftExceptionCheckOutTime: string | null
   shiftExceptionEnjoymentOfSalary: string | null
-  shiftExceptionPeriodInDays: number | null
-  shiftExceptionPeriodInHours: number | null
   shiftExceptionsCreatedAt?: Date | string | null
   shiftExceptionsUpdatedAt?: Date | string | null
   shiftExceptionsDeletedAt?: Date | string | null
