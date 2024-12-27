@@ -11,6 +11,7 @@ import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
+import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
 
 export default defineComponent({
   components: {
@@ -21,7 +22,8 @@ export default defineComponent({
   name: 'employeeShiftException',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    date: { type: Date, required: true }
+    date: { type: Date, required: true },
+    shift: { type: Object as PropType<ShiftInterface>, required: true }
   },
   data: () => ({
     isReady: false,
@@ -49,7 +51,6 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-
     this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 

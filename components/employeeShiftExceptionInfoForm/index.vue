@@ -68,10 +68,13 @@
           <label for="enjoyment-of-salary">
             Salary enjoyment
           </label>
-          <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label" optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem" />
+          <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label" optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem" :disabled="activeSwichtTimeByTime"/>
           <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
             Salary enjoyment is required.
-          </small>
+          </small><br/>
+            <label for="timeByTime">
+              Time by Time</label>
+            <InputSwitch v-model="activeSwichtTimeByTime" />
         </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">

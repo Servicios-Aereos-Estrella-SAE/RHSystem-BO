@@ -11,7 +11,6 @@ import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
-import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService';
@@ -47,7 +46,8 @@ export default defineComponent({
     drawershiftExceptionsError: false,
     drawerExceptionRequestsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
-    exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>
+    exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
+    currentShift: null as ShiftInterface | null
   }),
   setup() {
     const router = useRouter()
@@ -225,6 +225,7 @@ export default defineComponent({
     },
     onClickExceptions(employeeCalendar: AssistDayInterface) {
       this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftExceptions = true
     },
     onClickException() {

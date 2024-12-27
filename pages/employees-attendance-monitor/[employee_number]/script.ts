@@ -125,6 +125,7 @@ export default defineComponent({
     faultsDelays: 0,
     workedTime: '',
     canReadTimeWorked: false,
+    canAddAssistManual: false,
   }),
   computed: {
     isRoot () {
@@ -290,8 +291,10 @@ export default defineComponent({
     const permissions = await myGeneralStore.getAccess(firstSegment)
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
+      this.canAddAssistManual = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
+      this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
     }
     this.periodSelected = new Date()
     await this.setAssistSyncStatus()

@@ -10,6 +10,7 @@ import { DateTime } from 'luxon';
 import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
+import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
 
 export default defineComponent({
   components: {
@@ -21,6 +22,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
+    shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
@@ -47,6 +49,7 @@ export default defineComponent({
       { label: 'Yes', value: 1 },
       { label: 'No', value: 0 },
     ],
+    activeSwichtTimeByTime: false,
   }),
   computed: {
     selectedExceptionDate() {
@@ -68,6 +71,14 @@ export default defineComponent({
     },
     "applyToMoreThanOneDay"() {
       this.shiftException.daysToApply = 0
+    },
+    "activeSwichtTimeByTime"(val) {
+      if (val) {
+        this.shiftException.shiftExceptionEnjoymentOfSalary = 0
+      } else {
+        this.shiftException.shiftExceptionEnjoymentOfSalary = null
+      }
+     
     }
   },
   async mounted() {
@@ -75,7 +86,6 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     this.isNewShiftException = !this.shiftException.shiftExceptionId ? true : false
-
     if (this.shiftException.shiftExceptionId) {
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await shiftExceptionService.show(this.shiftException.shiftExceptionId)
@@ -89,7 +99,9 @@ export default defineComponent({
         const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
-
+      let isActive: number = 1
+      isActive = this.shiftException.shiftExceptionTimeByTime ? this.shiftException.shiftExceptionTimeByTime : 0
+      this.activeSwichtTimeByTime = isActive === 1 ? true : false
     } else {
       this.shiftException.shiftExceptionsDate = this.date
       this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
@@ -103,6 +115,14 @@ export default defineComponent({
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
+    if (!myGeneralStore.isRoot && !myGeneralStore.isAdmin && !myGeneralStore.isRh && this.shift.shiftRestDays !== "0") {
+      const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'rest-day')
+      if (existRestDayIndex >= 0) {
+        if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.shiftException.exceptionTypeId) {
+          this.exceptionTypeList.splice(existRestDayIndex, 1)
+        }
+      }
+    }
     if (this.shiftException.shiftExceptionId) {
       let existCurrentExceptionType = this.exceptionTypeList.find(a => a.exceptionTypeId === this.shiftException.exceptionTypeId)
       if (!existCurrentExceptionType) {
@@ -219,8 +239,12 @@ export default defineComponent({
       if (!this.dateWasChange) {
         this.shiftException.shiftExceptionsDate = this.currentDate
       }
-      this.shiftException.shiftExceptionCheckInTime = this.formattedShiftExceptionInTime
-      this.shiftException.shiftExceptionCheckOutTime = this.formattedShiftExceptionOutTime
+      if (this.formattedShiftExceptionInTime) {
+        this.shiftException.shiftExceptionCheckInTime = this.formattedShiftExceptionInTime
+      }
+      if (this.formattedShiftExceptionOutTime) {
+        this.shiftException.shiftExceptionCheckOutTime = this.formattedShiftExceptionOutTime
+      }
       if (!this.needCheckInTime && !this.needPeriodHours) {
         this.shiftException.shiftExceptionCheckInTime = null
       }
@@ -229,6 +253,12 @@ export default defineComponent({
       }
       if (!this.needEnjoymentOfSalary) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
+        this.shiftException.shiftExceptionTimeByTime = null
+      } else {
+        this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
+        if ( this.shiftException.shiftExceptionTimeByTime === 1) {
+          this.shiftException.shiftExceptionEnjoymentOfSalary = 0
+        }
       }
       if (!this.needPeriodDays) {
         this.shiftException.daysToApply = 0

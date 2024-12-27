@@ -46,6 +46,7 @@
         :shiftException="shiftException"
         :employee="employee"
         :date="date"
+        :shift="shift"
         @onShiftExceptionSave="onSave"
         @onShiftExceptionSaveAll="onSaveAll"
       />
