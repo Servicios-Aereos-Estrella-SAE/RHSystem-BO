@@ -36,7 +36,8 @@ export default defineComponent({
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
     drawershiftExceptionsError: false,
-    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    canManageToPreviousDays: false
   }),
   computed: {
     selectedExceptionDate() {
@@ -56,11 +57,60 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
+      this.canManageToPreviousDays = true
+    } else {
+      if (myGeneralStore.isRh) {
+        this.canManageToPreviousDays = true
+      } else {
+        if (this.isDateGreaterOrEqualToToday(this.date.toString())) {
+          this.canManageToPreviousDays = true
+        }
+      }
+      if (myGeneralStore.isRh) {
+        if (this.isDateAfterOrEqualToFirstDayPeriod()) {
+          this.canManageToPreviousDays = true
+        } else {
+          this.canManageToPreviousDays = false
+        }
+      }
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    isDateAfterOrEqualToFirstDayPeriod() {
+      const datePay = this.getNextPayThursday()
+      const monthPerdiod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
+      let start
+      const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+      const startOfWeek = date.startOf('week')
+      let thursday = startOfWeek.plus({ days: 3 })
+      start = thursday.minus({ days: 24 })
+      let currentDay = start
+      currentDay = currentDay.minus({ days: 1 })
+      return DateTime.fromJSDate(this.date) >= currentDay
+    },
+    isDateGreaterOrEqualToToday(dateString: string) {
+      const inputDate = new Date(dateString)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      return inputDate >= today
+    },
     async getShiftEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
