@@ -9,9 +9,8 @@
       </svg>
     </div>
     <div class="name">
-      {{ `${pilot.person.personFirstname || ''}` }} {{ `${pilot.person.personLastname ||
-      ''}`  }} {{ `${pilot.person.personSecondLastname ||
-        ''}`  }}
+      {{ `${pilot.employee.employeeFirstName || ''}` }} {{ `${pilot.employee.employeeLastName ||
+      ''}`  }}
     </div>
     <div class="line">
     </div>

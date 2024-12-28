@@ -1,12 +1,12 @@
 import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface'
+import type { AircraftOperatorInterface } from '~/resources/scripts/interfaces/AircraftOperatorInterface'
 
 export default defineComponent({
-  name: 'FlightAttendantInfoCard',
+  name: 'AircraftOperatorInfoCard',
   props: {
-    flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: true },
+    aircraftOperator: { type: Object as PropType<AircraftOperatorInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     canUpdate: { type: Boolean, default: false, required: true },
@@ -14,13 +14,7 @@ export default defineComponent({
   },
   data: () => ({
   }),
-  computed: {
-    hireDate() {
-      if (this.flightAttendant && this.flightAttendant.flightAttendantHireDate) {
-        return DateTime.fromISO(this.flightAttendant.flightAttendantHireDate.toString()).toFormat('LLL dd, yyyy')
-      }
-      return ''
-    }
+  async mounted() {
   },
   methods: {
     handlerClickOnEdit () {

@@ -1,3 +1,4 @@
+import type { EmployeeInterface } from "./EmployeeInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 
 interface PilotInterface {
@@ -5,12 +6,12 @@ interface PilotInterface {
   pilotId: number | null,
   pilotHireDate: Date | string | null,
   pilotPhoto: string | null,
-  personId: number,
+  employeeId: number,
   pilotCreatedAt: Date | string | null,
   pilotUpdatedAt: Date | string | null,
   pilotDeletedAt: Date | string | null,
 
-  person?: PeopleInterface,
+  employee?: EmployeeInterface,
 }
 
 export type { PilotInterface }

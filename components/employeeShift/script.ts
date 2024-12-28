@@ -11,9 +11,10 @@ import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
-import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
+import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService';
+import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface';
 
 export default defineComponent({
   components: {
@@ -45,7 +46,8 @@ export default defineComponent({
     drawershiftExceptionsError: false,
     drawerExceptionRequestsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
-    exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>
+    exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
+    currentShift: null as ShiftInterface | null
   }),
   setup() {
     const router = useRouter()
@@ -56,16 +58,16 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       return myGeneralStore.isRoot
     },
-    monthName () {
+    monthName() {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
     },
-    period () {
-      const daysList =[]
+    period() {
+      const daysList = []
 
       const start = this.selectedDate.startOf('month')
       const daysInMonth = (start.daysInMonth || 0)
-      
+
       for (let index = 0; index < daysInMonth; index++) {
         const currentDay = start.plus({ days: index })
         const year = parseInt(currentDay.toFormat('yyyy'))
@@ -81,12 +83,12 @@ export default defineComponent({
 
       return daysList
     },
-    statusForm () {
+    statusForm() {
       const myGeneralStore = useMyGeneralStore()
       return myGeneralStore.userVacationFormClosed
     }
   },
-  created () {
+  created() {
   },
   async mounted() {
     this.isReady = false
@@ -102,7 +104,7 @@ export default defineComponent({
     }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
-   
+
   },
   methods: {
     async getShifts() {
@@ -125,20 +127,35 @@ export default defineComponent({
 
       myGeneralStore.setFullLoader(false)
     },
-    async getEmployeeCalendar () {
-      this.displayCalendar =  false
+    async getEmployeeCalendar() {
+      this.displayCalendar = false
       const firstDay = this.period[0]
       const lastDay = this.period[this.period.length - 1]
-
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
-      this.displayCalendar =  true
+      const exceptionTypeVacationId = await this.getExceptionTypeVacation()
+      if (exceptionTypeVacationId) {
+        for await (const day of this.employeeCalendar) {
+          const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
+          day.assist.exceptions = exceptions
+          if (day.assist.exceptions.length === 0) {
+            day.assist.hasExceptions = false
+          }
+        }
+      }
+      this.displayCalendar = true
     },
-    async handlerCalendarChange () {
+    async getExceptionTypeVacation() {
+      const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
+      const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
+      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === 'vacation')
+      return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
+    },
+    async handlerCalendarChange() {
       const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('America/Mexico_City').setLocale('en')
 
       if (calendarDate.toFormat('LLLL').toLocaleLowerCase() !== this.selectedDate.toFormat('LLLL').toLocaleLowerCase()) {
@@ -150,21 +167,21 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
       }
     },
-    async handlerLastMonth () {
+    async handlerLastMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('America/Mexico_City').setLocale('en')
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
-    async handlerNextMonth () {
+    async handlerNextMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('America/Mexico_City').setLocale('en')
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
-    getFakeEmployeeCalendar () {
+    getFakeEmployeeCalendar() {
       const assistCalendar: AssistDayInterface[] = []
 
       this.period.forEach((periodDay) => {
@@ -199,25 +216,26 @@ export default defineComponent({
 
       return assistCalendar
     },
-    handlerDisplayInputDate () {
+    handlerDisplayInputDate() {
       this.inputSelectedDate = new Date()
       this.displayInputCalendar = true
     },
-    handlerCalendarCancel () {
+    handlerCalendarCancel() {
       this.displayInputCalendar = false
     },
-    onClickExceptions (employeeCalendar: AssistDayInterface) {
+    onClickExceptions(employeeCalendar: AssistDayInterface) {
       this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftExceptions = true
     },
-    onClickException(){
+    onClickException() {
       this.drawerShiftException = true
 
     },
-    onClickVacations () {
+    onClickVacations() {
       this.displaySidebarVacations = true
     },
-    handlerVacationsManager (vacationPeriod: VacationPeriodInterface) {
+    handlerVacationsManager(vacationPeriod: VacationPeriodInterface) {
       this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
     },
@@ -225,7 +243,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
     },
-    async onSave (shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
+    async onSave(shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -239,10 +257,10 @@ export default defineComponent({
         this.displaySidebarVacations = false
       }
       myGeneralStore.setFullLoader(false)
-      
+
       this.isReady = true
     },
-    async onSaveExceptionRequest (exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {
+    async onSaveExceptionRequest(exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

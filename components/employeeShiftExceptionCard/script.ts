@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/ExceptionRequestInterface'
+import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface'
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService'
 
@@ -15,9 +16,10 @@ export default defineComponent({
     clickOnEditException: { type: Function, default: null },
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
+    canManageToPreviousDays: { type: Boolean, required: true },
   },
   data: () => ({
-    exceptionTypeList: [], 
+    exceptionTypeList: [] as Array<ExceptionTypeInterface>, 
     isReady: false, 
   }),
   computed: {
@@ -33,7 +35,7 @@ export default defineComponent({
     },
   },
   async mounted() {
-    await this.fetchExceptionTypes()
+    await this.getExceptionTypes()
 
     // if (this.shiftException.requestedDate) {
     //   const newDate = DateTime.fromISO(this.shiftException.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
@@ -61,10 +63,10 @@ export default defineComponent({
         this.clickOnDeleteException()
       }
     },
-    async fetchExceptionTypes() {
+    async getExceptionTypes() {
       try {
         // Realiza la llamada al servicio para obtener los tipos de excepción
-        const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
+        const response = await new ExceptionTypeService().getFilteredList('', 1, 100, false)
         if (response.status === 200) {
           // Filtra la lista para excluir el tipo de excepción con slug "vacation"
           this.exceptionTypeList = response._data.data.exceptionTypes.data.filter(

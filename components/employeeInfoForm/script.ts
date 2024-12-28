@@ -14,6 +14,10 @@ import BusinessUnitService from '~/resources/scripts/services/BusinessUnitServic
 import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
 import { DateTime } from 'luxon';
 import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
+import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface';
+import PilotService from '~/resources/scripts/services/PilotService'
+import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
+import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
 
 export default defineComponent({
   components: {
@@ -23,6 +27,8 @@ export default defineComponent({
   name: 'employeeInfoForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
+    flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: false, default: null },
     clickOnSave: { type: Function, default: null },
   },
   data: () => ({
@@ -41,7 +47,9 @@ export default defineComponent({
     ],
     currenEmployee: null as EmployeeInterface | null,
     passwordConfirm: '',
+    dateWasChange: false,
     changePassword: false,
+    files: [] as Array<any>,
     isNewUser: false,
     isReady: false,
     isEmailInvalid: false,
@@ -88,8 +96,8 @@ export default defineComponent({
   },
   async mounted() {
     this.isReady = false
-    this.isNewUser = !this.employee.employeeId ? true : false
-
+    this.isNewUser = !this.employee?.employeeId ? true : false
+    // this.setFormatDates()
     await Promise.all([
       this.getBusinessUnits(),
       this.getDepartments(),
@@ -161,14 +169,101 @@ export default defineComponent({
       let response = null
       const employeeTypeService = new EmployeeTypeService()
       response = await employeeTypeService.getFilteredList('')
-      console.log(response)
       this.employeeTypes = response._data.data.employeeTypes.data
+      this.setDefaultEmployeeType(response._data.data.employeeTypes.data)
+    },
+    setDefaultEmployeeType(employeeTypes: any) {
+      if (this.pilot) {
+        this.employee.employeeTypeId = employeeTypes.find((employeeType: any) => employeeType.employeeTypeSlug === 'pilot')?.employeeTypeId
+      } else if(this.flightAttendant) {
+        this.employee.employeeTypeId = employeeTypes.find((employeeType: any) => employeeType.employeeTypeSlug === 'flight-attendant')?.employeeTypeId
+      }
     },
     onUpload(event: any) {
       this.employee.employeePhoto = event.files[0];
     },
     onSelect(event: any) {
       this.employee.employeePhoto = event.files[0];
+    },
+    validateFiles(event: any) {
+      let validFiles = event.files;
+      this.files = validFiles;
+      this.$forceUpdate()
+    },
+    getObjectURL(file: any) {
+      return URL.createObjectURL(file);
+    },
+    dateYear(date: string) {
+      if (!date) {
+        return 0
+      }
+
+      const year = parseInt(`${date.toString().split('-')[0]}`)
+      return year
+    },
+    dateMonth(date: string) {
+      if (!date) {
+        return 0
+      }
+
+      const month = parseInt(`${date.toString().split('-')[1]}`)
+      return month
+    },
+    dateDay(date: string) {
+      if (!date) {
+        return 0
+      }
+
+      const day = parseInt(`${date.toString().split('-')[2]}`)
+      return day
+    },
+    formatDate(propertyName: string, isPilot = true) {
+      let currentDate = propertyName === 'birthday' ? this.pilot.person?.personBirthday : (isPilot ? this.pilot.pilotHireDate : this.flightAttendant.flightAttendantHireDate)
+      if ((this.pilot || this.fl) && currentDate) {
+        let newDate = null
+        currentDate = currentDate.toString()
+        const date = DateTime.local(this.dateYear(currentDate), this.dateMonth(currentDate), this.dateDay(currentDate), 0)
+        const day = date.toFormat('yyyy-MM-dd')
+        if (date.isValid) {
+          newDate = day
+        } else {
+          const otherDate = DateTime.fromHTTP(currentDate)
+          if (date.isValid) {
+            const day = otherDate.toFormat('yyyy-MM-dd')
+            newDate = day
+          }
+        }
+        if (newDate) {
+          if (propertyName === 'hireDate') {
+            if (isPilot) {
+              this.pilot.pilotHireDate = newDate
+            } else {
+              this.flightAttendant.flightAttendantHireDate = newDate
+            }
+          } else {
+            if (this.pilot.person) {
+              this.pilot.person.personBirthday = newDate
+            }
+          }
+        }
+        if (propertyName === 'hireDate') {
+          this.dateWasChange = true
+        }
+      }
+    },
+    getDate(date: string) {
+      return  DateTime.fromJSDate(new Date(date)).toFormat('yyyy-MM-dd');
+    },
+    hasPhotoEmployee() {
+      return (this.pilot && this.pilot.pilotPhoto) || (this.flightAttendant && this.flightAttendant.flightAttendantPhoto)
+    },
+    getUrlPhoto() {
+      if(this.pilot && this.pilot.pilotPhoto) {
+        return this.pilot.pilotPhoto
+      }
+      if(this.flightAttendant && this.flightAttendant.flightAttendantPhoto) {
+        return this.flightAttendant.flightAttendantPhoto
+      }
     },
     async onSave() {
       this.isEmailInvalid = false
@@ -177,6 +272,9 @@ export default defineComponent({
       this.isValidRFC = true
       const employeeService = new EmployeeService()
       const personService = new PersonService()
+      const pilotService = new PilotService()
+      const flightAttendantService = new FlightAttendantService()
+    
       if (!employeeService.validateEmployeeInfo(this.employee)) {
         this.$toast.add({
           severity: 'warn',
@@ -206,6 +304,33 @@ export default defineComponent({
         })
         return
       }
+      if (this.pilot !== null && this.files.length > 1) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Image invalid',
+          detail: 'Only one image is allowed',
+          life: 5000,
+        })
+        return
+      } else if(this.pilot !== null){
+        for await (const file of this.files) {
+          if (file) {
+            const mimeType = file.type;
+            const isAudioOrVideo = mimeType.startsWith('image/');
+            if (!isAudioOrVideo) {
+              this.$toast.add({
+                severity: 'warn',
+                summary: 'Image invalid',
+                detail: 'Only select image.',
+                life: 5000,
+              })
+              return
+            }
+          }
+        }
+      }
+
+
       // convert employee last name to last name and second last name
       const lastnames = this.employee.employeeLastName.split(' ')
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
@@ -264,9 +389,81 @@ export default defineComponent({
             life: 5000,
         })
         employeeResponse = await employeeService.show(employeeResponse._data.data.employee.employeeId)
-        if (employeeResponse?.status === 200) {
+        if (employeeResponse?.status === 200 && this.pilot === null && this.flightAttendant === null) {
           const employee = employeeResponse._data.data.employee
           this.$emit('save', employee as EmployeeInterface)
+        }
+        let pilotResponse = null
+        if (this.pilot !== null && employeeResponse?.status === 200) {
+          const image = this.files.length > 0 ? this.files[0] : null
+          this.pilot.pilotHireDate = this.employee.employeeHireDate
+          this.pilot.employeeId = employeeResponse._data.data.employee.employeeId
+          this.formatDate('hireDate', true)
+          if (this.pilot.pilotHireDate) {
+            this.pilot.pilotHireDate = this.getDate(this.pilot.pilotHireDate.toString())
+          }
+          if (!this.pilot.pilotId) {
+            pilotResponse = await pilotService.store(this.pilot, image)
+          } else {
+            pilotResponse = await pilotService.update(this.pilot, image)
+           }
+          if (pilotResponse.status === 201 || pilotResponse.status === 200) {
+            this.$toast.add({
+              severity: 'success',
+              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              detail: pilotResponse._data.message,
+                life: 5000,
+            })
+            pilotResponse = await pilotService.show(pilotResponse._data.data.pilot.pilotId)
+            if (pilotResponse?.status === 200) {
+              const pilot = pilotResponse._data.data.pilot
+              this.$emit('save', pilot as PilotInterface)
+            }
+          } else {
+            const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
+            this.$toast.add({
+              severity: 'error',
+              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              detail: msgError,
+                life: 5000,
+            })
+          }
+        }
+        let FlightAttendantResponse = null
+        if (this.flightAttendant !== null && employeeResponse?.status === 200) {
+          const image = this.files.length > 0 ? this.files[0] : null
+          this.flightAttendant.flightAttendantHireDate = this.employee.employeeHireDate
+          this.flightAttendant.employeeId = employeeResponse._data.data.employee.employeeId
+          this.formatDate('hireDate', false)
+          if (this.flightAttendant.flightAttendantHireDate) {
+            this.flightAttendant.flightAttendantHireDate = this.getDate(this.flightAttendant.flightAttendantHireDate.toString())
+          }
+          if (!this.flightAttendant.flightAttendantId) {
+            FlightAttendantResponse = await flightAttendantService.store(this.flightAttendant, image)
+          } else {
+            FlightAttendantResponse = await flightAttendantService.update(this.flightAttendant, image)
+          }
+          if (FlightAttendantResponse.status === 201 || FlightAttendantResponse.status === 200) {
+            this.$toast.add({
+              severity: 'success',
+              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              detail: FlightAttendantResponse._data.message,
+                life: 5000,
+            })
+            FlightAttendantResponse = await flightAttendantService.show(FlightAttendantResponse._data.data.flightAttendant.flightAttendantId)
+            if (FlightAttendantResponse?.status === 200) {
+              const flightAttendant = FlightAttendantResponse._data.data.flightAttendant
+              this.$emit('save', flightAttendant as FlightAttendantInterface)
+            }
+          } else {
+            const msgError = FlightAttendantResponse._data.error ? FlightAttendantResponse._data.error : FlightAttendantResponse._data.message
+            this.$toast.add({
+              severity: 'error',
+              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              detail: msgError,
+                life: 5000,
+            })
+          }
         }
       } else {
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message

@@ -15,6 +15,8 @@ export const useMyGeneralStore = defineStore({
     backgroundColorDark: '#092c50',
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
     isRoot: false,
+    isRh: false,
+    isAdmin: false,
     displayContent: false,
     userVacationFormClosed: false,
     systemSettingId: null as number | null,
@@ -93,12 +95,22 @@ export const useMyGeneralStore = defineStore({
         this.isRoot = true
         return true
       }
+      if (authUser && authUser.roleId && authUser.role && authUser.role.roleSlug === 'rh-manager') {
+        this.isRh = true
+        return true
+      }
+      if (authUser && authUser.roleId && authUser.role && authUser.role.roleSlug === 'admin') {
+        this.isAdmin = true
+        return true
+      }
 
       if (!authUser || !authUser.roleId) {
         return false
       }
 
       this.isRoot = false
+      this.isRh = false
+      this.isAdmin = false
       let hasAccess = false
 
       if (this.systemModules.length === 0) {
@@ -134,6 +146,8 @@ export const useMyGeneralStore = defineStore({
         }
       } else {
         this.isRoot = false
+        this.isRh = false
+        this.isAdmin = false
       }
       return hasAccess
     },
@@ -147,8 +161,14 @@ export const useMyGeneralStore = defineStore({
         if (authUser.role) {
           if (authUser.role.roleSlug === 'root') {
             this.isRoot = true
+          } else if (authUser.role.roleSlug === 'rh-manager') {
+            this.isRh = true
+          }  else if (authUser.role.roleSlug === 'admin') {
+            this.isAdmin = true
           } else {
             this.isRoot = false
+            this.isRh = false
+            this.isAdmin = false
           }
         }
         const roleService = new RoleService()
@@ -158,6 +178,8 @@ export const useMyGeneralStore = defineStore({
         }
       } else {
         this.isRoot = false
+        this.isRh = false
+        this.isAdmin = false
       }
       return systemPermissions
     },

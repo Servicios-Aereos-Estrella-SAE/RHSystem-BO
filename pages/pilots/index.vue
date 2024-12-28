@@ -38,9 +38,13 @@
               @page="onPageChange" />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
-              <Sidebar v-model:visible="drawerPilotForm" header="Pilot form" position="right"
+              <!-- <Sidebar v-model:visible="drawerPilotForm" header="Pilot form" position="right"
                 class="pilot-form-sidebar" :showCloseIcon="true">
                 <pilotInfoForm :pilot="pilot" @save="onSave" />
+              </Sidebar> -->
+               <Sidebar v-model:visible="drawerPilotForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
+                header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                <employeeInfoForm employeeType='pilot' :pilot="pilot" :employee="pilot.employee" @save="onSave" />
               </Sidebar>
             </div>
           </div>
