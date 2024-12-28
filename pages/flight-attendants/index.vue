@@ -41,7 +41,7 @@
             <div class="card flex justify-content-center">
               <Sidebar v-model:visible="drawerFlightAttendantForm" header="Flight attendant form" position="right"
                 class="flight-attendant-form-sidebar" :showCloseIcon="true">
-                <flightAttendantInfoForm :flightAttendant="flightAttendant" @save="onSave" />
+                <employeeInfoForm employeeType='pilot' :flightAttendant="flightAttendant" :employee="flightAttendant.employee" @save="onSave" />
               </Sidebar>
             </div>
           </div>
