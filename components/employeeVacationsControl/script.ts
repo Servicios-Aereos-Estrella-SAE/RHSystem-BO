@@ -151,6 +151,7 @@ export default defineComponent({
               detail: aircraftProceedingFileResponse._data.message,
               life: 5000,
             })
+            this.$emit('save', [])
           } else {
             this.$toast.add({
               severity: 'error',
@@ -194,9 +195,9 @@ export default defineComponent({
     async onSaveAll(shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       await this.getVacations()
       this.getCurrentInfo()
-      if (shiftExceptionsError.length > 0) {
-        this.$emit('save', shiftExceptionsError)
-      }
+      //if (shiftExceptionsError.length > 0) {
+      this.$emit('save', shiftExceptionsError)
+      //}
       this.$forceUpdate()
     },
     onCancel(index: number) {

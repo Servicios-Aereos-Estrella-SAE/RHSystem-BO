@@ -114,7 +114,17 @@ export default defineComponent({
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess ? '' : 'rest-day'
-    await this.getExceptionTypes(exceptionType)
+    this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
+    if (this.exceptionRequest.exceptionRequestId) {
+      let existCurrentExceptionType = this.exceptionTypeList.find(a => a.exceptionTypeId === this.exceptionRequest.exceptionTypeId)
+      if (!existCurrentExceptionType) {
+        const exceptionTypeList = await this.getExceptionTypes(exceptionType, false)
+        existCurrentExceptionType = exceptionTypeList.find(a => a.exceptionTypeId === this.exceptionRequest.exceptionTypeId)
+        if (existCurrentExceptionType) {
+          this.exceptionTypeList.push(existCurrentExceptionType)
+        }
+      }
+    }
 
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.exceptionRequest.exceptionTypeId)
@@ -133,10 +143,10 @@ export default defineComponent({
     }
   },
   methods: {
-    async getExceptionTypes(search: string) {
-      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100)
+    async getExceptionTypes(search: string, onlyActive: boolean) {
+      const response = await new ExceptionTypeService().getFilteredList(search, 1, 100, onlyActive)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      this.exceptionTypeList = list.filter(item => item.exceptionTypeSlug !== 'vacation')
+      return list.filter(item => item.exceptionTypeSlug !== 'vacation')
     },
     async onSave() {
       this.submitted = true

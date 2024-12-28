@@ -73,6 +73,7 @@
       <employeeShiftException
         :employee="employee"
         :date="selectedExceptionDate"
+        :shift="currentShift"
         @save="onSave"
       />
     </Sidebar>
