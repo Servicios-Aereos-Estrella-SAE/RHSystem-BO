@@ -41,10 +41,12 @@ export default defineComponent({
     needEnjoymentOfSalary: false,
     needPeriodDays: false,
     needPeriodHours: false,
+    needTimeByTime: false,
     formattedShiftExceptionInTime: '' as string | null,
     formattedShiftExceptionOutTime: '' as string | null,
     applyToMoreThanOneDay: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    isDisabilityLeave: false,
     options: [
       { label: 'Yes', value: 1 },
       { label: 'No', value: 0 },
@@ -115,7 +117,7 @@ export default defineComponent({
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
-    if (!myGeneralStore.isRoot && !myGeneralStore.isAdmin && !myGeneralStore.isRh && this.shift.shiftRestDays !== "0") {
+    if (!myGeneralStore.isRoot && !myGeneralStore.isAdmin && !myGeneralStore.isRh && (this.shift.shiftRestDays !== "0" || this.shift.shiftCalculateFlag)) {
       const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'rest-day')
       if (existRestDayIndex >= 0) {
         if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.shiftException.exceptionTypeId) {
@@ -253,12 +255,14 @@ export default defineComponent({
       }
       if (!this.needEnjoymentOfSalary) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
-        this.shiftException.shiftExceptionTimeByTime = null
-      } else {
-        this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
-        if ( this.shiftException.shiftExceptionTimeByTime === 1) {
-          this.shiftException.shiftExceptionEnjoymentOfSalary = 0
+        if (!this.needTimeByTime) {
+          this.shiftException.shiftExceptionTimeByTime = null
+          this.activeSwichtTimeByTime = false
         }
+      }
+      this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
+      if ( this.shiftException.shiftExceptionTimeByTime === 1) {
+        this.shiftException.shiftExceptionEnjoymentOfSalary = 0
       }
       if (!this.needPeriodDays) {
         this.shiftException.daysToApply = 0
@@ -325,6 +329,8 @@ export default defineComponent({
         this.needEnjoymentOfSalary = false
         this.needPeriodDays = false
         this.needPeriodHours = false
+        this.needTimeByTime = false
+        this.isDisabilityLeave = false
         let isVacation = false
         const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
         if (index >= 0) {
@@ -364,12 +370,19 @@ export default defineComponent({
                 })
               }
             }
+          } else if (this.exceptionTypeList[index].exceptionTypeSlug !== 'falta-por-incapacidad' && (this.exceptionTypeList[index].exceptionTypeSlug === 'late-arrival' || this.exceptionTypeList[index].exceptionTypeSlug === 'early-departure' || this.exceptionTypeList[index].exceptionTypeSlug === 'leaving-during-work-hours')) {
+            this.needTimeByTime = true
+          }
+          if (this.exceptionTypeList[index].exceptionTypeSlug === 'falta-por-incapacidad') {
+            this.isDisabilityLeave = true
+            this.activeSwichtTimeByTime = false
           }
         }
         if (this.needPeriodDays) {
           this.applyToMoreThanOneDay = false
           this.shiftException.daysToApply = 0
         }
+        
         this.setMinDate(isVacation)
       }
     },
