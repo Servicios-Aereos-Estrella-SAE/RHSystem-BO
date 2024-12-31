@@ -354,8 +354,14 @@ export default defineComponent({
     },
     setGeneralData () {
       const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
-      const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
-      const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      let tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
+      let delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const delaysOut = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
+      const tolerancesOut = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'tolerance').length
+      delays += delaysOut // verificar
+      tolerances += tolerancesOut // verificar
+      // console.log('salio antes de tiempo delays: ' + delaysOut)
+      // console.log('salio antes de tiempo tolerance: ' + tolerancesOut)
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay && assistDate.assist.dateShift).length
       const totalAvailable = assists + tolerances + delays + faults
 
