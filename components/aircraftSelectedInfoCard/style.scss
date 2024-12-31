@@ -1,0 +1,187 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.aircraft-selected-info{
+  width: 100%;
+  height: 100vh;
+
+  .aircraft-info{
+    display: grid;
+    // titulo, imagen, detalles, mapa, itinerario, costo, boton
+    grid-template-rows: 2rem 10rem 6rem 10rem 1fr .5rem 7rem 6rem;
+    gap: 0.4rem;
+
+    .aircraft-title{
+      font-size: .8rem;
+      font-weight: bold;
+      color: $text;
+      font-family: $font;
+    }
+
+    .aircraft-image{
+      width: 100%;
+
+      img{
+        object-fit: cover;  /* recorta la imagen para llenar el contenedor */
+        object-position: center; /* centro de la imagen */
+        border-radius: 15px;
+        width: 100%;
+        height: 150px;
+      }
+    }
+
+    .details{
+      display: flex;
+      flex-direction: column;  // Apilar de arriba hacia abajo
+      gap: 0;
+
+      // margin-top: -20px;
+      .aircraft-details-info{
+
+        padding: 0;
+        margin: 0;
+        color: $font-color;
+        font-family: $font;
+        font-size: .7rem;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        p{
+          margin: 0;
+          padding: 0;
+        }
+      }
+    }
+
+    .maps-info{
+      width: 100%;
+      height: auto;
+      .maps-header{
+        margin: 0;
+        display: flex;
+        justify-content: space-between;
+        font-size: .8rem;
+      font-weight: 500;
+      color: $font-color;
+      font-family: $font;
+      }
+      .btn-map{
+        background: none;
+        border: none;
+        color: $secondary;
+        font-size: .8rem;
+        font-weight: bold;
+        font-family: $font;
+        cursor: pointer;
+
+      }
+      iframe{
+        width: 100%;
+        height: 100%;
+        border-radius: 15px;
+      }
+
+    }
+
+    .detail-itinerary{
+      margin-top: 40px;
+      
+      .itinerary-info{
+        display: flex;
+        flex-direction: column;
+        .title-itinerary
+        {
+          font-size: .8rem;
+          font-weight: bold;
+          color: $font-color;
+          font-family: $font;
+          p{
+            margin: 0;
+            padding: 0;
+          }
+        }
+        
+        .itinerary-details{
+          display: grid;
+          grid-template-columns: 3rem 1fr;
+          justify-content: space-between;
+          font-size: .7rem;
+          color: $icon;
+          font-family: $font;
+        p{
+          margin: 3px;
+        }
+
+          .icon-itinerary{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            color: $icon;
+          }
+        }
+      }
+    }
+
+    .line-dash{
+      margin-top: -7px;
+      hr {
+        border: none; 
+        border-top: 1px dashed $black;
+      }    
+    }
+
+    .info-cost{
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 10px;
+      margin-top: -10px;
+      
+      .info-cost-details{
+        display: flex;
+        flex-direction: column;
+       
+        .info-cost-item{
+          font-size: .7rem;
+          font-weight: 500;
+          color: $font-color;
+          font-family: $font;
+          display: flex;
+          justify-content: space-between;
+          p{
+            margin: 3px;
+          }
+
+          .color-text{
+            color: $primary;
+            font-family: $font;
+            font-weight: bold;
+          }
+        }
+      
+      }
+    }
+
+    .bnt-save{
+    margin-top: -22px;
+    padding: 10px;
+    
+    .btn-quote{
+      background: $primary;
+      color: white;
+      font-size: .8rem;
+      font-weight: 500;
+      font-family: $font;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 0.5rem;
+      text-align: center;
+      width: 100%;
+    }
+    }
+
+  }
+}
+

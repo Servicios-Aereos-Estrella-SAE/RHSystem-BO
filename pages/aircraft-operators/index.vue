@@ -25,7 +25,7 @@
           </div>
           <div>
             <h2>
-              Pilots
+              Aircraft Operators
             </h2>
             <div class="pilot-card-wrapper">
               <div v-for="(aircraftOperator, index) in filteredAircraftOperators" :key="`pilot-${aircraftOperator.aircraftOperatorId}-${index}`">
@@ -39,7 +39,7 @@
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
               <Sidebar v-model:visible="drawerPilotForm" header="Pilot form" position="right"
-                class="pilot-form-sidebar" :showCloseIcon="true">
+                class="aircraft-operator-form-sidebar" :showCloseIcon="true">
                 <AircraftOperatorInfoForm :aircraftOperator="aircraftOperator" @save="onSave" />
               </Sidebar>
             </div>
@@ -72,7 +72,7 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
  
-  .pilot-form-sidebar {
+  .aircraft-operator-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
 
