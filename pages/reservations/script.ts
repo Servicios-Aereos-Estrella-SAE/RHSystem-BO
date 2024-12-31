@@ -1,14 +1,29 @@
-import AircraftOperatorService from "~/resources/scripts/services/AircraftOperatorService";
+import AircraftService from "~/resources/scripts/services/AircraftService"
+import CustomerService from "~/resources/scripts/services/CustomerService";
+import PilotService from "~/resources/scripts/services/PilotService";
+import FlightAttendantService from "~/resources/scripts/services/FlightAttendantService";
 import { useMyGeneralStore } from "~/store/general";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
 import type { AircraftOperatorInterface } from "~/resources/scripts/interfaces/AircraftOperatorInterface";
+import type { AircraftInterface } from "~/resources/scripts/interfaces/AircraftInterface";
+import type { CustomerInterface } from "~/resources/scripts/interfaces/CustomerInterface";
+import { format } from "date-fns";
+import type { PilotInterface } from "~/resources/scripts/interfaces/PilotInterface";
+import type { FlightAttendantInterface } from "~/resources/scripts/interfaces/FlightAttendantInterface";
 export default defineComponent({
     name: 'AircraftOperators',
     props: {},
     data: () => ({
         search: '' as string,
-        filteredAircraftOperators: [] as AircraftOperatorInterface[],
-        aircraftOperator: null as AircraftOperatorInterface | null,
+        aircraft: [] as AircraftInterface[],
+        customers: [] as CustomerInterface[],
+        pilots: [] as PilotInterface[],
+        pilotSelectedSic: null as PilotInterface | null,
+        pilotSelectedPic: null as PilotInterface | null,
+        flightAttendants: [] as FlightAttendantInterface[],
+        flightAttendantSelected: null as FlightAttendantInterface | null,
+        customerSelected: null as CustomerInterface | null,
+        aircraftSelected: null as AircraftInterface | null,
         currentPage: 1,
         totalRecords: 0,
         first: 0,
@@ -22,13 +37,50 @@ export default defineComponent({
         canUpdate: false,
         canDelete: false
     }),
-    computed: {},
-    created() { },
+    computed: {
+        formatContacts() {
+            return this.customers.map((customer: CustomerInterface) => {
+                return {
+                    customerId: customer.customerId,
+                    customerName: customer.person?.personFirstname + ' ' + customer.person?.personLastname
+                }
+            })
+        },
+        formatAircraft() {
+            return this.aircraft.map((aircraft: AircraftInterface) => {
+                return {
+                    aircraftId: aircraft.aircraftId,
+                    aircraftName:  aircraft.aircraftSerialNumber + ' - ' + aircraft.aircraftRegistrationNumber
+                }
+            })
+        },
+        formatPilots() {
+            return this.pilots.map((pilot: PilotInterface) => {
+                return {
+                    pilotId: pilot.pilotId,
+                    pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.person?.employeeLastName
+                }
+            })
+        },
+        formatFlightAttendants() {
+            return this.flightAttendants.map((flightAttendant: FlightAttendantInterface) => {
+                return {
+                    flightAttendantId: flightAttendant.flightAttendantId,
+                    flightAttendantName: flightAttendant.employee?.employeeFirstName + ' ' + flightAttendant.employee?.employeeLastName
+                }
+            })
+        }
+    },
+    created() {},
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
         const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
         const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+        await this.handlerSearchCustomer();
+        await this.handlerSearchAircraft();
+        await this.handlerSearchPilot();
+        await this.handlerSearchFlightAttendant();
         if (myGeneralStore.isRoot) {
           this.canCreate = true
           this.canUpdate = true
@@ -39,90 +91,44 @@ export default defineComponent({
           this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
         }
         myGeneralStore.setFullLoader(false)
-        await this.handlerSearchAircraftOperator();
     },
     methods: {
-        async handlerSearchAircraftOperator() {
+        async handlerSearchCustomer() {
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
-            const response = await new AircraftOperatorService().getFilteredList(this.search, this.currentPage, this.rowsPerPage);
-            const list = response.status === 200 ? response._data.data.operators.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.operators.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.operators.meta.first_page : 0;
-            this.filteredAircraftOperators = list;
+            const response = await new CustomerService().getFilteredList('', 1, 999999999);
+            const list = response.status === 200 ? response._data.data.customers.data : [];
+            this.totalRecords = response.status === 200 ? response._data.data.customers.meta.total : 0;
+            this.first = response.status === 200 ? response._data.data.customers.meta.first_page : 0;
+            this.customers = list;
             myGeneralStore.setFullLoader(false)
         },
-        onPhoto(aircraftOperator: AircraftOperatorInterface) {
-            this.aircraftOperator = { ...aircraftOperator };
-            this.drawerPilotPhotoForm = true;
+        async handlerSearchFlightAttendant() {
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const response = await new FlightAttendantService().getFilteredList('', 1, 999999999);
+            const list = response.status === 200 ? response._data.data.flightAttendants.data : [];
+            this.totalRecords = response.status === 200 ? response._data.data.flightAttendants.meta.total : 0;
+            this.first = response.status === 200 ? response._data.data.flightAttendants.meta.first_page : 0;
+            this.flightAttendants = list;
+            myGeneralStore.setFullLoader(false)
         },
-        onPageChange(event: any) {
-            this.currentPage = event.page + 1;
-            this.rowsPerPage = event.rows;
-            this.handlerSearchAircraftOperator();
+        async handlerSearchPilot() {
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const response = await new PilotService().getFilteredList('', 1, 999999999);
+            const list = response.status === 200 ? response._data.data.pilots.data : [];
+            this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
+            this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
+            this.pilots = list;
+            myGeneralStore.setFullLoader(false)
         },
-        addNew() {
-            const newAircraftOperator: AircraftOperatorInterface = {
-                aircraftOperatorId: null,
-                aircraftOperatorName: '',
-                aircraftOperatorFiscalName: '',
-                aircraftOperatorSlug: '',
-                aircraftOperatorCreatedAt: new Date(),
-                aircraftOperatorUpdatedAt: new Date(),
-                aircraftOperatorDeletedAt: null,
-                aircraftOperatorImage: null,
-                aircraftOperatorActive: 1
-            }
-            this.aircraftOperator = newAircraftOperator
-            this.drawerPilotForm = true
-        },
-        onEdit(aircraftOperator: AircraftOperatorInterface) {
-            this.aircraftOperator = { ...aircraftOperator };
-            this.drawerPilotForm = true;
-        },
-        onDelete(aircraftOperator: AircraftOperatorInterface) {
-            this.aircraftOperator = { ...aircraftOperator };
-            this.drawerPilotDelete = true;
-        },
-        async confirmDelete() {
-            if (this.aircraftOperator) {
-                this.drawerPilotDelete = false;
-                const aircraftOperatorService = new AircraftOperatorService();
-                const aircraftOperatorResponse = await aircraftOperatorService.delete(this.aircraftOperator);
-                if (aircraftOperatorResponse.status === 200) {
-                    const index = this.filteredAircraftOperators.findIndex((aircraftOperator: AircraftOperatorInterface) => aircraftOperator.aircraftOperatorId === this.aircraftOperator?.aircraftOperatorId);
-                    if (index !== -1) {
-                        this.filteredAircraftOperators.splice(index, 1);
-                        this.$forceUpdate();
-                    }
-                    this.$toast.add({
-                        severity: 'success',
-                        summary: 'Delete Aircraft Operator',
-                        detail: aircraftOperatorResponse._data.message,
-                        life: 5000,
-                    });
-                } else {
-                    this.$toast.add({
-                        severity: 'error',
-                        summary: 'Delete pilot',
-                        detail: aircraftOperatorResponse._data.message,
-                        life: 5000,
-                    });
-                }
-            }
-        },
-        onSave(aircraftOperator: AircraftOperatorInterface) {
-            this.aircraftOperator = { ...aircraftOperator };
-            const index = this.filteredAircraftOperators.findIndex((s: AircraftOperatorInterface) => s.aircraftOperatorId === this.aircraftOperator?.aircraftOperatorId);
-            if (index !== -1) {
-                this.filteredAircraftOperators[index] = aircraftOperator;
-                this.$forceUpdate();
-            } else {
-                this.filteredAircraftOperators.push(aircraftOperator);
-                this.$forceUpdate();
-            }
-            this.drawerPilotForm = false;
-            this.drawerPilotPhotoForm = false;
+        async handlerSearchAircraft() {
+            const response = await new AircraftService().getFilteredList('', 1, 999999999);
+            const list = response.status === 200 ? response._data.data.data : [];
+            this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
+            this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
+            this.aircraft = list;
         },
     }
 });

@@ -17,14 +17,14 @@
                   Select Aircraft
                 </label>
                 <Dropdown
-                  placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted"/>
+                  placeholder="Select" class="w-full md:w-14rem" v-model="aircraftSelected" :options="formatAircraft" optionLabel="aircraftName"/>
               </div>
               <div class="input-box">
                 <label for="search">
                   Select Customer
                 </label>
                 <Dropdown
-                  placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted"/>
+                  placeholder="Select" v-model="customerSelected" class="w-full md:w-14rem" :options="formatContacts" optionLabel="customerName" />
               </div>
               <div class="input-box">
                 <Button v-if="canCreate" class="btn-add flex justify-content-center" severity="primary" @click="addNew" >
@@ -59,19 +59,18 @@
                     <div class="input-box">
                       <label for="lastName">PIC</label>
                       <Dropdown
-                        placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted"/>
-                      <small class="p-error" v-if="submitted">Second Last Name is required.</small>
+                        placeholder="Select" class="w-full md:w-14rem" v-model="pilotSelectedPic" :options="formatPilots" optionLabel="pilotName"/>
                     </div>
                     <div class="input-box">
                       <label for="lastName">SIC</label>
                       <Dropdown
-                        placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted"/>
+                        placeholder="Select" class="w-full md:w-14rem" v-model="pilotSelectedSic" :options="formatPilots" optionLabel="pilotName"/>
                       <small class="p-error" v-if="submitted">Second Last Name is required.</small>
                     </div>
                     <div class="input-box">
                       <label for="lastName">SOB</label>
                       <Dropdown
-                        placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted"/>
+                        placeholder="Select" class="w-full md:w-14rem" v-model="flightAttendantSelected" :options="formatFlightAttendants" optionLabel="flightAttendantName"/>
                       <small class="p-error" v-if="submitted">Second Last Name is required.</small>
                     </div>
                   </div>
