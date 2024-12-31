@@ -40,6 +40,14 @@
     margin-bottom: 0.75rem;
     background-color: transparentize($color: $success, $amount: 0.95);
   }
+
+  .early-out {
+    margin-top: .8rem;
+    font-size: 1.25rem;
+    color: $danger;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $success, $amount: 0.95);
+  }
   
   .tolerance {
     background-color: transparentize($color: $info, $amount: 0.95);
@@ -49,6 +57,11 @@
   .delay {
     background-color: transparentize($color: $warning, $amount: 0.95);
     color: $warning;
+  }
+
+  .early-out {
+    background-color: transparentize($color: $warning, $amount: 0.95);
+    color: #f6a65bc7;
   }
 
   .fault {
