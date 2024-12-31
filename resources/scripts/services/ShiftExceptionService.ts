@@ -230,10 +230,6 @@ export default class ShiftExceptionService {
       console.error("Wrong date");
       return false;
     }
-    if (!shiftException.shiftExceptionsDescription) {
-      console.error("Wrong description");
-      return false;
-    }
     if (!shiftException.exceptionTypeId) {
       console.error("Wrong type id");
       return false;

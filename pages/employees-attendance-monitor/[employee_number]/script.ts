@@ -125,6 +125,7 @@ export default defineComponent({
     faultsDelays: 0,
     workedTime: '',
     canReadTimeWorked: false,
+    canAddAssistManual: false,
   }),
   computed: {
     isRoot () {
@@ -290,8 +291,10 @@ export default defineComponent({
     const permissions = await myGeneralStore.getAccess(firstSegment)
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
+      this.canAddAssistManual = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
+      this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
     }
     this.periodSelected = new Date()
     await this.setAssistSyncStatus()
@@ -392,8 +395,11 @@ export default defineComponent({
         if (idx >= 0) {
           this.visualizationModeOptions[idx].selected =  true
         }
-
-        this.periodSelected = new Date()
+        if (this.visualizationMode?.value === 'fourteen') {
+          this.periodSelected = this.getNextPayThursday()
+        } else {
+          this.periodSelected = new Date()
+        }
 
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -656,6 +662,17 @@ export default defineComponent({
     onSaveAssist () {
       this.drawerAssistForm = false
       this.handlerPeriodChange()
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
     }
   }
 })

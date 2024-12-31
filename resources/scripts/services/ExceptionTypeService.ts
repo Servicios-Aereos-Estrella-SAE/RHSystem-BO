@@ -14,7 +14,7 @@ export default class ExceptionTypeService {
     }
   }
 
-  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999, onlyActive: boolean = true) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -22,6 +22,7 @@ export default class ExceptionTypeService {
       headers,
       query: {
         search: searchText,
+        onlyActive: onlyActive,
         page,
         limit
       },

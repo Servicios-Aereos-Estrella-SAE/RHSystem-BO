@@ -132,13 +132,36 @@
             </div>
           </div>
         </div>
-        <div class="input-box">
+        <div class="input-box" v-show="!pilot && !flightAttendant">
           <label for="employee-type">
             Employee type
           </label>
           <Dropdown v-model="employee.employeeTypeId" :options="employeeTypes" optionLabel="employeeTypeName" optionValue="employeeTypeId"
             placeholder="Select a Employee Type" filter class="w-full md:w-14rem" :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted"/>
           <small class="p-error" v-if="submitted && !employee.employeeTypeId">Employee type is required.</small>
+        </div>
+        <div class="input-box" v-if="pilot || flightAttendant">
+          <div v-if="hasPhotoEmployee()" class="p-d-flex p-ai-center p-mb-2 image-pilot">
+            <img role="presentation"
+              class="p-fileupload-file-thumbnail" width="50" :src="getUrlPhoto()" />
+          </div>
+          <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
+          :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
+          <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+            <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
+              <img v-if="file && file.type.startsWith('image/')" role="presentation"
+                class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
+              <span v-if="file">{{ file.name }}</span>
+              <Button v-if="file" @click="removeFileCallback(index)"
+                class="p-ml-auto p-button p-component p-button-text">
+                <span class="p-button-icon pi pi-times"></span>
+              </Button>
+            </div>
+          </template>
+          <template #empty>
+            <p>Drag and drop file to here to upload.</p>
+          </template>
+        </FileUpload>
         </div>
         <div class="box-tools-footer">
           <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->

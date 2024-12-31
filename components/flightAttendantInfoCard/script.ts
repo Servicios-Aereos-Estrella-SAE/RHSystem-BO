@@ -22,8 +22,6 @@ export default defineComponent({
       return ''
     }
   },
-  async mounted() {
-  },
   methods: {
     handlerClickOnEdit () {
       if (this.clickOnEdit) {

@@ -93,7 +93,7 @@
               :dateFormat="visualizationMode.calendar_format.format"
               :minDate="minDate"
               :maxDate="maxDate"
-              showWeek
+              :showWeek="false"
               @update:modelValue="handlerPeriodChange"
             />
             <Calendar
@@ -107,7 +107,7 @@
               selectionMode="range"
               :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange"
-              showWeek
+              :showWeek="false"
             />
 
             <Calendar
@@ -119,7 +119,7 @@
               hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange"
-              showWeek
+              :showWeek="false"
             >
               <template #date="slotProps">
                 <strong v-if="isThursday(slotProps.date)" >{{ slotProps.date.day }}</strong>
@@ -140,7 +140,7 @@
             </span>
           </h6>
           <div class="subhead-tools">
-            <div v-if="visualizationMode && isRoot" class="input-box">
+            <div v-if="visualizationMode && canAddAssistManual" class="input-box">
               <Button class="btn btn-block" severity="success" @click="addNewAssist">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM21 8.5l.001 3.523a6.5 6.5 0 0 0-8.979 8.979L6.25 21A3.25 3.25 0 0 1 3 17.75V8.5h18ZM17.5 14l-.09.008a.5.5 0 0 0-.402.402L17 14.5V17h-2.5l-.09.008a.5.5 0 0 0-.402.402L14 17.5l.008.09a.5.5 0 0 0 .402.402l.09.008H17v2.5l.008.09a.5.5 0 0 0 .402.402l.09.008.09-.008a.5.5 0 0 0 .402-.402L18 20.5V18h2.5l.09-.008a.5.5 0 0 0 .402-.402L21 17.5l-.008-.09a.5.5 0 0 0-.402-.402L20.5 17H18v-2.5l-.008-.09a.5.5 0 0 0-.402-.402L17.5 14Zm.25-11A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </Button>

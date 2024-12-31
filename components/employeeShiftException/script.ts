@@ -11,6 +11,7 @@ import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
+import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
 
 export default defineComponent({
   components: {
@@ -21,7 +22,8 @@ export default defineComponent({
   name: 'employeeShiftException',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    date: { type: Date, required: true }
+    date: { type: Date, required: true },
+    shift: { type: Object as PropType<ShiftInterface>, required: true }
   },
   data: () => ({
     isReady: false,
@@ -36,10 +38,11 @@ export default defineComponent({
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
     drawershiftExceptionsError: false,
-    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    canManageToPreviousDays: false
   }),
   computed: {
-    selectedExceptionDate () {
+    selectedExceptionDate() {
       const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
       return day
     }
@@ -48,7 +51,6 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-
     this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
@@ -56,20 +58,79 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
+      this.canManageToPreviousDays = true
+    } else {
+      if (myGeneralStore.isRh) {
+        this.canManageToPreviousDays = true
+      } else {
+        if (this.isDateGreaterOrEqualToToday(this.date.toString())) {
+          this.canManageToPreviousDays = true
+        }
+      }
+      if (myGeneralStore.isRh) {
+        if (this.isDateAfterOrEqualToFirstDayPeriod()) {
+          this.canManageToPreviousDays = true
+        } else {
+          this.canManageToPreviousDays = false
+        }
+      }
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
-   
+
   },
   methods: {
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    isDateAfterOrEqualToFirstDayPeriod() {
+      const datePay = this.getNextPayThursday()
+      const monthPerdiod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
+      let start
+      const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+      const startOfWeek = date.startOf('week')
+      let thursday = startOfWeek.plus({ days: 3 })
+      start = thursday.minus({ days: 24 })
+      let currentDay = start
+      currentDay = currentDay.minus({ days: 1 })
+      return DateTime.fromJSDate(this.date) >= currentDay
+    },
+    isDateGreaterOrEqualToToday(dateString: string) {
+      const inputDate = new Date(dateString)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      return inputDate >= today
+    },
     async getShiftEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.shiftExceptionsList = []
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const shiftExceptionService = new ShiftExceptionService()
-      const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeId, this.selectedExceptionTypeId, this.selectedDateStart,this.selectedDateEnd)
+      const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeId, this.selectedExceptionTypeId, this.selectedDateStart, this.selectedDateEnd)
       this.shiftExceptionsList = shiftExceptionResponse
+      const exceptionTypeVacationId = await this.getExceptionTypeVacation()
+      if (exceptionTypeVacationId) {
+        this.shiftExceptionsList = this.shiftExceptionsList.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
+      }
       myGeneralStore.setFullLoader(false)
+    },
+    async getExceptionTypeVacation() {
+      const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
+      const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
+      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === 'vacation')
+      return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     addNew() {
       const newShiftException: ShiftExceptionInterface = {
@@ -92,7 +153,7 @@ export default defineComponent({
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.shiftException = {...shiftException}
+      this.shiftException = { ...shiftException }
       if (this.shiftException.shiftExceptionsDate) {
         const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
@@ -115,7 +176,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       for await (const shiftException of shiftExceptions) {
-        this.shiftException = {...shiftException}
+        this.shiftException = { ...shiftException }
         if (this.shiftException.shiftExceptionsDate) {
           const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
           this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
@@ -128,7 +189,7 @@ export default defineComponent({
           this.shiftExceptionsList.push(shiftException)
           this.$forceUpdate()
         }
-       
+
         this.drawerShiftExceptionForm = false
       }
       this.$emit('save', shiftExceptionsError)
@@ -136,18 +197,18 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     onEdit(shiftException: ShiftExceptionInterface) {
-      this.shiftException = {...shiftException}
+      this.shiftException = { ...shiftException }
       this.drawerShiftExceptionForm = true
     },
     onDelete(shiftException: ShiftExceptionInterface) {
-      this.shiftException = {...shiftException}
+      this.shiftException = { ...shiftException }
       this.selectedDateTimeDeleted = ''
       if (this.shiftException.shiftExceptionsDate) {
         this.selectedDateTimeDeleted = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString()).toHTTP()
       }
       this.drawerShiftExceptionDelete = true
     },
-    
+
     async confirmDelete() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -161,13 +222,13 @@ export default defineComponent({
             this.shiftExceptionsList.splice(index, 1)
             this.$forceUpdate()
           }
-          this.$emit('save')
+          this.$emit('save', [])
         } else {
           this.$toast.add({
             severity: 'error',
             summary: 'Delete shift exception',
             detail: shiftExceptionResponse._data.message,
-              life: 5000,
+            life: 5000,
           })
         }
       }

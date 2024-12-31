@@ -530,6 +530,9 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      if (this.visualizationMode?.value === 'fourteen') {
+        this.periodSelected = this.getNextPayThursday()
+      }
       this.setGraphsData()
       myGeneralStore.setFullLoader(false)
     },
@@ -720,6 +723,17 @@ export default defineComponent({
         })
         myGeneralStore.setFullLoader(false)
       }
-    }
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
   }
 })

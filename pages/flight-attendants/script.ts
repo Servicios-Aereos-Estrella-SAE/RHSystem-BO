@@ -1,3 +1,4 @@
+import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { FlightAttendantInterface } from "~/resources/scripts/interfaces/FlightAttendantInterface";
 import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
@@ -78,12 +79,39 @@ export default defineComponent({
                 personUpdatedAt: new Date(),
                 personDeletedAt: null
             }
+            const newEmployee: EmployeeInterface = {
+                employeeId: null,
+                employeeFirstName: "",
+                employeeSyncId: "",
+                employeeCode: "",
+                employeeLastName: "",
+                employeePayrollNum: "",
+                departmentSyncId: "",
+                positionSyncId: "",
+                employeeDeletedAt: null,
+                employeeHireDate: new Date(),
+                companyId: 1,
+                departmentId: 0,
+                positionId: 0,
+                employeeWorkSchedule: "Onsite",
+                personId: 0,
+                employeeTypeId: 0,
+                employeePhoto: null,
+                employeeLastSynchronizationAt: new Date(),
+                employeeCreatedAt: new Date(),
+                employeeUpdatedAt: new Date(),
+                person: person,
+                businessUnitId: 1,
+                employeeAssistDiscriminator: 0,
+                employeeTypeOfContract: "Internal",
+                employeeTerminatedDate: new Date(),
+            }
             const newFlightAttendant: FlightAttendantInterface = {
                 flightAttendantId: null,
                 flightAttendantPhoto: null,
                 flightAttendantHireDate: null,
-                personId: 0,
-                person: person,
+                employeeId: 0,
+                employee: newEmployee,
                 flightAttendantCreatedAt: new Date(),
                 flightAttendantUpdatedAt: new Date(),
                 flightAttendantDeletedAt: null

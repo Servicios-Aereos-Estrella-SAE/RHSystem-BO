@@ -3,6 +3,7 @@ import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInter
 import PilotService from "~/resources/scripts/services/PilotService";
 import { useMyGeneralStore } from "~/store/general";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
+import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 export default defineComponent({
     name: 'Pilots',
     props: {},
@@ -51,6 +52,7 @@ export default defineComponent({
             this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
             this.filteredPilots = list;
+            console.log(this.filteredPilots, 'this filter pilots')
             myGeneralStore.setFullLoader(false)
         },
         onPhoto(pilot: PilotInterface) {
@@ -63,7 +65,7 @@ export default defineComponent({
             this.handlerSearchPilot();
         },
         addNew() {
-            const person: PeopleInterface = {
+             const person: PeopleInterface = {
                 personId: null,
                 personFirstname: "",
                 personLastname: "",
@@ -78,12 +80,39 @@ export default defineComponent({
                 personUpdatedAt: new Date(),
                 personDeletedAt: null
             }
+            const newEmployee: EmployeeInterface = {
+                employeeId: null,
+                employeeFirstName: "",
+                employeeSyncId: "",
+                employeeCode: "",
+                employeeLastName: "",
+                employeePayrollNum: "",
+                departmentSyncId: "",
+                positionSyncId: "",
+                employeeDeletedAt: null,
+                employeeHireDate: new Date(),
+                companyId: 1,
+                departmentId: 0,
+                positionId: 0,
+                employeeWorkSchedule: "Onsite",
+                personId: 0,
+                employeeTypeId: 0,
+                employeePhoto: null,
+                employeeLastSynchronizationAt: new Date(),
+                employeeCreatedAt: new Date(),
+                employeeUpdatedAt: new Date(),
+                person: person,
+                businessUnitId: 1,
+                employeeAssistDiscriminator: 0,
+                employeeTypeOfContract: "Internal",
+                employeeTerminatedDate: new Date(),
+            }
             const newPilot: PilotInterface = {
                 pilotId: null,
                 pilotPhoto: null,
                 pilotHireDate: null,
-                personId: 0,
-                person: person,
+                employeeId: 0,
+                employee: newEmployee,
                 pilotCreatedAt: new Date(),
                 pilotUpdatedAt: new Date(),
                 pilotDeletedAt: null
