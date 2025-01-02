@@ -174,6 +174,7 @@
                   :onTimePercentage="onTimePercentage"
                   :onToleracePercentage="onTolerancePercentage"
                   :onDelayPercentage="onDelayPercentage"
+                  :onEarlyOutPercentage="onEarlyOutPercentage"
                   :onFaultPercentage="onFaultPercentage"
                 />
                 <div class="indicators-extra-info">
@@ -183,6 +184,14 @@
                     </span>
                     <span class="prop-label">
                       Faults from delays
+                    </span>
+                  </div>
+                  <div class="indicator-prop-val">
+                    <span class="prop-val">
+                      {{ `${faultsEarlyOuts}`.padStart(2, '0') }}
+                    </span>
+                    <span class="prop-label">
+                      Faults from early out
                     </span>
                   </div>
                   <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
