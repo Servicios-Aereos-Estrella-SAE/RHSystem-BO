@@ -10,33 +10,33 @@
         {{ `${employee.employee.employeeLastName || ''}`.toLocaleLowerCase() }}
       </div>
       <div class="percentage assist">
-        {{employee.assistStatisticsTemp.onTimePercentage || 0}}%
+        {{employee.assistStatistics.onTimePercentage || 0}}%
         <small>
           On Time
         </small>
       </div>
       <div class="percentages">
         <div class="percentage tolerance">
-          {{employee.assistStatisticsTemp.onTolerancePercentage || 0}}%
+          {{employee.assistStatistics.onTolerancePercentage || 0}}%
           <small>
             Tolerances
           </small>
         </div>
         <div class="percentage delay">
-          {{employee.assistStatisticsTemp.onDelayPercentage || 0}}%
+          {{employee.assistStatistics.onDelayPercentage || 0}}%
           <small>
             Delays
           </small>
         </div>
         <div class="percentage fault">
-          {{employee.assistStatisticsTemp.onFaultPercentage || 0}}%
+          {{employee.assistStatistics.onFaultPercentage || 0}}%
           <small>
             Faults
           </small>
         </div>
       </div>
       <div class="percentage early-out">
-        {{employee.assistStatisticsTemp.onEarlyOutPercentage || 0}}%
+        {{employee.assistStatistics.onEarlyOutPercentage || 0}}%
         <small>
           Early outs
         </small>
