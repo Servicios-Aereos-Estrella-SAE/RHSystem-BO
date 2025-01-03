@@ -10,30 +10,36 @@
         {{ `${employee.employee.employeeLastName || ''}`.toLocaleLowerCase() }}
       </div>
       <div class="percentage assist">
-        {{employee.assistStatistics.onTimePercentage || 0}}%
+        {{employee.assistStatisticsTemp.onTimePercentage || 0}}%
         <small>
           On Time
         </small>
       </div>
       <div class="percentages">
         <div class="percentage tolerance">
-          {{employee.assistStatistics.onTolerancePercentage || 0}}%
+          {{employee.assistStatisticsTemp.onTolerancePercentage || 0}}%
           <small>
             Tolerances
           </small>
         </div>
         <div class="percentage delay">
-          {{employee.assistStatistics.onDelayPercentage || 0}}%
+          {{employee.assistStatisticsTemp.onDelayPercentage || 0}}%
           <small>
             Delays
           </small>
         </div>
         <div class="percentage fault">
-          {{employee.assistStatistics.onFaultPercentage || 0}}%
+          {{employee.assistStatisticsTemp.onFaultPercentage || 0}}%
           <small>
             Faults
           </small>
         </div>
+      </div>
+      <div class="percentage early-out">
+        {{employee.assistStatisticsTemp.onEarlyOutPercentage || 0}}%
+        <small>
+          Early outs
+        </small>
       </div>
       <div class="box-tools-footer">
         <nuxt-link :to="`/employees-attendance-monitor/${employee.employee.employeeCode}`" class="box-button block">

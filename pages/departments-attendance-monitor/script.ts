@@ -102,7 +102,7 @@ export default defineComponent({
     },
     departmentList: [] as DepartmentInterface[],
     departmenSelected: null as DepartmentInterface | null,
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
@@ -123,9 +123,9 @@ export default defineComponent({
     statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
-    weeklyStartDay () {
+    weeklyStartDay() {
       const daysList = []
-      
+
       if (!this.periodSelected && !this.datesSelected.length) {
         return []
       }
@@ -139,13 +139,13 @@ export default defineComponent({
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('month')
           const daysInMonth = (start.daysInMonth || 0)
-          
+
           for (let index = 0; index < daysInMonth; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -157,13 +157,13 @@ export default defineComponent({
         case 'weekly': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('week')
-          
+
           for (let index = 0; index < 7; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -171,7 +171,7 @@ export default defineComponent({
             })
           }
           break;
-        }   
+        }
         case 'custom': {
           if (this.datesSelected.length === 2) {
             const startDate = DateTime.fromJSDate(this.datesSelected[0]) // Fecha de inicio
@@ -197,7 +197,7 @@ export default defineComponent({
         case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
-          
+
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
@@ -224,7 +224,7 @@ export default defineComponent({
       }
       return daysList
     },
-    lineChartTitle () {
+    lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
         return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
@@ -240,22 +240,22 @@ export default defineComponent({
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
-          // Convertimos la fecha inicio desde weeklyStartDay[0]
-          const startDate = DateTime.fromObject({
-            year: this.weeklyStartDay[0].year,
-            month: this.weeklyStartDay[0].month,
-            day: this.weeklyStartDay[0].day
-          }).minus({ days: 1 }).setLocale('en');
+        // Convertimos la fecha inicio desde weeklyStartDay[0]
+        const startDate = DateTime.fromObject({
+          year: this.weeklyStartDay[0].year,
+          month: this.weeklyStartDay[0].month,
+          day: this.weeklyStartDay[0].day
+        }).minus({ days: 1 }).setLocale('en');
 
-          // Convertimos la fecha fin desde weeklyStartDay[1]
-          const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-          const endDate = DateTime.fromObject({
-            year: endDateObject.year,
-            month: endDateObject.month,
-            day: endDateObject.day
-          }).minus({ days: 1 }).setLocale('en');
+        // Convertimos la fecha fin desde weeklyStartDay[1]
+        const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+        const endDate = DateTime.fromObject({
+          year: endDateObject.year,
+          month: endDateObject.month,
+          day: endDateObject.day
+        }).minus({ days: 1 }).setLocale('en');
 
-          return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
+        return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
@@ -264,17 +264,17 @@ export default defineComponent({
         return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
       }
     },
-    departmentCollection (): DepartmentInterface[] {
+    departmentCollection(): DepartmentInterface[] {
       const list: DepartmentInterface[] = JSON.parse(JSON.stringify(this.departmentList)) as DepartmentInterface[]
       const collection = list.map((item: DepartmentInterface) => ({ ...item, label: item.departmentAlias || item.departmentName }))
       return collection
     },
-    departmentPositionCollection (): PositionInterface[] {
+    departmentPositionCollection(): PositionInterface[] {
       const list: PositionInterface[] = JSON.parse(JSON.stringify(this.departmentPositionList)) as PositionInterface[]
       const collection = list.map((item: PositionInterface) => item)
       return collection
     },
-    assistSyncStatusDate () {
+    assistSyncStatusDate() {
       if (this.statusInfo) {
         const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
         const dateTimeFormat = dateTime.toFormat('ff')
@@ -284,7 +284,7 @@ export default defineComponent({
       return ''
     }
   },
-  created () {
+  created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -307,7 +307,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    setDefaultVisualizationMode () {
+    setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
@@ -317,8 +317,8 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
     },
     isThursday(dateObject: any, addOneMonth = true) {
-      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
-      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
+      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
     },
@@ -328,14 +328,14 @@ export default defineComponent({
 
       return [previousDay, currentDay];
     },
-    handlerSetInitialDepartmentList () {
+    handlerSetInitialDepartmentList() {
       this.departmenSelected = this.departmentCollection.length > 0 ? this.departmentCollection[0] : null
     },
-    setGraphsData () {
+    setGraphsData() {
       this.setPeriodData()
       this.setGeneralData()
     },
-    setPeriodCategories () {
+    setPeriodCategories() {
       if (this.visualizationMode?.value === 'custom') {
         this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
       } else {
@@ -343,12 +343,12 @@ export default defineComponent({
       }
     },
     isValidPeriodSelected() {
-      if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+      if (this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Invalid Date',
           detail: 'You should select a valid date. Only Thursdays are valid',
-            life: 5000,
+          life: 5000,
         })
         return false;
       } else {
@@ -356,27 +356,30 @@ export default defineComponent({
       }
       return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
     },
-    setGeneralData () {
+    setGeneralData() {
       const assists = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
       const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0)
       const delays = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0)
+      const earlyOuts = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onEarlyOutPercentage || 0), 0)
       const faults = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onFaultPercentage || 0), 0)
-      const totalAvailable = assists + tolerances + delays + faults
+      const totalAvailable = assists + tolerances + delays + faults + earlyOuts
       const serieData = []
 
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
+      const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
       serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
       serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
+      serieData.push({ name: 'Early outs', y: earlyOut, color: '#f6a65bc7' })
       serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData
     },
-    setPeriodData () {
+    setPeriodData() {
       let periodLenght = 12
 
       const monthPerdiod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('LL'))
@@ -413,14 +416,14 @@ export default defineComponent({
           }
           break
         case 'fourteen': {
-            const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
-            const startOfWeek = date.startOf('week')
-            // Encontrar el jueves de la semana seleccionada
-            let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-            // Establecer el inicio del periodo como el jueves de dos semanas atrás
-            start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
-            // El periodo es de 14 días (dos semanas completas)
-            periodLenght = 14
+          const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+          const startOfWeek = date.startOf('week')
+          // Encontrar el jueves de la semana seleccionada
+          let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+          // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
+          // El periodo es de 14 días (dos semanas completas)
+          periodLenght = 14
           break
         }
         default:
@@ -435,14 +438,14 @@ export default defineComponent({
           let currentDay = start.plus({ days: index })
           switch (this.visualizationMode?.value) {
             case 'fourteen':
-              currentDay = currentDay.minus( { days: 1 })
+              currentDay = currentDay.minus({ days: 1 })
           }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
           const evalDate = `${year}-${`${month}`.padStart(2, '0')}-${`${day}`.padStart(2, '0')}`
           let dayCalendar: any[] = []
-  
+
           this.employeeDepartmentList.forEach(item => {
             const currentCalendar: AssistDayInterface[] = item.calendar.filter(calendar => calendar.day === evalDate)
             if (currentCalendar.length > 0) {
@@ -454,51 +457,56 @@ export default defineComponent({
             assist: dayCalendar
           })
         }
-  
+
         const assistSerie: number[] = []
         const toleranceSerie: number[] = []
         const delaySerie: number[] = []
+        const earlyOutSerie: number[] = []
         const faultSerie: number[] = []
-  
+
         dayStatisticsCollection.forEach((element: any) => {
           const assists = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'ontime').length
           const tolerances = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'tolerance').length
           const delays = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'delay').length
+          const earlyOuts = element.assist.filter((assistDate: any) => assistDate.checkOutStatus === 'delay').length
           const faults = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'fault' && !assistDate.isFutureDay && !assistDate.isRestDay).length
-          const totalAvailable = assists + tolerances + delays + faults
-  
+          const totalAvailable = assists + tolerances + delays + faults + earlyOuts
+
           const assist = Math.round((assists / totalAvailable) * 100)
           const tolerance = Math.round((tolerances / totalAvailable) * 100)
           const delay = Math.round((delays / totalAvailable) * 100)
+          const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
           const fault = Math.round((faults / totalAvailable) * 100)
-  
+
           assistSerie.push(Number.isNaN(assist) ? 0 : assist)
           toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
           delaySerie.push(Number.isNaN(delay) ? 0 : delay)
+          earlyOutSerie.push(Number.isNaN(earlyOut) ? 0 : earlyOut)
           faultSerie.push(Number.isNaN(fault) ? 0 : fault)
         });
-  
-        
+
+
         const serieData = []
-  
+
         serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
         serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
         serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
+        serieData.push({ name: 'Early outs', data: earlyOutSerie, color: '#f6a65bc7' })
         serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
         this.periodData.series = serieData
         this.setPeriodCategories()
       }
     },
-    async setDepartmetList () {
-      const response = await  new DepartmentService().getAllDepartmentList()
+    async setDepartmetList() {
+      const response = await new DepartmentService().getAllDepartmentList()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
-    async handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange() {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
-        this.visualizationModeOptions[idx].selected =  true
+        this.visualizationModeOptions[idx].selected = true
       }
 
       this.periodSelected = new Date()
@@ -525,7 +533,7 @@ export default defineComponent({
       }
       return true
     },
-    async onInputVisualizationModeChange () {
+    async onInputVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
@@ -543,18 +551,18 @@ export default defineComponent({
         this.filteredEmployees = list
       }
     },
-    async setDepartmentPositionEmployeeList () {
+    async setDepartmentPositionEmployeeList() {
       const positionId = null
       const departmentId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
-      this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic ().toModelObject(), calendar: [] }))
+      this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
       this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
-    async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
+    async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
@@ -576,38 +584,41 @@ export default defineComponent({
           onTimePercentage: number
           onTolerancePercentage: number
           onDelayPercentage: number
+          onEarlyOutPercentage: number
           onFaultPercentage: number
         }
         employeesCount: number
       }> = []
-    
+
       this.departmentCollection.forEach(async (department: DepartmentInterface) => {
         const departmentId = department.departmentId
-        const list = this.employeeDepartmentList.filter(item => 
+        const list = this.employeeDepartmentList.filter(item =>
           item?.employee?.departmentId === departmentId
         )
-    
+
         if (list.length === 0) return
-    
+
         const totals = list.reduce(
           (acc, val) => {
-            acc.onTime += val.assistStatistics.onTimePercentage || 0
-            acc.onTolerance += val.assistStatistics.onTolerancePercentage || 0
-            acc.onDelay += val.assistStatistics.onDelayPercentage || 0
-            acc.onFault += val.assistStatistics.onFaultPercentage || 0
+            acc.onTime += val.assistStatisticsTemp?.onTimePercentage || 0
+            acc.onTolerance += val.assistStatisticsTemp?.onTolerancePercentage || 0
+            acc.onDelay += val.assistStatisticsTemp?.onDelayPercentage || 0
+            acc.onEarlyOut += val.assistStatisticsTemp?.onEarlyOutPercentage || 0
+            acc.onFault += val.assistStatisticsTemp?.onFaultPercentage || 0
             return acc
           },
-          { onTime: 0, onTolerance: 0, onDelay: 0, onFault: 0 }
+          { onTime: 0, onTolerance: 0, onDelay: 0, onEarlyOut: 0, onFault: 0 }
         )
-    
+
         const listLength = list.length
         const statistics = {
           onTimePercentage: Math.round(totals.onTime / listLength),
           onTolerancePercentage: Math.round(totals.onTolerance / listLength),
           onDelayPercentage: Math.round(totals.onDelay / listLength),
+          onEarlyOutPercentage: Math.round(totals.onEarlyOut / listLength),
           onFaultPercentage: Math.round(totals.onFault / listLength),
         }
-        if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
+        if (statistics.onDelayPercentage > 0 || statistics.onFaultPercentage > 0 || statistics.onEarlyOutPercentage > 0 || statistics.onTimePercentage > 0 || statistics.onTolerancePercentage > 0) {
           if (this.isShowByStatusSelected(statistics)) {
             departmentListStatistics.push({
               department,
@@ -617,14 +628,16 @@ export default defineComponent({
           }
         }
       })
-    
+
       return departmentListStatistics
     },
-     isShowByStatusSelected(statistics: any) {
+    isShowByStatusSelected(statistics: any) {
       if (this.statusSelected === 'Faults') {
         return statistics?.onFaultPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Delays') {
         return statistics?.onDelayPercentage ?? 0 > 0
+      } else if (this.statusSelected === 'Early outs') {
+        return statistics?.onEarlyOutPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Tolerances') {
         return statistics?.onTolerancePercentage ?? 0 > 0
       } else if (this.statusSelected === 'On time') {
@@ -634,38 +647,57 @@ export default defineComponent({
       }
       return true
     },
-    setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
+    setGeneralStatisticsData(employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const earlyOuts = employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
-      const totalAvailable = assists + tolerances + delays + faults
-
-      const assist = Math.round((assists / totalAvailable) * 100)
-      const tolerance = Math.round((tolerances / totalAvailable) * 100)
-      const delay = Math.round((delays / totalAvailable) * 100)
-      const fault = Math.round((faults / totalAvailable) * 100)
+      let totalAvailable = assists + tolerances + delays + faults //+ earlyOuts
+      let assist = Math.round((assists / totalAvailable) * 100)
+      let tolerance = Math.round((tolerances / totalAvailable) * 100)
+      let delay = Math.round((delays / totalAvailable) * 100)
+      let earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
+      let fault = Math.round((faults / totalAvailable) * 100)
 
       const assistStatistics = {
         onTimePercentage: assist,
         onTolerancePercentage: tolerance,
         onDelayPercentage: delay,
+        onEarlyOutPercentage: earlyOut,
         onFaultPercentage: fault,
       }
+      earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
+
+
 
       employee.assistStatistics = assistStatistics
+      totalAvailable = assists + tolerances + delays + faults + earlyOuts
+      assist = Math.round((assists / totalAvailable) * 100)
+      tolerance = Math.round((tolerances / totalAvailable) * 100)
+      delay = Math.round((delays / totalAvailable) * 100)
+      earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
+      fault = Math.round((faults / totalAvailable) * 100)
+      const assistStatisticsTemp = {
+        onTimePercentage: assist,
+        onTolerancePercentage: tolerance,
+        onDelayPercentage: delay,
+        onEarlyOutPercentage: earlyOut,
+        onFaultPercentage: fault,
+      }
+      employee.assistStatisticsTemp = assistStatisticsTemp
     },
-    onEmployeeSelect () {
+    onEmployeeSelect() {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-    async setAssistSyncStatus () {
+    async setAssistSyncStatus() {
       try {
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {}
+      } catch (error) { }
     },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
@@ -685,16 +717,16 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        
+
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate.minus({ days: 1 })
-         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
-         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
-         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-      
+
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelAll(startDay, endDay)
       if (assistResponse.status === 201) {
@@ -710,7 +742,7 @@ export default defineComponent({
           severity: 'success',
           summary: 'Excel assist',
           detail: 'Excel was created successfully',
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       } else {
@@ -719,7 +751,7 @@ export default defineComponent({
           severity: 'error',
           summary: 'Excel assist',
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       }

@@ -158,6 +158,7 @@
               :onTimePercentage="item?.statistics?.onTimePercentage || 0"
               :onToleracePercentage="item?.statistics?.onTolerancePercentage || 0"
               :onDelayPercentage="item?.statistics?.onDelayPercentage || 0"
+              :onEarlyOutPercentage="item?.statistics?.onEarlyOutPercentage || 0"
               :onFaultPercentage="item?.statistics?.onFaultPercentage || 0"
             />
           </div>
