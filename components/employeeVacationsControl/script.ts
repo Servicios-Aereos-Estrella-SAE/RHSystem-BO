@@ -18,7 +18,8 @@ export default defineComponent({
   props: {
     vacationPeriod: { type: Object as PropType<VacationPeriodInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    canManageVacation: { type: Boolean, required: true }
+    canManageVacation: { type: Boolean, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptions: [] as Array<ShiftExceptionInterface>,

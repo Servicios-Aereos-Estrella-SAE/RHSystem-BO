@@ -17,6 +17,7 @@ export default defineComponent({
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canManageToPreviousDays: { type: Boolean, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     exceptionTypeList: [] as Array<ExceptionTypeInterface>, 

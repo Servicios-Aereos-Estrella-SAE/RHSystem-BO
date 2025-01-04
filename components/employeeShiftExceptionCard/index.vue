@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div v-if="shiftException.exceptionType && !isDeleted && canManageToPreviousDays" class="box-tools-footer">
+    <div v-if="shiftException.exceptionType && !isDeleted && canManageToPreviousDays && canManageException" class="box-tools-footer">
       <Button class="btn btn-block" @click="handlerClickOnEdit" >
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path

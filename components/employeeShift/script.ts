@@ -15,6 +15,7 @@ import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interface
 import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService';
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -47,7 +48,8 @@ export default defineComponent({
     drawerExceptionRequestsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
     exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
-    currentShift: null as ShiftInterface | null
+    currentShift: null as ShiftInterface | null,
+    canManageShiftOrException: true,
   }),
   setup() {
     const router = useRouter()
@@ -101,6 +103,16 @@ export default defineComponent({
     ])
     if (this.employee.deletedAt) {
       this.isDeleted = true
+    }
+    const { getSession } = useAuth()
+    const session: unknown = await getSession()
+    const authUser = session as UserInterface
+    if (!myGeneralStore.isRoot && !myGeneralStore.isAdmin && !myGeneralStore.isRh) {
+      if (authUser.personId && this.employee) {
+        if (authUser.personId === this.employee.personId) {
+          this.canManageShiftOrException = false
+        }
+      }
     }
     myGeneralStore.setFullLoader(false)
     this.isReady = true

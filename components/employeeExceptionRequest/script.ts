@@ -19,7 +19,8 @@ export default defineComponent({
   name: 'employeeExceptionRequest',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
-    date: { type: Date, required: true }
+    date: { type: Date, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
