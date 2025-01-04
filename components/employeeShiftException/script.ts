@@ -23,7 +23,8 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
-    shift: { type: Object as PropType<ShiftInterface>, required: true }
+    shift: { type: Object as PropType<ShiftInterface>, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,

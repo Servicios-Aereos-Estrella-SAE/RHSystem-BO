@@ -103,7 +103,7 @@ export default defineComponent({
       },
       series: [] as Array<Object>
     },
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1 },
@@ -285,13 +285,13 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await this.setDefaultVisualizationMode()
-    if (this.$config.public.ENVIRONMENT === 'production') {
-      await Promise.all([
-        this.setAssistSyncStatus(),
-        this.setDepartmetList(),
-        this.setDepartmentPositionEmployeeList()
-      ])
-    }
+    //if (this.$config.public.ENVIRONMENT === 'production') {
+    await Promise.all([
+      this.setAssistSyncStatus(),
+      this.setDepartmetList(),
+      this.setDepartmentPositionEmployeeList()
+    ])
+    //}
 
     this.setGeneralData()
     this.setPeriodData()
@@ -350,13 +350,15 @@ export default defineComponent({
     },
     isShowByStatusSelected(employee: EmployeeAssistStatisticInterface) {
       if (this.statusSelected === 'Faults') {
-        return employee?.assistStatistics?.onFaultPercentage ?? 0 > 0
+        return employee?.assistStatistics.onFaultPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Delays') {
-        return employee?.assistStatistics?.onDelayPercentage ?? 0 > 0
+        return employee?.assistStatistics.onDelayPercentage ?? 0 > 0
+      } else if (this.statusSelected === 'Early outs') {
+        return employee?.assistStatistics.onEarlyOutPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Tolerances') {
-        return employee?.assistStatistics?.onTolerancePercentage ?? 0 > 0
+        return employee?.assistStatistics.onTolerancePercentage ?? 0 > 0
       } else if (this.statusSelected === 'On time') {
-        return employee?.assistStatistics?.onTimePercentage ?? 0 > 0
+        return employee?.assistStatistics.onTimePercentage ?? 0 > 0
       } else if (this.statusSelected === null || this.statusSelected === 'All') {
         return true
       }
@@ -452,6 +454,7 @@ export default defineComponent({
         const assistSerie: number[] = []
         const toleranceSerie: number[] = []
         const delaySerie: number[] = []
+        const earlyOutSerie: number[] = []
         const faultSerie: number[] = []
 
         dayStatisticsCollection.forEach((element: any) => {
@@ -460,12 +463,10 @@ export default defineComponent({
           const delays = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'delay').length
           const faults = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'fault' && !assistDate.isFutureDay && !assistDate.isRestDay).length
           const totalAvailable = assists + tolerances + delays + faults
-
           const assist = Math.round((assists / totalAvailable) * 100)
           const tolerance = Math.round((tolerances / totalAvailable) * 100)
           const delay = Math.round((delays / totalAvailable) * 100)
           const fault = Math.round((faults / totalAvailable) * 100)
-
           assistSerie.push(Number.isNaN(assist) ? 0 : assist)
           toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
           delaySerie.push(Number.isNaN(delay) ? 0 : delay)
@@ -533,10 +534,11 @@ export default defineComponent({
         const departmentId = department.departmentId
         const list = this.employeeDepartmentPositionList.filter(item => item.employee.departmentId === departmentId)
         const statistics = {
-          onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length) || 0,
-          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length) || 0,
-          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length) || 0,
-          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length) || 0,
+          onTimePercentage: Math.round(list.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0) / list.length) || 0,
+          onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + (val.assistStatistics.onTolerancePercentage || 0), 0) / list.length) || 0,
+          onDelayPercentage: Math.round(list.reduce((acc, val) => acc + (val.assistStatistics.onDelayPercentage || 0), 0) / list.length) || 0,
+          onEarlyOutPercentage: Math.round(list.reduce((acc, val) => acc + (val.assistStatistics.onEarlyOutPercentage || 0), 0) / list.length) || 0,
+          onFaultPercentage: Math.round(list.reduce((acc, val) => acc + (val.assistStatistics.onFaultPercentage || 0), 0) / list.length) || 0,
         }
         departmentListStatistics.push({
           department: department,
@@ -551,22 +553,25 @@ export default defineComponent({
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const earlyOuts = employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
-
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
+      const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
       const assistStatistics = {
         onTimePercentage: assist,
         onTolerancePercentage: tolerance,
         onDelayPercentage: delay,
+        onEarlyOutPercentage: earlyOut,
         onFaultPercentage: fault,
       }
 
       employee.assistStatistics = assistStatistics
+     
     },
     async handlerVisualizationModeChange() {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)

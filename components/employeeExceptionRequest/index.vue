@@ -9,7 +9,7 @@
   
       <div v-if="isReady" class="employee">
         <div class="">
-          <div v-if="!isDeleted" class="employee-exception-request-wrapper">
+          <div v-if="!isDeleted && canManageException" class="employee-exception-request-wrapper">
             <div class="head-page">
               <div class="input-box">
                 <Button class="btn btn-block" @click="addNew">
@@ -24,6 +24,7 @@
               <employeeExceptionRequestCard
                 :exceptionRequest="exceptionRequest"
                 :isDeleted="isDeleted"
+                :canManageException="canManageException"
                 :click-on-edit-exception="() => { onEdit(exceptionRequest) }"
                 :click-on-delete-exception="() => { onDelete(exceptionRequest) }" 
               />

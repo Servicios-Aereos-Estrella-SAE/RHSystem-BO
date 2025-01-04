@@ -108,7 +108,7 @@ export default defineComponent({
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -600,6 +600,7 @@ export default defineComponent({
           onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length),
           onTolerancePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0) / list.length),
           onDelayPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0) / list.length),
+          onEarlyOutPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onEarlyOutPercentage, 0) / list.length),
           onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length),
         }
         if(this.isShowByStatusSelected(statistics)) {
@@ -617,6 +618,8 @@ export default defineComponent({
         return statistics?.onFaultPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Delays') {
         return statistics?.onDelayPercentage ?? 0 > 0
+      } else if (this.statusSelected === 'Early outs') {
+        return statistics?.onEarlyOutPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Tolerances') {
         return statistics?.onTolerancePercentage ?? 0 > 0
       } else if (this.statusSelected === 'On time') {
@@ -631,7 +634,9 @@ export default defineComponent({
         return employee?.assistStatistics?.onFaultPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Delays') {
         return employee?.assistStatistics?.onDelayPercentage ?? 0 > 0
-      } else if (this.statusSelected === 'Tolerances') {
+      } else if (this.statusSelected === 'Early outs') {
+        return employee?.assistStatistics?.onEarlyOutPercentage ?? 0 > 0
+      }  else if (this.statusSelected === 'Tolerances') {
         return employee?.assistStatistics?.onTolerancePercentage ?? 0 > 0
       } else if (this.statusSelected === 'On time') {
         return employee?.assistStatistics?.onTimePercentage ?? 0 > 0
@@ -644,18 +649,21 @@ export default defineComponent({
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      const earlyOuts = employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
 
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
+      const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
       const assistStatistics = {
         onTimePercentage: assist,
         onTolerancePercentage: tolerance,
         onDelayPercentage: delay,
+        onEarlyOutPercentage: earlyOut,
         onFaultPercentage: fault,
       }
 

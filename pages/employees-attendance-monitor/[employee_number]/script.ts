@@ -361,7 +361,7 @@ export default defineComponent({
       const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
       this.earlyOuts = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay && assistDate.assist.dateShift).length
-      const totalAvailable = assists + tolerances + delays + faults + this.earlyOuts
+      const totalAvailable = assists + tolerances + delays + faults
 
       const serieData = []
 
@@ -380,7 +380,6 @@ export default defineComponent({
       serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
       serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
-      serieData.push({ name: 'Early outs', y: earlyOut, color: '#f6a65bc7' })
       serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData

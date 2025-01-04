@@ -61,6 +61,7 @@
         :employeeCalendarAssist="item"
         :shiftsList="shiftsList"
         :isDeleted="isDeleted"
+        :canUpdateShift="canManageShiftOrException"
         @successShiftAssigned="onSuccessShiftAssigned"
         @clickExceptions="onClickExceptions"
       />
@@ -74,6 +75,7 @@
         :employee="employee"
         :date="selectedExceptionDate"
         :shift="currentShift"
+        :canManageException="canManageShiftOrException"
         @save="onSave"
       />
     </Sidebar>
@@ -83,6 +85,7 @@
       <employeeExceptionRequest
         :employee="employee"
         :date="selectedExceptionDate"
+        :canManageException="canManageShiftOrException"
         @saveExceptionRequest="onSaveExceptionRequest"
       />
     </Sidebar>
@@ -102,6 +105,7 @@
         @manageVacations="handlerVacationsManager"
         :status-form="statusForm"
         :can-manage-vacation="canManageVacation"
+        :canManageException="canManageShiftOrException"
       />
     </Sidebar>
 
@@ -119,6 +123,7 @@
         :employee="employee"
         :vacation-period="vacationPeriod"
         :can-manage-vacation="canManageVacation"
+        :canManageException="canManageShiftOrException"
         @save="onSave"
       />
     </Sidebar>

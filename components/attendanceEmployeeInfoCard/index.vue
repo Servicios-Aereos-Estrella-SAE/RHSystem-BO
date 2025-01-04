@@ -35,6 +35,12 @@
           </small>
         </div>
       </div>
+      <div class="percentage early-out">
+        {{employee.assistStatistics.onEarlyOutPercentage || 0}}%
+        <small>
+          Early outs
+        </small>
+      </div>
       <div class="box-tools-footer">
         <nuxt-link :to="`/employees-attendance-monitor/${employee.employee.employeeCode}`" class="box-button block">
           See details
