@@ -126,6 +126,9 @@ export default defineComponent({
     workedTime: '',
     canReadTimeWorked: false,
     canAddAssistManual: false,
+    earlyOuts: 0,
+    faultsEarlyOuts: 0,
+    onEarlyOutPercentage: 0,
   }),
   computed: {
     isRoot () {
@@ -356,6 +359,7 @@ export default defineComponent({
       const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
+      this.earlyOuts = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay && assistDate.assist.dateShift).length
       const totalAvailable = assists + tolerances + delays + faults
 
@@ -364,12 +368,14 @@ export default defineComponent({
       const assist = totalAvailable > 0 ? Math.round((assists / totalAvailable) * 100) : 0;
       const tolerance = totalAvailable > 0 ? Math.round((tolerances / totalAvailable) * 100) : 0;
       const delay = totalAvailable > 0 ? Math.round((delays / totalAvailable) * 100) : 0;
+      const earlyOut = totalAvailable > 0 ? Math.round((this.earlyOuts / totalAvailable) * 100) : 0;
       const fault = totalAvailable > 0 ? Math.round((faults / totalAvailable) * 100) : 0;
 
       this.onTimePercentage = assist
       this.onTolerancePercentage = tolerance
       this.onDelayPercentage = delay
-      this.onFaultPercentage = fault
+      this.onEarlyOutPercentage = earlyOut
+      this.onFaultPercentage = fault 
 
       serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
@@ -501,9 +507,10 @@ export default defineComponent({
           delays += 1
         } 
       }
+      this.setGeneralData()
       this.workedTime = await this.calculateTotalElapsedTimeWithCrossing(assistArray)
       this.faultsDelays = await this.getFaultsFromDelays(delays)
-      this.setGeneralData()
+      this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
       myGeneralStore.setFullLoader(false)
     },
     /* calculateTotalElapsedTime(dataList: Array<{

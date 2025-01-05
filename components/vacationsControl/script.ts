@@ -15,7 +15,8 @@ export default defineComponent({
     canManageVacation: { type: Boolean, required: true },
     indexCard: { type: Number, required: true },
     isDeleted: { type: Boolean, required: true },
-    vacationPeriodAvailableDays: { type: Number, required: true }
+    vacationPeriodAvailableDays: { type: Number, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptionsDate: '',

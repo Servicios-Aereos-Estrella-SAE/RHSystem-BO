@@ -32,6 +32,12 @@
         </small>
       </div>
     </div>
+    <div class="percentage early-out">
+      {{onEarlyOutPercentage}}%
+      <small>
+        Early outs
+      </small>
+    </div>
     <div v-if="!hideLink" class="box-tools-footer">
       <nuxt-link v-if="department && position" :to="`/departments-attendance-monitor/${department.departmentId}/position/${position.positionId}`" class="box-button block">
         See details

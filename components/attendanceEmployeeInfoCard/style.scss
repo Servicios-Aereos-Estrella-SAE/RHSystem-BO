@@ -90,4 +90,12 @@
     background-color: transparentize($color: $danger, $amount: 0.95);
     color: $danger;
   }
+
+  .early-out {
+    margin-top: .8rem;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    background-color: transparentize($color: $warning, $amount: 0.95);
+    color: #f6a65bc7;
+  }
 }

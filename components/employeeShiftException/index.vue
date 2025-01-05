@@ -9,7 +9,7 @@
 
     <div v-if="isReady" class="employee">
       <div class="">
-        <div v-if="!isDeleted && canManageToPreviousDays" class="shift-exception-wrapper">
+        <div v-if="!isDeleted && canManageToPreviousDays && canManageException" class="shift-exception-wrapper">
           <div class="head-page">
             <div class="input-box">
               <Button class="btn btn-block" @click="addNew" >
@@ -27,6 +27,7 @@
               :click-on-edit="() => { onEdit(shiftException) }"
               :click-on-delete="() => { onDelete(shiftException) }"
               :canManageToPreviousDays="canManageToPreviousDays"
+              :canManageException="canManageException"
             />
           </div>
         </div>

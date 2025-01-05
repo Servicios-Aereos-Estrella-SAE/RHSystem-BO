@@ -48,7 +48,7 @@
       </Button>
     </div>
 
-    <div v-if="!exceptionRequest.exceptionType && !isDeleted" class="box-tools-footer">
+    <div v-if="!exceptionRequest.exceptionType && !isDeleted && canManageException" class="box-tools-footer">
       <Button class="btn btn-block" @click="handlerClickOnEditException" >
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path

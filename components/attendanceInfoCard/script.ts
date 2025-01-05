@@ -12,6 +12,7 @@ export default defineComponent({
     onTimePercentage: { type: Number, required: false, default: 0 },
     onToleracePercentage: { type: Number, required: false, default: 0 },
     onDelayPercentage: { type: Number, required: false, default: 0 },
+    onEarlyOutPercentage: { type: Number, required: false, default: 0 },
     onFaultPercentage: { type: Number, required: false, default: 0 },
     hideLink: { type: Boolean, required: false, default: false },
     hidePositionTitle: { type: Boolean, required: false, default: false }
