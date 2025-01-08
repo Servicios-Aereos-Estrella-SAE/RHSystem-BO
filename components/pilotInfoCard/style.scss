@@ -3,7 +3,8 @@
 .pilot-info-card {
   margin-top: 2.25rem;
   position: relative;
-  height: 15rem;
+  // min-height: 23.5rem;
+  padding: 1.5rem;
 
   .avatar {
     width: 4rem;
@@ -51,6 +52,22 @@
       font-size: 0.7rem;
     }
   }
+  .info {
+    font-weight: 300;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    line-height: 1.25rem;
+  }
+  .employee-number {
+    text-align: left;
+    font-weight: 300;
+    font-size: 0.7rem;
+    border-radius: calc($radius / 2);
+    box-sizing: border-box;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+  }
+
   .hire-date {
     text-align: left;
     font-weight: 600;
@@ -65,6 +82,10 @@
     @media screen and (max-width: $ipad) {
       font-size: 0.7rem;
     }
+  }
+  .business-unit {
+    font-size: 0.75rem;
+    font-weight: normal;
   }
   .date {
     text-align: left;

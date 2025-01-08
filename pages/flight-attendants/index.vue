@@ -35,9 +35,12 @@
               </div>
             </div>
             <div></div>
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
-              @page="onPageChange" />
-            <!-- Form Shift -->
+            <Paginator 
+              :alwaysShow="false"
+              class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+              @page="onPageChange" 
+            />
+            <!-- Form -->
             <div class="card flex justify-content-center">
               <Sidebar v-model:visible="drawerFlightAttendantForm" header="Flight attendant form" position="right"
                 class="flight-attendant-form-sidebar" :showCloseIcon="true">
