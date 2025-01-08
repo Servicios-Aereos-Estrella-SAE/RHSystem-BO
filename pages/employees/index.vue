@@ -136,7 +136,8 @@
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
           header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
-          <employeeProceedingFile :employee="employee" />
+          <proceedingFiles :employee="employee" />
+          <!-- <employeeProceedingFile :employee="employee" /> -->
         </Sidebar>
 
         <transition name="page">
