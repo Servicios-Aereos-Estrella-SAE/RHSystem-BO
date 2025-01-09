@@ -146,7 +146,7 @@
               class="p-fileupload-file-thumbnail" width="50" :src="getUrlPhoto()" />
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-          :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
+          :custom-upload="true" :showUploadButton="false" :maxFileSize="6000000" :fileLimit="1" @select="validateFiles">
           <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
             <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
               <img v-if="file && file.type.startsWith('image/')" role="presentation"
