@@ -15,12 +15,13 @@ export default class EmployeeProceedingFileService {
     }
   }
 
-  async getByEmployee(employeeId: number) {
+  async getByEmployee(employeeId: number, fileTypeId?: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/${employeeId}/proceeding-files`, {
       headers,
+      query: { type: fileTypeId },
       onResponse ({ response }) { responseRequest = response },
       onRequestError ({ response }) { responseRequest = response }
     })
@@ -28,7 +29,6 @@ export default class EmployeeProceedingFileService {
     const list = responseRequest.status === 200 ? responseRequest._data.data : []
     return list
   }
-
 
   async store (employeeProceedingFile: EmployeeProceedingFileInterface) {
     const headers = { ...this.GENERAL_HEADERS }

@@ -1,5 +1,5 @@
 <template>
-  <div class="box aircraft-proceeding-files">
+  <div class="box employee-proceeding-files">
     <Toast />
 
     <div v-if="isReady">
@@ -8,7 +8,7 @@
           <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.727 3.687a1 1 0 1 0-1.454-1.374l-8.5 9a1 1 0 0 0 0 1.374l8.5 9.001a1 1 0 1 0 1.454-1.373L4.875 12l7.852-8.313Z" fill="#88a4bf" class="fill-212121"></path></svg>
         </Button>
         <h1>
-          Aircraft proceeding files
+          Employee proceeding files
           <div class="caret">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.273 3.687a1 1 0 1 1 1.454-1.374l8.5 9a1 1 0 0 1 0 1.374l-8.5 9.001a1 1 0 1 1-1.454-1.373L19.125 12l-7.852-8.313Z" fill="#88a4bf" class="fill-212121"></path></svg>
           </div>
@@ -21,29 +21,11 @@
         </h1>
       </div>
 
-      <div class="aircraft">
+      <div class="employee">
         <div class="form-container">
-
+          <employeeModalInfoCard :employee="employee" />
           <div class="box head-page">
-            <div class="aircraft-info">
-              <div class="banner">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.989 11.946a1.991 1.991 0 0 1-2.05 1.99l-4.738-.139-3.454 7.143c-.277.574-.86.94-1.498.94a.926.926 0 0 1-.919-1.037l.862-7.193-3.765-.11-.49 1.341a1.29 1.29 0 0 1-1.211.847.901.901 0 0 1-.901-.902V13.35l-.81-.169a1.261 1.261 0 0 1 0-2.469l.81-.168V9.066c0-.46.343-.838.788-.894l.113-.007a1.29 1.29 0 0 1 1.21.846l.492 1.34 3.751-.11-.849-7.084a.93.93 0 0 1-.005-.055l-.002-.055c0-.511.415-.926.926-.926.585 0 1.123.307 1.423.8l.075.14 3.403 7.035 4.79-.14a1.991 1.991 0 0 1 2.048 1.932l.001.058Z" fill="#88a4bf" class="fill-212121"></path></svg>
-              </div>
-              <div class="info">
-                <div>
-                  <div class="tail">
-                    {{ aircraft.aircraftRegistrationNumber }}
-                  </div>
-                  <div class="serial">
-                    Serial number:
-                    {{ aircraft.aircraftSerialNumber }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div></div>
-
             <div class="input-search">
               <div class="input-box">
                 <label for="search">
@@ -92,11 +74,11 @@
               </div>
 
               <div v-if="filesFolderFiltered.length > 0" class="file-list-wrapper">
-                <div v-for="(aircraftProceedingFile, index) in filesFolderFiltered" :key="`proceeding-file-${index}`">
-                  <aircraftProceedingFileInfoCard
-                    :aircraftProceedingFile="aircraftProceedingFile"
-                    :click-on-edit="() => { onEdit(aircraftProceedingFile) }"
-                    :click-on-delete="() => { onDelete(aircraftProceedingFile) }"
+                <div v-for="(employeeProceedingFile, index) in filesFolderFiltered" :key="`proceeding-file-${index}`">
+                  <employeeProceedingFileInfoCard
+                    :employeeProceedingFile="employeeProceedingFile"
+                    :click-on-edit="() => { onEdit(employeeProceedingFile) }"
+                    :click-on-delete="() => { onDelete(employeeProceedingFile) }"
                   />
                 </div>
               </div>
@@ -107,25 +89,26 @@
               </div>
             </div>
           </div>
+
           <ProgressSpinner v-if="filesLoader"/>
 
-          <!-- Aircraft Proceeding File form -->
+          <!-- Employee Proceeding File form -->
           <div class="card flex justify-content-center">
             <Sidebar
-              v-model:visible="drawerAircraftProceedingFileForm"
+              v-model:visible="drawerEmployeeProceedingFileForm"
               position="right"
-              class="aircraft-proceeding-file-form-sidebar"
+              class="employee-proceeding-file-form-sidebar"
               :blockScroll="true"
               :closeOnEscape="false"
               :dismissable="false"
               :showCloseIcon="true"
             >
-              <aircraftProceedingFileInfoForm :aircraftProceedingFile="aircraftProceedingFile"
-                @onAircraftProceedingFileSave="onSave" />
+              <employeeProceedingFileInfoForm :employeeProceedingFile="employeeProceedingFile"
+                @onEmployeeProceedingFileSave="onSave" />
             </Sidebar>
           </div>
 
-           <!-- Aircraft Proceeding File Type Email form -->
+           <!-- Employee Proceeding File Type Email form -->
            <div class="card flex justify-content-center">
             <Sidebar
               v-model:visible="drawerProceedingFileTypeEmailForm"
@@ -144,9 +127,9 @@
 
         <transition name="page">
           <confirmDelete
-            v-if="drawerAircraftProceedingFileDelete"
+            v-if="drawerEmployeeProceedingFileDelete"
             @confirmDelete="confirmDelete"
-            @cancelDelete="drawerAircraftProceedingFileDelete = false"
+            @cancelDelete="drawerEmployeeProceedingFileDelete = false"
           />
         </transition>
       </div>
@@ -166,7 +149,7 @@
 <style lang="scss">
 @import '/resources/styles/variables.scss';
 
-.aircraft-proceeding-file-form-sidebar {
+.employee-proceeding-file-form-sidebar {
     width: 100% !important;
     max-width: 45rem !important;
 
