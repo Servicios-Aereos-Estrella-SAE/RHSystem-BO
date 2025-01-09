@@ -131,7 +131,7 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
-          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation" :can-manage-exception-request="canManageExceptionRequest"/>
+          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation" :canManageWorkDisability="canManageVacation" :can-manage-exception-request="canManageExceptionRequest"/>
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
