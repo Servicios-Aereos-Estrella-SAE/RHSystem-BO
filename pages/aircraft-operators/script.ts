@@ -1,5 +1,3 @@
-import type { PilotInterface } from "~/resources/scripts/interfaces/PilotInterface";
-import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 import AircraftOperatorService from "~/resources/scripts/services/AircraftOperatorService";
 import { useMyGeneralStore } from "~/store/general";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";

@@ -58,7 +58,7 @@ export default defineComponent({
             return this.pilots.map((pilot: PilotInterface) => {
                 return {
                     pilotId: pilot.pilotId,
-                    pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.person?.employeeLastName
+                    pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
                 }
             })
         },
