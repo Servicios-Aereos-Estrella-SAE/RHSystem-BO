@@ -13,12 +13,16 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     statusForm: { type: Boolean, required: false, default: false },
-    canManageWorkDisability: { type: Boolean, required: true }
+    canManageWorkDisability: { type: Boolean, required: true },
+    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false as boolean,
     workDisabilities: [] as Array<WorkDisabilityInterface>,
-    isDeleted: false
+    workDisability: null as WorkDisabilityInterface | null,
+    isDeleted: false,
+    drawerWorkDisabilityForm: false,
+    drawerWorkDisabilityDelete: false,
   }),
   watch: {
     async 'statusForm'(value) {
@@ -50,8 +54,67 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(false)
     },
-    handlerClickManage(vacationPeriod: VacationPeriodInterface) {
-      this.$emit('manageWorkDisabilities', vacationPeriod)
-    }
+    addNew() {
+      const newWorkDisability = {
+        workDisabilityId: 0,
+        workDisabilityUuid: '',
+        employeeId: this.employee.employeeId,
+      } as WorkDisabilityInterface
+      this.workDisability = newWorkDisability
+      this.drawerWorkDisabilityForm = true
+    },
+    onSave(workDisability: WorkDisabilityInterface) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.workDisability = { ...workDisability }
+      const index = this.workDisabilities.findIndex((workDisability: WorkDisabilityInterface) => workDisability.workDisabilityId === this.workDisability?.workDisabilityId)
+      if (index !== -1) {
+        this.workDisabilities[index] = workDisability
+        this.$forceUpdate()
+      } else {
+        this.workDisabilities.push(workDisability)
+        this.$forceUpdate()
+      }
+      this.$emit('save', [])
+      this.drawerWorkDisabilityForm = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
+    onEdit(workDisability: WorkDisabilityInterface) {
+      this.workDisability = { ...workDisability }
+      this.drawerWorkDisabilityForm = true
+    },
+    onDelete(workDisability: WorkDisabilityInterface) {
+      this.workDisability = { ...workDisability }
+
+      this.drawerWorkDisabilityDelete = true
+    },
+
+    /* async confirmDelete() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.workDisability) {
+        this.drawerWorkDisabilityDelete = false
+        const workDisabilityService = new WorkDisabilityService()
+        const workDisabilityResponse = await workDisabilityService.delete(this.workDisability)
+        if (workDisabilityResponse.status === 200) {
+          const index = this.workDisabilities.findIndex((workDisability: WorkDisabilityInterface) => workDisability.workDisabilityId === this.workDisability?.workDisabilityId)
+          if (index !== -1) {
+            this.workDisabilities.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$emit('save', [])
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete shift exception',
+            detail: workDisabilityResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    } */
   }
 })

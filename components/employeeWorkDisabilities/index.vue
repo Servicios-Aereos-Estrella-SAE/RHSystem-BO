@@ -5,21 +5,50 @@
     <h1>
       Employee Work Disabilities
     </h1>
-
+    <div class="head">
+      <Button v-if="canManageWorkDisability && !isDeleted && canManageException" class="btn btn-block" @click="addNew">
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z"
+            fill="#88a4bf" class="fill-212121"></path>
+        </svg>
+        Add work disability
+      </Button>
+    </div>
     <div v-if="isReady">
       <div class="work-disabilities-wrapper">
         <div v-for="(workDisability, index) in workDisabilities" :key="`work-disability-${index}`">
           <workDisabilityInfoCard
             :isDeleted="isDeleted"
             :work-disability="workDisability"
+            :click-on-edit="() => { onEdit(workDisability) }"
+            :click-on-delete="() => { onDelete(workDisability) }"
             @manageWorkDisabilities="handlerClickManage(workDisability)"
             :can-manage-work-disability="canManageWorkDisability" 
             :canManageException="canManageWorkDisability"/>
         </div>
       </div>
     </div>
-
     <ProgressSpinner v-else />
+    <Sidebar v-model:visible="drawerWorkDisabilityForm" header="form" position="right" class="shift-exception-form-sidebar" :showCloseIcon="true">
+      <employeeWorkDisabilityInfoForm
+        :can-manage-work-disability="canManageWorkDisability" 
+        :workDisability="workDisability"
+        :employee="employee"
+        @onWorkDisabilitySave="onSave"
+      />
+    </Sidebar>
+
+    <transition name="page">
+      <confirmDelete
+        v-if="drawerWorkDisabilityDelete"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="drawerWorkDisabilityDelete = false"
+      />
+    </transition>
+
+
+    
   </div>
 </template>
 

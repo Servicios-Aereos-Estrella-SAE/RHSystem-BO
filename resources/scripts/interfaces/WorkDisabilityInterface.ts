@@ -6,6 +6,5 @@ export interface WorkDisabilityInterface {
   workDisabilityCreatedAt?: string,
   workDisabilityUpdatedAt?: string,
   deletedAt?: string,
-  subPositions?: PositionInterface[]
   }
   

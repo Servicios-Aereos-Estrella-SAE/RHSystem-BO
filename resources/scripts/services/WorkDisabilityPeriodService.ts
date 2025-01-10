@@ -1,5 +1,5 @@
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
-import type { WorkDisabilityInterface } from "../interfaces/WorkDisabilityInterface";
+import type { WorkDisabilityPeriodInterface } from "../interfaces/WorkDisabilityPeriodInterface";
 
 export default class WorkDisabilityService {
   protected API_PATH: string;
@@ -14,34 +14,15 @@ export default class WorkDisabilityService {
     };
   }
 
-  
-
-  async getByEmployee(employeeId: number) {
-    let responseRequest: any = null;
-    const headers = { ...this.GENERAL_HEADERS };
-
-    await $fetch(`${this.API_PATH}/work-disabilities/employee/${employeeId}`, {
-      headers,
-      onResponse({ response }) {
-        responseRequest = response;
-      },
-      onRequestError({ response }) {
-        responseRequest = response;
-      },
-    });
-   
-    return responseRequest;
-  }
-
-  async store(workDisability: WorkDisabilityInterface) {
+  async store(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
     try {
-      await $fetch(`${this.API_PATH}/work-disabilities`, {
+      await $fetch(`${this.API_PATH}/work-disability-periods`, {
         headers,
         method: "POST",
-        body: { ...workDisability },
+        body: { ...workDisabilityPeriod },
         onResponse({ response }) {
           responseRequest = response;
         },
@@ -53,17 +34,17 @@ export default class WorkDisabilityService {
     return responseRequest;
   }
 
-  async update(workDisability: WorkDisabilityInterface) {
+  async update(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
     try {
       await $fetch(
-        `${this.API_PATH}/work-disabilities/${workDisability.workDisabilityId}`,
+        `${this.API_PATH}/work-disability-periods/${workDisabilityPeriod.workDisabilityPeriodId}`,
         {
           headers,
           method: "PUT",
-          body: { ...workDisability },
+          body: { ...workDisabilityPeriod },
           onResponse({ response }) {
             responseRequest = response;
           },
@@ -76,12 +57,12 @@ export default class WorkDisabilityService {
     return responseRequest;
   }
 
-  async delete(workDisability: WorkDisabilityInterface) {
+  async delete(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
     await $fetch(
-      `${this.API_PATH}/work-disabilities/${workDisability.workDisabilityId}`,
+      `${this.API_PATH}/work-disability-periods/${workDisabilityPeriod.workDisabilityPeriodId}`,
       {
         headers,
         method: "DELETE",
@@ -97,11 +78,11 @@ export default class WorkDisabilityService {
     return responseRequest;
   }
 
-  async show(workDisabilityId: number) {
+  async show(workDisabilityPeriodId: number) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
-    await $fetch(`${this.API_PATH}/work-disabilities/${workDisabilityId}`, {
+    await $fetch(`${this.API_PATH}/work-disability-periods/${workDisabilityPeriodId}`, {
       headers,
       onResponse({ response }) {
         responseRequest = response;
@@ -110,14 +91,14 @@ export default class WorkDisabilityService {
         responseRequest = response;
       },
     });
-    const workDisability =
-      responseRequest.status === 200 ? responseRequest._data.data.workDisability : null;
+    const workDisabilityPeriod =
+      responseRequest.status === 200 ? responseRequest._data.data.workDisabilityPeriod : null;
 
     return {
       status: responseRequest.status,
       _data: {
         data: {
-          workDisability: workDisability,
+          workDisabilityPeriod: workDisabilityPeriod,
         },
       },
     };
