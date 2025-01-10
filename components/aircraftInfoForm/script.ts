@@ -4,6 +4,9 @@ import type { AircraftInterface } from '~/resources/scripts/interfaces/AircraftI
 import AirportService from '~/resources/scripts/services/AirportService'
 import AircraftPropertiesService from '~/resources/scripts/services/AircraftPropertyService'
 import AircraftService from '~/resources/scripts/services/AircraftService'
+import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface'
+import PilotService from '~/resources/scripts/services/PilotService'
+import AircraftOperatorService from '~/resources/scripts/services/AircraftOperatorService'
 
 export default defineComponent({
   name: 'AircraftInfoForm',
@@ -14,8 +17,12 @@ export default defineComponent({
   data: () => ({
     submitted: false,
     airportOptions: [],
+    aircraftOperator: [],
     aircraftPropertiesOptions: [],
     drawerProceedingFiles: false,
+    pilotSicId: null as number | null,
+    pilotPicId: null as number | null,
+    pilots: [] as PilotInterface[],
   }),
   computed: {
     isAircraftActive: {
@@ -25,15 +32,42 @@ export default defineComponent({
       set(newValue: boolean) {
         this.aircraft.aircraftActive = newValue ? 1 : 0;
       }
-    }
+    },
+    formatPilots() {
+        return this.pilots.map((pilot: PilotInterface) => {
+            return {
+                pilotId: pilot.pilotId,
+                pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
+            }
+        })
+    },
   },
-  mounted() {
+  async mounted() {
     this.loadAirportOptions();
     this.loadAircraftPropertiesOptions();
+    await this.handlerSearchPilot();
+    await this.handlerSearchAircraftOperator();
+    this.loadPilotsAircraft();
   },
   methods: {
     getProceedingFiles() {
       this.drawerProceedingFiles = true
+    },
+    loadPilotsAircraft() {
+      if (this.aircraft.pilots) {
+        this.pilotPicId = this.aircraft.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'pic')?.pilotId || null;
+        this.pilotSicId = this.aircraft.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'sic')?.pilotId || null;
+      }
+    },
+    async handlerSearchPilot() {
+        const response = await new PilotService().getFilteredList('', 1, 999999999);
+        const list = response.status === 200 ? response._data.data.pilots.data : [];
+        this.pilots = list;
+    },
+    async handlerSearchAircraftOperator() {
+      const response = await new AircraftOperatorService().getFilteredList('', 1, 999999999);
+      const list = response.status === 200 ? response._data.data.operators.data : [];
+      this.aircraftOperator = list;
     },
     async loadAirportOptions() {
       try {
@@ -94,7 +128,9 @@ export default defineComponent({
         this.aircraft.aircraftRegistrationNumber &&
         this.aircraft.aircraftSerialNumber &&
         this.aircraft.airportId &&
-        this.aircraft.aircraftPropertiesId
+        this.aircraft.aircraftPropertiesId &&
+        this.aircraft.aircraftOperatorId &&
+        (this.pilotPicId !== this.pilotSicId || (this.pilotPicId === null && this.pilotSicId === null))
       ) {
         try {
           const response = this.aircraft.aircraftId
@@ -133,11 +169,11 @@ export default defineComponent({
     },
     async createAircraft() {
       const aircraftService = new AircraftService();
-      return await aircraftService.store(this.aircraft);
+      return await aircraftService.store(this.aircraft, this.pilotPicId, this.pilotSicId);
     },
     async updateAircraft() {
       const aircraftService = new AircraftService();
-      return await aircraftService.update(this.aircraft);
+      return await aircraftService.update(this.aircraft, this.pilotPicId, this.pilotSicId);
     }
   }
 });

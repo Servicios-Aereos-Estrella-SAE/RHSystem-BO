@@ -56,7 +56,7 @@ export default class AircraftService {
     }
   }
 
-  async update(aircraft: AircraftInterface) {
+  async update(aircraft: AircraftInterface, pilotPicId: number | null = null, pilotSicId: number | null = null) {
     const headers = { ...this.GENERAL_HEADERS }
 
     let responseRequest: any = null;
@@ -64,7 +64,7 @@ export default class AircraftService {
       await $fetch(`${this.API_PATH}/aircraft/${aircraft.aircraftId}`, {
         headers,
         method: 'PUT',
-        body: aircraft,
+        body: {...aircraft, pilotSicId, pilotPicId},
         onResponse({ response }) { responseRequest = response; },
         onRequestError({ response }) { responseRequest = response; }
       });
@@ -73,7 +73,7 @@ export default class AircraftService {
     return responseRequest;
   }
 
-  async store(aircraft: AircraftInterface) {
+  async store(aircraft: AircraftInterface, pilotPicId: number | null = null, pilotSicId: number | null = null) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -81,7 +81,7 @@ export default class AircraftService {
       await $fetch(`${this.API_PATH}/aircraft`, {
         headers,
         method: 'POST',
-        body: aircraft,
+        body: {...aircraft, pilotSicId, pilotPicId},
         onResponse({ response }) { responseRequest = response; },
         onRequestError({ response }) { responseRequest = response; }
       });

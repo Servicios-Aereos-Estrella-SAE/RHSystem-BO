@@ -10,6 +10,7 @@ interface PilotInterface {
   pilotCreatedAt: Date | string | null,
   pilotUpdatedAt: Date | string | null,
   pilotDeletedAt: Date | string | null,
+  aircraftPilotRole: string | null,
 
   employee?: EmployeeInterface,
 }

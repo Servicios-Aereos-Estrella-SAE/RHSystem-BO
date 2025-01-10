@@ -41,6 +41,35 @@
                     </div>
 
                     <div class="input-box">
+                        <label for="aircraftPilotPic">PIC</label>
+                        <Dropdown showClear  id="aircraftPilotPic" v-model="pilotPicId"
+                            :options="formatPilots" optionLabel="pilotName" optionValue="pilotId"
+                        />
+                    </div>
+
+                    <div class="input-box">
+                        <label for="aircraftPropertiesId">SIC</label>
+                        <Dropdown id="aircraftPropertiesId" v-model="pilotSicId"
+                            showClear
+                            optionValue="pilotId"
+                            :options="formatPilots" optionLabel="pilotName"
+                            :invalid="submitted && (pilotSicId === pilotPicId && pilotSicId !== null)" />
+                            <small class="p-error" v-if="submitted && (pilotSicId === pilotPicId && pilotSicId !== null)">
+                                Pilot SIC and Pilot PIC can't be the same.
+                            </small>
+                    </div>
+
+                    <div class="input-box">
+                        <label for="aircraftOperatorId">Operator</label>
+                        <Dropdown id="aircraftOperatorId" v-model="aircraft.aircraftOperatorId"
+                            :options="aircraftOperator" optionLabel="aircraftOperatorName" optionValue="aircraftOperatorId"
+                        />
+                        <small class="p-error" v-if="submitted && !aircraft.aircraftOperatorId">
+                            Operator is required.
+                        </small>
+                    </div>
+
+                    <div class="input-box">
                         <label for="aircraftActive">Active {{ isAircraftActive }}</label>
                         <ToggleButton v-model="isAircraftActive" onLabel="Active" offLabel="Inactive" />
                     </div>
