@@ -1,7 +1,7 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 
-.work-disability-info-form {
+.work-disability-note-info-form {
   position: relative;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
@@ -29,11 +29,6 @@
     justify-content: center;
     align-items: center;
     min-height: 50vh;
-  }
-  .work-disability-periods-wrapper {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 0.5rem;
   }
   .work-disability-notes-wrapper {
     display: grid;

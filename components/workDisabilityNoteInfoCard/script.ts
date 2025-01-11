@@ -1,12 +1,11 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodInterface'
+import type { WorkDisabilityNoteInterface } from '~/resources/scripts/interfaces/WorkDisabilityNoteInterface'
 
 export default defineComponent({
-  name: 'workDisabilityPeriodInfoCard',
+  name: 'workDisabilityNoteInfoCard',
   props: {
-    workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
+    workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
@@ -19,10 +18,6 @@ export default defineComponent({
   async mounted() {
   },
   methods: {
-    getDate(date: string) {
-      const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
-    },
     handlerClickOnEdit () {
       if (this.clickOnEdit) {
         this.clickOnEdit()
@@ -32,9 +27,6 @@ export default defineComponent({
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
-    },
-    openFile() {
-      window.open(this.workDisabilityPeriod?.workDisabilityPeriodFile)
     },
   }
 })

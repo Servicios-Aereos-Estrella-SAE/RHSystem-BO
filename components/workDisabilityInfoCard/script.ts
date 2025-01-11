@@ -12,7 +12,7 @@ export default defineComponent({
     clickOnEditException: { type: Function, default: null },
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
-    canManageException: { type: Boolean, required: true },
+    canManageWorkDisability: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false, 

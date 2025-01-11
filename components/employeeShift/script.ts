@@ -45,7 +45,6 @@ export default defineComponent({
     displaySidebarVacations: false as boolean,
     displaySidebarVacationsManager: false as boolean,
     displaySidebarWorkDisabilities: false as boolean,
-    displaySidebarWorkDisabilitiesManager: false as boolean,
     isDeleted: false as boolean,
     drawershiftExceptionsError: false,
     drawerExceptionRequestsError: false,
@@ -254,9 +253,6 @@ export default defineComponent({
       this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
     },
-    handlerWorkDisabilitiesManager() {
-      this.displaySidebarWorkDisabilitiesManager = true
-    },
     onClickWorkDisabilities() {
       this.displaySidebarWorkDisabilities = true
     },
@@ -276,6 +272,7 @@ export default defineComponent({
         this.drawerShiftExceptions = false
         this.displaySidebarVacationsManager = false
         this.displaySidebarVacations = false
+        this.displaySidebarWorkDisabilities = false
       }
       myGeneralStore.setFullLoader(false)
 

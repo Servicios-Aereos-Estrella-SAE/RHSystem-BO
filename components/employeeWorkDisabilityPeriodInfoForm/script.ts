@@ -4,15 +4,12 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
-import WorkDisabilityService from '~/resources/scripts/services/WorkDisabilityService';
-import type { InsuranceCoverageTypeInterface } from '~/resources/scripts/interfaces/InsuranceCoverageTypeInterface';
-import InsuranceCoverageTypeService from '~/resources/scripts/services/InsuranceCoverageTypeService';
-import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface';
 import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodInterface';
 import type { WorkDisabilityTypeInterface } from '~/resources/scripts/interfaces/WorkDisabilityTypeInterface';
 import WorkDisabilityPeriodService from '~/resources/scripts/services/WorkDisabilityPeriodService';
 import WorkDisabilityTypeService from '~/resources/scripts/services/WorkDisabilityTypeService';
 import { DateTime } from 'luxon';
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 
 export default defineComponent({
   components: {
@@ -32,10 +29,18 @@ export default defineComponent({
     isNewWorkDisabilityPeriod: false,
     isReady: false,
     isDeleted: false,
+    files: [] as Array<any>,
+    dates: [],
   }),
   computed: {
   },
   watch: {
+    dates(newRange) {
+      if (newRange.length === 2) {
+        this.workDisabilityPeriod.workDisabilityPeriodStartDate = newRange[0]
+        this.workDisabilityPeriod.workDisabilityPeriodEndDate = newRange[1]
+      }
+    }
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -124,7 +129,22 @@ export default defineComponent({
         })
         return
       }
-
+      for await (const file of this.files) {
+        if (file) {
+          const mimeType = file.type;
+          const isAudioOrVideo = mimeType.startsWith('audio/') || mimeType.startsWith('video/');
+          if (isAudioOrVideo) {
+            this.$toast.add({
+              severity: 'warn',
+              summary: 'File invalid',
+              detail: 'Audio or video files are not allowed.',
+              life: 5000,
+            })
+            return
+          }
+        }
+      }
+      const files = this.files.length > 0 ? this.files[0] : null
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -140,16 +160,22 @@ export default defineComponent({
           .toFormat('yyyy-MM-dd');
       }
       if (!this.workDisabilityPeriod.workDisabilityPeriodId) {
-        workDisabilityPeriodResponse = await workDisabilityPeriodService.store(this.workDisabilityPeriod)
+        workDisabilityPeriodResponse = await workDisabilityPeriodService.store(this.workDisabilityPeriod, files)
       } else {
-        workDisabilityPeriodResponse = await workDisabilityPeriodService.update(this.workDisabilityPeriod)
+        workDisabilityPeriodResponse = await workDisabilityPeriodService.update(this.workDisabilityPeriod, files)
       }
 
       if (workDisabilityPeriodResponse.status === 201 || workDisabilityPeriodResponse.status === 200) {
+        let shiftExceptionsError = [] as Array<ShiftExceptionErrorInterface>
+        if (workDisabilityPeriodResponse._data.data.shiftExceptionsError) {
+          shiftExceptionsError = workDisabilityPeriodResponse._data.data.shiftExceptionsError
+        }
         workDisabilityPeriodResponse = await workDisabilityPeriodService.show(workDisabilityPeriodResponse._data.data.workDisabilityPeriod.workDisabilityPeriodId)
         if (workDisabilityPeriodResponse.status === 200) {
           const workDisabilityPeriod = workDisabilityPeriodResponse._data.data.workDisabilityPeriod
-          this.$emit('onWorkDisabilityPeriodSave', workDisabilityPeriod as WorkDisabilityPeriodInterface)
+         
+       
+          this.$emit('onWorkDisabilityPeriodSave', workDisabilityPeriod as WorkDisabilityPeriodInterface, shiftExceptionsError as Array<ShiftExceptionErrorInterface>)
         }
       } else {
         const msgError = workDisabilityPeriodResponse._data.error ? workDisabilityPeriodResponse._data.error : workDisabilityPeriodResponse._data.message
@@ -165,6 +191,14 @@ export default defineComponent({
       this.workDisabilityPeriod.workDisabilityPeriodEndDate = workDisabilityPeriodEndDateTemp
       this.isReady = true
       myGeneralStore.setFullLoader(false)
+    },
+    validateFiles(event: any) {
+      let validFiles = event.files;
+      this.files = validFiles;
+      this.$forceUpdate()
+    },
+    getObjectURL(file: any) {
+      return URL.createObjectURL(file);
     },
   }
 })

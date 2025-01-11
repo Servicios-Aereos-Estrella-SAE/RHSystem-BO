@@ -1,4 +1,5 @@
 export interface WorkDisabilityPeriodInterface {
+  [key: string]: any
   workDisabilityPeriodId: number
   workDisabilityPeriodStartDate: string
   workDisabilityPeriodEndDate: string

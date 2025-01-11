@@ -1,7 +1,7 @@
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
-import type { WorkDisabilityPeriodInterface } from "../interfaces/WorkDisabilityPeriodInterface";
+import type { WorkDisabilityNoteInterface } from "../interfaces/WorkDisabilityNoteInterface";
 
-export default class WorkDisabilityPeriodService {
+export default class WorkDisabilityNoteService {
   protected API_PATH: string;
   protected GENERAL_HEADERS: GeneralHeadersInterface;
 
@@ -14,24 +14,15 @@ export default class WorkDisabilityPeriodService {
     };
   }
 
-  async store(workDisabilityPeriod: WorkDisabilityPeriodInterface, file: any) {
+  async store(workDisabilityNote: WorkDisabilityNoteInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
-    const formData = new FormData()
-    formData.append('workDisabilityPeriodFile', file)
-    for (const key in workDisabilityPeriod) {
-      if (workDisabilityPeriod.hasOwnProperty(key)) {
-        if (workDisabilityPeriod[key] === undefined || workDisabilityPeriod[key] === 'null') {
-          workDisabilityPeriod[key] = ''
-        }
-        formData.append(key, workDisabilityPeriod[key])
-      } 
-    }
+    
     try {
-      await $fetch(`${this.API_PATH}/work-disability-periods`, {
+      await $fetch(`${this.API_PATH}/work-disability-notes`, {
         headers,
         method: "POST",
-        body: formData,
+        body: workDisabilityNote,
         onResponse({ response }) {
           responseRequest = response;
         },
@@ -43,26 +34,17 @@ export default class WorkDisabilityPeriodService {
     return responseRequest;
   }
 
-  async update(workDisabilityPeriod: WorkDisabilityPeriodInterface, file: any) {
+  async update(workDisabilityNote: WorkDisabilityNoteInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
-    const formData = new FormData()
-    formData.append('workDisabilityPeriodFile', file)
-    for (const key in workDisabilityPeriod) {
-      if (workDisabilityPeriod.hasOwnProperty(key)) {
-        if (workDisabilityPeriod[key] === undefined || workDisabilityPeriod[key] === 'null') {
-          workDisabilityPeriod[key] = ''
-        }
-        formData.append(key, workDisabilityPeriod[key])
-      }
-    }
+   
     try {
       await $fetch(
-        `${this.API_PATH}/work-disability-periods/${workDisabilityPeriod.workDisabilityPeriodId}`,
+        `${this.API_PATH}/work-disability-notes/${workDisabilityNote.workDisabilityNoteId}`,
         {
           headers,
           method: "PUT",
-          body: formData,
+          body: workDisabilityNote,
           onResponse({ response }) {
             responseRequest = response;
           },
@@ -75,12 +57,12 @@ export default class WorkDisabilityPeriodService {
     return responseRequest;
   }
 
-  async delete(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
+  async delete(workDisabilityNote: WorkDisabilityNoteInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
     await $fetch(
-      `${this.API_PATH}/work-disability-periods/${workDisabilityPeriod.workDisabilityPeriodId}`,
+      `${this.API_PATH}/work-disability-notes/${workDisabilityNote.workDisabilityNoteId}`,
       {
         headers,
         method: "DELETE",
@@ -96,11 +78,11 @@ export default class WorkDisabilityPeriodService {
     return responseRequest;
   }
 
-  async show(workDisabilityPeriodId: number) {
+  async show(workDisabilityNoteId: number) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
 
-    await $fetch(`${this.API_PATH}/work-disability-periods/${workDisabilityPeriodId}`, {
+    await $fetch(`${this.API_PATH}/work-disability-notes/${workDisabilityNoteId}`, {
       headers,
       onResponse({ response }) {
         responseRequest = response;
@@ -109,14 +91,14 @@ export default class WorkDisabilityPeriodService {
         responseRequest = response;
       },
     });
-    const workDisabilityPeriod =
-      responseRequest.status === 200 ? responseRequest._data.data.workDisabilityPeriod : null;
+    const workDisabilityNote =
+      responseRequest.status === 200 ? responseRequest._data.data.workDisabilityNote : null;
 
     return {
       status: responseRequest.status,
       _data: {
         data: {
-          workDisabilityPeriod: workDisabilityPeriod,
+          workDisabilityNote: workDisabilityNote,
         },
       },
     };

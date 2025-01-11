@@ -143,10 +143,10 @@
       >
       <employeeWorkDisabilities
         :employee="employee"
-        @manageVacations="handlerWorkDisabilitiesManager"
         :status-form="statusForm"
         :can-manage-work-disability="canManageWorkDisability"
         :canManageException="canManageShiftOrException"
+        @save="onSave"
       />
     </Sidebar>
   </div>
@@ -221,7 +221,7 @@
 
   .work-disabilities-sidebar {
     width: 100% !important;
-    max-width: 27rem !important;
+    max-width: 33rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

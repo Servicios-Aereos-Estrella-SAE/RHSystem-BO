@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface'
 import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface'
 import WorkDisabilityService from '~/resources/scripts/services/WorkDisabilityService'
@@ -14,7 +15,6 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     statusForm: { type: Boolean, required: false, default: false },
     canManageWorkDisability: { type: Boolean, required: true },
-    canManageException: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false as boolean,
@@ -63,7 +63,7 @@ export default defineComponent({
       this.workDisability = newWorkDisability
       this.drawerWorkDisabilityForm = true
     },
-    onSave(workDisability: WorkDisabilityInterface) {
+    onSave(workDisability: WorkDisabilityInterface, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -76,8 +76,8 @@ export default defineComponent({
         this.workDisabilities.push(workDisability)
         this.$forceUpdate()
       }
-      this.$emit('save', [])
-      this.drawerWorkDisabilityForm = false
+      this.$emit('save', shiftExceptionsError)
+      this.drawerWorkDisabilityForm = true
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },

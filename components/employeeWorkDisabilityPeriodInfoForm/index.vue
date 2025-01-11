@@ -10,7 +10,49 @@
     
     <div v-if="isReady" class="work-disability-period-form">
       <div class="form-container">
-       
+        <div class="input-box">
+          <label for="work-disability-period-file">
+            File
+          </label>
+          <Button v-if="workDisabilityPeriod.workDisabilityPeriodFile" label="Open file" severity="primary" @click="openFile()" />
+          <FileUpload
+          ref="fileUpload"
+          v-model="files"
+          name="demo[]"
+          url="/api/upload"
+          @upload="onAdvancedUpload($event)"
+          :custom-upload="true"
+          :maxFileSize="1000000"
+          :fileLimit="1"
+          @select="validateFiles"
+          :showUploadButton="false"
+          accept="image/*,application/pdf"
+        >
+          <template #content="{ files, removeUploadedFileCallback, removeFileCallback }">
+            <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
+              <img
+                v-if="file && file.type.startsWith('image/')"
+                role="presentation"
+                class="p-fileupload-file-thumbnail"
+                :alt="file.name"
+                width="50"
+                :src="getObjectURL(file)"
+              />
+              <span v-if="file">{{ file.name }}</span>
+              <Button
+                v-if="file"
+                @click="removeFileCallback(index)"
+                class="p-ml-auto p-button p-component p-button-text"
+              >
+                <span class="p-button-icon pi pi-times"></span>
+              </Button>
+            </div>
+          </template>
+          <template #empty>
+            <p>Drag and drop file to here to upload.</p>
+          </template>
+        </FileUpload>
+        </div>
         <div  class="input-box">
           <label for="folio">
             Ticket folio
@@ -28,25 +70,18 @@
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">Work disability type is required.</small>
         </div>
         <div class="input-box">
-          <label for="requested-date">
-              From
-          </label>
-          <Calendar v-model="workDisabilityPeriod.workDisabilityPeriodStartDate" dateFormat="yy-mm-dd" placeholder="Select date start"
-              class="w-full md:w-14rem" />
-          <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodStartDate">
-              Date from is required.
+          <label for="requested-date">Date Range</label>
+          <Calendar 
+            v-model="dates" 
+            selectionMode="range" 
+            dateFormat="yy-mm-dd" 
+            placeholder="Select date range"
+            class="w-full md:w-14rem" 
+          />
+          <small class="p-error" v-if="submitted && (!dates || dates.length !== 2)">
+          Dates are required.
           </small>
-      </div>
-      <div class="input-box">
-        <label for="requested-date">
-            At
-        </label>
-        <Calendar v-model="workDisabilityPeriod.workDisabilityPeriodEndDate" dateFormat="yy-mm-dd" placeholder="Select date end"
-            class="w-full md:w-14rem" />
-        <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodEndDate">
-            Date from is required.
-        </small>
-    </div>
+        </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
             Save work disability period

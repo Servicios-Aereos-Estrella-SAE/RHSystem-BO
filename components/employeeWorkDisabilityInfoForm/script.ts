@@ -9,6 +9,8 @@ import type { InsuranceCoverageTypeInterface } from '~/resources/scripts/interfa
 import InsuranceCoverageTypeService from '~/resources/scripts/services/InsuranceCoverageTypeService';
 import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface';
 import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodInterface';
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
+import type { WorkDisabilityNoteInterface } from '~/resources/scripts/interfaces/WorkDisabilityNoteInterface';
 
 export default defineComponent({
   components: {
@@ -25,6 +27,7 @@ export default defineComponent({
   data: () => ({
     insuranceCoverageTypeList: [] as InsuranceCoverageTypeInterface[],
     workDisabilityPeriodsList: [] as WorkDisabilityPeriodInterface[],
+    workDisabilityNotesList: [] as WorkDisabilityNoteInterface[],
     submitted: false,
     currentWorkDisability: null as WorkDisabilityInterface | null,
     isNewWorkDisability: false,
@@ -32,6 +35,8 @@ export default defineComponent({
     isDeleted: false,
     drawerWorkDisabilityPeriodForm: false,
     workDisabilityPeriod: null as WorkDisabilityPeriodInterface | null,
+    drawerWorkDisabilityNoteForm: false,
+    workDisabilityNote: null as WorkDisabilityNoteInterface | null,
   }),
   computed: {
   },
@@ -52,6 +57,7 @@ export default defineComponent({
       if (workDisabilityResponse.status === 200) {
         this.currentWorkDisability = workDisabilityResponse._data.data.workDisability
         this.workDisabilityPeriodsList = workDisabilityResponse._data.data.workDisability.workDisabilityPeriods
+        this.workDisabilityNotesList = workDisabilityResponse._data.data.workDisability.workDisabilityNotes
       }
     }
 
@@ -127,7 +133,7 @@ export default defineComponent({
       this.workDisabilityPeriod = newWorkDisabilityPeriod
       this.drawerWorkDisabilityPeriodForm = true
     },
-    onSavePeriod(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
+    onSavePeriod(workDisabilityPeriod: WorkDisabilityPeriodInterface, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -140,8 +146,33 @@ export default defineComponent({
         this.workDisabilityPeriodsList.push(workDisabilityPeriod)
         this.$forceUpdate()
       }
-      this.$emit('save', [])
+      this.$emit('save',workDisabilityPeriod, shiftExceptionsError)
       this.drawerWorkDisabilityPeriodForm = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
+    addNewNote() {
+      const newWorkDisabilityNote = {
+        workDisabilityId: this.workDisability.workDisabilityId
+      } as WorkDisabilityNoteInterface
+      this.workDisabilityNote = newWorkDisabilityNote
+      this.drawerWorkDisabilityNoteForm = true
+    },
+    onSaveNote(workDisabilityNote: WorkDisabilityNoteInterface) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.workDisabilityNote = { ...workDisabilityNote }
+      const index = this.workDisabilityNotesList.findIndex((workDisabilityNote: WorkDisabilityNoteInterface) => workDisabilityNote.workDisabilityNoteId === this.workDisabilityNote?.workDisabilityNoteId)
+      if (index !== -1) {
+        this.workDisabilityNotesList[index] = workDisabilityNote
+        this.$forceUpdate()
+      } else {
+        this.workDisabilityNotesList.push(workDisabilityNote)
+        this.$forceUpdate()
+      }
+      //this.$emit('save',workDisabilityNote)
+      this.drawerWorkDisabilityNoteForm = false
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
