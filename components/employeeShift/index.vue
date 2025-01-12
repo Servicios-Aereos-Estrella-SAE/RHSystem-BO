@@ -51,6 +51,10 @@
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 3a.75.75 0 0 1 .75.75V7h1.75A3.25 3.25 0 0 1 21 10.25v6.5A3.25 3.25 0 0 1 17.75 20H6.25A3.25 3.25 0 0 1 3 16.75v-6.5A3.25 3.25 0 0 1 6.25 7H8V3.75a.75.75 0 0 1 .648-.743L8.75 3h6.5Zm-.75 1.5h-5V7h5V4.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
         Vacations
       </Button>
+      <Button  title="Work disabilities" class="btn btn-block" @click="onClickWorkDisabilities">
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 3a.75.75 0 0 1 .75.75V7h1.75A3.25 3.25 0 0 1 21 10.25v6.5A3.25 3.25 0 0 1 17.75 20H6.25A3.25 3.25 0 0 1 3 16.75v-6.5A3.25 3.25 0 0 1 6.25 7H8V3.75a.75.75 0 0 1 .648-.743L8.75 3h6.5Zm-.75 1.5h-5V7h5V4.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
+        Work Disabilities
+      </Button>
     </div>
 
     <div v-if="employeeCalendar.length > 0 && displayCalendar" class="calendar-wrapper">
@@ -127,6 +131,24 @@
         @save="onSave"
       />
     </Sidebar>
+
+    <Sidebar
+      v-model:visible="displaySidebarWorkDisabilities"
+      :blockScroll="true"
+      :dismissable="false"
+      :closeOnEscape="false"
+      header="work disabilities"
+      position="right"
+      class="work-disabilities-sidebar"
+      >
+      <employeeWorkDisabilities
+        :employee="employee"
+        :status-form="statusForm"
+        :can-manage-work-disability="canManageWorkDisability"
+        :canManageException="canManageShiftOrException"
+        @save="onSave"
+      />
+    </Sidebar>
   </div>
   <div v-else class="loader">
     <ProgressSpinner />
@@ -191,6 +213,15 @@
   .shift-vacations-manage-sidebar {
     width: 100% !important;
     max-width: 27rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .work-disabilities-sidebar {
+    width: 100% !important;
+    max-width: 33rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

@@ -27,6 +27,7 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
+    canManageWorkDisability: { type: Boolean, required: true },
     canManageExceptionRequest: { type: Boolean, required: true }
   },
   data: () => ({
@@ -43,6 +44,7 @@ export default defineComponent({
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
     displaySidebarVacationsManager: false as boolean,
+    displaySidebarWorkDisabilities: false as boolean,
     isDeleted: false as boolean,
     drawershiftExceptionsError: false,
     drawerExceptionRequestsError: false,
@@ -251,6 +253,9 @@ export default defineComponent({
       this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
     },
+    onClickWorkDisabilities() {
+      this.displaySidebarWorkDisabilities = true
+    },
     handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
@@ -267,6 +272,7 @@ export default defineComponent({
         this.drawerShiftExceptions = false
         this.displaySidebarVacationsManager = false
         this.displaySidebarVacations = false
+        this.displaySidebarWorkDisabilities = false
       }
       myGeneralStore.setFullLoader(false)
 
