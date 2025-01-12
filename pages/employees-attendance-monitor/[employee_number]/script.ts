@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import moment from 'moment';
+import moment from 'moment'
 import type { VisualizationModeOptionInterface } from '../../../resources/scripts/interfaces/VisualizationModeOptionInterface'
 import AttendanceMonitorController from '../../../resources/scripts/controllers/AttendanceMonitorController'
 import { DateTime } from 'luxon'
@@ -8,12 +8,12 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
-import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface';
-import ToleranceService from '~/resources/scripts/services/ToleranceService';
-import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
+import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface'
+import ToleranceService from '~/resources/scripts/services/ToleranceService'
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 
 export default defineComponent({
   components: {
@@ -124,6 +124,8 @@ export default defineComponent({
     tardies: 3,
     faultsDelays: 0,
     workedTime: '',
+    workedProductiveTime: '',
+    workedActiveTime: '',
     canReadTimeWorked: false,
     canAddAssistManual: false,
     earlyOuts: 0,
@@ -131,11 +133,11 @@ export default defineComponent({
     onEarlyOutPercentage: 0,
   }),
   computed: {
-    isRoot () {
+    isRoot() {
       const myGeneralStore = useMyGeneralStore()
       return myGeneralStore.isRoot
     },
-    weeklyStartDay () {
+    weeklyStartDay() {
       const daysList = []
       if (!this.periodSelected && !this.datesSelected.length) {
         return []
@@ -146,38 +148,38 @@ export default defineComponent({
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('month')
           const daysInMonth = (start.daysInMonth || 0)
-          
+
           for (let index = 0; index < daysInMonth; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
               day
             })
           }
-          break;
+          break
         }
         case 'weekly': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('week')
-          
+
           for (let index = 0; index < 7; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
               day
             })
           }
-          break;
+          break
         }
         case 'custom': {
           if (this.datesSelected.length === 2) {
@@ -200,11 +202,11 @@ export default defineComponent({
             }
           }
           break;
-        }  
-      case 'fourteen': {
+        }
+        case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
-          
+
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
@@ -224,15 +226,15 @@ export default defineComponent({
               day
             })
           }
-          break;
+          break
         }
-      default:
-          break;
+        default:
+          break
       }
 
       return daysList
     },
-    calendarTitle () {
+    calendarTitle() {
       if (this.visualizationMode?.value === 'weekly') {
         const date = DateTime.fromJSDate(this.periodSelected).setZone('America/Mexico_City').setLocale('en')
         const start = date.startOf('week')
@@ -246,7 +248,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en')
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -254,7 +256,7 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale('en')
 
         return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
@@ -271,7 +273,7 @@ export default defineComponent({
 
       return `Check in & Check out on ${text}`
     },
-    assistSyncStatusDate () {
+    assistSyncStatusDate() {
       if (this.statusInfo) {
         const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
         const dateTimeFormat = dateTime.toFormat('ff')
@@ -281,7 +283,7 @@ export default defineComponent({
       return ''
     }
   },
-  created () {
+  created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -289,8 +291,8 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    const fullPath = this.$route.path;
-    const firstSegment = fullPath.split('/')[1];
+    const fullPath = this.$route.path
+    const firstSegment = fullPath.split('/')[1]
     const permissions = await myGeneralStore.getAccess(firstSegment)
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
@@ -307,7 +309,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async getEmployee () {
+    async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
         const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
@@ -316,9 +318,9 @@ export default defineComponent({
           this.employee = employee
         }
       }
-     
+
       if (!this.employee) {
-     
+
         if (!this.employee) {
           const myGeneralStore = useMyGeneralStore()
           myGeneralStore.setFullLoader(false)
@@ -328,16 +330,16 @@ export default defineComponent({
             message: 'Employee not found'
           })
         }
-      } 
+      }
     },
     isThursday(dateObject: any, addOneMonth = true) {
-      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
-      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
-      const weekDayName = moment(mydate).format('dddd');
-      return weekDayName === 'Thursday';
-      
+      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00"
+      const weekDayName = moment(mydate).format('dddd')
+      return weekDayName === 'Thursday'
+
     },
-    async setDefaultVisualizationMode () {
+    async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
 
       if (index >= 0) {
@@ -350,12 +352,12 @@ export default defineComponent({
       const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('month').toJSDate()
       const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('month').toJSDate()
 
-      return [previousDay, currentDay];
+      return [previousDay, currentDay]
     },
     isValidPeriodSelected() {
       return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
     },
-    setGeneralData () {
+    setGeneralData() {
       const assists = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = this.employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
@@ -365,17 +367,17 @@ export default defineComponent({
 
       const serieData = []
 
-      const assist = totalAvailable > 0 ? Math.round((assists / totalAvailable) * 100) : 0;
-      const tolerance = totalAvailable > 0 ? Math.round((tolerances / totalAvailable) * 100) : 0;
-      const delay = totalAvailable > 0 ? Math.round((delays / totalAvailable) * 100) : 0;
-      const earlyOut = totalAvailable > 0 ? Math.round((this.earlyOuts / totalAvailable) * 100) : 0;
-      const fault = totalAvailable > 0 ? Math.round((faults / totalAvailable) * 100) : 0;
+      const assist = totalAvailable > 0 ? Math.round((assists / totalAvailable) * 100) : 0
+      const tolerance = totalAvailable > 0 ? Math.round((tolerances / totalAvailable) * 100) : 0
+      const delay = totalAvailable > 0 ? Math.round((delays / totalAvailable) * 100) : 0
+      const earlyOut = totalAvailable > 0 ? Math.round((this.earlyOuts / totalAvailable) * 100) : 0
+      const fault = totalAvailable > 0 ? Math.round((faults / totalAvailable) * 100) : 0
 
       this.onTimePercentage = assist
       this.onTolerancePercentage = tolerance
       this.onDelayPercentage = delay
       this.onEarlyOutPercentage = earlyOut
-      this.onFaultPercentage = fault 
+      this.onFaultPercentage = fault
 
       serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
@@ -384,22 +386,22 @@ export default defineComponent({
 
       this.generalData.series[0].data = serieData
     },
-    async setPeriodData () {
+    async setPeriodData() {
       this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected)
       if (this.visualizationMode?.value !== 'yearly') {
         await this.getEmployeeAssist()
       }
     },
-    setPeriodCategories () {
+    setPeriodCategories() {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    async handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange() {
       if (this.employee) {
         const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
         this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
         if (idx >= 0) {
-          this.visualizationModeOptions[idx].selected =  true
+          this.visualizationModeOptions[idx].selected = true
         }
         if (this.visualizationMode?.value === 'fourteen') {
           this.periodSelected = this.getNextPayThursday()
@@ -413,8 +415,8 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
       }
     },
-    async handlerPeriodChange () {
-      if(this.isValidPeriodSelected()) {
+    async handlerPeriodChange() {
+      if (this.isValidPeriodSelected()) {
         await this.getEmployeeAssist()
       }
     },
@@ -425,17 +427,17 @@ export default defineComponent({
         this.filteredEmployees = list
       }
     },
-    onEmployeeSelect () {
+    onEmployeeSelect() {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-    async getEmployeeAssist () {
+    async getEmployeeAssist() {
       if (this.visualizationMode?.value !== 'yearly') {
         await this.getEmployeeCalendar()
       }
     },
-    async getEmployeeCalendar () {
+    async getEmployeeCalendar() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const toleranceService = new ToleranceService()
@@ -464,22 +466,22 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        
+
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate//.minus({ days: 1 })
-         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
-         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
         const endDate = DateTime.fromObject({
           year: lastDay.year,
           month: lastDay.month,
           day: lastDay.day,
         }).plus({ days: 1 })
-         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-         
-         endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+
+        endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
       }
-      
+
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
@@ -491,6 +493,8 @@ export default defineComponent({
       const assistArray = [] as Array<{
         checkIn: { assistPunchTime?: string | null }
         checkOut: { assistPunchTime?: string | null }
+        checkEatIn: { assistPunchTime?: string | null }
+        checkEatOut: { assistPunchTime?: string | null }
       }>
       for await (const day of this.employeeCalendar) {
         if (day.assist.checkIn && day.assist.checkOut) {
@@ -499,16 +503,24 @@ export default defineComponent({
               assistPunchTime: day.assist.checkIn.assistPunchTime.toString(),
             },
             checkOut: {
-              assistPunchTime:day.assist.checkOut.assistPunchTime.toString(),
+              assistPunchTime: day.assist.checkOut.assistPunchTime.toString(),
+            },
+            checkEatIn: {
+              assistPunchTime: day.assist.checkEatIn ? day.assist.checkEatIn.assistPunchTime.toString() : null,
+            },
+            checkEatOut: {
+              assistPunchTime: day.assist.checkEatOut ? day.assist.checkEatOut.assistPunchTime.toString() : null,
             }
           })
         }
         if (day.assist.checkInStatus === 'delay') {
           delays += 1
-        } 
+        }
       }
       this.setGeneralData()
       this.workedTime = await this.calculateTotalElapsedTimeWithCrossing(assistArray)
+      this.workedProductiveTime = await this.calculateProductiveElapsedTime(assistArray)
+      this.workedActiveTime = await this.sumShiftActiveHours(this.employeeCalendar)
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
       myGeneralStore.setFullLoader(false)
@@ -551,36 +563,134 @@ export default defineComponent({
         const checkInB = b.checkIn?.assistPunchTime || ''
         return DateTime.fromISO(checkInA).toMillis() - DateTime.fromISO(checkInB).toMillis()
       })
-    
+
       let lastCheckOut: DateTime | null = null
-    
+
       sortedList.forEach(data => {
         // Determinar las fechas de check-in y check-out
         const checkIn = data.checkIn?.assistPunchTime || null
         const checkOut = data.checkOut?.assistPunchTime || null
-    
+
         if (checkIn || checkOut) {
           // Parsear las fechas
           const checkInDateTime = checkIn ? DateTime.fromISO(checkIn) : null
           const checkOutDateTime = checkOut ? DateTime.fromISO(checkOut) : null
-    
+
           const start = checkInDateTime || lastCheckOut
           const end = checkOutDateTime
           if (start && end && end >= start) {
             const duration = end.diff(start, ['minutes'])
             totalMinutes += Math.floor(duration.minutes)
           }
-    
+
           // Actualizar el último check-out
           lastCheckOut = checkOutDateTime || lastCheckOut
         }
       })
-    
+
       // Convertir minutos acumulados a horas y minutos
       const totalHours = Math.floor(totalMinutes / 60)
       const remainingMinutes = totalMinutes % 60
-    
+
       return `${totalHours} hours ${remainingMinutes} minutes`
+    },
+    async calculateProductiveElapsedTime(dataList: Array<{
+      checkIn?: { assistPunchTime?: string | null },
+      checkOut?: { assistPunchTime?: string | null },
+      checkEatIn?: { assistPunchTime?: string | null },
+      checkEatOut?: { assistPunchTime?: string | null }
+    }>): Promise<string> {
+      let totalMinutes = 0
+
+      // Ordenar la lista por fechas de check-in para asegurar la secuencia
+      const sortedList = dataList.sort((a, b) => {
+        const checkInA = a.checkIn?.assistPunchTime || ''
+        const checkInB = b.checkIn?.assistPunchTime || ''
+        return DateTime.fromISO(checkInA).toMillis() - DateTime.fromISO(checkInB).toMillis()
+      })
+
+      let lastCheckOut: DateTime | null = null
+
+      sortedList.forEach(data => {
+        const checkIn = data.checkIn?.assistPunchTime || null
+        const checkOut = data.checkOut?.assistPunchTime || null
+        const checkEatIn = data.checkEatIn?.assistPunchTime || null
+        const checkEatOut = data.checkEatOut?.assistPunchTime || null
+
+        if (checkIn) {
+          const checkInDateTime = DateTime.fromISO(checkIn)
+          let end: DateTime | null = null
+
+          // Determinar el tiempo final considerando las horas de comida
+          if (checkEatIn && checkEatOut) {
+            const checkEatInDateTime = DateTime.fromISO(checkEatIn)
+            const checkEatOutDateTime = DateTime.fromISO(checkEatOut)
+            if (checkEatOutDateTime >= checkEatInDateTime) {
+              end = checkOut ? DateTime.fromISO(checkOut) : checkEatOutDateTime
+              const eatDuration = checkEatOutDateTime.diff(checkEatInDateTime, ['minutes'])
+              totalMinutes -= Math.floor(eatDuration.minutes)
+            }
+          } else if (checkEatIn) {
+            end = DateTime.fromISO(checkEatIn)
+          } else {
+            end = checkOut ? DateTime.fromISO(checkOut) : lastCheckOut
+          }
+
+          if (end && end >= checkInDateTime) {
+            const durationMinutes = Math.floor(end.diff(checkInDateTime, ['minutes']).minutes)
+            totalMinutes += durationMinutes
+          }
+
+          lastCheckOut = checkOut ? DateTime.fromISO(checkOut) : lastCheckOut
+        }
+      })
+
+      // Convertir minutos acumulados a horas y minutos
+      const totalHours = Math.floor(totalMinutes / 60)
+      const remainingMinutes = totalMinutes % 60
+
+      return `${totalHours} hours ${remainingMinutes} minutes`
+    },
+    sumShiftActiveHours(dataList: AssistDayInterface[]): string {
+      // Sumar las horas activas del turno solo si no es un día de descanso
+      const totalActiveHours = dataList.reduce((sum, data) => {
+        if (!this.calendarIsRestDay(data) && !data.assist.isFutureDay) {
+          const shiftActiveHours = data.assist?.dateShift?.shiftActiveHours ? parseFloat(data.assist.dateShift.shiftActiveHours.toString()) : 0
+          return sum + shiftActiveHours
+        }
+        return sum
+      }, 0)
+
+      // Convertir a horas y minutos
+      const wholeHours = Math.floor(totalActiveHours)
+      const fractionalMinutes = Math.round((totalActiveHours - wholeHours) * 60)
+
+      return `${wholeHours} hours ${fractionalMinutes} minutes`
+    },
+    checkInTime(checkAssist: AssistDayInterface) {
+      if (!checkAssist?.assist?.checkIn?.assistPunchTimeUtc) {
+        return ''
+      }
+
+      const time = DateTime.fromISO(checkAssist.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true })
+      const timeCST = time.setZone('UTC-6')
+      return timeCST.setLocale('en').toFormat('TT')
+    },
+    calendarIsRestDay(checkAssist: AssistDayInterface) {
+      const valid = (checkAssist.assist.isRestDay && !this.checkInTime(checkAssist) && checkAssist.assist.checkInStatus !== 'working' && !this.checkInTime(checkAssist) && checkAssist.assist.checkInStatus !== 'rest-working-out')
+        && !this.calendarIsHoliday(checkAssist)
+        && !this.calendarIsVacationDay(checkAssist)
+      return valid
+    },
+    calendarIsHoliday(checkAssist: AssistDayInterface) {
+      const valid = checkAssist.assist.isHoliday
+        && checkAssist.assist.holiday
+        && !checkAssist.assist.checkIn
+      return valid
+    },
+    calendarIsVacationDay(checkAssist: AssistDayInterface) {
+      const valid = checkAssist.assist.isVacationDate && !this.checkInTime(checkAssist) && !this.calendarIsHoliday(checkAssist)
+      return valid
     },
     async getFaultsFromDelays(delays: number) {
       const faults = Math.floor(delays / this.tardies) // Cada 3 retardos es 1 falta
@@ -616,14 +726,14 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        
+
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate.minus({ days: 1 })
-         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
-         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
-         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
@@ -644,19 +754,19 @@ export default defineComponent({
           severity: 'error',
           summary: 'Excel assist',
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       }
     },
-    async setAssistSyncStatus () {
+    async setAssistSyncStatus() {
       try {
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {}
+      } catch (error) { }
     },
-    addNewAssist () {
+    addNewAssist() {
       if (this.employee && this.employee.employeeId) {
         const assist = {
           assistEmpId: this.employee.employeeId,
@@ -666,7 +776,7 @@ export default defineComponent({
         this.drawerAssistForm = true
       }
     },
-    onSaveAssist () {
+    onSaveAssist() {
       this.drawerAssistForm = false
       this.handlerPeriodChange()
     },
