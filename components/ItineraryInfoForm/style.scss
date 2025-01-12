@@ -69,12 +69,12 @@
         display: flex;      // Para que los botones estén en línea
         gap: 0.5rem;        // Espacio entre botones
         &.btn-group-with-stops {
-          margin-top: 1.5rem;
+          margin-top: 2rem;
         }
         .btn {
           // Tamaño de cada botón
-          width: 2.5rem;
-          height: 2.5rem;
+          width: 2.9rem;
+          height: 2.9rem;
           // Estilos básicos
           border: none;
           border-radius: 0.5rem; // o 50% si los quieres 100% circulares

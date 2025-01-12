@@ -24,7 +24,7 @@
                   Select Customer
                 </label>
                 <Dropdown
-                  placeholder="Select" v-model="customerSelected" class="w-full md:w-14rem" :options="formatContacts" optionLabel="customerName" />
+                  placeholder="Select" v-model="customerSelected" class="w-full md:w-14rem" :options="formatContacts" optionLabel="customerFullName" />
               </div>
               <div class="input-box">
                 <Button v-if="canCreate" class="btn-add flex justify-content-center" severity="primary" @click="addNew" >
@@ -50,11 +50,6 @@
               <div class="input-box">
                   <label for="exception-type">
                   </label>
-                  <div class="checkbox-item">
-                      <Checkbox inputId="applyToMoreThanOneDay"
-                          name="applyToMoreThanOneDay" :binary="true" />
-                      <label for="applyToMoreThanOneDay" class="ml-2"> Flight with third party? </label>
-                  </div>
                   <div class="input-text-row">
                     <div class="input-box">
                       <label for="lastName">PIC</label>
@@ -85,6 +80,12 @@
                 <Textarea  id="proceedingFileObservations" autoResize
                   rows="12" />
               </div>
+            </div>
+            <div class="card flex justify-content-center">
+              <Sidebar v-model:visible="drawerCustomerForm" header="Customer form" position="right"
+                class="customer-form-sidebar" :showCloseIcon="true">
+                <customerInfoForm :customer="customer" @save="onSave" />
+              </Sidebar>
             </div>
           </div>
           <div class="box aside-legs-details">
@@ -118,7 +119,7 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
  
-  .pilot-form-sidebar {
+  .customer-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
 

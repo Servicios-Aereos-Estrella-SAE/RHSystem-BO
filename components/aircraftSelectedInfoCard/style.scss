@@ -8,7 +8,7 @@
   .aircraft-info{
     display: grid;
     // titulo, imagen, detalles, mapa, itinerario, costo, boton
-    grid-template-rows: 2rem 10rem 6rem 10rem 1fr .5rem 7rem 6rem;
+    grid-template-rows: 2rem 10rem 10 1fr .5rem 7rem 6rem;
     gap: 0.4rem;
 
     .aircraft-title{

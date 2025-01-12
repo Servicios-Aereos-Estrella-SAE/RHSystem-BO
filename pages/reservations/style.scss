@@ -1,7 +1,6 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 .pilots-page {
-
     h2 {
         font-size: 1rem;
         font-weight: 500;
@@ -29,8 +28,8 @@
 
             .btn-add {
               // Ajustes de tamaño y espaciado
-              width: 3rem;
-              height: 3rem;
+              width: 4rem;
+              height: 4rem;
               padding: 0;               // Para que no interfiera con la altura final del botón
               margin: 1.5rem 0 0 0;
               right: 0;
@@ -44,8 +43,8 @@
               align-items: center;
               .circle {
                 // Ajusta el tamaño del círculo
-                width: 1.2rem;
-                height: 1.2rem;
+                width: 2rem;
+                height: 2rem;
                 // Dale forma circular y céntralo internamente
                 border-radius: 50%;
                 display: flex;
@@ -57,7 +56,7 @@
             }
 
             @media screen and (max-width: $desktop) {
-                grid-template-columns: 15rem 15rem auto 5rem;
+                grid-template-columns: auto auto 5rem;
             }
 
             @media screen and (max-width: $tablet) {
