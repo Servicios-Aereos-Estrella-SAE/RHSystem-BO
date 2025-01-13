@@ -11,21 +11,33 @@
         display: grid;
         grid-template-columns: auto 20rem;
         gap: 1rem;
+        @media screen and (max-width: $ipad) {
+            grid-template-columns: 1fr;
+          
+        }
     }
-    .aside-legs-details{
+    .aside-legs-details {
       border-bottom: $border-dashed;
-      min-height: 50vh;
-      width: 100%;
+      min-height: 50vh; 
+      
     }
+
     .reservations-wrapper {
         min-height: 100dvh;
         box-sizing: border-box;
 
         .head-page {
             display: grid;
-            grid-template-columns: auto auto 4rem;
+            grid-template-columns: auto auto;
             gap: 0.5rem;
-
+            .flex {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                .input-wrapper {
+                    width: 90%;
+                }
+            }
             .btn-add {
               // Ajustes de tamaño y espaciado
               width: 4rem;
@@ -53,14 +65,23 @@
                 // Color de fondo e ícono
                 background-color: $silver;  // gris más oscuro
               }
+              @media screen and (max-width: $ipad) {
+                width: 3rem;
+                height: 3rem;
+                .circle {
+                  width: 1.5rem;
+                  height: 1.5rem;
+                }
+                
+              }
             }
 
             @media screen and (max-width: $desktop) {
-                grid-template-columns: auto auto 5rem;
+                grid-template-columns: auto auto;
             }
 
             @media screen and (max-width: $tablet) {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr auto;
             }
 
             @media screen and (max-width: $phone) {

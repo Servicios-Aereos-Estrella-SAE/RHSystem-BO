@@ -7,7 +7,7 @@
       </div>
 
       <div class="aircraft-image">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREaCaG-oGCrXvRNW7GG8hHD12ip2MD6U4DXQ&s" alt="">
+        <img src="https://www.guardianjet.com/userfiles/files/specs/Lear75/ext4c_300.jpg" alt="">
       </div>
 
       <div class="details">
@@ -40,6 +40,7 @@
           <p>$3, 100.00</p>
         </div>
       </div>
+
 
 
       <div class="detail-itinerary">
@@ -149,12 +150,12 @@
             <p>Exchange Rate</p>
             <p>$ 16.89 USD</p>
           </div>
-         
+  
         </div>
       </div>
 
       <div class="bnt-save">
-        <button type="button"class=" btn-quote">Save Quote</button>
+        <button type="button" class=" btn-quote">Save Quote</button>
       </div>
     </div>
   </div>

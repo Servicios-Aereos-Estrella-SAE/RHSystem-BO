@@ -9,6 +9,10 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr); 
     gap: 1rem; // Espacio entre columnas, ajústalo a tu gusto
+    @media screen and (max-width: $ipad) {
+      grid-template-columns: repeat(3, 1fr); 
+      
+    }
     .input-box {
       position: relative!important;
       display: inline-block!important; // o block, según tu diseño
