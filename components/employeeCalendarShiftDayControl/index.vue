@@ -11,7 +11,7 @@
     <div class="shift">
       <Dropdown v-if="drawerEmployeeShiftForm && employeeShift && shiftEditSelected && (shiftEditSelected.day === employeeCalendar.day)" v-model="employeeShift.shiftId" :options="shiftsList" optionLabel="shiftName" optionValue="shiftId" filter />
       <div v-else>
-        <span v-if="!employeeCalendar.assist.dateShift || employeeCalendar.assist.isRestDay || employeeCalendar.assist.isVacationDate" class="off">
+        <span v-if="!employeeCalendar.assist.dateShift || employeeCalendar.assist.isRestDay || employeeCalendar.assist.isVacationDate || employeeCalendar.assist.isWorkDisabilityDate" class="off">
           ---- -- ----
         </span>
         <span v-else :class="{ off: employeeCalendar.assist.isHoliday }">
@@ -28,6 +28,9 @@
       </span>
       <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isVacationDate">
         Vacation day
+      </span>
+      <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isWorkDisabilityDate">
+        Work disability day
       </span>
       <span v-else-if="employeeCalendar.assist.isHoliday && employeeCalendar.assist.holiday">
         {{ employeeCalendar.assist.holiday.holidayName }}

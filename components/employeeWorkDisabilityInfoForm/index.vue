@@ -15,7 +15,7 @@
           <label for="uuid">
             UUID
           </label>
-          <InputText v-model="workDisability.workDisabilityUuid" disabled />
+          {{ workDisability.workDisabilityUuid.toLocaleUpperCase() }}
         </div>
         <div class="input-box">
           <label for="exception-type">
@@ -23,7 +23,7 @@
           </label>
           <Dropdown v-model="workDisability.insuranceCoverageTypeId" :options="insuranceCoverageTypeList"
             optionLabel="insuranceCoverageTypeName" optionValue="insuranceCoverageTypeId" placeholder="" filter
-            class="w-full md:w-14rem" disabled/>
+            class="w-full md:w-14rem" :disabled="!isNewWorkDisability"/>
           <small class="p-error" v-if="submitted && !workDisability.insuranceCoverageTypeId">Insurance coverage type is
             required.</small>
         </div>
@@ -92,6 +92,14 @@
   @import '/resources/styles/variables.scss';
 
   .work-disability-period-form-sidebar {
+    width: 100% !important;
+    max-width: 33rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+  .work-disability-note-form-sidebar {
     width: 100% !important;
     max-width: 33rem !important;
 

@@ -20,7 +20,8 @@ export const useMyGeneralStore = defineStore({
     displayContent: false,
     userVacationFormClosed: false,
     systemSettingId: null as number | null,
-    systemModules: [] as Array<SystemModuleInterface>
+    systemModules: [] as Array<SystemModuleInterface>,
+    workDisabilityId: null as number | null,
   }),
   actions: {
     setDisplayAside(status: boolean) {

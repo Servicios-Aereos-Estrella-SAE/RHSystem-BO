@@ -18,6 +18,7 @@ interface AssistDayInterface {
     isSundayBonus: boolean
     isRestDay: boolean
     isVacationDate: boolean
+    isWorkDisabilityDate: boolean
     isHoliday: boolean
     checkInDateTime: Date | string
     checkOutDateTime: Date | string

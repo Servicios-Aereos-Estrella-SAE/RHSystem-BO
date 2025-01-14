@@ -26,7 +26,7 @@
       <Sidebar v-model:visible="drawerWorkDisabilityForm" header="form" position="right"
       class="work-disability-form-sidebar" :showCloseIcon="true">
       <employeeWorkDisabilityInfoForm :canManageWorkDisability="canManageWorkDisability"
-        :workDisability="workDisability" :employee="employee" @save="onSave" />
+        :workDisability="workDisability" :employee="employee" @onWorkDisabilitySave="onSave" @save="onSave" />
     </Sidebar>
     </div>
     <ProgressSpinner v-else />

@@ -133,22 +133,23 @@
     </Sidebar>
 
     <Sidebar
-      v-model:visible="displaySidebarWorkDisabilities"
-      :blockScroll="true"
-      :dismissable="false"
-      :closeOnEscape="false"
-      header="work disabilities"
-      position="right"
-      class="work-disabilities-sidebar"
-      >
-      <employeeWorkDisabilities
-        :employee="employee"
-        :status-form="statusForm"
-        :can-manage-work-disability="canManageWorkDisability"
-        :canManageException="canManageShiftOrException"
-        @save="onSave"
-      />
-    </Sidebar>
+    v-model:visible="displaySidebarWorkDisabilities"
+    :blockScroll="true"
+    :dismissable="false"
+    :closeOnEscape="false"
+    header="work disabilities"
+    position="right"
+    class="work-disabilities-sidebar"
+    >
+    <employeeWorkDisabilities
+      :employee="employee"
+      :status-form="statusForm"
+      :can-manage-work-disability="canManageWorkDisability"
+      :canManageException="canManageShiftOrException"
+      @save="onSave"
+    />
+  </Sidebar>
+    
   </div>
   <div v-else class="loader">
     <ProgressSpinner />

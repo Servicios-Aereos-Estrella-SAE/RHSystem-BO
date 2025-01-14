@@ -151,7 +151,8 @@ export default defineComponent({
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
-      const exceptionTypeVacationId = await this.getExceptionTypeVacation()
+      const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
+      const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
       if (exceptionTypeVacationId) {
         for await (const day of this.employeeCalendar) {
           const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
@@ -161,12 +162,21 @@ export default defineComponent({
           }
         }
       }
+      if (exceptionTypeWorkDisabilityId) {
+        for await (const day of this.employeeCalendar) {
+          const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeWorkDisabilityId)
+          day.assist.exceptions = exceptions
+          if (day.assist.exceptions.length === 0) {
+            day.assist.hasExceptions = false
+          }
+        }
+      }
       this.displayCalendar = true
     },
-    async getExceptionTypeVacation() {
+    async getExceptionTypeBySlug(type: string) {
       const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === 'vacation')
+      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === type)
       return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     async handlerCalendarChange() {
@@ -217,6 +227,7 @@ export default defineComponent({
             isSundayBonus: false,
             isRestDay: false,
             isVacationDate: false,
+            isWorkDisabilityDate: false,
             isHoliday: false,
             holiday: null,
             hasExceptions: false,
