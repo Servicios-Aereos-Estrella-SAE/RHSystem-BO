@@ -8,6 +8,7 @@ interface CustomerInterface {
   customerCreatedAt: Date | string | null,
   customerUpdatedAt: Date | string | null,
   customerDeletedAt: Date | string | null,
+  customerFullName?: string | null,
 
   person?: PeopleInterface,
 }

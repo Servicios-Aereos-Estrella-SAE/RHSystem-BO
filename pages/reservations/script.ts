@@ -10,6 +10,7 @@ import type { CustomerInterface } from "~/resources/scripts/interfaces/CustomerI
 import { format } from "date-fns";
 import type { PilotInterface } from "~/resources/scripts/interfaces/PilotInterface";
 import type { FlightAttendantInterface } from "~/resources/scripts/interfaces/FlightAttendantInterface";
+import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
 export default defineComponent({
     name: 'AircraftOperators',
     props: {},
@@ -26,12 +27,15 @@ export default defineComponent({
         aircraftSelected: null as AircraftInterface | null,
         currentPage: 1,
         totalRecords: 0,
+        submitted: false,
+        customer: null as CustomerInterface | null,
         first: 0,
         last: 0,
         rowsPerPage: 50,
         drawerPilotForm: false,
         drawerPilotPhotoForm: false,
         drawerPilotDelete: false,
+        drawerCustomerForm: false,
         drawerPilotSync: false,
         canCreate: false,
         canUpdate: false,
@@ -41,25 +45,25 @@ export default defineComponent({
         formatContacts() {
             return this.customers.map((customer: CustomerInterface) => {
                 return {
-                    customerId: customer.customerId,
-                    customerName: customer.person?.personFirstname + ' ' + customer.person?.personLastname
-                }
+                    ...customer,
+                    customerFullName: customer.person?.personFirstname + ' ' + customer.person?.personLastname
+                } as CustomerInterface
             })
         },
         formatAircraft() {
             return this.aircraft.map((aircraft: AircraftInterface) => {
                 return {
-                    aircraftId: aircraft.aircraftId,
+                    ...aircraft,
                     aircraftName:  aircraft.aircraftSerialNumber + ' - ' + aircraft.aircraftRegistrationNumber
-                }
+                } as AircraftInterface
             })
         },
         formatPilots() {
             return this.pilots.map((pilot: PilotInterface) => {
                 return {
-                    pilotId: pilot.pilotId,
+                    ...pilot,
                     pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
-                }
+                } as PilotInterface
             })
         },
         formatFlightAttendants() {
@@ -71,7 +75,21 @@ export default defineComponent({
             })
         }
     },
-    created() {},
+    created() { },
+    watch: {
+        customerSelected: function (val: CustomerInterface | null) {
+            if (val) {
+                console.log('customerSelected', val)
+                this.customer = val
+            }
+        },
+        aircraftSelected: function (val: AircraftInterface | null) {
+            if (val) {
+                this.setPilotsDefaultSelected()
+            }
+        },
+        
+    },
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -103,6 +121,12 @@ export default defineComponent({
             this.customers = list;
             myGeneralStore.setFullLoader(false)
         },
+        setPilotsDefaultSelected() {
+            if (this.aircraftSelected) {
+                this.pilotSelectedPic = this.formatPilots.find((s: PilotInterface) => s.pilotId === this.aircraftSelected?.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'pic')?.pilotId || null) ?? null;
+                this.pilotSelectedSic = this.formatPilots.find((s: PilotInterface) => s.pilotId === this.aircraftSelected?.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'sic')?.pilotId || null) ?? null;
+            }
+        },
         async handlerSearchFlightAttendant() {
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
@@ -129,6 +153,49 @@ export default defineComponent({
             this.totalRecords = response.status === 200 ? response._data.data.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.meta.first_page : 0;
             this.aircraft = list;
+        },
+        addNew() {
+            const person: PeopleInterface = {
+                personId: null,
+                personFirstname: "Rogelio ",
+                personLastname: "Rogelio ",
+                personSecondLastname: "Rogelio ",
+                personGender: "Male",
+                personBirthday: new Date(),
+                personCurp: 'SORA000915MDGRZNA5',
+                personPhone: "8713854575",
+                personRfc: 'JIGR960217H78',
+                personImssNss: 'JIGR960217H78',
+                personCreatedAt: new Date(),
+                personUpdatedAt: new Date(),
+                personDeletedAt: null
+            }
+            const newCustomer: CustomerInterface = {
+                customerId: null,
+                customerUuid: 'JIGR960217H78',
+                personId: 0,
+                person: person,
+                customerCreatedAt: new Date(),
+                customerUpdatedAt: new Date(),
+                customerDeletedAt: null
+            }
+            this.customer = newCustomer
+            this.drawerCustomerForm = true
+        },
+        onSave(customer: CustomerInterface) {
+            this.customer = { ...customer };
+            const index = this.customers.findIndex((s: CustomerInterface) => s.customerId === this.customer?.customerId);
+            if (index !== -1) {
+                this.customers[index] = customer;
+                this.$forceUpdate();
+            } else {
+                this.customers.push(customer);
+                this.$forceUpdate();
+                // selected new customer from formatContacts
+                this.customerSelected = this.formatContacts.find((s: CustomerInterface) => s.customerId === customer.customerId) ?? null;
+                
+            }
+            this.drawerCustomerForm = false;
         },
     }
 });
