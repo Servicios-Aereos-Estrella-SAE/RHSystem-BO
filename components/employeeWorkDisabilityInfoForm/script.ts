@@ -110,7 +110,7 @@ export default defineComponent({
         workDisabilityResponse = await workDisabilityService.show(workDisabilityResponse._data.data.workDisability.workDisabilityId)
         if (workDisabilityResponse.status === 200) {
           const workDisability = workDisabilityResponse._data.data.workDisability
-          this.$emit('onWorkDisabilitySave', workDisability as WorkDisabilityInterface)
+          this.$emit('onWorkDisabilitySave', workDisability as WorkDisabilityInterface, [])
         }
       } else {
         const msgError = workDisabilityResponse._data.error ? workDisabilityResponse._data.error : workDisabilityResponse._data.message
@@ -137,6 +137,7 @@ export default defineComponent({
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      myGeneralStore.workDisabilityId = workDisabilityPeriod.workDisabilityId
       this.workDisabilityPeriod = { ...workDisabilityPeriod }
       const index = this.workDisabilityPeriodsList.findIndex((workDisabilityPeriod: WorkDisabilityPeriodInterface) => workDisabilityPeriod.workDisabilityPeriodId === this.workDisabilityPeriod?.workDisabilityPeriodId)
       if (index !== -1) {

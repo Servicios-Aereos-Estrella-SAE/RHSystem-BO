@@ -121,16 +121,17 @@ export default defineComponent({
       const shiftExceptionService = new ShiftExceptionService()
       const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeId, this.selectedExceptionTypeId, this.selectedDateStart, this.selectedDateEnd)
       this.shiftExceptionsList = shiftExceptionResponse
-      const exceptionTypeVacationId = await this.getExceptionTypeVacation()
+      const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
+      const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
       if (exceptionTypeVacationId) {
-        this.shiftExceptionsList = this.shiftExceptionsList.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
+        this.shiftExceptionsList = this.shiftExceptionsList.filter(a => a.exceptionTypeId !== exceptionTypeVacationId && a.exceptionTypeId !== exceptionTypeWorkDisabilityId)
       }
       myGeneralStore.setFullLoader(false)
     },
-    async getExceptionTypeVacation() {
+    async getExceptionTypeBySlug(type: string) {
       const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === 'vacation')
+      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === type)
       return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     addNew() {

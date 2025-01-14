@@ -12,11 +12,6 @@
           {{ workDisability.insuranceCoverageType.insuranceCoverageTypeName }} 
           </div>
       </div>
-      <div class="uuid">
-        <div v-if="workDisability.workDisabilityUuid">
-          {{ workDisability.workDisabilityUuid }}
-        </div>
-      </div>
     </div>
 
     <div v-if="!isDeleted" class="box-tools-footer">

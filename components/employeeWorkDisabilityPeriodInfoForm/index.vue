@@ -78,7 +78,7 @@
             placeholder="Select date range"
             class="w-full md:w-14rem" 
           />
-          <small class="p-error" v-if="submitted && (!dates || dates.length !== 2)">
+          <small class="p-error" v-if="submitted && (!workDisabilityPeriod.workDisabilityPeriodStartDate || !workDisabilityPeriod.workDisabilityPeriodEndDate)">
           Dates are required.
           </small>
         </div>

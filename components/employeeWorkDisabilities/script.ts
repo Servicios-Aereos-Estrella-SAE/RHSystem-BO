@@ -35,9 +35,17 @@ export default defineComponent({
   },
   async mounted() {
     this.isReady = false
-    this.getWorkDisabilities()
+    await this.getWorkDisabilities()
     if (this.employee.deletedAt) {
       this.isDeleted = true
+    }
+    const myGeneralStore = useMyGeneralStore()
+    if (myGeneralStore.workDisabilityId) {
+     const existWorkDisability = this.workDisabilities.find(a => a.workDisabilityId === myGeneralStore.workDisabilityId)
+     if (existWorkDisability) {
+      this.workDisability = existWorkDisability
+      this.drawerWorkDisabilityForm = true
+     }
     }
     this.isReady = true
   },

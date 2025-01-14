@@ -80,7 +80,7 @@ export default defineComponent({
       } else {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
       }
-     
+
     }
   },
   async mounted() {
@@ -125,6 +125,12 @@ export default defineComponent({
         }
       }
     }
+    const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'falta-por-incapacidad')
+    if (existRestDayIndex >= 0) {
+      if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.shiftException.exceptionTypeId) {
+        this.exceptionTypeList.splice(existRestDayIndex, 1)
+      }
+    }
     if (this.shiftException.shiftExceptionId) {
       let existCurrentExceptionType = this.exceptionTypeList.find(a => a.exceptionTypeId === this.shiftException.exceptionTypeId)
       if (!existCurrentExceptionType) {
@@ -135,7 +141,7 @@ export default defineComponent({
         }
       }
     }
-   
+
 
     let isVacation = false
     const index = this.exceptionTypeList.findIndex(opt => opt.exceptionTypeId === this.shiftException.exceptionTypeId)
@@ -261,7 +267,7 @@ export default defineComponent({
         }
       }
       this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
-      if ( this.shiftException.shiftExceptionTimeByTime === 1) {
+      if (this.shiftException.shiftExceptionTimeByTime === 1) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = 0
       }
       if (!this.needPeriodDays) {
@@ -382,7 +388,7 @@ export default defineComponent({
           this.applyToMoreThanOneDay = false
           this.shiftException.daysToApply = 0
         }
-        
+
         this.setMinDate(isVacation)
       }
     },
