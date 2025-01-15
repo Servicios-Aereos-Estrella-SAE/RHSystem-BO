@@ -7,6 +7,7 @@ export default defineComponent({
   name: 'workDisabilityPeriodInfoCard',
   props: {
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
+    canManageWorkDisability: { type: Boolean, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },

@@ -41,11 +41,11 @@ export default defineComponent({
     }
     const myGeneralStore = useMyGeneralStore()
     if (myGeneralStore.workDisabilityId) {
-     const existWorkDisability = this.workDisabilities.find(a => a.workDisabilityId === myGeneralStore.workDisabilityId)
-     if (existWorkDisability) {
-      this.workDisability = existWorkDisability
-      this.drawerWorkDisabilityForm = true
-     }
+      const existWorkDisability = this.workDisabilities.find(a => a.workDisabilityId === myGeneralStore.workDisabilityId)
+      if (existWorkDisability) {
+        this.workDisability = existWorkDisability
+        this.drawerWorkDisabilityForm = true
+      }
     }
     this.isReady = true
   },
@@ -99,7 +99,7 @@ export default defineComponent({
       this.drawerWorkDisabilityDelete = true
     },
 
-    /* async confirmDelete() {
+    async confirmDelete() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       if (this.workDisability) {
@@ -116,13 +116,13 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete shift exception',
+            summary: 'Delete work disability',
             detail: workDisabilityResponse._data.message,
             life: 5000,
           })
         }
       }
       myGeneralStore.setFullLoader(false)
-    } */
+    }
   }
 })

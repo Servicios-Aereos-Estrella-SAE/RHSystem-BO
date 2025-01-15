@@ -30,7 +30,7 @@ export default defineComponent({
     isReady: false,
     isDeleted: false,
     files: [] as Array<any>,
-    dates: [],
+    dates: [] as Array<any>,
   }),
   computed: {
   },
@@ -52,9 +52,11 @@ export default defineComponent({
     }
     if (this.workDisabilityPeriod.workDisabilityPeriodId) {
       if (this.workDisabilityPeriod && this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
+        
         const isoDate = this.workDisabilityPeriod.workDisabilityPeriodStartDate.toString();
         const newDate = DateTime.fromISO(isoDate).toUTC().toFormat('yyyy-MM-dd')
         if (newDate) {
+          this.dates.push(new Date(newDate))
           this.workDisabilityPeriod.workDisabilityPeriodStartDate = newDate;
         } else {
           this.workDisabilityPeriod.workDisabilityPeriodStartDate = '';
@@ -64,6 +66,7 @@ export default defineComponent({
         const isoDate = this.workDisabilityPeriod.workDisabilityPeriodEndDate.toString();
         const newDate = DateTime.fromISO(isoDate).toUTC().toFormat('yyyy-MM-dd')
         if (newDate) {
+          this.dates.push(new Date(newDate))
           this.workDisabilityPeriod.workDisabilityPeriodEndDate = newDate;
         } else {
           this.workDisabilityPeriod.workDisabilityPeriodEndDate = '';

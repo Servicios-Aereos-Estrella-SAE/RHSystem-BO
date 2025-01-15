@@ -11,6 +11,8 @@ import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/Wor
 import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 import type { WorkDisabilityNoteInterface } from '~/resources/scripts/interfaces/WorkDisabilityNoteInterface';
+import WorkDisabilityNoteService from '~/resources/scripts/services/WorkDisabilityNoteService';
+import WorkDisabilityPeriodService from '~/resources/scripts/services/WorkDisabilityPeriodService';
 
 export default defineComponent({
   components: {
@@ -34,8 +36,10 @@ export default defineComponent({
     isReady: false,
     isDeleted: false,
     drawerWorkDisabilityPeriodForm: false,
+    drawerWorkDisabilityPeriodDelete: false,
     workDisabilityPeriod: null as WorkDisabilityPeriodInterface | null,
     drawerWorkDisabilityNoteForm: false,
+    drawerWorkDisabilityNoteDelete: false,
     workDisabilityNote: null as WorkDisabilityNoteInterface | null,
   }),
   computed: {
@@ -152,6 +156,40 @@ export default defineComponent({
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
+    onEditPeriod(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
+      this.workDisabilityPeriod = { ...workDisabilityPeriod }
+      this.drawerWorkDisabilityPeriodForm = true
+    },
+    onDeletePeriod(workDisabilityPeriod: WorkDisabilityPeriodInterface) {
+      this.workDisabilityPeriod = { ...workDisabilityPeriod }
+
+      this.drawerWorkDisabilityPeriodDelete = true
+    },
+    async confirmDeletePeriod() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.workDisabilityPeriod) {
+        this.drawerWorkDisabilityPeriodDelete = false
+        const workDisabilityPeriodService = new WorkDisabilityPeriodService()
+        const workDisabilityPeriodResponse = await workDisabilityPeriodService.delete(this.workDisabilityPeriod)
+        if (workDisabilityPeriodResponse.status === 200) {
+          const index = this.workDisabilityPeriodsList.findIndex((workDisabilityPeriod: WorkDisabilityPeriodInterface) => workDisabilityPeriod.workDisabilityPeriodId === this.workDisabilityPeriod?.workDisabilityPeriodId)
+          if (index !== -1) {
+            this.workDisabilityPeriodsList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          //this.$emit('save', [])
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete work disability period',
+            detail: workDisabilityPeriodResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    },
     addNewNote() {
       const newWorkDisabilityNote = {
         workDisabilityId: this.workDisability.workDisabilityId
@@ -177,5 +215,39 @@ export default defineComponent({
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
+    onEditNote(workDisabilityNote: WorkDisabilityNoteInterface) {
+      this.workDisabilityNote = { ...workDisabilityNote }
+      this.drawerWorkDisabilityNoteForm = true
+    },
+    onDeleteNote(workDisabilityNote: WorkDisabilityNoteInterface) {
+      this.workDisabilityNote = { ...workDisabilityNote }
+
+      this.drawerWorkDisabilityNoteDelete = true
+    },
+    async confirmDeleteNote() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.workDisabilityNote) {
+        this.drawerWorkDisabilityNoteDelete = false
+        const workDisabilityNoteService = new WorkDisabilityNoteService()
+        const workDisabilityNoteResponse = await workDisabilityNoteService.delete(this.workDisabilityNote)
+        if (workDisabilityNoteResponse.status === 200) {
+          const index = this.workDisabilityNotesList.findIndex((workDisabilityNote: WorkDisabilityNoteInterface) => workDisabilityNote.workDisabilityNoteId === this.workDisabilityNote?.workDisabilityNoteId)
+          if (index !== -1) {
+            this.workDisabilityNotesList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          //this.$emit('save', [])
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete work disability note',
+            detail: workDisabilityNoteResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    }
   }
 })
