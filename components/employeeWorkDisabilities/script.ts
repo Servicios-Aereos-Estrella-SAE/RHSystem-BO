@@ -1,8 +1,8 @@
+import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
-import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface'
 import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface'
 import WorkDisabilityService from '~/resources/scripts/services/WorkDisabilityService'
 import { useMyGeneralStore } from '~/store/general'
@@ -98,7 +98,6 @@ export default defineComponent({
 
       this.drawerWorkDisabilityDelete = true
     },
-
     async confirmDelete() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -123,6 +122,6 @@ export default defineComponent({
         }
       }
       myGeneralStore.setFullLoader(false)
-    }
+    },
   }
 })

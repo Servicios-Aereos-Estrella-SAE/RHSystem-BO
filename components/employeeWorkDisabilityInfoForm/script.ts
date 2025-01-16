@@ -94,14 +94,10 @@ export default defineComponent({
         })
         return
       }
-
-
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       let workDisabilityResponse = null
-
-
       let isNew = false
       if (!this.workDisability.workDisabilityId) {
         isNew = true
@@ -109,7 +105,6 @@ export default defineComponent({
       } else {
         workDisabilityResponse = await workDisabilityService.update(this.workDisability)
       }
-
       if (workDisabilityResponse.status === 201 || workDisabilityResponse.status === 200) {
         workDisabilityResponse = await workDisabilityService.show(workDisabilityResponse._data.data.workDisability.workDisabilityId)
         if (workDisabilityResponse.status === 200) {
@@ -169,6 +164,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       if (this.workDisabilityPeriod) {
+        myGeneralStore.workDisabilityId = this.workDisabilityPeriod.workDisabilityId
         this.drawerWorkDisabilityPeriodDelete = false
         const workDisabilityPeriodService = new WorkDisabilityPeriodService()
         const workDisabilityPeriodResponse = await workDisabilityPeriodService.delete(this.workDisabilityPeriod)
@@ -178,7 +174,7 @@ export default defineComponent({
             this.workDisabilityPeriodsList.splice(index, 1)
             this.$forceUpdate()
           }
-          //this.$emit('save', [])
+          this.$emit('onWorkDisabilitySave', {} as WorkDisabilityInterface, [])
         } else {
           this.$toast.add({
             severity: 'error',

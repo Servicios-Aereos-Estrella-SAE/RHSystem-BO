@@ -14,7 +14,7 @@ export default class WorkDisabilityService {
     };
   }
 
-  
+
 
   async getByEmployee(employeeId: number) {
     let responseRequest: any = null;
@@ -29,7 +29,7 @@ export default class WorkDisabilityService {
         responseRequest = response;
       },
     });
-   
+
     return responseRequest;
   }
 

@@ -176,8 +176,6 @@ export default defineComponent({
         workDisabilityPeriodResponse = await workDisabilityPeriodService.show(workDisabilityPeriodResponse._data.data.workDisabilityPeriod.workDisabilityPeriodId)
         if (workDisabilityPeriodResponse.status === 200) {
           const workDisabilityPeriod = workDisabilityPeriodResponse._data.data.workDisabilityPeriod
-         
-       
           this.$emit('onWorkDisabilityPeriodSave', workDisabilityPeriod as WorkDisabilityPeriodInterface, shiftExceptionsError as Array<ShiftExceptionErrorInterface>)
         }
       } else {
@@ -202,6 +200,9 @@ export default defineComponent({
     },
     getObjectURL(file: any) {
       return URL.createObjectURL(file);
+    },
+    openFile() {
+      window.open(this.workDisabilityPeriod?.workDisabilityPeriodFile)
     },
   }
 })

@@ -10,7 +10,7 @@
     
     <div v-if="isReady" class="work-disability-period-form">
       <div class="form-container">
-        <div class="input-box">
+        <div v-if="canManageWorkDisability" class="input-box">
           <label for="work-disability-period-file">
             File
           </label>
@@ -57,7 +57,7 @@
           <label for="folio">
             Ticket folio
           </label>
-          <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"/>
+          <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio" :disabled="!canManageWorkDisability" />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio is required.</small>
         </div>
         <div class="input-box">
@@ -66,6 +66,7 @@
           </label>
           <Dropdown v-model="workDisabilityPeriod.workDisabilityTypeId" :options="workDisabilityTypeList" optionLabel="workDisabilityTypeName" optionValue="workDisabilityTypeId"
           placeholder="" filter class="w-full md:w-14rem"
+          :disabled="!canManageWorkDisability" 
           />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">Work disability type is required.</small>
         </div>
@@ -77,13 +78,14 @@
             dateFormat="yy-mm-dd" 
             placeholder="Select date range"
             class="w-full md:w-14rem" 
+            :disabled="!isNewWorkDisabilityPeriod"
           />
           <small class="p-error" v-if="submitted && (!workDisabilityPeriod.workDisabilityPeriodStartDate || !workDisabilityPeriod.workDisabilityPeriodEndDate)">
           Dates are required.
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canManageWorkDisability" class="btn btn-block btn-primary" @click="onSave">
             Save work disability period
           </Button>
         </div>
