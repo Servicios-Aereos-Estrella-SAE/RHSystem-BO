@@ -23,12 +23,12 @@
           </label>
           <Dropdown v-model="workDisability.insuranceCoverageTypeId" :options="insuranceCoverageTypeList"
             optionLabel="insuranceCoverageTypeName" optionValue="insuranceCoverageTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageWorkDisability" />
+            class="w-full md:w-14rem" :disabled="!canManageWorkDisability || !canManageCurrentPeriod" />
           <small class="p-error" v-if="submitted && !workDisability.insuranceCoverageTypeId">Insurance coverage type is
             required.</small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisability" class="btn btn-block btn-primary"
+          <Button v-if="canManageWorkDisability && canManageCurrentPeriod" class="btn btn-block btn-primary"
             @click="onSave">
             Save work disability
           </Button>

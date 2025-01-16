@@ -31,6 +31,7 @@ export default defineComponent({
     isDeleted: false,
     files: [] as Array<any>,
     dates: [] as Array<any>,
+    canManageCurrentPeriod: false
   }),
   computed: {
   },
@@ -50,41 +51,42 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    this.canManageCurrentPeriod = this.canManageWorkDisability
     if (this.workDisabilityPeriod.workDisabilityPeriodId) {
-      if (this.workDisabilityPeriod && this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
-        
-        const isoDate = this.workDisabilityPeriod.workDisabilityPeriodStartDate.toString();
-        const newDate = DateTime.fromISO(isoDate).toUTC().toFormat('yyyy-MM-dd')
-        if (newDate) {
-          this.dates.push(new Date(newDate))
-          this.workDisabilityPeriod.workDisabilityPeriodStartDate = newDate;
-        } else {
-          this.workDisabilityPeriod.workDisabilityPeriodStartDate = '';
+      await this.validateDisabilityDateRange()
+      if (this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
+        const startIsoDate = this.workDisabilityPeriod.workDisabilityPeriodStartDate.toString()
+        const startNewDate = DateTime.fromISO(startIsoDate, { zone: 'utc' }).toISODate()
+        if (startNewDate) {
+          this.dates.push(startNewDate)
+          this.workDisabilityPeriod.workDisabilityPeriodStartDate = startNewDate
         }
       }
-      if (this.workDisabilityPeriod && this.workDisabilityPeriod.workDisabilityPeriodEndDate) {
-        const isoDate = this.workDisabilityPeriod.workDisabilityPeriodEndDate.toString();
-        const newDate = DateTime.fromISO(isoDate).toUTC().toFormat('yyyy-MM-dd')
-        if (newDate) {
-          this.dates.push(new Date(newDate))
-          this.workDisabilityPeriod.workDisabilityPeriodEndDate = newDate;
-        } else {
-          this.workDisabilityPeriod.workDisabilityPeriodEndDate = '';
+      if (this.workDisabilityPeriod.workDisabilityPeriodEndDate) {
+        const endIsoDate = this.workDisabilityPeriod.workDisabilityPeriodEndDate.toString()
+        const endNewDate = DateTime.fromISO(endIsoDate, { zone: 'utc' }).toISODate()
+        if (endNewDate) {
+          this.dates.push(endNewDate)
+          this.workDisabilityPeriod.workDisabilityPeriodEndDate = endNewDate
         }
       }
     }
-
     let hasAccess = false
     const fullPath = this.$route.path;
     const firstSegment = fullPath.split('/')[1]
     const systemModuleSlug = firstSegment
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     this.workDisabilityTypeList = await this.getWorkDisabilityTypes()
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
+    getDate(date: string) {
+      const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
+      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+    },
     async getWorkDisabilityTypes() {
       const response = await new WorkDisabilityTypeService().getFilteredList('', 1, 100)
       const list: WorkDisabilityTypeInterface[] = response.status === 200 ? response._data.data.workDisabilityTypes.data : []
@@ -204,5 +206,62 @@ export default defineComponent({
     openFile() {
       window.open(this.workDisabilityPeriod?.workDisabilityPeriodFile)
     },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    async validateDisabilityDateRange() {
+      const datePay = this.getNextPayThursday()
+      const monthPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
+
+      const date = DateTime.local(yearPeriod, monthPeriod, dayPeriod)
+      const startOfWeek = date.startOf('week')
+      const thursday = startOfWeek.plus({ days: 3 })
+      const start = thursday.minus({ days: 24 })
+      const currentDay = start.minus({ days: 1 }).startOf('day').setZone('utc')
+      const normalizedCurrentDay = currentDay.startOf('day')
+
+      const startDateISO = this.workDisabilityPeriod.workDisabilityPeriodStartDate
+      const endDateISO = this.workDisabilityPeriod.workDisabilityPeriodEndDate
+
+      if (!startDateISO || !endDateISO) {
+        return
+      }
+
+      const currentDate = DateTime.fromISO(startDateISO, { zone: 'utc' }).startOf('day');
+      const endDate = DateTime.fromISO(endDateISO, { zone: 'utc' }).startOf('day');
+
+      if (!currentDate.isValid || !endDate.isValid || !normalizedCurrentDay.isValid) {
+        console.error('Date invalid', {
+          currentDate: currentDate.invalidExplanation,
+          endDate: endDate.invalidExplanation,
+          currentDay: normalizedCurrentDay.invalidExplanation,
+        })
+        return
+      }
+
+      for await (const dateRange of this.iterateDates(currentDate, endDate)) {
+        const normalizedDateRange = dateRange.startOf('day')
+        if (normalizedDateRange < normalizedCurrentDay) {
+          this.canManageCurrentPeriod = false
+          return
+        }
+      }
+    },
+    async *iterateDates(startDate: DateTime, endDate: DateTime) {
+      while (startDate <= endDate) {
+        yield startDate
+        startDate = startDate.plus({ days: 1 })
+      }
+    }
   }
 })

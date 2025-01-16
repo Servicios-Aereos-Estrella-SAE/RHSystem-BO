@@ -20,20 +20,19 @@ export default defineComponent({
   },
   async mounted() {
     this.canManageCurrentPeriod = this.canManageWorkDisability
-
-   await this.isDateRangeAfterOrEqualToFirstDayPeriod()
+    await this.validateDisabilityDateRange()
   },
   methods: {
     getDate(date: string) {
-      const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+      const dateWorkDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
+      return dateWorkDisabilityPeriod.setLocale('en').toFormat('DDDD')
     },
-    handlerClickOnEdit () {
+    handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
     },
-    handlerClickOnDelete () {
+    handlerClickOnDelete() {
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
@@ -52,28 +51,44 @@ export default defineComponent({
       }
       return nextPayDate.toJSDate()
     },
-    async isDateRangeAfterOrEqualToFirstDayPeriod() {
-      //console.log('verificando fechas....')
-      const datePay = this.getNextPayThursday()
-      const monthPerdiod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
-      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
-      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
-      let start
-      const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+    async validateDisabilityDateRange() {
+      const datePay = this.getNextPayThursday();
+      const monthPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'));
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'));
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'));
+
+      const date = DateTime.local(yearPeriod, monthPeriod, dayPeriod)
       const startOfWeek = date.startOf('week')
-      let thursday = startOfWeek.plus({ days: 3 })
-      start = thursday.minus({ days: 24 })
-      let currentDay = start
-      currentDay = currentDay.minus({ days: 1 })
-      //console.log(currentDay.toFormat('DDDD'))
-      let currentDate = DateTime.fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate, { zone: 'utc' })
-      const endDate = DateTime.fromISO(this.workDisabilityPeriod.workDisabilityPeriodEndDate, { zone: 'utc' })
-      for await (const dateRange of this.iterateDates(currentDate, endDate)) {
-       if (!(dateRange >= currentDay)) {
-        this.canManageCurrentPeriod = false
-        //console.log('esta fecha es menor: ' + dateRange.toFormat('DDDD'))
+      const thursday = startOfWeek.plus({ days: 3 })
+      const start = thursday.minus({ days: 24 })
+      const currentDay = start.minus({ days: 1 }).startOf('day').setZone('utc')
+      const normalizedCurrentDay = currentDay.startOf('day')
+
+      const startDateISO = this.workDisabilityPeriod.workDisabilityPeriodStartDate
+      const endDateISO = this.workDisabilityPeriod.workDisabilityPeriodEndDate
+
+      if (!startDateISO || !endDateISO) {
         return
-       }
+      }
+
+      const currentDate = DateTime.fromISO(startDateISO, { zone: 'utc' }).startOf('day')
+      const endDate = DateTime.fromISO(endDateISO, { zone: 'utc' }).startOf('day')
+
+      if (!currentDate.isValid || !endDate.isValid || !normalizedCurrentDay.isValid) {
+        console.error('Date invalid', {
+          currentDate: currentDate.invalidExplanation,
+          endDate: endDate.invalidExplanation,
+          currentDay: normalizedCurrentDay.invalidExplanation,
+        })
+        return
+      }
+
+      for await (const dateRange of this.iterateDates(currentDate, endDate)) {
+        const normalizedDateRange = dateRange.startOf('day')
+        if (normalizedDateRange < normalizedCurrentDay) {
+          this.canManageCurrentPeriod = false
+          return
+        }
       }
     },
     async *iterateDates(startDate: DateTime, endDate: DateTime) {
