@@ -22,7 +22,7 @@
           </div>
           <div v-if="displayDateCalendar" class="date-box-controller">
             <Calendar v-if="displayDateCalendar" dateFormat="yy-mm-dd" showTime hourFormat="24"
-              v-model.lazy="assist.assistPunchTime" placeholder="Select date time to assist" />
+              v-model.lazy="assist.assistPunchTime" placeholder="Select date time to assist" :invalid="dateInvalid" :minDate="startLimit"/>
             <Button type="button" class="btn btn-block" id="display-input-expiration-at"
               @click="displayDateCalendar = false">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -31,7 +31,9 @@
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
             </Button>
+            
           </div>
+              <small class="p-error" v-if="dateInvalid">Date is invalid.</small>
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
