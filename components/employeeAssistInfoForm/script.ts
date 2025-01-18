@@ -25,7 +25,7 @@ export default defineComponent({
     assistPunchTime: '' as string,
     displayDateCalendar: false as boolean,
     dateInvalid: false,
-    startLimit: DateTime.local(2023, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
   }),
   watch: {
     'assist.assistPunchTime'(val: Date) {
@@ -39,7 +39,10 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
-    this.getStartPeriodDay()
+    if (!myGeneralStore.isRoot) {
+      this.getStartPeriodDay()
+    }
+    
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -50,7 +53,7 @@ export default defineComponent({
       const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
       const thursday = startOfWeek.plus({ days: 3 })
       const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-      this.startLimit = startLimit.toJSDate()
+      this.startDateLimit = startLimit.toJSDate()
     },
     async onSave() {
       this.submitted = true
