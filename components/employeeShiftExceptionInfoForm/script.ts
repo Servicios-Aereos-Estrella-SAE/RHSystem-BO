@@ -74,14 +74,14 @@ export default defineComponent({
     "applyToMoreThanOneDay"() {
       this.shiftException.daysToApply = 0
     },
-    "activeSwichtTimeByTime"(val) {
+   /*  "activeSwichtTimeByTime"(val) {
       if (val) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = 0
       } else {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
       }
 
-    }
+    } */
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -261,14 +261,12 @@ export default defineComponent({
       }
       if (!this.needEnjoymentOfSalary) {
         this.shiftException.shiftExceptionEnjoymentOfSalary = null
-        if (!this.needTimeByTime) {
-          this.shiftException.shiftExceptionTimeByTime = null
-          this.activeSwichtTimeByTime = false
-        }
       }
-      this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
-      if (this.shiftException.shiftExceptionTimeByTime === 1) {
-        this.shiftException.shiftExceptionEnjoymentOfSalary = 0
+      if (!this.needTimeByTime) {
+        this.shiftException.shiftExceptionTimeByTime = null
+        this.activeSwichtTimeByTime = false
+      } else {
+        this.shiftException.shiftExceptionTimeByTime = this.activeSwichtTimeByTime ? 1 : 0
       }
       if (!this.needPeriodDays) {
         this.shiftException.daysToApply = 0

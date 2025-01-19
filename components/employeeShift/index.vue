@@ -66,6 +66,7 @@
         :shiftsList="shiftsList"
         :isDeleted="isDeleted"
         :canUpdateShift="canManageShiftOrException"
+        :startDateLimit="startDateLimit"
         @successShiftAssigned="onSuccessShiftAssigned"
         @clickExceptions="onClickExceptions"
       />

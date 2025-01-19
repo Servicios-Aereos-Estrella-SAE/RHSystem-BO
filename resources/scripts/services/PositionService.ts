@@ -5,7 +5,7 @@ export default class PositionService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -56,60 +56,63 @@ export default class PositionService {
     }
     return responseRequest;
   }
-    
+
   async getPositionsDepartment(departmentId: number): Promise<PositionInterface[]> {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
+    try {
+      await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
 
-    await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
-      headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
-    })
-
-    const list = responseRequest.status === 200 ? responseRequest._data.data.positions : []
-    // map list and set to position inteface object item.position
-    return list.map((item: any) => item.position)
+      const list = responseRequest.status === 200 ? responseRequest._data.data.positions : []
+      // map list and set to position inteface object item.position
+      return list.map((item: any) => item.position)
+    } catch (error) {
+    }
+    return []
   }
 
-  async show (positionId: number) {
+  async show(positionId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/positions/${positionId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async assignShift (departmentId: number, positionId: number, shiftId: number, applySince: string) {
+  async assignShift(departmentId: number, positionId: number, shiftId: number, applySince: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
-    const query = { 'departmentId': departmentId, 'shiftId': shiftId,  'applySince': applySince }
+    const query = { 'departmentId': departmentId, 'shiftId': shiftId, 'applySince': applySince }
     try {
       await $fetch(`${this.API_PATH}/position/assign-shift/${positionId}`, {
         headers,
         method: 'POST',
         query: { ...query },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async getPositions (): Promise<PositionInterface[]> {
+  async getPositions(): Promise<PositionInterface[]> {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/positions`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest.status === 200 ? responseRequest._data.data.positions : []

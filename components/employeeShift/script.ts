@@ -52,6 +52,7 @@ export default defineComponent({
     exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
     currentShift: null as ShiftInterface | null,
     canManageShiftOrException: true,
+    startDateLimit: DateTime.local(2023, 12, 29).toJSDate()
   }),
   setup() {
     const router = useRouter()
@@ -100,6 +101,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await Promise.all([
+      this.getStartPeriodDay(),
       this.getShifts(),
       this.getEmployeeCalendar()
     ])
@@ -305,6 +307,30 @@ export default defineComponent({
     },
     confirm() {
       this.drawershiftExceptionsError = false
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRh) {
+        const datePay = this.getNextPayThursday()
+        const payDate = DateTime.fromJSDate(datePay).startOf('day')
+        const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+        const thursday = startOfWeek.plus({ days: 3 })
+        const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
+        this.startDateLimit = startLimit.toJSDate()
+      } else {
+        this.startDateLimit = DateTime.now().minus({ days: 1 }).toJSDate()
+      }
     }
   }
 })

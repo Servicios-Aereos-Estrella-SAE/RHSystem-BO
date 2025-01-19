@@ -144,6 +144,18 @@ export default defineComponent({
       }
 
       await this.getPositions(this.employee.departmentId)
+      if (this.employee.department) {
+        const existCurrentDepartment = this.departments.find(a => a.departmentId === this.employee.departmentId)
+        if (!existCurrentDepartment) {
+          this.departments.push(this.employee.department)
+        }
+      }
+      if (this.employee.position) {
+        const existCurrentPosition = this.positions.find(a => a.positionId === this.employee.positionId)
+        if (!existCurrentPosition) {
+          this.positions.push(this.employee.position)
+        }
+      }
     } else {
       this.employee.employeeAssistDiscriminator = 0
 
@@ -151,6 +163,8 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
+    
+    
 
     this.isReady = true
   },
@@ -219,7 +233,7 @@ export default defineComponent({
     },
     formatDate(propertyName: string, isPilot = true) {
       let currentDate = propertyName === 'birthday' ? this.pilot.person?.personBirthday : (isPilot ? this.pilot.pilotHireDate : this.flightAttendant.flightAttendantHireDate)
-      if ((this.pilot || this.fl) && currentDate) {
+      if ((this.pilot || this.flightAttendant) && currentDate) {
         let newDate = null
         currentDate = currentDate.toString()
         const date = DateTime.local(this.dateYear(currentDate), this.dateMonth(currentDate), this.dateDay(currentDate), 0)
