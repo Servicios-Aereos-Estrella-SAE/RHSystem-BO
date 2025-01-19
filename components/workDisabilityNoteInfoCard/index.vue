@@ -5,10 +5,13 @@
         <div>
           {{ workDisabilityNote.workDisabilityNoteDescription }}
         </div>
+        <div class="work-disability-note-date">
+          {{ getDate(workDisabilityNote.workDisabilityNoteCreatedAt) }}
+        </div>
       </div>
     </div>
 
-    <!-- <div v-if="!isDeleted" class="box-tools-footer">
+    <div v-if="!isDeleted" class="box-tools-footer">
       <Button class="btn btn-block" @click="handlerClickOnEdit" >
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -23,7 +26,7 @@
             fill="#88a4bf" class="fill-212121 fill-303e67"></path>
         </svg>
       </Button>
-    </div> -->
+    </div>
   </div>
 </template>
 
