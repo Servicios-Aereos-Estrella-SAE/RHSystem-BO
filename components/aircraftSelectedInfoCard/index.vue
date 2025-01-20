@@ -155,7 +155,7 @@
       </div>
 
       <div class="bnt-save">
-        <button type="button" class=" btn-quote">Save Quote</button>
+        <button @click="clickOnSave" type="button" class="btn-quote">Save Quote</button>
       </div>
     </div>
   </div>

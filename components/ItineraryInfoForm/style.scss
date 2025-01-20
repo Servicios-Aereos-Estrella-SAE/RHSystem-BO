@@ -4,10 +4,14 @@
 .itinerary-info-form {
   position: relative;
   margin-bottom: 1rem;
+  input {
+      padding: 0.5rem 0.5rem 0.5rem 2rem !important;
+      width: 100% !important;
+  }
   .input-text-row {
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: repeat(7, 1fr); 
+    grid-template-columns: repeat(5, 1fr); 
     gap: 1rem; // Espacio entre columnas, ajústalo a tu gusto
     @media screen and (max-width: $ipad) {
       grid-template-columns: repeat(3, 1fr); 
@@ -27,6 +31,7 @@
           margin-right: 0.5rem;
         }
       }
+      
       &>.icon {
         position: absolute;
         width: 1rem;
@@ -43,6 +48,15 @@
           color: $icon;  // O usa fill si tu SVG lo permite
         }
       }
+
+      &>.icon.translate5 {
+        transform: translateY(5%);
+      }
+
+      &>.icon.translate-30 {
+        transform: translateY(-30%) !important;
+      }
+      
       // Sólo si es requerido => asterisco en rojo
       .input-label {
         display: block;
@@ -53,7 +67,7 @@
           font-weight: 300;
           &::before {
             content: "*";
-            color: red;
+            color: $danger;
             margin-right: 0.3rem;
           }
         }

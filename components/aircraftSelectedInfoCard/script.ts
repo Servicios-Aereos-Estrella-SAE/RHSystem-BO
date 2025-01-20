@@ -5,6 +5,7 @@ import ToastService from 'primevue/toastservice';
 export default defineComponent({
   props: {
     hasStops: { type: Boolean, required: false, default: false },
+    clickOnSave: { type: Function, required: true },
   },
   components: {
     Toast,
