@@ -5,6 +5,7 @@ interface SystemSettingInterface {
   systemSettingId: number | null,
   systemSettingTradeName: string | null,
   systemSettingLogo: string | null,
+  systemSettingBanner: string | null,
   systemSettingSidebarColor: string | null,
   systemSettingActive: number | null,
   systemSettingCreatedAt: Date | string | null,

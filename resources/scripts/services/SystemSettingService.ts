@@ -5,7 +5,7 @@ export default class SystemSettingService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     const { token } = useAuth()
 
@@ -15,7 +15,7 @@ export default class SystemSettingService {
     }
   }
 
-  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+  async getFilteredList(searchText: string, page: number = 1, limit: number = 999999999) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/system-settings`, {
@@ -25,18 +25,21 @@ export default class SystemSettingService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async store(systemSetting: SystemSettingInterface, logo: any) {
+  async store(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any) {
     const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
-    if (logo) {
-      formData.append('logo', logo)
+    if (systemSettingLogo) {
+      formData.append('systemSettingLogo', systemSettingLogo)
+    }
+    if (systemSettingBanner) {
+      formData.append('systemSettingBanner', systemSettingBanner)
     }
     for (const key in systemSetting) {
       if (systemSetting.hasOwnProperty(key)) {
@@ -52,19 +55,22 @@ export default class SystemSettingService {
         headers,
         method: 'POST',
         body: formData,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update(systemSetting: SystemSettingInterface, logo: any) {
+  async update(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any) {
     const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
-    if (logo) {
-      formData.append('logo', logo)
+    if (systemSettingLogo) {
+      formData.append('systemSettingLogo', systemSettingLogo)
+    }
+    if (systemSettingBanner) {
+      formData.append('systemSettingBanner', systemSettingBanner)
     }
     for (const key in systemSetting) {
       if (systemSetting.hasOwnProperty(key)) {
@@ -80,8 +86,8 @@ export default class SystemSettingService {
         headers,
         method: 'PUT',
         body: formData,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -95,20 +101,20 @@ export default class SystemSettingService {
     try {
       await $fetch(`${this.API_PATH}/system-settings/${id}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
 
       const systemSetting = responseRequest.status === 200 ? responseRequest._data.data.systemSetting : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              systemSetting: systemSetting
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            systemSetting: systemSetting
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -120,8 +126,8 @@ export default class SystemSettingService {
     await $fetch(`${this.API_PATH}/system-settings/${systemSetting.systemSettingId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -134,7 +140,7 @@ export default class SystemSettingService {
       const headers = { ...this.GENERAL_HEADERS }
       await $fetch(`${this.API_PATH}/system-settings/get-active`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const systemSetting = responseRequest.status === 200 ? responseRequest._data.data.systemSetting : null
@@ -172,8 +178,8 @@ export default class SystemSettingService {
     }
   }
   async updateTolerance(toleranceId: number, toleranceMinutes: number) {
-       const headers = { ...this.GENERAL_HEADERS }
- let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
     try {
       responseRequest = await $fetch(`${this.API_PATH}/tolerances/${toleranceId}`, {
         headers,
@@ -197,7 +203,7 @@ export default class SystemSettingService {
     try {
       responseRequest = await $fetch(`${this.API_PATH}/tolerances/${id}`, {
         headers,
-        method: 'DELETE', 
+        method: 'DELETE',
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -220,12 +226,12 @@ export default class SystemSettingService {
         method: 'POST',
         headers,
         body: formData,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
-  
+
 }

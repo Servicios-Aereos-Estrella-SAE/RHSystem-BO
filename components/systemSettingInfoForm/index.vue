@@ -12,6 +12,7 @@
           <InputSwitch v-model="activeSwicht" />
         </div>
         <div class="input-box">
+          <label for="logo">Logo</label>
           <div v-if="systemSetting && systemSetting.systemSettingLogo"
             class="p-d-flex p-ai-center p-mb-2 image-system-setting">
             <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
@@ -23,6 +24,31 @@
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
                   class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
+                <span v-if="file">{{ file.name }}</span>
+                <Button v-if="file" @click="removeFileCallback(index)"
+                  class="p-ml-auto p-button p-component p-button-text">
+                  <span class="p-button-icon pi pi-times"></span>
+                </Button>
+              </div>
+            </template>
+            <template #empty>
+              <p>Drag and drop file to here to upload.</p>
+            </template>
+          </FileUpload>
+        </div>
+        <div class="input-box">
+          <label for="logo">Banner</label>
+          <div v-if="systemSetting && systemSetting.systemSettingBanner"
+            class="p-d-flex p-ai-center p-mb-2 image-system-setting">
+            <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
+              :src="systemSetting.systemSettingBanner" />
+          </div>
+          <FileUpload v-model="bannerFiles" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
+            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateBannerFiles">
+            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+              <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
+                <img v-if="file && file.type.startsWith('image/')" role="presentation"
+                  class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getBannerObjectURL(file)" />
                 <span v-if="file">{{ file.name }}</span>
                 <Button v-if="file" @click="removeFileCallback(index)"
                   class="p-ml-auto p-button p-component p-button-text">
