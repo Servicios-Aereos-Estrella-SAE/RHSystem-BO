@@ -1,5 +1,7 @@
 import { defineComponent } from 'vue'
 import type { UserCredentialsInterface } from '~/resources/scripts/interfaces/UserCredentialsInterface'
+import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: "Login",
@@ -11,8 +13,15 @@ export default defineComponent({
       userPassword: ''
     } as UserCredentialsInterface,
     invalidCredentials: false,
-    isGuest: false
+    isGuest: false,
   }),
+  computed: {
+    getBackgroundImageLogo(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImage = myGeneralStore.backgroundImage
+      return backgroundImage
+    }
+  },
   created() {
     this.validateSession()
 
@@ -21,7 +30,9 @@ export default defineComponent({
       this.credentials.userPassword = 'adminSystemSAE123.'
     }
   },
-  mounted() {
+  async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
   },
   methods: {
     resetInvalidCredentials() {

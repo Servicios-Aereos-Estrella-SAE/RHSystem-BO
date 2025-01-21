@@ -14,6 +14,11 @@ export default defineComponent({
     token: ''
   }),
   computed: {
+    getBackgroundImageLogo(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImage = myGeneralStore.backgroundImage
+      return backgroundImage
+    },
     statusFullLoader() {
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.fullLoader
@@ -21,6 +26,8 @@ export default defineComponent({
     }
   },
   async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
     this.validToken = false
     const route = useRoute()
     this.token = route.params.token ? route.params.token.toString() : '';
@@ -33,7 +40,6 @@ export default defineComponent({
       })
       return
     }
-    const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     const userService = new UserService()
     const userResponse = await userService.verifyToken(this.token)

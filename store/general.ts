@@ -3,7 +3,6 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
-import SystemModuleService from '~/resources/scripts/services/SystemModuleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export const useMyGeneralStore = defineStore({
@@ -14,6 +13,7 @@ export const useMyGeneralStore = defineStore({
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
+    backgroundImageBannner: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/rh-system/images/100bcbbc-cea7-4c6b-9584-154bdc2144ba.jpg',
     isRoot: false,
     isRh: false,
     isAdmin: false,
@@ -52,6 +52,9 @@ export const useMyGeneralStore = defineStore({
         }
         if (systemSettingResponse.systemSettingLogo) {
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
+        }
+        if (systemSettingResponse.systemSettingBanner) {
+          this.backgroundImageBannner = `${systemSettingResponse.systemSettingBanner}`
         }
         await this.getSystemModules()
       }
