@@ -9,6 +9,9 @@
         {{ `${employee.employee.employeeFirstName}`.toLocaleLowerCase() }}
         {{ `${employee.employee.employeeLastName || ''}`.toLocaleLowerCase() }}
       </div>
+      <div class="position">
+        {{ employee.employee.position.positionName }}
+      </div>
       <div class="percentage assist">
         {{employee.assistStatistics.onTimePercentage || 0}}%
         <small>
@@ -46,7 +49,7 @@
             Faults
             <br>
             <span>
-              ( {{ `${employee.assistStatistics.faults || 0}`.padStart(2, '0') }} Arrivals )
+              ( {{ `${employee.assistStatistics.faults || 0}`.padStart(2, '0') }} Absences )
             </span>
           </small>
         </div>

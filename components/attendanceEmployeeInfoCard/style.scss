@@ -35,7 +35,6 @@
   .name {
     text-align: left;
     font-weight: 500;
-    margin-bottom: 1rem;
     font-size: 0.8rem;
     text-wrap: pretty;
     display: -webkit-box;
@@ -47,6 +46,13 @@
     @media screen and (max-width: $ipad) {
       font-size: 0.7rem;
     }
+  }
+
+  .position {
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
+    font-weight: normal;
+    margin-top: 0.25rem;
   }
 
   .percentage {
