@@ -13,6 +13,10 @@
         {{employee.assistStatistics.onTimePercentage || 0}}%
         <small>
           On Time
+          <br>
+          <span>
+            ( {{ `${employee.assistStatistics.assists || 0}`.padStart(2, '0') }} Arrivals )
+          </span>
         </small>
       </div>
       <div class="percentages">
@@ -20,18 +24,30 @@
           {{employee.assistStatistics.onTolerancePercentage || 0}}%
           <small>
             Tolerances
+            <br>
+            <span>
+              ( {{ `${employee.assistStatistics.tolerances || 0}`.padStart(2, '0') }} Arrivals )
+            </span>
           </small>
         </div>
         <div class="percentage delay">
           {{employee.assistStatistics.onDelayPercentage || 0}}%
           <small>
             Delays
+            <br>
+            <span>
+              ( {{ `${employee.assistStatistics.delays || 0}`.padStart(2, '0') }} Arrivals )
+            </span>
           </small>
         </div>
         <div class="percentage fault">
           {{employee.assistStatistics.onFaultPercentage || 0}}%
           <small>
             Faults
+            <br>
+            <span>
+              ( {{ `${employee.assistStatistics.faults || 0}`.padStart(2, '0') }} Arrivals )
+            </span>
           </small>
         </div>
       </div>
