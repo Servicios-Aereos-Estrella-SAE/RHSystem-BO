@@ -123,7 +123,8 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     statusInfo: null as AssistSyncStatus | null,
-    departmentList: [] as DepartmentInterface[]
+    departmentList: [] as DepartmentInterface[],
+    evaluatedEmployees: 0 as number
   }),
   computed: {
     weeklyStartDay() {
@@ -329,17 +330,23 @@ export default defineComponent({
       const totalAvailable = assists + tolerances + delays + faults
       const serieData = []
 
+      const qtyOnTime = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.assists || 0), 0)
+      const qtyOnTolerance = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.tolerances || 0), 0)
+      const qtyOnDelay = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.delays || 0), 0)
+      const qtyOnFault = this.employeeDepartmentPositionList.reduce((acc, val) => acc + (val.assistStatistics.faults || 0), 0)
+
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
-      serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
-      serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
-      serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
-      serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
+      serieData.push({ name: `On time (${`${qtyOnTime}`.padStart(2, '0')} Arrivals)`, y: assist, color: '#33D4AD' })
+      serieData.push({ name: `Tolerances (${`${qtyOnTolerance}`.padStart(2, '0')} Arrivals)`, y: tolerance, color: '#3CB4E5' })
+      serieData.push({ name: `Delays (${`${qtyOnDelay}`.padStart(2, '0')} Arrivals)`, y: delay, color: '#FF993A' })
+      serieData.push({ name: `Faults (${`${qtyOnFault}`.padStart(2, '0')} Arrivals)`, y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData
+      this.evaluatedEmployees = this.employeeDepartmentPositionList.filter(e => e.assistStatistics.totalAvailable > 0).length
     },
     hasEmployees(employeeList: Array<EmployeeAssistStatisticInterface> | null) {
       if (!employeeList) {
@@ -556,6 +563,7 @@ export default defineComponent({
       const earlyOuts = employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
+
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
@@ -568,6 +576,12 @@ export default defineComponent({
         onDelayPercentage: delay,
         onEarlyOutPercentage: earlyOut,
         onFaultPercentage: fault,
+        assists,
+        tolerances,
+        delays,
+        earlyOuts,
+        faults,
+        totalAvailable,
       }
 
       employee.assistStatistics = assistStatistics

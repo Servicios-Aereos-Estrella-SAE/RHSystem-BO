@@ -142,6 +142,9 @@
               General behavior into period
             </h2>
             <highchart :options="generalData" style="width: 100%;" />
+            <div class="evaluated-emps">
+              {{ `${evaluatedEmployees}`.padStart(2, '0') }} Evaluated employees
+            </div>
           </div>
           <div class="box chart-bar">
             <h2>

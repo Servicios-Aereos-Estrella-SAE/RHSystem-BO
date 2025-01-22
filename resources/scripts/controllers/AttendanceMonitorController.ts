@@ -35,12 +35,14 @@ export default class AttendanceMonitorController {
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1)
+        const date = DateTime.local(year, month, 1).setLocale('en')
         const days = date.daysInMonth
         const categories = []
 
         for (let day = 0; day < (days || 0); day++) {
-          categories.push((day + 1).toString())
+          const formatedDay = date.plus({ 'days': day }).toFormat('DD')
+
+          categories.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
         }
 
         return categories
@@ -55,7 +57,7 @@ export default class AttendanceMonitorController {
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day)
+          const dayDate = DateTime.local(year, month, day).setLocale('en')
           const formatedDay = dayDate.toFormat('DD')
           const daySelected = date.toFormat('yyyy LLL dd') === dayDate.toFormat('yyyy LLL dd')
 
@@ -82,7 +84,7 @@ export default class AttendanceMonitorController {
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day)
+          const dayDate = DateTime.local(year, month, day).setLocale('en')
           const formatedDay = dayDate.toFormat('DD')
 
           daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -106,7 +108,7 @@ export default class AttendanceMonitorController {
       const year = parseInt(currentDay.toFormat('yyyy'))
       const month = parseInt(currentDay.toFormat('LL'))
       const day = parseInt(currentDay.toFormat('dd'))
-      const dayDate = DateTime.local(year, month, day)
+      const dayDate = DateTime.local(year, month, day).setLocale('en')
       const formatedDay = dayDate.toFormat('DD')
 
       daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -131,7 +133,7 @@ export default class AttendanceMonitorController {
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1)
+        const date = DateTime.local(year, month, 1).setLocale('en')
         const days = date.daysInMonth
         periodLenght = days || 0
         break
