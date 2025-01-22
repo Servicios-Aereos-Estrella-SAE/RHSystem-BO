@@ -125,7 +125,8 @@ export default defineComponent({
     statusInfo: null as AssistSyncStatus | null,
     departmentList: [] as DepartmentInterface[],
     evaluatedEmployees: 0 as number,
-    evaluatedAssistEmployees: 0 as number
+    evaluatedAssistEmployees: 0 as number,
+    estimatedArrivals: 0 as number
   }),
   computed: {
     weeklyStartDay() {
@@ -348,7 +349,8 @@ export default defineComponent({
 
       this.generalData.series[0].data = serieData
       this.evaluatedEmployees = this.employeeDepartmentPositionList.filter(e => e.assistStatistics.totalAvailable > 0).length
-      this.evaluatedAssistEmployees = this.evaluatedEmployees - qtyOnFault
+      this.estimatedArrivals = qtyOnTime + qtyOnTolerance + qtyOnDelay + qtyOnFault
+      this.evaluatedAssistEmployees = this.estimatedArrivals - qtyOnFault
     },
     hasEmployees(employeeList: Array<EmployeeAssistStatisticInterface> | null) {
       if (!employeeList) {

@@ -144,7 +144,11 @@
             <highchart :options="generalData" style="width: 100%;" />
             <div class="evaluated-emps">
               {{ `${evaluatedAssistEmployees}`.padStart(2, '0') }} Arrivals of
-              {{ `${evaluatedEmployees}`.padStart(2, '0') }} Evaluated employees
+              {{ `${estimatedArrivals}`.padStart(2, '0') }} Estimated
+              <br>
+              <div class="employees-evaluated">
+                {{ `${evaluatedEmployees}`.padStart(2, '0') }} Evaluated employees
+              </div>
             </div>
           </div>
           <div class="box chart-bar">

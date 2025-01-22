@@ -107,6 +107,13 @@
         border: $border-dashed;
         padding: 1rem;
         box-sizing: border-box;
+
+        .employees-evaluated {
+          border-top: $border-dashed;
+          margin-top: 0.5rem;
+          padding-top: 0.5rem;
+          font-size: 0.7rem;
+        }
       }
         text
 
