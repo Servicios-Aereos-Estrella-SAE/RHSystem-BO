@@ -124,7 +124,9 @@ export default defineComponent({
     filteredEmployees: [] as EmployeeInterface[],
     statusInfo: null as AssistSyncStatus | null,
     departmentList: [] as DepartmentInterface[],
-    evaluatedEmployees: 0 as number
+    evaluatedEmployees: 0 as number,
+    evaluatedAssistEmployees: 0 as number,
+    estimatedArrivals: 0 as number
   }),
   computed: {
     weeklyStartDay() {
@@ -343,10 +345,12 @@ export default defineComponent({
       serieData.push({ name: `On time (${`${qtyOnTime}`.padStart(2, '0')} Arrivals)`, y: assist, color: '#33D4AD' })
       serieData.push({ name: `Tolerances (${`${qtyOnTolerance}`.padStart(2, '0')} Arrivals)`, y: tolerance, color: '#3CB4E5' })
       serieData.push({ name: `Delays (${`${qtyOnDelay}`.padStart(2, '0')} Arrivals)`, y: delay, color: '#FF993A' })
-      serieData.push({ name: `Faults (${`${qtyOnFault}`.padStart(2, '0')} Arrivals)`, y: fault, color: '#d45633' })
+      serieData.push({ name: `Faults (${`${qtyOnFault}`.padStart(2, '0')} Absences)`, y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData
       this.evaluatedEmployees = this.employeeDepartmentPositionList.filter(e => e.assistStatistics.totalAvailable > 0).length
+      this.estimatedArrivals = qtyOnTime + qtyOnTolerance + qtyOnDelay + qtyOnFault
+      this.evaluatedAssistEmployees = this.estimatedArrivals - qtyOnFault
     },
     hasEmployees(employeeList: Array<EmployeeAssistStatisticInterface> | null) {
       if (!employeeList) {
@@ -375,7 +379,7 @@ export default defineComponent({
       if (!employees) {
         return []
       }
-      return employees.filter(employee => this.isShowByStatusSelected(employee))
+      return employees.filter(employee => this.isShowByStatusSelected(employee) && !!(employee) && !!(employee?.employee) && employee?.assistStatistics?.totalAvailable > 0)
     },
     setPeriodData() {
       let periodLenght = 12

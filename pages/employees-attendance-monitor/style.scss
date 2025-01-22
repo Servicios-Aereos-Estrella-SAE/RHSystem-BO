@@ -107,6 +107,13 @@
         border: $border-dashed;
         padding: 1rem;
         box-sizing: border-box;
+
+        .employees-evaluated {
+          border-top: $border-dashed;
+          margin-top: 0.5rem;
+          padding-top: 0.5rem;
+          font-size: 0.7rem;
+        }
       }
         text
 
@@ -120,7 +127,7 @@
       box-sizing: border-box;
       display: grid;
       grid-auto-flow: dense;
-      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(23rem, 1fr));
       gap: .5rem;
       margin-top: 0.5rem;
     }
