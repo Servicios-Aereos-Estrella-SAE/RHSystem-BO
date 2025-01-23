@@ -22,11 +22,11 @@ interface ReservationInterface {
   reservationDeletedAt: Date | string | null;
 
   // Define las propiedades de las relaciones
-  customer?: CustomerInterface;
-  aircraft?: AircraftInterface;
-  pilotSic?: PilotInterface;
-  pilotPic?: PilotInterface;
-  flightAttendant?: FlightAttendantInterface;
+  customer?: CustomerInterface | null;
+  aircraft?: AircraftInterface | null;
+  pilotSic?: PilotInterface | null;
+  pilotPic?: PilotInterface | null;
+  flightAttendant?: FlightAttendantInterface | null;
   reservationLegs?: ReservationLegInterface[];
   reservationNotes?: ReservationNoteInterface[];
 }

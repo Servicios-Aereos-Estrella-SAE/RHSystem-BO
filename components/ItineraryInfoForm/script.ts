@@ -10,6 +10,7 @@ export default defineComponent({
     reservationLeg: { type: Object as () => ReservationLegInterface, required: true },
     index: { type: Number, required: true },
     addLeg: { type: Function, required: true },
+    editMode: { type: Boolean, required: true },
     removeLeg: { type: Function, required: true },
     isLast: { type: Boolean, required: true },
     isSubmitted: { type: Boolean, required: true },
@@ -34,6 +35,20 @@ export default defineComponent({
   }),
   async mounted() {
     await this.handlerSearchAirport();
+  },
+  watch: {
+    'reservationLeg.airportDepartureId': {
+      handler() {
+        this.reservationLeg.airportDeparture = this.airports.find((airport) => airport.airportId === this.reservationLeg.airportDepartureId) || null;
+      },
+      deep: true,
+    },
+    'reservationLeg.airportDestinationId': {
+      handler() {
+        this.reservationLeg.airportDestination = this.airports.find((airport) => airport.airportId === this.reservationLeg.airportDestinationId) || null;
+      },
+      deep: true,
+    },
   },
   methods: {
     async handlerSearchAirport() {

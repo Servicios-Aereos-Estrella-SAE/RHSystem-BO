@@ -1,4 +1,6 @@
 import type { PilotInterface } from "./PilotInterface";
+import Aircraft from '../../../../API-SAE/app/models/aircraft';
+import type { AircraftPropertyInterface } from "./AircraftPropertyInterface";
 
 export interface AircraftInterface {
     aircraftId: number | null;
@@ -11,5 +13,6 @@ export interface AircraftInterface {
     aircraftCreatedAt: Date | string | null;
     aircraftUpdatedAt: Date | string | null;
     aircraftDeletedAt: Date | string | null;
+    aircraftProperty: AircraftPropertyInterface | null;
     pilots: PilotInterface[];
 }

@@ -16,6 +16,11 @@
           
         }
     }
+    .wrapper-reservations-index{
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
     .aside-legs-details {
       border-bottom: $border-dashed;
       min-height: 50vh; 
@@ -165,6 +170,14 @@
         font-size: 0.8rem;
         padding: 0.5rem;
       }
+    }
+    .reservation-card-info-wrapper {
+      box-sizing: border-box;
+      display: grid;
+      grid-auto-flow: dense;
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+      gap: .5rem;
+      margin-top: 0.5rem;
     }
 
   }
