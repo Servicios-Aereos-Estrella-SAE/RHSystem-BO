@@ -123,8 +123,8 @@ export default defineComponent({
     statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
-    weeklyStartDay () {
-      const daysList =[]
+    weeklyStartDay() {
+      const daysList = []
 
       if (!this.periodSelected && !this.datesSelected.length) {
         return []
@@ -135,13 +135,13 @@ export default defineComponent({
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('month')
           const daysInMonth = (start.daysInMonth || 0)
-          
+
           for (let index = 0; index < daysInMonth; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -153,13 +153,13 @@ export default defineComponent({
         case 'weekly': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('week')
-          
+
           for (let index = 0; index < 7; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -189,11 +189,11 @@ export default defineComponent({
             }
           }
           break;
-        }  
+        }
         case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
-          
+
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
@@ -215,13 +215,13 @@ export default defineComponent({
           }
           break;
         }
-      default:
+        default:
           break;
       }
 
       return daysList
     },
-    lineChartTitle () {
+    lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
         return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
@@ -261,17 +261,17 @@ export default defineComponent({
         return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
       }
     },
-    departmentCollection (): DepartmentInterface[] {
+    departmentCollection(): DepartmentInterface[] {
       const list: DepartmentInterface[] = JSON.parse(JSON.stringify(this.departmentList)) as DepartmentInterface[]
       const collection = list.map((item: DepartmentInterface) => ({ ...item, label: item.departmentAlias || item.departmentName }))
       return collection
     },
-    departmentPositionCollection (): PositionInterface[] {
+    departmentPositionCollection(): PositionInterface[] {
       const list: PositionInterface[] = JSON.parse(JSON.stringify(this.departmentPositionList)) as PositionInterface[]
       const collection = list.map((item: PositionInterface) => item)
       return collection
     },
-    assistSyncStatusDate () {
+    assistSyncStatusDate() {
       if (this.statusInfo) {
         const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
         const dateTimeFormat = dateTime.toFormat('ff')
@@ -281,7 +281,7 @@ export default defineComponent({
       return ''
     }
   },
-  created () {
+  created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -298,16 +298,16 @@ export default defineComponent({
       this.setDefaultVisualizationMode()
     ])
 
-    this.handlerSetInitialDepartmentList()
+    await this.handlerSetInitialDepartmentList()
 
     await this.setDepartmentPositions()
     await this.setDepartmentPositionEmployeeList()
 
-    this.setGraphsData()
+    await this.setGraphsData()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    setDefaultVisualizationMode () {
+    setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
@@ -323,23 +323,23 @@ export default defineComponent({
       return [previousDay, currentDay];
     },
     filtersEmployeesByStatus(employees: Array<EmployeeAssistStatisticInterface> | null) {
-      if(!employees) {
+      if (!employees) {
         return []
       }
       return employees.filter(employee => this.isShowEmployeeByStatusSelected(employee))
     },
-    handlerSetInitialDepartmentList () {
+    handlerSetInitialDepartmentList() {
       const departmentID = this.$route.params.department
       const department = this.departmentCollection.find((department: DepartmentInterface) => department.departmentId === parseInt(departmentID.toString()))
       this.departmenSelected = department ? department : null
     },
     isValidPeriodSelected() {
-      if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+      if (this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Invalid Date',
           detail: 'You should select a valid date. Only Thursdays are valid',
-            life: 5000,
+          life: 5000,
         })
         return false;
       } else {
@@ -360,28 +360,29 @@ export default defineComponent({
       return true
     },
     isThursday(dateObject: any, addOneMonth = true) {
-      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
-      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
+      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
     },
-    setGraphsData () {
-      this.setPeriodData()
+    async setGraphsData() {
+      await this.setPeriodData()
       this.setGeneralData()
     },
-    setPeriodCategories () {
+    setPeriodCategories() {
       if (this.visualizationMode?.value === 'custom') {
         this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
       } else {
         this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
       }
     },
-    setGeneralData () {
+    async setGeneralData() {
       const assists = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
       const tolerances = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
       const delays = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
       const faults = this.employeeDepartmentList.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0)
       const totalAvailable = assists + tolerances + delays + faults
+
       const serieData = []
 
       const assist = Math.round((assists / totalAvailable) * 100)
@@ -393,10 +394,9 @@ export default defineComponent({
       serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
       serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
       serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
-
       this.generalData.series[0].data = serieData
     },
-    setPeriodData () {
+    setPeriodData() {
       let periodLenght = 12
 
       const monthPerdiod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('LL'))
@@ -432,15 +432,15 @@ export default defineComponent({
             periodLenght = 0
           }
           break
-         case 'fourteen': {
-            const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
-            const startOfWeek = date.startOf('week')
-            // Encontrar el jueves de la semana seleccionada
-            let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-            // Establecer el inicio del periodo como el jueves de dos semanas atrás
-            start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
-            // El periodo es de 14 días (dos semanas completas)
-            periodLenght = 14
+        case 'fourteen': {
+          const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+          const startOfWeek = date.startOf('week')
+          // Encontrar el jueves de la semana seleccionada
+          let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+          // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
+          // El periodo es de 14 días (dos semanas completas)
+          periodLenght = 14
           break
         }
         default:
@@ -455,79 +455,77 @@ export default defineComponent({
           let currentDay = start.plus({ days: index })
           switch (this.visualizationMode?.value) {
             case 'fourteen':
-              currentDay = currentDay.minus( { days: 1 })
+              currentDay = currentDay.minus({ days: 1 })
           }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
           const evalDate = `${year}-${`${month}`.padStart(2, '0')}-${`${day}`.padStart(2, '0')}`
           let dayCalendar: any[] = []
-  
+
           this.employeeDepartmentList.forEach(item => {
             const currentCalendar: AssistDayInterface[] = item.calendar.filter(calendar => calendar.day === evalDate)
             if (currentCalendar.length > 0) {
               dayCalendar.push(currentCalendar[0].assist)
             }
           })
-  
+
           dayStatisticsCollection.push({
             day: evalDate,
             assist: dayCalendar
           })
         }
-  
+
         const assistSerie: number[] = []
         const toleranceSerie: number[] = []
         const delaySerie: number[] = []
         const faultSerie: number[] = []
-  
+
         dayStatisticsCollection.forEach((element: any) => {
           const assists = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'ontime').length
           const tolerances = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'tolerance').length
           const delays = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'delay').length
           const faults = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'fault' && !assistDate.isFutureDay && !assistDate.isRestDay).length
           const totalAvailable = assists + tolerances + delays + faults
-  
+
           const assist = Math.round((assists / totalAvailable) * 100)
           const tolerance = Math.round((tolerances / totalAvailable) * 100)
           const delay = Math.round((delays / totalAvailable) * 100)
           const fault = Math.round((faults / totalAvailable) * 100)
-  
+
           assistSerie.push(Number.isNaN(assist) ? 0 : assist)
           toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
           delaySerie.push(Number.isNaN(delay) ? 0 : delay)
           faultSerie.push(Number.isNaN(fault) ? 0 : fault)
-        });
-  
-        
+        })
+
         const serieData = []
-  
+
         serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
         serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
         serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
         serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
-  
         this.periodData.series = serieData
         this.setPeriodCategories()
       }
     },
-    async setDepartmetList () {
-      const response = await  new DepartmentService().getOnlyWithEmployees()
+    async setDepartmetList() {
+      const response = await new DepartmentService().getOnlyWithEmployees()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
-    async setDepartmentPositions () {
+    async setDepartmentPositions() {
       const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
       this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
-    async handlerDeparmentSelect () {
+    async handlerDeparmentSelect() {
       this.$router.push(`/departments-attendance-monitor/${this.departmenSelected?.departmentId}`)
     },
-    async handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange() {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
-        this.visualizationModeOptions[idx].selected =  true
+        this.visualizationModeOptions[idx].selected = true
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
@@ -545,7 +543,7 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
       }
     },
-    async onInputVisualizationModeChange () {
+    async onInputVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
@@ -560,11 +558,11 @@ export default defineComponent({
         this.filteredEmployees = list
       }
     },
-    async setDepartmentPositionEmployeeList () {
+    async setDepartmentPositionEmployeeList() {
       if (!this.departmenSelected) {
         return false
       }
-      
+
       const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null)
@@ -575,13 +573,32 @@ export default defineComponent({
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
-    async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
+    async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
-      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
-      const employeeID = employee?.employee?.employeeId || 0
+      let startDay = ''
+      let endDay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
 
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate//.minus({ days: 1 })
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+      } else {
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      }
+      const employeeID = employee?.employee?.employeeId || 0
       try {
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
@@ -590,7 +607,7 @@ export default defineComponent({
       } catch (error) {
       }
     },
-    getDepartmentPositionAssistStatistics () {
+    getDepartmentPositionAssistStatistics() {
       const positionListStatistics: any[] = []
 
       this.departmentPositionCollection.forEach((position: any) => {
@@ -603,14 +620,14 @@ export default defineComponent({
           onEarlyOutPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onEarlyOutPercentage, 0) / list.length),
           onFaultPercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onFaultPercentage, 0) / list.length),
         }
-        if(this.isShowByStatusSelected(statistics)) {
+        if (this.isShowByStatusSelected(statistics)) {
           positionListStatistics.push({
             position: position.position,
             statistics
           })
         }
       })
-      
+
       return positionListStatistics
     },
     isShowByStatusSelected(statistics: any) {
@@ -636,7 +653,7 @@ export default defineComponent({
         return employee?.assistStatistics?.onDelayPercentage ?? 0 > 0
       } else if (this.statusSelected === 'Early outs') {
         return employee?.assistStatistics?.onEarlyOutPercentage ?? 0 > 0
-      }  else if (this.statusSelected === 'Tolerances') {
+      } else if (this.statusSelected === 'Tolerances') {
         return employee?.assistStatistics?.onTolerancePercentage ?? 0 > 0
       } else if (this.statusSelected === 'On time') {
         return employee?.assistStatistics?.onTimePercentage ?? 0 > 0
@@ -645,7 +662,7 @@ export default defineComponent({
       }
       return true
     },
-    setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
+    setGeneralStatisticsData(employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
@@ -653,33 +670,33 @@ export default defineComponent({
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
 
+
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
       const delay = Math.round((delays / totalAvailable) * 100)
       const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
-
       const assistStatistics = {
-        onTimePercentage: assist,
-        onTolerancePercentage: tolerance,
-        onDelayPercentage: delay,
-        onEarlyOutPercentage: earlyOut,
-        onFaultPercentage: fault,
+        onTimePercentage: Number.isNaN(assist) ? 0 : assist,
+        onTolerancePercentage: Number.isNaN(tolerance) ? 0 : tolerance,
+        onDelayPercentage: Number.isNaN(delay) ? 0 : delay,
+        onEarlyOutPercentage: Number.isNaN(earlyOut) ? 0 : earlyOut,
+        onFaultPercentage: Number.isNaN(fault) ? 0 : fault,
       }
 
       employee.assistStatistics = assistStatistics
     },
-    onEmployeeSelect () {
+    onEmployeeSelect() {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-    async setAssistSyncStatus () {
+    async setAssistSyncStatus() {
       try {
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {}
+      } catch (error) { }
     },
     async getExcel() {
       const myGeneralStore = useMyGeneralStore()
@@ -700,16 +717,16 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        
+
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate.minus({ days: 1 })
-         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
-         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
-         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
-         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-      
+
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId)
       if (assistResponse.status === 201) {
@@ -725,7 +742,7 @@ export default defineComponent({
           severity: 'success',
           summary: 'Excel assist',
           detail: 'Excel was created successfully',
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       } else {
@@ -734,7 +751,7 @@ export default defineComponent({
           severity: 'error',
           summary: 'Excel assist',
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       }
