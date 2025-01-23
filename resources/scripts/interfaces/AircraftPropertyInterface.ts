@@ -1,3 +1,5 @@
+import type { AircraftClassInterface } from "./AircraftClassInterface";
+
 export interface AircraftPropertyInterface {
     aircraftPropertiesBanner: any;
     aircraftPropertiesHourlyRate: any;
@@ -6,7 +8,7 @@ export interface AircraftPropertyInterface {
     aircraftPropertiesOvernightStayLocal: any;
     aircraftPropertiesFuelSurcharge: any;
     aircraftPropertiesDescription: string;
-    aircraftPropertyBanner: any;
+    aircraftPropertyBanner: any | null;
     aircraftPropertiesId: number | null;
     aircraftPropertiesName: string;
     aircraftClassId: number | null;
@@ -20,5 +22,6 @@ export interface AircraftPropertyInterface {
     createdAt: Date | string | null;
     updatedAt: Date | string | null;
     deletedAt: Date | string | null;
+    aircraftClass: AircraftClassInterface | null;
   }
   

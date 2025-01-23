@@ -6,14 +6,7 @@
   height: auto;
 
   .aircraft-info{
-    display: grid;
-    // titulo, imagen, detalles, mapa, itinerario, costo, boton
-    grid-template-rows: 2rem 8rem 10 1fr .5rem 7rem 6rem;
-    gap: 0.4rem;
-    @media screen and (max-width: $ipad) {
-      grid-template-rows: 2rem 10rem 10 1fr .5rem 7rem 6rem;
-      
-    }
+    
     .aircraft-title{
       font-size: .8rem;
       font-weight: bold;
@@ -30,6 +23,23 @@
         border-radius: 15px;
         width: 100%;
         height: 30vh;
+      }
+    }
+
+    .banner {
+      background-color: $gray;
+      border-radius: $radius;
+      position: relative;
+      height: 8rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      svg {
+        width: 7rem;
+        transform: rotate(-30deg);
       }
     }
 
@@ -88,7 +98,8 @@
     }
 
     .detail-itinerary{
-      margin-top: 40px;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
       
       .itinerary-info{
         display: flex;
@@ -168,23 +179,22 @@
     }
 
     .bnt-save{
-    margin-top: -22px;
-    padding: 10px;
+      padding: 10px;
     
-    .btn-quote{
-      margin-top: 2rem;
-      background: $primary;
-      color: $white;
-      font-size: .8rem;
-      font-weight: 500;
-      font-family: $font;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      padding: 0.5rem;
-      text-align: center;
-      width: 100%;
-    }
+      .btn-quote{
+        margin-top: 1rem;
+        background: $primary;
+        color: $white;
+        font-size: .8rem;
+        font-weight: 500;
+        font-family: $font;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 0.5rem;
+        text-align: center;
+        width: 100%;
+      }
     }
 
   }

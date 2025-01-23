@@ -17,12 +17,12 @@ interface ReservationLegInterface {
   reservationLegDeletedAt: Date | string | null;
   reservationLegPax: number;
   reservationLegDistanceMn: number | null;
-  reservationLegTravelTime: Date | string | null;
+  reservationLegTravelTime: string | null;
 
   // Relaciones
   reservation?: ReservationInterface | null;
-  departureAirport?: AirportInterface | null;
-  arrivalAirport?: AirportInterface | null;
+  airportDeparture?: AirportInterface | null;
+  airportDestination?: AirportInterface | null;
 }
 
 export type { ReservationLegInterface };
