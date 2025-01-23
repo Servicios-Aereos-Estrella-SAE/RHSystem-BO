@@ -142,6 +142,14 @@
               General behavior into period
             </h2>
             <highchart :options="generalData" style="width: 100%;" />
+            <div class="evaluated-emps">
+              {{ `${evaluatedAssistEmployees}`.padStart(2, '0') }} Arrivals of
+              {{ `${estimatedArrivals}`.padStart(2, '0') }} Estimated
+              <br>
+              <div class="employees-evaluated">
+                {{ `${evaluatedEmployees}`.padStart(2, '0') }} Evaluated employees
+              </div>
+            </div>
           </div>
           <div class="box chart-bar">
             <h2>
@@ -159,7 +167,7 @@
             <div v-if="hasEmployees(item.employees)" class="department-positions-wrapper">
               <div v-for="(employeeAssist, index) in filtersEmployeesByStatus(item.employees)" :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
                 <attendanceEmployeeInfoCard
-                  v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
+                  v-if="!!(employeeAssist) && !!(employeeAssist?.employee)"
                   :employee="employeeAssist"
                 />
               </div>
