@@ -132,7 +132,7 @@ export default class SystemSettingService {
     let responseRequest: any = null
     try {
       const headers = { ...this.GENERAL_HEADERS }
-      await $fetch(`${this.API_PATH}/system-settings/get-active`, {
+      await $fetch(`${this.API_PATH}/system-settings-active`, {
         headers,
         onResponse ({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
