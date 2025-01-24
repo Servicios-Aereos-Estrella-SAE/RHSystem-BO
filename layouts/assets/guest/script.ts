@@ -1,5 +1,4 @@
 import { defineComponent } from 'vue'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -16,6 +15,16 @@ export default defineComponent({
     },
   },
   created() {
+    const myGeneralStore = useMyGeneralStore()
+    const businessName = ref(myGeneralStore.activeSystemBusinessName)
+    const businessFavicon = ref(myGeneralStore.favicon)
+
+    useHead({
+        titleTemplate: `${ businessName.value } BO | %s`,
+        link: [
+            { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
+        ]
+    })
     // const colorMode = useColorMode()
   },
   async mounted() {

@@ -11,13 +11,13 @@
       <NuxtLayout name="backoffice">
         <div class="system-setting-wrapper">
           <div class="box head-page">
-            <div class="input-box">
+            <!-- <div class="input-box">
               <label for="search">
                 Search
               </label>
               <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchSystemSetting"
                 @keyup.delete="handlerSearchSystemSetting" />
-            </div>
+            </div> -->
             <div class="input-box">
               <br />
               <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
@@ -35,8 +35,8 @@
               </div>
             </div>
             <div></div>
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
-              @page="onPageChange" />
+            <!-- <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+              @page="onPageChange" /> -->
             <!-- Form Shift -->
             <div class="card flex justify-content-center">
               <Sidebar v-model:visible="drawerSystemSettingForm" header="System Setting form" position="right"

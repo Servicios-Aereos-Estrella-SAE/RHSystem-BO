@@ -48,7 +48,8 @@ export default defineComponent({
         employeeTypes: [] as EmployeeTypeService[],
         employeeTypeId: null as number | null,
     }),
-    computed: {},
+    computed: {
+    },
     created() { },
     watch: {
         'departmentId': function(newVal) {

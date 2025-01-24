@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
 import type { UserCredentialsInterface } from '~/resources/scripts/interfaces/UserCredentialsInterface'
-import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({

@@ -12,8 +12,10 @@ export const useMyGeneralStore = defineStore({
     fullLoader: false as boolean,
     backgroundColor: '#093057',
     backgroundColorDark: '#092c50',
+    activeSystemBusinessName: '' as string,
     backgroundImage: 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg',
     backgroundImageBannner: 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/rh-system/images/100bcbbc-cea7-4c6b-9584-154bdc2144ba.jpg',
+    favicon: '',
     isRoot: false,
     isRh: false,
     isAdmin: false,
@@ -41,21 +43,29 @@ export const useMyGeneralStore = defineStore({
       this.backgroundColor = '#093057'
       this.backgroundColorDark = '#092c50'
       this.backgroundImage = 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
+
       const systemSettingService = new SystemSettingService()
       const systemSettingResponse = await systemSettingService.getActive()
+
       if (systemSettingResponse) {
         this.systemSettingId = systemSettingResponse.systemSettingId
+        this.activeSystemBusinessName = systemSettingResponse.systemSettingTradeName
+        this.favicon = systemSettingResponse.systemSettingFavicon
+
         if (systemSettingResponse.systemSettingSidebarColor) {
           this.backgroundColor = `#${systemSettingResponse.systemSettingSidebarColor}`
           const shades = this.generateColorShades(this.backgroundColor)
           this.backgroundColorDark = shades.darker
         }
+
         if (systemSettingResponse.systemSettingLogo) {
           this.backgroundImage = `${systemSettingResponse.systemSettingLogo}`
         }
+
         if (systemSettingResponse.systemSettingBanner) {
           this.backgroundImageBannner = `${systemSettingResponse.systemSettingBanner}`
         }
+
         await this.getSystemModules()
       }
     },

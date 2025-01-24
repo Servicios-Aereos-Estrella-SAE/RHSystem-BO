@@ -1,7 +1,7 @@
 <template>
   <Sidebar v-model:visible="visible" dismissable>
     <template #container>
-      <div v-if="isReady" class="aside-menu">
+      <div v-if="isReady" class="aside-menu" :style="{ backgroundColor: getBackgroundColor }">
         <div class="header-menu-box">
           <Button type="button" class="btn btn-block" @click="closeCallback">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 6a1 1 0 0 1 1-1h15a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1ZM9 18a1 1 0 0 1 1-1h11a1 1 0 1 1 0 2H10a1 1 0 0 1-1-1ZM3 11a1 1 0 1 0 0 2h18a1 1 0 1 0 0-2H3Z" fill="#88a4bf" class="fill-212121"></path></svg>

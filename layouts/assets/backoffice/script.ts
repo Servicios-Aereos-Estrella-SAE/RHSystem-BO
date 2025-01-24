@@ -13,6 +13,11 @@ export default defineComponent({
     authAccess: false
   }),
   computed: {
+    getBackgroundImageBanner(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImageBanner = myGeneralStore.backgroundImageBannner
+      return backgroundImageBanner
+    },
     displayContent() {
       const myGeneralStore = useMyGeneralStore()
       const displayContent = myGeneralStore.displayContent
@@ -32,10 +37,22 @@ export default defineComponent({
   async created() {
     await this.validateSession()
     await this.setAuthUser()
+
     this.socketIO = io(this.$config.public.SOCKET)
     this.socketIO.on(`user-forze-logout:${this.authUser?.userEmail}`, async () => {
       this.socketIO.close()
       await this.handlerLogout()
+    })
+
+    const myGeneralStore = useMyGeneralStore()
+    const businessName = ref(myGeneralStore.activeSystemBusinessName)
+    const businessFavicon = ref(myGeneralStore.favicon)
+
+    useHead({
+        titleTemplate: `${ businessName.value } BO | %s`,
+        link: [
+            { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
+        ]
     })
   },
   mounted() {

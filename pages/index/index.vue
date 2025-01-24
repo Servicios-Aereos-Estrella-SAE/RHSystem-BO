@@ -1,5 +1,10 @@
 <template>
   <div v-if="isGuest">
+    <Head>
+      <Title>
+        Login
+      </Title>
+    </Head>
     <NuxtLayout name="guest">
       <div class="guest-page">
         <div>
