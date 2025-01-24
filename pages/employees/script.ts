@@ -35,6 +35,7 @@ export default defineComponent({
         canDelete: false,
         canManageVacation: false,
         canManageExceptionRequest: false,
+        canManageWorkDisability: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
         hasAccessToManageShifts: false,
@@ -47,7 +48,8 @@ export default defineComponent({
         employeeTypes: [] as EmployeeTypeService[],
         employeeTypeId: null as number | null,
     }),
-    computed: {},
+    computed: {
+    },
     created() { },
     watch: {
         'departmentId': function(newVal) {
@@ -79,6 +81,7 @@ export default defineComponent({
             this.canDelete = true
             this.canManageVacation = true
             this.canManageExceptionRequest = true
+            this.canManageWorkDisability = true
         } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false

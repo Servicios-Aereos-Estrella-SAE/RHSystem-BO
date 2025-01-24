@@ -24,10 +24,13 @@ export default defineComponent({
     isReady: false,
     assistPunchTime: '' as string,
     displayDateCalendar: false as boolean,
+    dateInvalid: false,
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
   }),
   watch: {
     'assist.assistPunchTime'(val: Date) {
       this.assistPunchTime = this.getDateFormatted(val)
+      this.validateAssistPunchTime()
     },
   },
   computed: {
@@ -36,10 +39,22 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
+    if (!myGeneralStore.isRoot) {
+      this.getStartPeriodDay()
+    }
+    
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
   methods: {
+    getStartPeriodDay() {
+      const datePay = this.getNextPayThursday()
+      const payDate = DateTime.fromJSDate(datePay).startOf('day')
+      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+      const thursday = startOfWeek.plus({ days: 3 })
+      const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
+      this.startDateLimit = startLimit.toJSDate()
+    },
     async onSave() {
       this.submitted = true
       const assistService = new AssistService()
@@ -57,6 +72,15 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (this.dateInvalid) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Date selected is invalid',
           life: 5000,
         })
         return
@@ -101,6 +125,46 @@ export default defineComponent({
     },
     handlerDisplayDate() {
       this.displayDateCalendar = true
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    async validateAssistPunchTime() {
+      if (!this.assistPunchTime) {
+        return
+      }
+      const selectedDate = DateTime.fromFormat(this.assistPunchTime, 'MMMM dd, yyyy HH:mm', { zone: 'utc' }).startOf('day')
+      if (!selectedDate.isValid) {
+        return
+      }
+      const datePay = this.getNextPayThursday()
+      const monthPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
+      const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
+      const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
+      const payDate = DateTime.local(yearPeriod, monthPeriod, dayPeriod).setZone('utc').startOf('day')
+      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+      const thursday = startOfWeek.plus({ days: 3 })
+      const startLimit = thursday.minus({ days: 24 }).startOf('day')
+      if (selectedDate < startLimit) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: `The selected date cannot be earlier than the first day of the period, which is ${startLimit
+            .toFormat('MMMM dd, yyyy')}`,
+          life: 5000,
+        })
+        this.dateInvalid = true
+        return
+      }
+      this.dateInvalid = false
     },
   }
 })

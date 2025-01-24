@@ -16,8 +16,8 @@ export default defineComponent({
   }),
   computed: {
     hireDate() {
-      if (this.flightAttendant && this.flightAttendant.flightAttendantHireDate) {
-        return DateTime.fromISO(this.flightAttendant.flightAttendantHireDate.toString()).toFormat('LLL dd, yyyy')
+      if (this.flightAttendant && this.flightAttendant.employee?.employeeHireDate) {
+        return DateTime.fromISO(this.flightAttendant.employee.employeeHireDate.toString()).toFormat('LLL dd, yyyy')
       }
       return ''
     }
@@ -27,6 +27,16 @@ export default defineComponent({
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
+    },
+    formatName(name: string | null | undefined) {
+      if (!name) return '';
+    
+      return name
+        .split(' ')
+        .map(word => {
+          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        })
+        .join(' ');
     },
     handlerClickOnDelete () {
       if (this.clickOnDelete) {

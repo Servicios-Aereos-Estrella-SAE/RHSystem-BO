@@ -29,6 +29,7 @@ export default defineComponent({
     isNewSystemSetting: false,
     isReady: false,
     files: [] as Array<any>,
+    bannerFiles: [] as Array<any>,
     toleranceDelay: 0,
     toleranceFault: 0,
     tardinessTolerance: 0,
@@ -116,7 +117,7 @@ export default defineComponent({
           this.toleranceFaultId = faultTolerance.toleranceId;
         }
         if (tardinessTolerance) {
-          this.tardinessTolerance = tardinessTolerance.toleranceMinutes; 
+          this.tardinessTolerance = tardinessTolerance.toleranceMinutes;
           this.tardinessToleranceId = tardinessTolerance.toleranceId;
         }
       }
@@ -175,22 +176,21 @@ export default defineComponent({
     async saveTardiness() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
-      
+
       if (this.tardinessToleranceId !== null) {
         const systemSettingService = new SystemSettingService();
         const response = await systemSettingService.updateTolerance(
           this.tardinessToleranceId,
           this.tardinessTolerance
         );
-        
+
         myGeneralStore.setFullLoader(false);
-        
+
         if (response) {
           this.$toast.add({
             severity: "success",
-            summary: `Tardiness tolerance ${
-              this.tardinessToleranceId ? "updated" : "created"
-            }`,
+            summary: `Tardiness tolerance ${this.tardinessToleranceId ? "updated" : "created"
+              }`,
             detail: "Tardiness tolerance saved successfully",
             life: 5000,
           });
@@ -201,7 +201,7 @@ export default defineComponent({
         console.error("Tardiness tolerance ID is missing");
       }
     },
-    
+
     onUpload(event: any) {
       this.systemSetting.systemSettingPhoto = event.files[0];
     },
@@ -242,7 +242,7 @@ export default defineComponent({
         console.error('Fault tolerance ID is missing')
       }
     },
-    deleteTardiness(){
+    deleteTardiness() {
       if (this.tardinessToleranceId !== null) {
         this.deleteTolerance(this.tardinessToleranceId)
         this.tardinessTolerance = 0
@@ -267,7 +267,16 @@ export default defineComponent({
         this.$toast.add({
           severity: "warn",
           summary: "Image invalid",
-          detail: "Only one image is allowed",
+          detail: "Only one image is allowed to logo",
+          life: 5000,
+        });
+        return;
+      }
+      if (this.bannerFiles.length > 1) {
+        this.$toast.add({
+          severity: "warn",
+          summary: "Image invalid",
+          detail: "Only one image is allowed to banner",
           life: 5000,
         });
         return;
@@ -282,7 +291,24 @@ export default defineComponent({
             this.$toast.add({
               severity: "warn",
               summary: "Invalid Image",
-              detail: "Only .png, .webp, and .svg images are allowed.",
+              detail: "Only .png, .webp, and .svg images are allowed to logo.",
+              life: 5000,
+            });
+            return;
+          }
+        }
+      }
+      for await (const file of this.bannerFiles) {
+        if (file) {
+          const mimeType = file.type;
+          const isImage = mimeType.startsWith("image/");
+          const allowedFormats = ["image/png", "image/webp", "image/svg+xml"];
+
+          if (!isImage || !allowedFormats.includes(mimeType)) {
+            this.$toast.add({
+              severity: "warn",
+              summary: "Invalid Image",
+              detail: "Only .png, .webp, and .svg images are allowed to banner.",
               life: 5000,
             });
             return;
@@ -300,16 +326,19 @@ export default defineComponent({
       if (this.systemSetting) {
         this.systemSetting.systemSettingActive = this.activeSwicht ? 1 : 0;
         let systemSettingResponse = null;
-        const image = this.files.length > 0 ? this.files[0] : null;
+        const systemSettingLogo = this.files.length > 0 ? this.files[0] : null;
+        const systemSettingBanner = this.bannerFiles.length > 0 ? this.bannerFiles[0] : null;
         if (!this.systemSetting.systemSettingId) {
           systemSettingResponse = await systemSettingService.store(
             this.systemSetting,
-            image
+            systemSettingLogo,
+            systemSettingBanner
           );
         } else {
           systemSettingResponse = await systemSettingService.update(
             this.systemSetting,
-            image
+            systemSettingLogo,
+            systemSettingBanner
           );
         }
         if (
@@ -388,6 +417,14 @@ export default defineComponent({
       this.$forceUpdate();
     },
     getObjectURL(file: any) {
+      return URL.createObjectURL(file);
+    },
+    validateBannerFiles(event: any) {
+      let validFiles = event.files;
+      this.bannerFiles = validFiles;
+      this.$forceUpdate();
+    },
+    getBannerObjectURL(file: any) {
       return URL.createObjectURL(file);
     },
     addHash() {

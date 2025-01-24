@@ -34,7 +34,7 @@
               </div>
             </div>
             <div></div>
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+            <Paginator :alwaysShow="false" class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
               @page="onPageChange" />
             <!-- Form Shift -->
             <div class="card flex justify-content-center">

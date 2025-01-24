@@ -115,6 +115,12 @@ export default defineComponent({
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess ? '' : 'rest-day'
     this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
+    const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'falta-por-incapacidad')
+    if (existRestDayIndex >= 0) {
+      if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.exceptionRequest.exceptionTypeId) {
+        this.exceptionTypeList.splice(existRestDayIndex, 1)
+      }
+    }
     if (this.exceptionRequest.exceptionRequestId) {
       let existCurrentExceptionType = this.exceptionTypeList.find(a => a.exceptionTypeId === this.exceptionRequest.exceptionTypeId)
       if (!existCurrentExceptionType) {

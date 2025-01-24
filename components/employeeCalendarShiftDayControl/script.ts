@@ -18,19 +18,28 @@ export default defineComponent({
     shiftsList: { type: Array as PropType<ShiftInterface[]>, required: true },
     isDeleted: { type: Boolean, required: true },
     canUpdateShift: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     employeeCalendar: null as AssistDayInterface | null,
     drawerEmployeeShiftForm: false,
     employeeShift: null as EmployeeShiftInterface | null,
-    shiftEditSelected: null as AssistDayInterface | null
+    shiftEditSelected: null as AssistDayInterface | null,
+    canManagementShift: false
   }),
   computed: {
   },
   created () {
     this.employeeCalendar = JSON.parse(JSON.stringify(this.employeeCalendarAssist)) as AssistDayInterface
   },
-  mounted() {
+  async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    if (myGeneralStore.isRoot) {
+      this.canManagementShift = true
+    }else {
+      await this.validateCanUpdateShift()
+    }
+   
   },
   methods: {
     async onSave() {
@@ -101,6 +110,33 @@ export default defineComponent({
     },
     handlerClickExceptions () {
       this.$emit('clickExceptions', this.employeeCalendar as AssistDayInterface)
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    async validateCanUpdateShift() {
+      if (!this.employeeCalendarAssist.day) {
+        return
+      }
+      const selectedDate = DateTime.fromISO(this.employeeCalendarAssist.day, { zone: 'utc' }).startOf('day')
+      if (!selectedDate.isValid) {
+        return
+      }
+      const startLimit = DateTime.fromJSDate(this.startDateLimit, { zone: 'utc' }).startOf('day')
+
+      if (selectedDate < startLimit) {
+        this.canManagementShift = false
+        return
+      }
+      this.canManagementShift = true
     }
   },
 })

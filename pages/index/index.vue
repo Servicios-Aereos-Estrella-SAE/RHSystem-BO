@@ -1,10 +1,15 @@
 <template>
   <div v-if="isGuest">
+    <Head>
+      <Title>
+        Login
+      </Title>
+    </Head>
     <NuxtLayout name="guest">
       <div class="guest-page">
         <div>
           <div class="logo">
-            <img src="https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg" alt="SAE">
+            <img :src="getBackgroundImageLogo" alt="SAE">
           </div>
           <div class="guest-form">
             <div class="form-container">

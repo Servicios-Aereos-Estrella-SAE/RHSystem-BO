@@ -23,6 +23,11 @@ export default defineComponent({
     notificationAudio: null as HTMLAudioElement | null,
   }),
   computed: {
+    getBusinessName (){
+      const myGeneralStore = useMyGeneralStore()
+      const value = myGeneralStore.activeSystemBusinessName
+      return value
+    },
     getBackgroundImage(){
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
@@ -44,16 +49,17 @@ export default defineComponent({
   },
   created () {
   },
- async mounted() {
-  this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
+  async mounted() {
+    this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
-    // this.setAuthUser()
-    const { getSession } = useAuth()
 
+    const { getSession } = useAuth()
     const session: unknown = await getSession()
+
     this.authUser = session as UserInterface
     this.socketIO = io(this.$config.public.SOCKET)
+
     if (this.authUser?.role?.roleSlug === 'rh-manager') {
       this.socketIO.on('new-exception-request', async () => {
         await this.handlerFetchNotifications()
@@ -72,6 +78,7 @@ export default defineComponent({
         });
       })
     }
+
     this.handlerFetchNotifications();
 
   },

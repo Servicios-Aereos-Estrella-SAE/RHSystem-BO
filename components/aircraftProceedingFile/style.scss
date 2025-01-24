@@ -1,5 +1,4 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
 
 .aircraft-proceeding-files {
   margin-top: 2.25rem;
@@ -184,7 +183,7 @@
     
     .files-header {
       display: grid;
-      grid-template-columns: auto 15rem 15rem;
+      grid-template-columns: auto 15rem 5rem;
       gap: 0.5rem;
       margin-bottom: 1rem;
     }

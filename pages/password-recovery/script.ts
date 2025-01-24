@@ -12,8 +12,15 @@ export default defineComponent({
     sendMessage: ''
   }),
   mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.getSystemSettings()
   },
   computed: {
+    getBackgroundImageLogo(){
+      const myGeneralStore = useMyGeneralStore()
+      const backgroundImage = myGeneralStore.backgroundImage
+      return backgroundImage
+    },
     statusFullLoader() {
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.fullLoader

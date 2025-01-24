@@ -27,6 +27,7 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
+    canManageWorkDisability: { type: Boolean, required: true },
     canManageExceptionRequest: { type: Boolean, required: true }
   },
   data: () => ({
@@ -43,6 +44,7 @@ export default defineComponent({
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
     displaySidebarVacationsManager: false as boolean,
+    displaySidebarWorkDisabilities: false as boolean,
     isDeleted: false as boolean,
     drawershiftExceptionsError: false,
     drawerExceptionRequestsError: false,
@@ -50,6 +52,7 @@ export default defineComponent({
     exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
     currentShift: null as ShiftInterface | null,
     canManageShiftOrException: true,
+    startDateLimit: DateTime.local(2023, 12, 29).toJSDate()
   }),
   setup() {
     const router = useRouter()
@@ -98,6 +101,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await Promise.all([
+      this.getStartPeriodDay(),
       this.getShifts(),
       this.getEmployeeCalendar()
     ])
@@ -149,7 +153,8 @@ export default defineComponent({
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
       this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
-      const exceptionTypeVacationId = await this.getExceptionTypeVacation()
+      const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
+      const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
       if (exceptionTypeVacationId) {
         for await (const day of this.employeeCalendar) {
           const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
@@ -159,12 +164,21 @@ export default defineComponent({
           }
         }
       }
+      if (exceptionTypeWorkDisabilityId) {
+        for await (const day of this.employeeCalendar) {
+          const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeWorkDisabilityId)
+          day.assist.exceptions = exceptions
+          if (day.assist.exceptions.length === 0) {
+            day.assist.hasExceptions = false
+          }
+        }
+      }
       this.displayCalendar = true
     },
-    async getExceptionTypeVacation() {
+    async getExceptionTypeBySlug(type: string) {
       const response = await new ExceptionTypeService().getFilteredList('', 1, 100)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === 'vacation')
+      const exceptionTypeList = list.filter(item => item.exceptionTypeSlug === type)
       return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     async handlerCalendarChange() {
@@ -215,6 +229,7 @@ export default defineComponent({
             isSundayBonus: false,
             isRestDay: false,
             isVacationDate: false,
+            isWorkDisabilityDate: false,
             isHoliday: false,
             holiday: null,
             hasExceptions: false,
@@ -251,6 +266,9 @@ export default defineComponent({
       this.vacationPeriod = vacationPeriod
       this.displaySidebarVacationsManager = true
     },
+    onClickWorkDisabilities() {
+      this.displaySidebarWorkDisabilities = true
+    },
     handlerSidebarVacationsClose(vacationPeriod: VacationPeriodInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setUserVacationFormStatus(true)
@@ -267,6 +285,7 @@ export default defineComponent({
         this.drawerShiftExceptions = false
         this.displaySidebarVacationsManager = false
         this.displaySidebarVacations = false
+        this.displaySidebarWorkDisabilities = false
       }
       myGeneralStore.setFullLoader(false)
 
@@ -288,6 +307,30 @@ export default defineComponent({
     },
     confirm() {
       this.drawershiftExceptionsError = false
+    },
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRh) {
+        const datePay = this.getNextPayThursday()
+        const payDate = DateTime.fromJSDate(datePay).startOf('day')
+        const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+        const thursday = startOfWeek.plus({ days: 3 })
+        const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
+        this.startDateLimit = startLimit.toJSDate()
+      } else {
+        this.startDateLimit = DateTime.now().minus({ days: 1 }).toJSDate()
+      }
     }
   }
 })

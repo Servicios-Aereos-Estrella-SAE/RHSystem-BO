@@ -84,7 +84,7 @@
       </div>
     </div>
     <div class="card flex justify-content-center">
-      <Sidebar v-model:visible="drawerProceedingFiles" header="Pilot proceeding files" position="right" class="proceeding-file-sidebar"
+      <Sidebar v-model:visible="drawerProceedingFiles" header="Pilot proceeding files" position="right" class="pilot-sidebar"
         :showCloseIcon="true">
         <pilotProceedingFile :pilot="pilot" />
       </Sidebar>
@@ -98,7 +98,7 @@
   export default Script
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import './style';
   .shift-exception-sidebar {
     width: 100% !important;
@@ -108,17 +108,9 @@
       width: 100% !important;
     }
   }
-  .shift-sidebar {
+  .pilot-sidebar {
     width: 100% !important;
     max-width: 70rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-  .proceeding-file-sidebar {
-    width: 100% !important;
-    max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

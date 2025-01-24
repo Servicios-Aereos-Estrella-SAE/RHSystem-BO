@@ -5,7 +5,7 @@
         <slot />
       </div>
       <div class="banner-wrapper">
-        <img src="https://sae-assets.sfo3.cdn.digitaloceanspaces.com/rh-system/images/100bcbbc-cea7-4c6b-9584-154bdc2144ba.jpg" alt="SAE">
+        <img :src="getBackgroundImageBanner" alt="SAE">
       </div>
     </div>
   </div>

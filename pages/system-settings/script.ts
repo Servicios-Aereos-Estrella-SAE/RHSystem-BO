@@ -48,8 +48,8 @@ export default defineComponent({
             myGeneralStore.setFullLoader(true)
             const response = await new SystemSettingService().getFilteredList(this.search, this.currentPage, this.rowsPerPage);
             const list = response.status === 200 ? response._data.data.systemSettings.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.systemSettings.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.systemSettings.meta.first_page : 0;
+            // this.totalRecords = response.status === 200 ? response._data.data.systemSettings.meta.total : 0;
+            // this.first = response.status === 200 ? response._data.data.systemSettings.meta.first_page : 0;
             this.filteredSystemSettings = list;
             myGeneralStore.setFullLoader(false)
         },
@@ -67,6 +67,7 @@ export default defineComponent({
                 systemSettingId: null,
                 systemSettingTradeName: null,
                 systemSettingLogo: null,
+                systemSettingBanner: null,
                 systemSettingSidebarColor: null,
                 systemSettingActive: 1,
                 systemSettingCreatedAt: new Date(),

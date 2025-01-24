@@ -197,6 +197,12 @@
                   <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
                     {{ workedTime }} worked
                   </div>
+                  <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
+                    {{ workedProductiveTime }} worked productive
+                  </div>
+                  <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
+                    {{ workedActiveTime }} to work
+                  </div>
                 </div>
               </div>
             </div>

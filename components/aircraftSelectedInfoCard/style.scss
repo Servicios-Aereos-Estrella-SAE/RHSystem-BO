@@ -3,14 +3,10 @@
 
 .aircraft-selected-info{
   width: 100%;
-  height: 100vh;
+  height: auto;
 
   .aircraft-info{
-    display: grid;
-    // titulo, imagen, detalles, mapa, itinerario, costo, boton
-    grid-template-rows: 2rem 10rem 6rem 10rem 1fr .5rem 7rem 6rem;
-    gap: 0.4rem;
-
+    
     .aircraft-title{
       font-size: .8rem;
       font-weight: bold;
@@ -20,13 +16,30 @@
 
     .aircraft-image{
       width: 100%;
-
+      
       img{
         object-fit: cover;  /* recorta la imagen para llenar el contenedor */
         object-position: center; /* centro de la imagen */
         border-radius: 15px;
         width: 100%;
-        height: 150px;
+        height: 30vh;
+      }
+    }
+
+    .banner {
+      background-color: $gray;
+      border-radius: $radius;
+      position: relative;
+      height: 8rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      svg {
+        width: 7rem;
+        transform: rotate(-30deg);
       }
     }
 
@@ -44,6 +57,7 @@
         font-family: $font;
         font-size: .7rem;
         text-align: center;
+        line-height: 1rem;
         display: flex;
         justify-content: space-between;
         p{
@@ -84,7 +98,8 @@
     }
 
     .detail-itinerary{
-      margin-top: 40px;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
       
       .itinerary-info{
         display: flex;
@@ -164,22 +179,22 @@
     }
 
     .bnt-save{
-    margin-top: -22px;
-    padding: 10px;
+      padding: 10px;
     
-    .btn-quote{
-      background: $primary;
-      color: white;
-      font-size: .8rem;
-      font-weight: 500;
-      font-family: $font;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      padding: 0.5rem;
-      text-align: center;
-      width: 100%;
-    }
+      .btn-quote{
+        margin-top: 1rem;
+        background: $primary;
+        color: $white;
+        font-size: .8rem;
+        font-weight: 500;
+        font-family: $font;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        padding: 0.5rem;
+        text-align: center;
+        width: 100%;
+      }
     }
 
   }

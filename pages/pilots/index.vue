@@ -34,16 +34,12 @@
               </div>
             </div>
             <div></div>
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+            <Paginator :alwaysShow="false" class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
               @page="onPageChange" />
-            <!-- Form Shift -->
+            <!-- Form -->
             <div class="card flex justify-content-center">
-              <!-- <Sidebar v-model:visible="drawerPilotForm" header="Pilot form" position="right"
-                class="pilot-form-sidebar" :showCloseIcon="true">
-                <pilotInfoForm :pilot="pilot" @save="onSave" />
-              </Sidebar> -->
                <Sidebar v-model:visible="drawerPilotForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-                header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+                position="right" class="pilot-form-sidebar" :showCloseIcon="true">
                 <employeeInfoForm employeeType='pilot' :pilot="pilot" :employee="pilot.employee" @save="onSave" />
               </Sidebar>
             </div>

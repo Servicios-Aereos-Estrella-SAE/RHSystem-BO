@@ -145,8 +145,7 @@ export default defineComponent({
             isItemActive || 
             item.systemModuleSlug === 'users' || 
             item.systemModuleSlug === 'system-settings' || 
-            item.systemModuleSlug === 'roles-and-permissions' ||
-            item.systemModuleSlug === 'reservations'
+            item.systemModuleSlug === 'roles-and-permissions'
           ) {
             if (!item.systemModulePath.toString().includes('#')) {
               const hasPermission = this.roleSystemPermissions.find((a) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read' && a.systemPermissions.systemModule && a.systemPermissions.systemModule.systemModuleSlug === item.systemModuleSlug)
