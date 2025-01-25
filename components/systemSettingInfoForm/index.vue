@@ -62,6 +62,31 @@
           </FileUpload>
         </div>
         <div class="input-box">
+          <label for="logo">Favicon</label>
+          <div v-if="systemSetting && systemSetting.systemSettingFavicon"
+            class="p-d-flex p-ai-center p-mb-2 image-system-setting">
+            <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
+              :src="systemSetting.systemSettingFavicon" />
+          </div>
+          <FileUpload v-model="faviconFiles" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
+            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFaviconFiles">
+            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+              <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
+                <img v-if="file && file.type.startsWith('image/')" role="presentation"
+                  class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getFaviconObjectURL(file)" />
+                <span v-if="file">{{ file.name }}</span>
+                <Button v-if="file" @click="removeFileCallback(index)"
+                  class="p-ml-auto p-button p-component p-button-text">
+                  <span class="p-button-icon pi pi-times"></span>
+                </Button>
+              </div>
+            </template>
+            <template #empty>
+              <p>Drag and drop file to here to upload.</p>
+            </template>
+          </FileUpload>
+        </div>
+        <div class="input-box">
           <label for="firstName">Trade Name</label>
           <InputText v-model="systemSetting.systemSettingTradeName" placeholder="Enter Trade Name" />
           <small class="p-error" v-if="submitted && !systemSetting.systemSettingTradeName">Trade name is
