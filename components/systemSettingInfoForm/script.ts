@@ -30,6 +30,7 @@ export default defineComponent({
     isReady: false,
     files: [] as Array<any>,
     bannerFiles: [] as Array<any>,
+    faviconFiles: [] as Array<any>,
     toleranceDelay: 0,
     toleranceFault: 0,
     tardinessTolerance: 0,
@@ -281,6 +282,15 @@ export default defineComponent({
         });
         return;
       }
+      if (this.faviconFiles.length > 1) {
+        this.$toast.add({
+          severity: "warn",
+          summary: "Image invalid",
+          detail: "Only one image is allowed to favicon",
+          life: 5000,
+        });
+        return;
+      }
       for await (const file of this.files) {
         if (file) {
           const mimeType = file.type;
@@ -315,6 +325,23 @@ export default defineComponent({
           }
         }
       }
+      for await (const file of this.faviconFiles) {
+        if (file) {
+          const mimeType = file.type;
+          const isImage = mimeType.startsWith("image/");
+          const allowedFormats = ["image/png", "image/webp", "image/svg+xml"];
+
+          if (!isImage || !allowedFormats.includes(mimeType)) {
+            this.$toast.add({
+              severity: "warn",
+              summary: "Invalid Image",
+              detail: "Only .png, .webp, and .svg images are allowed to favicon.",
+              life: 5000,
+            });
+            return;
+          }
+        }
+      }
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
       if (this.systemSetting.systemSettingSidebarColor) {
@@ -328,17 +355,20 @@ export default defineComponent({
         let systemSettingResponse = null;
         const systemSettingLogo = this.files.length > 0 ? this.files[0] : null;
         const systemSettingBanner = this.bannerFiles.length > 0 ? this.bannerFiles[0] : null;
+        const systemSettingFavicon = this.faviconFiles.length > 0 ? this.faviconFiles[0] : null;
         if (!this.systemSetting.systemSettingId) {
           systemSettingResponse = await systemSettingService.store(
             this.systemSetting,
             systemSettingLogo,
-            systemSettingBanner
+            systemSettingBanner,
+            systemSettingFavicon
           );
         } else {
           systemSettingResponse = await systemSettingService.update(
             this.systemSetting,
             systemSettingLogo,
-            systemSettingBanner
+            systemSettingBanner,
+            systemSettingFavicon
           );
         }
         if (
@@ -425,6 +455,14 @@ export default defineComponent({
       this.$forceUpdate();
     },
     getBannerObjectURL(file: any) {
+      return URL.createObjectURL(file);
+    },
+    validateFaviconFiles(event: any) {
+      let validFiles = event.files;
+      this.faviconFiles = validFiles;
+      this.$forceUpdate();
+    },
+    getFaviconObjectURL(file: any) {
       return URL.createObjectURL(file);
     },
     addHash() {

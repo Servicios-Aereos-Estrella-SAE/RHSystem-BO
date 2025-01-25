@@ -22,7 +22,7 @@
               Role
             </label>
             <Dropdown v-model="selectedRoleId" :options="filteredRoles" optionLabel="roleName" optionValue="roleId"
-              placeholder="" filter class="w-full md:w-14rem" @change="handlerSearchUser" />
+              placeholder="" filter class="w-full md:w-14rem" @change="handlerSearchUser" showClear/>
           </div>
           <div class="input-box">
             <br />

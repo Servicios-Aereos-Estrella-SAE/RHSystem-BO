@@ -32,7 +32,7 @@ export default class SystemSettingService {
     return responseRequest
   }
 
-  async store(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any) {
+  async store(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any, systemSettingFavicon: any) {
     const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     if (systemSettingLogo) {
@@ -40,6 +40,9 @@ export default class SystemSettingService {
     }
     if (systemSettingBanner) {
       formData.append('systemSettingBanner', systemSettingBanner)
+    }
+    if (systemSettingFavicon) {
+      formData.append('systemSettingFavicon', systemSettingFavicon)
     }
     for (const key in systemSetting) {
       if (systemSetting.hasOwnProperty(key)) {
@@ -63,7 +66,7 @@ export default class SystemSettingService {
     return responseRequest
   }
 
-  async update(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any) {
+  async update(systemSetting: SystemSettingInterface, systemSettingLogo: any, systemSettingBanner: any, systemSettingFavicon: any) {
     const headers = { ...this.GENERAL_HEADERS }
     const formData = new FormData()
     if (systemSettingLogo) {
@@ -71,6 +74,9 @@ export default class SystemSettingService {
     }
     if (systemSettingBanner) {
       formData.append('systemSettingBanner', systemSettingBanner)
+    }
+    if (systemSettingFavicon) {
+      formData.append('systemSettingFavicon', systemSettingFavicon)
     }
     for (const key in systemSetting) {
       if (systemSetting.hasOwnProperty(key)) {
