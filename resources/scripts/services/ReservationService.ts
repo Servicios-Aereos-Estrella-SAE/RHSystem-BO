@@ -1,5 +1,6 @@
 import type { ReservationInterface } from "../interfaces/ReservationInterface";
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface";
+import type { ToastServiceMethods } from "primevue/toastservice";
 
 export default class ReservationService {
   protected API_PATH: string;
@@ -103,17 +104,23 @@ export default class ReservationService {
     return responseRequest;
   }
 
-  isValidInformationReservation(reservation: ReservationInterface): boolean {
+  isValidInformationReservation(reservation: ReservationInterface, toast: ToastServiceMethods): boolean {
     if (!reservation.customerId) {
+      toast.add({ severity: 'warn', summary: '', detail: 'The customer is required.', life: 5000 });
       return false;
     }
     if (!reservation.aircraftId) {
+      toast.add({ severity: 'warn', summary: '', detail: 'The aircraft is required.', life: 5000 });
       return false;
     }
     if (!reservation.pilotSicId) {
       return false;
     }
     if (!reservation.pilotPicId) {
+      return false;
+    }
+    if (reservation.pilotSicId === reservation.pilotPicId) {
+      toast.add({ severity: 'warn', summary: '', detail: 'The PIC and SIC pilots cannot be the same.', life: 5000 });
       return false;
     }
     if (!reservation.flightAttendantId) {
@@ -134,6 +141,11 @@ export default class ReservationService {
         break;
       }
       if (!reservationLeg.airportDestinationId) {
+        validLegData = false;
+        break;
+      }
+      if (reservationLeg.airportDepartureId === reservationLeg.airportDestinationId) {
+        toast.add({ severity: 'warn', summary: '', detail: 'The departure and destination airports cannot be the same.', life: 5000 });
         validLegData = false;
         break;
       }

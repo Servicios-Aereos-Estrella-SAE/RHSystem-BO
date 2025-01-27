@@ -1,10 +1,8 @@
 import AircraftService from "~/resources/scripts/services/AircraftService"
 import CustomerService from "~/resources/scripts/services/CustomerService";
-import PilotService from "~/resources/scripts/services/PilotService";
 import FlightAttendantService from "~/resources/scripts/services/FlightAttendantService";
 import { useMyGeneralStore } from "~/store/general";
 import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
-import type { AircraftOperatorInterface } from "~/resources/scripts/interfaces/AircraftOperatorInterface";
 import type { AircraftInterface } from "~/resources/scripts/interfaces/AircraftInterface";
 import type { CustomerInterface } from "~/resources/scripts/interfaces/CustomerInterface";
 import type { PilotInterface } from "~/resources/scripts/interfaces/PilotInterface";
@@ -13,16 +11,18 @@ import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInter
 import type { ReservationNoteInterface } from "~/resources/scripts/interfaces/ReservationNoteInterface";
 import type { ReservationLegInterface } from "~/resources/scripts/interfaces/ReservationLegInterface";
 import type { ReservationInterface } from "~/resources/scripts/interfaces/ReservationInterface";
+import { useRouter } from 'vue-router'
 import ReservationService from "~/resources/scripts/services/ReservationService";
 import ReservationLegService from "~/resources/scripts/services/ReservationLegService";
 import ReservationNoteService from "~/resources/scripts/services/ReservationNoteService";
 export default defineComponent({
-    name: 'AircraftOperators',
+    name: 'reservations',
     props: {},
     data: () => ({
         search: '' as string,
         aircraft: [] as AircraftInterface[],
         customers: [] as CustomerInterface[],
+        router: useRouter(),
         pilots: [] as PilotInterface[],
         pilotSelectedSic: null as PilotInterface | null,
         pilotSelectedPic: null as PilotInterface | null,
@@ -34,7 +34,6 @@ export default defineComponent({
         reservationLegs: [] as ReservationLegInterface[],
         reservations: [] as ReservationInterface[],
         reservation: null as ReservationInterface | null,
-        taxFactors: [{ taxFactor: 0.00 }, { taxFactor: 0.04 }, { taxFactor: 0.16 }] as { taxFactor: number }[],
         currentPage: 1,
         drawerReservationDelete: false,
         totalRecords: 0,
@@ -71,22 +70,6 @@ export default defineComponent({
                 } as AircraftInterface
             })
         },
-        formatPilots() {
-            return this.pilots.map((pilot: PilotInterface) => {
-                return {
-                    ...pilot,
-                    pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
-                } as PilotInterface
-            })
-        },
-        formatFlightAttendants() {
-            return this.flightAttendants.map((flightAttendant: FlightAttendantInterface) => {
-                return {
-                    flightAttendantId: flightAttendant.flightAttendantId,
-                    flightAttendantName: flightAttendant.employee?.employeeFirstName + ' ' + flightAttendant.employee?.employeeLastName
-                }
-            })
-        }
     },
     created() { },
     watch: {
@@ -94,14 +77,6 @@ export default defineComponent({
             if (val) {
                 console.log('customerSelected', val)
                 this.customer = val
-            }
-        },
-        'reservation.aircraftId': function (val: number | null) {
-            if (val) {
-                this.setPilotsDefaultSelected()
-                if (this.reservation) {
-                    this.reservation.aircraft = this.aircraft.find((a: AircraftInterface) => a.aircraftId === val) ?? null
-                }
             }
         },
         'reservation.customerId': function (val: number | null) {
@@ -153,8 +128,6 @@ export default defineComponent({
         const permissions = await myGeneralStore.getAccess(systemModuleSlug)
         await this.handlerSearchCustomer();
         await this.handlerSearchAircraft();
-        await this.handlerSearchPilot();
-        await this.handlerSearchFlightAttendant();
         if (myGeneralStore.isRoot) {
             this.canCreate = true
             this.canUpdate = true
@@ -183,9 +156,6 @@ export default defineComponent({
             this.first = response.status === 200 ? response._data.data.reservations.meta.first_page : 0;
             this.reservations = list;
             myGeneralStore.setFullLoader(false)
-        },
-        confirmDelete() {
-
         },
         handlerSearch() {
             this.currentPage = 1
@@ -299,33 +269,6 @@ export default defineComponent({
             this.customers = list;
             myGeneralStore.setFullLoader(false)
         },
-        setPilotsDefaultSelected() {
-            const aircraftSelected = this.aircraft.find((a: AircraftInterface) => a.aircraftId === this.reservation?.aircraftId) ?? null;
-            if (aircraftSelected && this.reservation) {
-                this.reservation.pilotPicId = this.formatPilots.find((s: PilotInterface) => s.pilotId === aircraftSelected?.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'pic')?.pilotId || null)?.pilotId ?? null;
-                this.reservation.pilotSicId = this.formatPilots.find((s: PilotInterface) => s.pilotId === aircraftSelected?.pilots.find((pilot: PilotInterface) => pilot.aircraftPilotRole === 'sic')?.pilotId || null)?.pilotId ?? null;
-            }
-        },
-        async handlerSearchFlightAttendant() {
-            const myGeneralStore = useMyGeneralStore()
-            myGeneralStore.setFullLoader(true)
-            const response = await new FlightAttendantService().getFilteredList('', 1, 999999999);
-            const list = response.status === 200 ? response._data.data.flightAttendants.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.flightAttendants.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.flightAttendants.meta.first_page : 0;
-            this.flightAttendants = list;
-            myGeneralStore.setFullLoader(false)
-        },
-        async handlerSearchPilot() {
-            const myGeneralStore = useMyGeneralStore()
-            myGeneralStore.setFullLoader(true)
-            const response = await new PilotService().getFilteredList('', 1, 999999999);
-            const list = response.status === 200 ? response._data.data.pilots.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
-            this.pilots = list;
-            myGeneralStore.setFullLoader(false)
-        },
         async handlerSearchAircraft() {
             const response = await new AircraftService().getFilteredList('', 1, 999999999);
             const list = response.status === 200 ? response._data.data.data : [];
@@ -334,9 +277,7 @@ export default defineComponent({
             this.aircraft = list;
         },
         addNewReservation() {
-            this.startReservation()
-            this.showDetail = true
-            this.editMode = true
+            this.router.push({ path: '/reservations/create'})
         },
         showIndex() {
             this.showDetail = false

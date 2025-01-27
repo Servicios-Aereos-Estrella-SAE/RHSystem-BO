@@ -17,6 +17,13 @@
       grid-template-columns: repeat(3, 1fr); 
       
     }
+    @media screen and (max-width: $sm) {
+      grid-template-columns: repeat(2, 1fr); 
+    }
+    @media screen and (max-width: $phone) {
+      grid-template-columns: 1fr;
+      
+    }
     .input-box {
       position: relative!important;
       display: inline-block!important; // o block, según tu diseño

@@ -5,7 +5,7 @@ import type { ReservationLegInterface } from "~/resources/scripts/interfaces/Res
 import AirportService from '../../resources/scripts/services/AirportService';
 import type { AirportInterface } from '~/resources/scripts/interfaces/AirportInterface';
 export default defineComponent({
-  name: 'itineraryInfoForm',
+  name: 'reservationLegsInfoForm',
   props: {
     reservationLeg: { type: Object as () => ReservationLegInterface, required: true },
     index: { type: Number, required: true },
