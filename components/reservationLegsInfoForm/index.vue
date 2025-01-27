@@ -39,7 +39,7 @@
         </div>
         <div class="input-box required">
           <label hidden for="someField" class="input-label">
-            (24hrs)
+            (am/pm)
           </label>
           <span class="icon" :class="{'translate-30': isSubmitted && !reservationLeg.reservationLegDepartureTime}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
@@ -83,7 +83,7 @@
         </div>
         <div class="input-box">
           <label for="someField" class="input-label">
-            (24hrs)
+            (am/pm)
           </label>
           <span class="icon translate5" :class="{'translate-30': isSubmitted && !reservationLeg.reservationLegArriveTime}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
@@ -107,7 +107,7 @@
         </div>
         <div class="input-box required">
           <label for="someField" class="input-label">
-            Leg travel time (mins)
+            Leg travel time
           </label>
           <span class="icon translate5" :class="{'translate-30': isSubmitted && !reservationLeg.reservationLegTravelTime}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
@@ -134,13 +134,6 @@
             <!-- Botón 1 (rojo clarito y ícono rojo intenso) -->
 
             <!-- Botón 2 (gris con ícono azul) -->
-            <button class="btn btn-middle">
-              <span class="icon translate5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                </svg>
-              </span>
-            </button>
 
             <!-- Botón 3 (rojo clarito y ícono rojo intenso) -->
             <button v-if="index != 0" @click="removeLeg()" class="btn btn-right">
@@ -187,6 +180,7 @@
   .input-text-row-reservation-leg .p-calendar input {
       padding: 0.5rem 0.5rem 0.5rem 2rem !important;
       width: 100% !important;
+      box-sizing: border-box;
   }
 </style>
 
