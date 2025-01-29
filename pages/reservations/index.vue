@@ -38,11 +38,12 @@
               <h2>
                 Reservations
               </h2>
-              <div v-if="reservations.length" class="reservation-card-info-wrapper">
+              <div v-if="reservations.length && canRead" class="reservation-card-info-wrapper">
                 <div v-for="(_reservation, index) in reservations" :key="`employee-${_reservation.reservationId}-${index}`">
                   <ReservationInfoCard  :reservation="_reservation"
                     :can-update="canUpdate" :can-delete="canDelete"
-                    :click-on-detail="() => {showDetails(_reservation) }" :click-on-delete="() => { onDelete(_reservation) }" />
+                    @click-on-detail="showDetails(_reservation.reservationId)"
+                    @click-on-delete="onDelete(_reservation)" />
                 </div>
               </div>
               <div></div>

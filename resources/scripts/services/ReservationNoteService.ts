@@ -34,7 +34,7 @@ export default class ReservationNoteService {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
     try {
-      await $fetch(`${this.API_PATH}/reservation-notes/${reservationNote.id}`, {
+      await $fetch(`${this.API_PATH}/reservation-notes/${reservationNote.reservationNoteId}`, {
         headers,
         method: 'PUT',
         body: JSON.stringify(reservationNote),

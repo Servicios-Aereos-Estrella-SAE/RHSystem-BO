@@ -50,6 +50,7 @@ export default defineComponent({
         canCreate: false,
         canUpdate: false,
         canDelete: false,
+        canRead: true,
         showDetail: false,
         editMode: false,
     }),
@@ -75,7 +76,6 @@ export default defineComponent({
     watch: {
         customerSelected: function (val: CustomerInterface | null) {
             if (val) {
-                console.log('customerSelected', val)
                 this.customer = val
             }
         },
@@ -132,10 +132,19 @@ export default defineComponent({
             this.canCreate = true
             this.canUpdate = true
             this.canDelete = true
+            this.canRead = true
         } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+            this.canRead = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+        }
+        if (!this.canRead) {
+            throw showError({
+                statusCode: 404,
+                fatal: true,
+                message: 'You don´t have access to reservations'
+            })
         }
         await this.handlerSearchReservations()
         myGeneralStore.setFullLoader(false)
@@ -150,7 +159,6 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const response = await new ReservationService().getFilterList(this.search, this.currentPage, this.rowsPerPage);
-            console.log('response', response)
             const list = response.status === 200 ? response._data.data.reservations.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.reservations.meta.total : 0;
             this.first = response.status === 200 ? response._data.data.reservations.meta.first_page : 0;
@@ -218,7 +226,6 @@ export default defineComponent({
             } as ReservationLegInterface)
         },
         setReservationIdToLegs(id: number) {
-            console.log('id', id)
             this.reservation?.reservationLegs?.forEach((leg: ReservationLegInterface) => {
                 leg.reservationId = id
             })
@@ -228,36 +235,6 @@ export default defineComponent({
                 return this.reservation.reservationNotes.filter((note: ReservationNoteInterface) => note.reservationNoteContent !== '')
             }
             return this.reservation?.reservationNotes ?? []
-        },
-        async saveReservation() {
-            const myGeneralStore = useMyGeneralStore()
-            const reservationService = new ReservationService()
-            this.submitted = true
-            if (reservationService.isValidInformationReservation(this.reservation as ReservationInterface)) {
-                myGeneralStore.setFullLoader(true)
-                const response = await new ReservationService().store(this.reservation as ReservationInterface);
-                if (response.status === 201) {
-                    this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Reservation created', life: 3000 });
-                    console.log('response', response)
-                    this.reservation!.reservationId = response._data.data.reservation.reservationId
-                    console.log('reservation', response._data.data)
-                    this.setReservationIdToLegs(this.reservation?.reservationId ?? 0)
-                    console.log(this.reservation?.reservationLegs, 'reservationLegs')
-                    this.reservation?.reservationLegs?.forEach(async reservationLeg => {
-                        const responseLegs = await new ReservationLegService().store(reservationLeg);
-                    });
-                    const reservationNotes = this.getReservationNotesNotEmpty()
-                    reservationNotes.forEach(async note => {
-                        note.reservationId = this.reservation?.reservationId ?? 0
-                        const responseNotes = await new ReservationNoteService().store(note);
-                    });
-                    // this.startReervation()
-                    this.submitted = false
-                } else {
-                    this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Reservation not created', life: 3000 });
-                }
-                myGeneralStore.setFullLoader(false)
-            }
         },
         async handlerSearchCustomer() {
             const myGeneralStore = useMyGeneralStore()
@@ -340,11 +317,8 @@ export default defineComponent({
             }
             this.drawerCustomerForm = true
         },
-        showDetails(reservation: ReservationInterface) {
-            this.reservation = { ...reservation }
-            this.showDetail = true
-            this.editMode = false
-            console.log('reservation', reservation)
+        showDetails(reservationId: number) {
+            this.router.push({ path: '/reservations/' + reservationId})
         },
         onDelete(reservation: ReservationInterface) {
             this.reservation = {... reservation }

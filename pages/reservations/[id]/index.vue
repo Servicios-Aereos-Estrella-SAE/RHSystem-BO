@@ -11,10 +11,18 @@
       <NuxtLayout name="backoffice">
         <div class="wrapper-reservations" v-if="reservation">
           <div class="reservations-wrapper">
-            <ReservationInfoForm v-if="reservation" :reservation="reservation" :editMode="editMode" :submitted="submitted" />
+            <ReservationInfoForm
+              v-if="reservation" 
+              :reservation="reservation"
+              :editMode="editMode" 
+              :submitted="submitted" 
+              :canUpdate="canUpdate" 
+              @deleteReservationLeg="deleteReservationLeg"
+              @deleteReservationNote="deleteReservationNote"
+            />
           </div>
           <div class="box aside-legs-details" v-if="reservation && reservation.reservationLegs">
-            <ReservationDetailsCard :editMode="editMode" :reservation='reservation' @onSave="saveReservation"/>
+            <ReservationDetailsCard :editMode="reservation.reservationId !== null" :canUpdate="canUpdate" :reservation='reservation' @onSave="saveReservation"/>
           </div>
         </div>
       </NuxtLayout>

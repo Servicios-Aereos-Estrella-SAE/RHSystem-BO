@@ -30,6 +30,8 @@ export default defineComponent({
         flightAttendants: [] as FlightAttendantInterface[],
         flightAttendantSelected: null as FlightAttendantInterface | null,
         customerSelected: null as CustomerInterface | null,
+        reservationLegsToDelete: [] as ReservationLegInterface[],
+        reservationNotesToDelete: [] as ReservationNoteInterface[],
         aircraftSelected: null as AircraftInterface | null,
         reservations: [] as ReservationInterface[],
         reservation: null as ReservationInterface | null,
@@ -43,6 +45,7 @@ export default defineComponent({
         canCreate: false,
         canUpdate: false,
         canDelete: false,
+        canRead: true,
         showDetail: false,
         editMode: true,
     }),
@@ -69,7 +72,7 @@ export default defineComponent({
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         // myGeneralStore.setFullLoader(true)
-        const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+        const systemModuleSlug = this.$route.path.split('/')[1];
         const permissions = await myGeneralStore.getAccess(systemModuleSlug)
         if (myGeneralStore.isRoot) {
             this.canCreate = true
@@ -79,14 +82,20 @@ export default defineComponent({
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+            this.canRead = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+        }
+        if (!this.canRead) {
+            throw showError({
+                statusCode: 404,
+                fatal: true,
+                message: 'You don´t have access to reservations'
+            })
         }
         const reservationId = this.$route.params.id
-        console.log('reservationId', reservationId)
         if (reservationId === 'create') {
             this.addNewReservation()
         } else {
             const reservationFind = await new ReservationService().show(parseInt(reservationId as string))
-            console.log('reservationFind', reservationFind) 
             if (reservationFind.status !== 200) {
                 throw showError({
                     statusCode: 404,
@@ -109,7 +118,6 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore()
             myGeneralStore.setFullLoader(true)
             const response = await new ReservationService().getFilterList(this.search, this.currentPage, this.rowsPerPage);
-            console.log('response', response)
             const list = response.status === 200 ? response._data.data.reservations.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.reservations.meta.total : 0;
             this.reservations = list;
@@ -153,7 +161,6 @@ export default defineComponent({
             this.reservation?.reservationNotes?.splice(index, 1)
         },
         setReservationIdToLegs(id: number) {
-            console.log('id', id)
             this.reservation?.reservationLegs?.forEach((leg: ReservationLegInterface) => {
                 leg.reservationId = id
             })
@@ -170,25 +177,47 @@ export default defineComponent({
             this.submitted = true
             if (reservationService.isValidInformationReservation(this.reservation as ReservationInterface, this.$toast)) {
                 myGeneralStore.setFullLoader(true)
-                const response = await new ReservationService().store(this.reservation as ReservationInterface);
-                if (response.status === 201) {
+                const reservationService = new ReservationService()
+                const reservationLegService = new ReservationLegService()
+                const reservationNoteService = new ReservationNoteService()
+                const response = await (
+                    this.reservation?.reservationId ?
+                        reservationService.update(this.reservation as ReservationInterface) :
+                        reservationService.store(this.reservation as ReservationInterface)
+                );
+                if (response.status === 201 || response.status === 200) {
                     this.reservation!.reservationId = response._data.data.reservation.reservationId
                     this.setReservationIdToLegs(this.reservation?.reservationId ?? 0)
                     this.reservation?.reservationLegs?.forEach(async reservationLeg => {
-                        await new ReservationLegService().store(reservationLeg);
+                        await (reservationLeg.reservationLegId ? reservationLegService.update(reservationLeg) : reservationLegService.store(reservationLeg));
                     });
                     const reservationNotes = this.getReservationNotesNotEmpty()
                     reservationNotes.forEach(async note => {
                         note.reservationId = this.reservation?.reservationId ?? 0
-                        await new ReservationNoteService().store(note);
+                        await (note.reservationNoteId ? reservationNoteService.update(note) : reservationNoteService.store(note));
                     });
-                    // this.startReervation()
+                    this.reservationNotesToDelete.forEach(async note => {
+                        await reservationNoteService.delete(note.reservationNoteId ?? 0)
+                    });
+                    this.reservationLegsToDelete.forEach(async leg => {
+                        await reservationLegService.delete(leg.reservationLegId ?? 0)
+                    });
                     this.submitted = false
                     this.$router.push({ name: 'reservations' })
                 } else {
                     this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Reservation not created', life: 3000 });
                 }
                 myGeneralStore.setFullLoader(false)
+            }
+        },
+        deleteReservationLeg(leg: ReservationLegInterface) {
+            if (leg.reservationLegId) {
+                this.reservationLegsToDelete.push(leg)
+            }
+        },
+        deleteReservationNote(reservationNote: ReservationNoteInterface) {
+            if (reservationNote.reservationNoteId) {
+                this.reservationNotesToDelete.push(reservationNote)
             }
         },
         setPilotsDefaultSelected() {
@@ -204,7 +233,6 @@ export default defineComponent({
             const response = await new FlightAttendantService().getFilteredList('', 1, 999999999);
             const list = response.status === 200 ? response._data.data.flightAttendants.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.flightAttendants.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.flightAttendants.meta.first_page : 0;
             this.flightAttendants = list;
             myGeneralStore.setFullLoader(false)
         },
@@ -214,7 +242,6 @@ export default defineComponent({
             const response = await new PilotService().getFilteredList('', 1, 999999999);
             const list = response.status === 200 ? response._data.data.pilots.data : [];
             this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
             this.pilots = list;
             myGeneralStore.setFullLoader(false)
         },
@@ -232,7 +259,6 @@ export default defineComponent({
             this.reservation = { ...reservation }
             this.showDetail = true
             this.editMode = false
-            console.log('reservation', reservation)
         },
         onDelete(reservation: ReservationInterface) {
             this.reservation = {... reservation }

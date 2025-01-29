@@ -10,6 +10,7 @@ export default defineComponent({
     reservationLeg: { type: Object as () => ReservationLegInterface, required: true },
     index: { type: Number, required: true },
     addLeg: { type: Function, required: true },
+    canUpdate: { type: Boolean, required: true },
     editMode: { type: Boolean, required: true },
     removeLeg: { type: Function, required: true },
     isLast: { type: Boolean, required: true },

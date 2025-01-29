@@ -16,6 +16,7 @@ export default defineComponent({
   props: {
     reservation: { type: Object as PropType<ReservationInterface>, required: true },
     editMode: { type: Boolean, default: false },
+    canUpdate: { type: Boolean, default: false },
     submitted: { type: Boolean, default: false },
   },
   data: () => ({
@@ -64,7 +65,6 @@ export default defineComponent({
   watch: {
     customerSelected: function (val: CustomerInterface | null) {
         if (val) {
-            console.log('customerSelected', val)
             this.customer = val
         }
     },
@@ -72,17 +72,13 @@ export default defineComponent({
         if (this.reservation && val) {
             // parse val to number
             val = Number(val);
-            console.log('reservationTaxFactor', val)
             // Calcula el impuesto
             const newTax = this.reservation.reservationSubtotal * val;
-            console.log('newTax', newTax)
             // Asigna con redondeo/control de decimales (ej: 2 decimales)
             this.reservation.reservationTax = Number(newTax.toFixed(2));
-            console.log('reservationTax', this.reservation.reservationTax)
             
             // El total es el subtotal + el impuesto calculado
             const newTotal = Number(this.reservation.reservationSubtotal) + this.reservation.reservationTax;
-            console.log('newTotal', newTotal)
             this.reservation.reservationTotal = Number(newTotal.toFixed(2));
           }
       },
@@ -143,8 +139,12 @@ export default defineComponent({
     await this.handlerSearchFlightAttendant()
     await this.handlerSearchCustomer();
     await this.handlerSearchAircraft();
-    this.addNewNote()
-    this.reservationLegsAdd()
+    if (this.reservation?.reservationLegs?.length === 0) {
+        this.reservationLegsAdd()
+    }
+    if (this.reservation?.reservationNotes?.length === 0) {
+        this.addNewNote()
+    }
   },
   methods: {
       async handlerSearchCustomer() {
@@ -247,28 +247,31 @@ export default defineComponent({
           this.pilots = list;
           myGeneralStore.setFullLoader(false)
     },
-    reservationLegsRemove(index: number) {
-          this.reservation?.reservationLegs?.splice(index, 1)
+    reservationLegsRemove(reservationLeg: ReservationLegInterface, index: number) {
+        this.reservation?.reservationLegs?.splice(index, 1)
+        if (reservationLeg.reservationLegId) {
+            this.$emit('deleteReservationLeg', reservationLeg)
+        }
       },
       reservationLegsAdd() {
           this.reservation?.reservationLegs?.push({
-              reservationLegId: null,
-              reservationLegArriveTime: null,
-              reservationLegArriveDate: null,
-              reservationLegDepartureTime: null,
-              reservationLegDepartureLocation: '',
-              reservationLegArrivalLocation: '',
-              reservationLegCreatedAt: new Date(),
-              reservationLegUpdatedAt: new Date(),
-              reservationLegDeletedAt: null,
-              reservationLegDepartureDate: null,
-              reservationId: null,
-              customerId: null,
-              airportDestinationId: null,
-              airportDepartureId: null,
-              reservationLegPax: 0,
-              reservationLegDistanceMn: 0,
-              reservationLegTravelTime: null,
+            reservationLegId: null,
+            reservationLegArriveTime: null,
+            reservationLegArriveDate: null,
+            reservationLegDepartureTime: null,
+            reservationLegDepartureLocation: '',
+            reservationLegArrivalLocation: '',
+            reservationLegCreatedAt: new Date(),
+            reservationLegUpdatedAt: new Date(),
+            reservationLegDeletedAt: null,
+            reservationLegDepartureDate: null,
+            reservationId: null,
+            customerId: null,
+            airportDestinationId: null,
+            airportDepartureId: null,
+            reservationLegPax: 0,
+            reservationLegDistanceMn: 0,
+            reservationLegTravelTime: null,
           } as ReservationLegInterface)
       },
     async handlerSearchFlightAttendant() {
@@ -284,8 +287,11 @@ export default defineComponent({
             this.reservation?.reservationNotes?.push({ reservationNoteId: 0, reservationNoteContent: '' } as ReservationNoteInterface)
         }
     },
-    removeNote(index: number) {
-      this.reservation?.reservationNotes?.splice(index, 1)
+    removeNote(reservationNote: ReservationNoteInterface, index: number) {
+        this.reservation?.reservationNotes?.splice(index, 1)
+        if(reservationNote.reservationNoteId){
+            this.$emit('deleteReservationNote', reservationNote)
+        }
     },
   },
 });
