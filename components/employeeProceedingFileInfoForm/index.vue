@@ -10,7 +10,7 @@
         <div class="input-box">
           <label for="userActive">
             {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
-          <InputSwitch v-model="activeSwicht" />
+          <InputSwitch v-model="activeSwicht" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <label for="proceeding-file">
@@ -18,7 +18,7 @@
           </label>
           <Dropdown v-model="proceedingFile.proceedingFileTypeId" :options="proceedingFileTypesList"
             optionLabel="proceedingFileTypeName" optionValue="proceedingFileTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :invalid="submitted && !proceedingFile.proceedingFileTypeId" />
+            class="w-full md:w-14rem" :invalid="submitted && !proceedingFile.proceedingFileTypeId" :disabled="!canManageFiles"/>
           <small class="p-error" v-if="submitted && !proceedingFile.proceedingFileTypeId">Type is required.</small>
         </div>
         <div class="input-box">
@@ -26,8 +26,8 @@
             Proceeding file
           </label>
           <Button v-if="proceedingFile.proceedingFilePath" label="Open file" severity="primary" @click="openFile()" />
-          <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
+          <FileUpload v-if="canManageFiles" v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
+            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles" :disabled="!canManageFiles">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
@@ -46,18 +46,18 @@
         </div>
         <div class="input-box">
           <label for="proceedingFileName">Name</label>
-          <InputText id="proceedingFileName" v-model="proceedingFile.proceedingFileName" />
+          <InputText id="proceedingFileName" v-model="proceedingFile.proceedingFileName" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <label for="proceedingFileIdentify">Identify</label>
-          <InputText id="proceedingFileIdentify" v-model="proceedingFile.proceedingFileIdentify" />
+          <InputText id="proceedingFileIdentify" v-model="proceedingFile.proceedingFileIdentify" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <div class="date-box-container">
             <label>Expiration at</label>
             <div v-if="!displayExpirationAtCalendar" class="date-box">
-              <InputText v-model="expirationAt" readonly class="capitalize" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+              <InputText v-model="expirationAt" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayExpirationAt">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -68,9 +68,9 @@
             </div>
             <div v-if="displayExpirationAtCalendar" class="date-box-controller">
               <Calendar v-if="displayExpirationAtCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date" />
+                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date" :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
-                @click="displayExpirationAtCalendar = false">
+                @click="displayExpirationAtCalendar = false" :disabled="!canManageFiles">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
@@ -83,18 +83,18 @@
         <div class="input-box">
           <label for="proceedingFileObservations">Observations</label>
           <Textarea id="proceedingFileObservations" v-model="proceedingFile.proceedingFileObservations" autoResize
-            rows="3" />
+            rows="3" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <label for="proceedingFileAfacRights">AFAC rights</label>
-          <InputText id="proceedingFileAfacRights" v-model="proceedingFile.proceedingFileAfacRights" />
+          <InputText id="proceedingFileAfacRights" v-model="proceedingFile.proceedingFileAfacRights" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <div class="date-box-container">
             <label>Signature date</label>
             <div v-if="!displaySignatureDateCalendar" class="date-box">
               <InputText v-model="signatureDate" readonly class="capitalize" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplaySignatureDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -105,8 +105,8 @@
             </div>
             <div v-if="displaySignatureDateCalendar" class="date-box-controller">
               <Calendar v-if="displaySignatureDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select signature date" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+                v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select signature date" :disabled="!canManageFiles" />
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displaySignatureDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -121,8 +121,8 @@
           <div class="date-box-container">
             <label>Effective start date</label>
             <div v-if="!displayEffectiveStartDateCalendar" class="date-box">
-              <InputText v-model="effectiveStartDate" readonly class="capitalize" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+              <InputText v-model="effectiveStartDate" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayEffectiveStartDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -134,7 +134,7 @@
             <div v-if="displayEffectiveStartDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEffectiveStartDateCalendar" dateFormat="yy-mm-dd"
                 v-model.lazy="proceedingFile.proceedingFileEffectiveStartDate"
-                placeholder="Select effective start date" />
+                placeholder="Select effective start date"  :disabled="!canManageFiles"/>
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEffectiveStartDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -150,8 +150,8 @@
           <div class="date-box-container">
             <label>Effective end date</label>
             <div v-if="!displayEffectiveEndDateCalendar" class="date-box">
-              <InputText v-model="effectiveEndDate" readonly class="capitalize" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+              <InputText v-model="effectiveEndDate" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayEffectiveEndDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -162,7 +162,7 @@
             </div>
             <div v-if="displayEffectiveEndDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEffectiveEndDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select effective end date" />
+                v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select effective end date" :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEffectiveEndDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -179,7 +179,7 @@
             <label>Inclusion in the files date</label>
             <div v-if="!displayInclusionInTheFilesDateCalendar" class="date-box">
               <InputText v-model="inclusionInTheFilesDate" readonly class="capitalize" />
-              <Button type="button" class="btn btn-block" id="display-input-expiration-at"
+              <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayInclusionInTheFilesDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -191,7 +191,7 @@
             <div v-if="displayInclusionInTheFilesDateCalendar" class="date-box-controller">
               <Calendar v-if="displayInclusionInTheFilesDateCalendar" dateFormat="yy-mm-dd"
                 v-model.lazy="proceedingFile.proceedingFileInclusionInTheFilesDate"
-                placeholder="Select inclusion in the files date" />
+                placeholder="Select inclusion in the files date" :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayInclusionInTheFilesDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -206,12 +206,12 @@
         <div class="input-box">
           <label for="proceedingFileOperationCost">Operation cost (USD)</label>
           <InputNumber v-model="proceedingFile.proceedingFileOperationCost" :minFractionDigits="2" fluid mode="currency"
-            currency="USD" locale="en-US" />
+            currency="USD" locale="en-US" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <label for="proceedingFileCompleteProcess">
             {{ processCompleteSwicht ? 'Complete process' : 'Incomplete process' }}</label>
-          <InputSwitch v-model="processCompleteSwicht" />
+          <InputSwitch v-model="processCompleteSwicht" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <label for="proceeding-file">
@@ -219,10 +219,10 @@
           </label>
           <Dropdown v-model="proceedingFile.proceedingFileStatusId" :options="proceedingFileStatusList"
             optionLabel="proceedingFileStatusName" optionValue="proceedingFileStatusId" placeholder="" filter
-            class="w-full md:w-14rem" />
+            class="w-full md:w-14rem" :disabled="!canManageFiles"/>
         </div>
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
+          <Button v-if="canManageFiles" label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>

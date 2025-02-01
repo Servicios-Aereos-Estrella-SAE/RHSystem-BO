@@ -21,7 +21,9 @@ export default defineComponent({
   },
   name: 'proceedingFiles',
   props: {
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    canReadOnlyFiles: { type: Boolean, default: false, required: true },
+    canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false,

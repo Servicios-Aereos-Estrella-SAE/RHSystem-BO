@@ -7,10 +7,11 @@ export default defineComponent({
   name: 'workDisabilityNoteInfoCard',
   props: {
     workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
-    isDeleted: { type: Boolean, required: true }
+    isDeleted: { type: Boolean, required: true },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false, 
