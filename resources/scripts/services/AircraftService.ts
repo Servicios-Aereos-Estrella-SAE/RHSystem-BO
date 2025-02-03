@@ -32,17 +32,20 @@ export default class AircraftService {
     return responseRequest;
   }
 
-  async show(id: number) {
+  async show(id: number, dateReservation: string | null = null) {
     const headers = { ...this.GENERAL_HEADERS }
 
     let responseRequest: any = null;
     try {
       await $fetch(`${this.API_PATH}/aircraft/${id}`, {
         headers,
+        query: {
+          date: dateReservation
+        },
         onResponse({ response }) { responseRequest = response; },
         onRequestError({ response }) { responseRequest = response; }
       });
-      const aircraft = responseRequest.status === 200 ? responseRequest._data.data : null;
+      const aircraft = responseRequest.status === 200 ? responseRequest._data.data.data : null;
 
       return {
         status: responseRequest.status,
@@ -53,6 +56,14 @@ export default class AircraftService {
         }
       };
     } catch (error) {
+      return {
+        status: responseRequest.status,
+        _data: {
+          data: {
+            aircraft: null
+          }
+        }
+      };
     }
   }
 

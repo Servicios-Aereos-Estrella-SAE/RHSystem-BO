@@ -175,7 +175,7 @@ export default defineComponent({
             const myGeneralStore = useMyGeneralStore()
             const reservationService = new ReservationService()
             this.submitted = true
-            if (reservationService.isValidInformationReservation(this.reservation as ReservationInterface, this.$toast)) {
+            if (await reservationService.isValidInformationReservation(this.reservation as ReservationInterface, this.$toast)) {
                 myGeneralStore.setFullLoader(true)
                 const reservationService = new ReservationService()
                 const reservationLegService = new ReservationLegService()
