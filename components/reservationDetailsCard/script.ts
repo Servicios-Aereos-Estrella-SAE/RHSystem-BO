@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 export default defineComponent({
   props: {
     reservation: { type: Object as () => ReservationInterface, required: true },
+    canUpdate: { type: Boolean, required: true },
     editMode: { type: Boolean, required: true },
   },
   components: {

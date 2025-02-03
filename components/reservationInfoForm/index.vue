@@ -6,7 +6,7 @@
             Select Aircraft
           </label>
           <Dropdown
-            :disabled="!editMode"
+            :disabled="reservation.reservationId && !canUpdate"
             placeholder="Select" class="w-full md:w-14rem" v-model="reservation.aircraftId" :options="formatAircraft" optionLabel="aircraftName" optionValue="aircraftId"/>
 
         </div>
@@ -17,10 +17,10 @@
                 Select Customer
               </label>
               <Dropdown
-                :disabled="!editMode"
+                :disabled="reservation.reservationId && !canUpdate"
                 placeholder="Select" v-model="reservation.customerId" class="w-full md:w-14rem" :options="formatContacts" optionLabel="customerFullName" optionValue="customerId" />
             </div>
-            <Button class="btn-add flex justify-content-center ml-4" severity="primary" @click="addNew" >
+            <Button v-if="(reservation.reservationId && canUpdate) || !reservation.reservationId" class="btn-add flex justify-content-center ml-4" severity="primary" @click="addNew" >
               <span class="circle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                   <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -39,10 +39,11 @@
             :add-leg="() => { reservationLegsAdd() }" 
             :isSubmitted="submitted"
             :reservationLeg="reservationLeg" 
-            :remove-leg="() => { reservationLegsRemove(index) }"
+            :remove-leg="() => { reservationLegsRemove(reservationLeg, index) }"
             :class="[(index+1) !== reservation.reservationLegs.length ? 'border-button-dashed' : '']" 
             :index="index"
-            :editMode="editMode"
+            :editMode="reservation.reservationId !== null"
+            :canUpdate="canUpdate"
             :isLast="(index+1) === reservation.reservationLegs.length"
           />
         </div>
@@ -58,21 +59,21 @@
               <div class="input-box">
                 <label for="lastName">PIC</label>
                 <Dropdown
-                  :disabled="!editMode"
+                  :disabled="reservation.reservationId && !canUpdate"
                   placeholder="Select" class="w-full md:w-14rem" v-model="reservation.pilotPicId" :options="formatPilots" optionLabel="pilotName" optionValue="pilotId"/>
                   <small class="p-error" v-if="submitted && !reservation.pilotPicId">Pilot is required.</small>
               </div>
               <div class="input-box">
                 <label for="lastName">SIC</label>
                 <Dropdown
-                  :disabled="!editMode"
+                  :disabled="reservation.reservationId && !canUpdate"
                   placeholder="Select" class="w-full md:w-14rem" v-model="reservation.pilotSicId" :options="formatPilots" optionLabel="pilotName" optionValue="pilotId"/>
                 <small class="p-error" v-if="submitted && !reservation.pilotSicId">Pilot is required.</small>
               </div>
               <div class="input-box">
                 <label for="lastName">SOB</label>
                 <Dropdown
-                  :disabled="!editMode"
+                  :disabled="reservation.reservationId && !canUpdate"
                   placeholder="Select" class="w-full md:w-14rem" v-model="reservation.flightAttendantId" :options="formatFlightAttendants" optionLabel="flightAttendantName" optionValue="flightAttendantId"/>
                 <small class="p-error" v-if="submitted && !reservation.flightAttendantId">Second Last Name is required.</small>
               </div>
@@ -89,17 +90,17 @@
             <div class="input-text-row">
               <div class="input-box">
                 <label for="lastName">Subtotal</label>
-                <InputText :disabled="!editMode" type="number" v-model="reservation.reservationSubtotal" />
+                <InputText :disabled="reservation.reservationId && !canUpdate" type="number" v-model="reservation.reservationSubtotal" />
               </div>
               <div class="input-box">
                 <label for="lastName">Tax Factor</label>
                 <Dropdown
-                  :disabled="!editMode"
+                  :disabled="reservation.reservationId && !canUpdate"
                   placeholder="Select tax factor" class="w-full md:w-14rem" v-model="reservation.reservationTaxFactor" :options="taxFactors" optionLabel="taxFactor" optionValue="taxFactor"/>
               </div>
               <div class="input-box">
                 <label for="lastName">Total</label>
-                <InputText :disabled="!editMode" v-model="reservation.reservationTotal" readonly disabled />
+                <InputText :disabled="reservation.reservationId && !canUpdate" v-model="reservation.reservationTotal" readonly disabled />
               </div>
             </div>
         </div>
@@ -116,7 +117,7 @@
             <span  
               v-if="index !== 0"
               class="delete-button"
-              @click="removeNote(index)">
+              @click="removeNote(note, index)">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -138,11 +139,11 @@
             :id="'note-' + index"
             v-model="note.reservationNoteContent"
             autoResize
-            :disabled="!editMode"
+            :disabled="reservation.reservationId && !canUpdate"
             rows="3" />
         </div>
         <div class="flex justify-content-center mt-4 wrapper-add-note">
-          <Button v-if="editMode" class="btn-add flex justify-content-center mt-2" severity="primary" @click="addNewNote" >
+          <Button v-if="!reservation.reservationId || canUpdate" class="btn-add flex justify-content-center mt-2" severity="primary" @click="addNewNote" >
             Add another note
           </Button>
         </div>

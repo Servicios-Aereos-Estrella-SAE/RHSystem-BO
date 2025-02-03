@@ -34,7 +34,7 @@ export default class ReservationLegService {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS };
     try {
-      await $fetch(`${this.API_PATH}/reservation-legs/${reservationLeg.id}`, {
+      await $fetch(`${this.API_PATH}/reservation-legs/${reservationLeg.reservationLegId}`, {
         headers,
         method: 'PUT',
         body: JSON.stringify(reservationLeg),
