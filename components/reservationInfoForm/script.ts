@@ -252,9 +252,20 @@ export default defineComponent({
         if (reservationLeg.reservationLegId) {
             this.$emit('deleteReservationLeg', reservationLeg)
         }
-      },
-      reservationLegsAdd() {
-          this.reservation?.reservationLegs?.push({
+    },
+    getPrevLastLeg() {
+        if (this.reservation) {
+            if (this.reservation?.reservationLegs?.length) {
+                // get last reservationLeg to get the arrival airport
+                return this.reservation.reservationLegs[this.reservation.reservationLegs.length - 1];
+            }
+            return null;
+        }
+        return null;
+    },
+    reservationLegsAdd() {
+        const lastLeg = this.getPrevLastLeg();
+        this.reservation?.reservationLegs?.push({
             reservationLegId: null,
             reservationLegArriveTime: null,
             reservationLegArriveDate: null,
@@ -264,11 +275,11 @@ export default defineComponent({
             reservationLegCreatedAt: new Date(),
             reservationLegUpdatedAt: new Date(),
             reservationLegDeletedAt: null,
-            reservationLegDepartureDate: null,
+            reservationLegDepartureDate: lastLeg ? lastLeg.reservationLegArriveDate : null,
             reservationId: null,
             customerId: null,
             airportDestinationId: null,
-            airportDepartureId: null,
+            airportDepartureId: lastLeg ? lastLeg.airportDestinationId : null,
             reservationLegPax: 0,
             reservationLegDistanceMn: 0,
             reservationLegTravelTime: null,
