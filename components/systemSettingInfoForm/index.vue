@@ -19,7 +19,7 @@
               :src="systemSetting.systemSettingLogo" />
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
+            :custom-upload="true" :fileLimit="1" @select="validateFiles">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
@@ -44,7 +44,7 @@
               :src="systemSetting.systemSettingBanner" />
           </div>
           <FileUpload v-model="bannerFiles" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateBannerFiles">
+            :custom-upload="true" :fileLimit="1" @select="validateBannerFiles">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
@@ -69,7 +69,7 @@
               :src="systemSetting.systemSettingFavicon" />
           </div>
           <FileUpload v-model="faviconFiles" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFaviconFiles">
+            :custom-upload="true" :fileLimit="1" @select="validateFaviconFiles">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"

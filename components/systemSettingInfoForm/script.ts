@@ -263,7 +263,6 @@ export default defineComponent({
         });
         return;
       }
-
       if (this.files.length > 1) {
         this.$toast.add({
           severity: "warn",
