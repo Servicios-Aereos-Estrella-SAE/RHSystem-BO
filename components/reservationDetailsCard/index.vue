@@ -116,8 +116,7 @@
       </div>
 
       <div class="bnt-save">
-        <button v-if="editMode" @click="clickOnSave" type="button" class="btn-quote">Save Quote</button>
-        <button @click="clickOnCancel" type="button" class="btn-quote">Go back</button>
+        <button v-if="canUpdate || !editMode" @click="handlerClickOnSave" type="button" class="btn-quote">Save Quote</button>
       </div>
 
     </div>

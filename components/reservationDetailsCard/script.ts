@@ -7,16 +7,15 @@ import { DateTime } from 'luxon';
 
 export default defineComponent({
   props: {
-    clickOnSave: { type: Function, required: true },
     reservation: { type: Object as () => ReservationInterface, required: true },
-    clickOnCancel: { type: Function, required: true },
+    canUpdate: { type: Boolean, required: true },
     editMode: { type: Boolean, required: true },
   },
   components: {
     Toast,
     ToastService,
   },
-  name: 'aircraftSelectedInfoCard',
+  name: 'reservationDetailsCard',
   data: () => ({
     isSubmitted: false,
   }),
@@ -33,6 +32,9 @@ export default defineComponent({
       // Conviertes un objeto Date de JS a un DateTime de Luxon 
       // y luego lo formateas como necesites
       return DateTime.fromJSDate(date).toFormat('yyyy-MM-dd');
+    },
+    handlerClickOnSave() {
+      this.$emit('onSave');
     }
   },
 })
