@@ -61,7 +61,7 @@
           <p class="title-itinerary">Itinerary Leg {{index + 1}} </p>
           <div class="itinerary-details">
             <div class="icon-itinerary">
-              <img src="../aircraftSelectedInfoCard/icons/despegue.png" alt="">
+              <img src="../reservationDetailsCard/icons/despegue.png" alt="">
             </div>
             <div v-if="leg.airportDeparture">
               <p>{{leg.airportDeparture?.airportName}}</p>
@@ -73,7 +73,7 @@
           <br>
           <div class="itinerary-details">
             <div class="icon-itinerary">
-              <img src="../aircraftSelectedInfoCard/icons/aterrizaje.png" alt="">
+              <img src="../reservationDetailsCard/icons/aterrizaje.png" alt="">
             </div>
             <div>
               <p>{{leg.airportDestination?.airportName}}</p>
