@@ -15,11 +15,11 @@
             Description
           </label>
           <Textarea id="proceedingFileObservations" v-model="workDisabilityNote.workDisabilityNoteDescription" autoResize
-          rows="3" :disabled="!canManageWorkDisability" />
+          rows="3" :disabled="!canManageWorkDisabilities" />
           <small class="p-error" v-if="submitted && !workDisabilityNote.workDisabilityNoteDescription">Description is required.</small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisability" class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canManageWorkDisabilities" class="btn btn-block btn-primary" @click="onSave">
             Save work disability note
           </Button>
         </div>

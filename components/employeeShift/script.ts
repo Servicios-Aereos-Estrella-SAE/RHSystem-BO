@@ -27,8 +27,9 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
-    canManageExceptionRequest: { type: Boolean, required: true }
+    canManageExceptionRequest: { type: Boolean, required: true },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false,

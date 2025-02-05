@@ -29,7 +29,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
     flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: false, default: null },
-    clickOnSave: { type: Function, default: null },
+    clickOnSave: { type: Function, default: null }
   },
   data: () => ({
     activeSwicht: true,

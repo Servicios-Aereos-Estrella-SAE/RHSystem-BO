@@ -17,8 +17,9 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
     clickOnSave: { type: Function, default: null },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     submitted: false,
