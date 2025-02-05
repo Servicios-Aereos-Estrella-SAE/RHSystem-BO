@@ -20,8 +20,9 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
     clickOnSave: { type: Function, default: null },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     workDisabilityTypeList: [] as WorkDisabilityTypeInterface[],
@@ -51,7 +52,7 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
-    this.canManageCurrentPeriod = this.canManageWorkDisability
+    this.canManageCurrentPeriod = this.canManageWorkDisabilities
     if (this.workDisabilityPeriod.workDisabilityPeriodId) {
       await this.validateDisabilityDateRange()
       if (this.workDisabilityPeriod.workDisabilityPeriodStartDate) {

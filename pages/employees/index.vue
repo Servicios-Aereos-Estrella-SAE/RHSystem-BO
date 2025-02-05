@@ -93,7 +93,7 @@
             <div v-if="filteredEmployees.length > 0" class="shift-card-wrapper">
               <div v-for="(employee, index) in filteredEmployees" :key="`employee-${employee.employeeId}-${index}`">
                 <EmployeeInfoCard :click-on-photo="() => { onPhoto(employee) }" :employee="employee"
-                  :can-manage-shifts="hasAccessToManageShifts" :can-update="canUpdate" :can-delete="canDelete"
+                  :can-manage-shifts="hasAccessToManageShifts" :can-update="canUpdate" :can-delete="canDelete" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
                   :click-on-edit="() => { onEdit(employee) }" :click-on-delete="() => { onDelete(employee) }"
                   @clickShifts="handlerOpenShifts" @clickProceedingFiles="onProceedingFiles" />
               </div>
@@ -127,12 +127,17 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
-          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation" :canManageWorkDisability="canManageWorkDisability" :can-manage-exception-request="canManageExceptionRequest"/>
+          <employeeShift :employee="employee"
+            :can-manage-vacation="canManageVacation"
+            :can-manage-exception-request="canManageExceptionRequest" 
+            :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+            :canManageWorkDisabilities="canManageWorkDisabilities"
+          />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
           header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
-          <proceedingFiles :employee="employee" />
+          <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"/>
           <!-- <employeeProceedingFile :employee="employee" /> -->
         </Sidebar>
 

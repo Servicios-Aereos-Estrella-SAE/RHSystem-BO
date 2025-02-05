@@ -357,7 +357,11 @@ export default class EmployeeService {
     positionId: number | null,
     startDate: string,
     endDate: string,
-    onlyInactive: boolean
+    onlyInactive: boolean,
+    employeeTypeId: number | null,
+    workSchedule: string | null,
+    page: number = 1,
+    limit: number = 999999999,
   ) {
     let responseRequest: any = null
     try {
@@ -367,7 +371,11 @@ export default class EmployeeService {
         endDate,
         departmentId: departmentId,
         positionId: positionId,
-        onlyInactive: onlyInactive
+        onlyInactive: onlyInactive,
+        workSchedule: workSchedule,
+        employeeTypeId: employeeTypeId,
+        page: page,
+        limit: limit,
       };
             await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
         method: 'GET',

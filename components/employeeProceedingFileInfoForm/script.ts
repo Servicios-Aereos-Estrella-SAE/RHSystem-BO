@@ -26,6 +26,8 @@ export default defineComponent({
     employeeProceedingFile: { type: Object as PropType<EmployeeProceedingFileInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     clickOnSave: { type: Function, default: null },
+    canReadOnlyFiles: { type: Boolean, default: false, required: true },
+    canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     proceedingFileTypesList: [] as ProceedingFileTypeInterface[],

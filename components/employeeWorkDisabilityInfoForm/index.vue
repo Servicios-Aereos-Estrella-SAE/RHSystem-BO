@@ -23,20 +23,20 @@
           </label>
           <Dropdown v-model="workDisability.insuranceCoverageTypeId" :options="insuranceCoverageTypeList"
             optionLabel="insuranceCoverageTypeName" optionValue="insuranceCoverageTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageWorkDisability || !canManageCurrentPeriod" />
+            class="w-full md:w-14rem" :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
           <small class="p-error" v-if="submitted && !workDisability.insuranceCoverageTypeId">Insurance coverage type is
             required.</small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisability && canManageCurrentPeriod" class="btn btn-block btn-primary"
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
             @click="onSave">
             Save work disability
           </Button>
-          <Button v-if="!isNewWorkDisability && canManageWorkDisability" class="btn btn-block btn-primary"
+          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities" class="btn btn-block btn-primary"
             @click="addNewPeriod">
             Add period
           </Button>
-          <Button v-if="!isNewWorkDisability && canManageWorkDisability" class="btn btn-block btn-primary"
+          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities" class="btn btn-block btn-primary"
             @click="addNewNote">
             Add note
           </Button>
@@ -50,7 +50,8 @@
             <workDisabilityPeriodInfoCard :isDeleted="isDeleted" :work-disability-period="workDisabilityPeriod"
               :click-on-edit="() => { onEditPeriod(workDisabilityPeriod) }"
               :click-on-delete="() => { onDeletePeriod(workDisabilityPeriod) }"
-              :canManageWorkDisability="canManageWorkDisability" />
+              :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+              :canManageWorkDisabilities="canManageWorkDisabilities" />
           </div>
         </div>
         <div v-if="workDisabilityNotesList.length > 0" class="work-disability-notes-wrapper">
@@ -58,7 +59,9 @@
             Notes
           </h1>
           <div v-for="(workDisabilityNote, index) in workDisabilityNotesList" :key="`work-disability-note-${index}`">
-            <workDisabilityNoteInfoCard :canManageWorkDisability="canManageWorkDisability" :isDeleted="isDeleted"
+            <workDisabilityNoteInfoCard 
+              :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+              :canManageWorkDisabilities="canManageWorkDisabilities" :isDeleted="isDeleted"
               :work-disability-note="workDisabilityNote" :click-on-edit="() => { onEditNote(workDisabilityNote) }"
               :click-on-delete="() => { onDeleteNote(workDisabilityNote) }" />
           </div>
@@ -66,13 +69,17 @@
       </div>
       <Sidebar v-model:visible="drawerWorkDisabilityPeriodForm" header="form" position="right"
         class="work-disability-period-form-sidebar" :showCloseIcon="true">
-        <employeeWorkDisabilityPeriodInfoForm :canManageWorkDisability="canManageWorkDisability"
+        <employeeWorkDisabilityPeriodInfoForm 
+          :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+          :canManageWorkDisabilities="canManageWorkDisabilities"
           :workDisabilityPeriod="workDisabilityPeriod" :employee="employee"
           @onWorkDisabilityPeriodSave="onSavePeriod" />
       </Sidebar>
       <Sidebar v-model:visible="drawerWorkDisabilityNoteForm" header="form" position="right"
         class="work-disability-note-form-sidebar" :showCloseIcon="true">
-        <employeeWorkDisabilityNoteInfoForm :canManageWorkDisability="canManageWorkDisability"
+        <employeeWorkDisabilityNoteInfoForm
+          :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+          :canManageWorkDisabilities="canManageWorkDisabilities"
           :workDisabilityNote="workDisabilityNote" :employee="employee" @onWorkDisabilityNoteSave="onSaveNote" />
       </Sidebar>
     </div>
