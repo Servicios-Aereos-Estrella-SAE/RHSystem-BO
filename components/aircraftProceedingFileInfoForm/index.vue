@@ -22,7 +22,6 @@
               url="/api/upload"
               @upload="onAdvancedUpload($event)"
               :custom-upload="true"
-              :maxFileSize="1000000"
               :fileLimit="1"
               :showUploadButton="false"
               @select="validateFiles"

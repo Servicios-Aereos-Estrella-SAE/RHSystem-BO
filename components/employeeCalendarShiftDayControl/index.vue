@@ -29,8 +29,11 @@
       <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isVacationDate">
         Vacation day
       </span>
-      <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isWorkDisabilityDate">
-        Work disability day
+      <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isWorkDisabilityDate" class="label-icon">
+        <div class="icon">
+          <svg viewBox="0 0 64 64" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M54.173 52.728c-.482.265-.997.39-1.528.39-1.296 0-2.606-.765-3.326-2.076l-6.51-11.901H25.994c-.093 0-.186 0-.28-.015h-.141a4.816 4.816 0 0 1-4.98-4.494l-1.108-16.908a4.822 4.822 0 0 1 4.498-5.121l.997-.061a4.808 4.808 0 0 1 5.123 4.479l.295 4.668h10.259c1.312 0 2.372 1.186 2.372 2.637 0 1.453-1.061 2.639-2.372 2.639H30.74l.25 3.763h12.274c.467 0 .905.078 1.326.218 1.076.188 2.092.891 2.702 1.999l8.086 14.785c.996 1.844.466 4.077-1.205 4.998z" fill="#88a4bf" class="fill-241f20"></path><circle cx="24.547" cy="5.627" fill="#88a4bf" r="5.594" class="fill-241f20"></circle><g fill="#88a4bf" class="fill-241f20"><path d="m28.006 30.869.009.134M40.076 43.046H23.262c-.095 0-.188 0-.281-.015h-.14a4.824 4.824 0 0 1-4.982-4.498l-.719-10.975c-5.425 3.534-9.018 9.643-9.018 16.601 0 10.94 8.869 19.808 19.809 19.808 7.716 0 14.383-4.419 17.655-10.855l-5.51-10.066z"></path></g></svg>
+        </div>
+        Disability day
       </span>
       <span v-else-if="employeeCalendar.assist.isHoliday && employeeCalendar.assist.holiday">
         {{ employeeCalendar.assist.holiday.holidayName }}

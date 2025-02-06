@@ -1,3 +1,5 @@
+import type { UserInterface } from "./UserInterface"
+
 export interface WorkDisabilityNoteInterface {
   workDisabilityNoteId: number
   workDisabilityNoteDescription: string
@@ -6,4 +8,6 @@ export interface WorkDisabilityNoteInterface {
   workDisabilityNoteCreatedAt?: string
   workDisabilityNoteUpdatedAt?: string
   deletedAt?: string
+
+  user?: UserInterface
 }

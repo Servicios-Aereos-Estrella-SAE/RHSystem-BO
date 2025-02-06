@@ -547,7 +547,13 @@ export default defineComponent({
         this.setGeneralStatisticsData(employee, employee.calendar)
 
         if (assistReq.status === 400) {
-          console.error('NO shift', employeeID)
+          const employeeNoShift = employee?.employee || null
+
+          if (employeeNoShift) {
+            const employeeNoShiftName = `${employeeNoShift.employeeFirstName} ${employeeNoShift.employeeLastName}`
+            const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
+            console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
+          }
         }
 
       } catch (error) {
