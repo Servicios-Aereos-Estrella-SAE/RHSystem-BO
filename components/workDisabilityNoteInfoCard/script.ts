@@ -18,7 +18,7 @@ export default defineComponent({
   }),
   computed: {
   },
-  async mounted() {
+  mounted() {
   },
   methods: {
     handlerClickOnEdit () {
@@ -33,7 +33,8 @@ export default defineComponent({
     },
     getDate(date: string) {
       const dateWorDisabilityNote = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityNote.setLocale('en').toFormat('DDDD')
+      const zone = DateTime.local().zoneName
+      return dateWorDisabilityNote.setLocale('en').setZone(zone).toFormat('FF')
     },
   }
 })
