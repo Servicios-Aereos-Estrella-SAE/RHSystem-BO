@@ -7,10 +7,11 @@ export default defineComponent({
   name: 'workDisabilityPeriodInfoCard',
   props: {
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false,
@@ -19,7 +20,7 @@ export default defineComponent({
   computed: {
   },
   async mounted() {
-    this.canManageCurrentPeriod = this.canManageWorkDisability
+    this.canManageCurrentPeriod = this.canManageWorkDisabilities
     await this.validateDisabilityDateRange()
   },
   methods: {

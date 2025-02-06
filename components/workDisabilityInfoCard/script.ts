@@ -9,11 +9,11 @@ export default defineComponent({
     workDisability: { type: Object as PropType<WorkDisabilityInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
-
     clickOnEditException: { type: Function, default: null },
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
-    canManageWorkDisability: { type: Boolean, required: true },
+    canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false,
@@ -22,7 +22,7 @@ export default defineComponent({
   computed: {
   },
   async mounted() {
-    this.canManageCurrentPeriod = this.canManageWorkDisability
+    this.canManageCurrentPeriod = this.canManageWorkDisabilities
     await this.validateDisabilityDateRange()
   },
   methods: {

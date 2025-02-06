@@ -10,13 +10,13 @@
 
     <div v-if="isReady" class="work-disability-period-form">
       <div class="form-container">
-        <div v-if="canManageWorkDisability && canManageCurrentPeriod" class="input-box">
+        <div class="input-box">
           <label for="work-disability-period-file">
             File
           </label>
           <Button v-if="workDisabilityPeriod.workDisabilityPeriodFile" label="Open file" severity="primary"
             @click="openFile()" />
-          <FileUpload ref="fileUpload" v-model="files" name="demo[]" url="/api/upload"
+          <FileUpload v-if="canManageWorkDisabilities && canManageCurrentPeriod" ref="fileUpload" v-model="files" name="demo[]" url="/api/upload"
             @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000" :fileLimit="1"
             @select="validateFiles" :showUploadButton="false" accept="image/*,application/pdf">
             <template #content="{ files, removeUploadedFileCallback, removeFileCallback }">
@@ -40,7 +40,7 @@
             Ticket folio
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
-            :disabled="!canManageWorkDisability || !canManageCurrentPeriod" />
+            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio
             is required.</small>
         </div>
@@ -50,7 +50,7 @@
           </label>
           <Dropdown v-model="workDisabilityPeriod.workDisabilityTypeId" :options="workDisabilityTypeList"
             optionLabel="workDisabilityTypeName" optionValue="workDisabilityTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageWorkDisability || !canManageCurrentPeriod" />
+            class="w-full md:w-14rem" :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">Work disability type is
             required.</small>
         </div>
@@ -69,7 +69,7 @@
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisability && canManageCurrentPeriod" class="btn btn-block btn-primary"
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
             @click="onSave">
             Save work disability period
           </Button>

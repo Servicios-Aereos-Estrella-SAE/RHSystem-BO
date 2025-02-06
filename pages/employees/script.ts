@@ -36,7 +36,10 @@ export default defineComponent({
         canDelete: false,
         canManageVacation: false,
         canManageExceptionRequest: false,
-        canManageWorkDisability: false,
+        canReadOnlyFiles: false,
+        canManageFiles: false,
+        canReadOnlyWorkDisabilities: false,
+        canManageWorkDisabilities: false,
         drawerShifts: false,
         drawerProceedingFiles: false,
         hasAccessToManageShifts: false,
@@ -82,13 +85,20 @@ export default defineComponent({
             this.canDelete = true
             this.canManageVacation = true
             this.canManageExceptionRequest = true
-            this.canManageWorkDisability = true
+            this.canReadOnlyFiles = true
+            this.canManageFiles = true
+            this.canReadOnlyWorkDisabilities = true
+            this.canManageWorkDisabilities = true
         } else {
             this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
             this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
             this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
             this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
             this.canManageExceptionRequest = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'exception-request') ? true : false
+            this.canReadOnlyFiles = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-only-files') ? true : false
+            this.canManageFiles = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-files') ? true : false
+            this.canReadOnlyWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-work-disabilities') ? true : false
+            this.canManageWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-work-disabilities') ? true : false
         }
         myGeneralStore.setFullLoader(false)
         await this.getWorkSchedules()
@@ -288,7 +298,8 @@ export default defineComponent({
             const onlyInactive = this.status === 'Terminated' ? true : false
             try {
               const employeeService = new EmployeeService();
-              const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive);
+              const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
+              const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive, this.employeeTypeId, workSchedule, this.currentPage, this.rowsPerPage);
               
               if (assistResponse) {
                 const reportDesc = onlyInactive ? '_terminated' : ''

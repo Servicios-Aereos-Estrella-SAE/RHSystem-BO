@@ -11,7 +11,9 @@ export default defineComponent({
     clickOnPhoto: { type: Function, default: null },
     canManageShifts: { type: Boolean, default: false, required: true },
     canUpdate: { type: Boolean, default: false, required: true },
-    canDelete: { type: Boolean, default: false, required: true }
+    canDelete: { type: Boolean, default: false, required: true },
+    canReadOnlyFiles: { type: Boolean, default: false, required: true },
+    canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
   }),

@@ -14,6 +14,8 @@ export default defineComponent({
     employeeProceedingFile: { type: Object as PropType<EmployeeProceedingFileInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
+    canReadOnlyFiles: { type: Boolean, default: false, required: true },
+    canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     menuRef: null as any, // Ref para el componente Menu
@@ -64,7 +66,7 @@ export default defineComponent({
       const day = date.toFormat('DD')
       return day
     },
-    fileIcon () {
+    fileIcon() {
       let icon = 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/sae-bo-system/icons/icon-file.svg'
 
       if (this.employeeProceedingFile.proceedingFile?.proceedingFilePath) {
@@ -79,34 +81,44 @@ export default defineComponent({
   },
   mounted() {
     this.menuRef = this.$refs.menu
-    this.items.push(
-      {
-        label: 'Open',
-        icon: 'pi pi-external-link',
-        command: () => {
-          if (this.employeeProceedingFile.proceedingFile?.proceedingFilePath) {
-            window.open(this.employeeProceedingFile.proceedingFile?.proceedingFilePath)
+    if (this.canReadOnlyFiles || this.canManageFiles) {
+      this.items.push(
+        {
+          label: 'Open',
+          icon: 'pi pi-external-link',
+          command: () => {
+            if (this.employeeProceedingFile.proceedingFile?.proceedingFilePath) {
+              window.open(this.employeeProceedingFile.proceedingFile?.proceedingFilePath)
+            }
           }
-        }
-      },
-      {
-        label: 'Edit',
-        icon: 'pi pi-refresh',
-        command: () => {
-          if (this.clickOnEdit) {
-            this.clickOnEdit()
+        })
+    }
+
+    if (this.canReadOnlyFiles || this.canManageFiles) {
+      this.items.push(
+        {
+          label: 'Edit',
+          icon: 'pi pi-refresh',
+          command: () => {
+            if (this.clickOnEdit) {
+              this.clickOnEdit()
+            }
           }
-        }
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-trash',
-        command: () => {
-          if (this.clickOnDelete) {
-            this.clickOnDelete()
+        })
+    }
+
+    if (this.canManageFiles) {
+      this.items.push(
+        {
+          label: 'Delete',
+          icon: 'pi pi-trash',
+          command: () => {
+            if (this.clickOnDelete) {
+              this.clickOnDelete()
+            }
           }
-        }
-      })
+        })
+    }
   },
   methods: {
     handlerClickOnEdit() {
