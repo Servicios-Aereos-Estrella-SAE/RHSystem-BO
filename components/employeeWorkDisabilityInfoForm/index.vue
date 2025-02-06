@@ -43,13 +43,15 @@
           </Button>
         </div>
 
-        <div class="work-disability-periods-wrapper">
+        <div>
           <div v-if="workDisabilityPeriodsList.length > 0">
             <h2>
               Periods for shift exceptions
             </h2>
-            <div v-for="(workDisabilityPeriod, index) in workDisabilityPeriodsList" :key="`work-disability-period-${index}`">
-              <workDisabilityPeriodInfoCard 
+            <div class="work-disability-periods-wrapper">
+              <workDisabilityPeriodInfoCard
+                v-for="(workDisabilityPeriod, index) in workDisabilityPeriodsList"
+                :key="`work-disability-period-${index}`"
                 :isDeleted="isDeleted"
                 :work-disability-period="workDisabilityPeriod"
                 :click-on-edit="() => { onEditPeriod(workDisabilityPeriod) }"

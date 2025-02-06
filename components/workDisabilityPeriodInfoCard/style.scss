@@ -52,15 +52,28 @@
     }
   }
 
-  .work-disability-period-date {
-    text-align: left;
-    font-weight: normal;
-    box-sizing: border-box;
+  .period-applied {
     font-size: 0.8rem;
-    line-height: 1.25rem;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+    box-sizing: border-box;
+    
+    .period-applied-date {
+      display: grid;
+      grid-template-columns: 2rem auto;
+      gap: 0.5rem;
+      align-items: center;
 
-    strong {
-      font-weight: 500;
+      .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+          width: 1.5rem;
+        }
+      }
     }
   }
 

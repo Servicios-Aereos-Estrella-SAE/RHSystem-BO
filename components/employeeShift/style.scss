@@ -36,8 +36,8 @@
   }
 
   .head-exception{
-    display: grid;
-    grid-template-columns: auto 15rem 10rem 15rem;
+    display: flex;
+    justify-content: flex-end;
     gap: 0.5rem;
     width: 100%;
     margin-bottom: 1.5rem;

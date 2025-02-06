@@ -12,7 +12,7 @@
           <label for="work-disability-period-file">
             Work disability document
           </label>
-          <Button v-if="workDisabilityPeriod.workDisabilityPeriodFile" label="Open file" severity="primary" @click="openFile" />
+
           <FileUpload
             v-if="canManageWorkDisabilities && canManageCurrentPeriod"
             ref="fileUpload"
@@ -50,13 +50,20 @@
           </FileUpload>
         </div>
         <div class="input-box">
+          <button v-if="workDisabilityPeriod.workDisabilityPeriodFile" type="button" class="btn btn-block" @click="openFile">
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" fill="#88a4bf" class="fill-212121"></path></svg>
+            Open attached file
+          </button>
+        </div>
+        <div class="input-box">
           <label for="folio">
             Document folio
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio
-            is required.</small>
+            is required.
+          </small>
         </div>
         <div class="input-box">
           <label for="work-disability-type">
@@ -69,13 +76,31 @@
             required.</small>
         </div>
         <div class="input-box">
-          <label for="requested-date">Date Range</label>
-          <Calendar v-if="isNewWorkDisabilityPeriod" v-model="dates" selectionMode="range" dateFormat="yy-mm-dd"
-            placeholder="Select date range" class="w-full md:w-14rem"
-            :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" />
-          <div v-else>
-            <span>From: {{ getDate(workDisabilityPeriod.workDisabilityPeriodStartDate) }}</span> <br>
-            <span>To: {{ getDate(workDisabilityPeriod.workDisabilityPeriodEndDate) }}</span>
+          <label for="requested-date">
+            Period for shift exceptions
+          </label>
+          <Calendar
+            v-if="isNewWorkDisabilityPeriod"
+            v-model="dates"
+            selectionMode="range"
+            dateFormat="yy-mm-dd"
+            placeholder="Select date range"
+            class="w-full md:w-14rem"
+            :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod"
+          />
+          <div v-else class="period-applied">
+            <div class="period-applied-date">
+              <div class="icon">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              </div>
+              {{ getDate(workDisabilityPeriod.workDisabilityPeriodStartDate) }}
+            </div>
+            <div class="period-applied-date">
+              <div class="icon">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 8.5v9.25A3.25 3.25 0 0 0 6.25 21h11.5A3.25 3.25 0 0 0 21 17.75V8.5H3ZM16.75 15a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 15a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm4.75-4.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm-4.75 0a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm-4.75 0a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm-1-7.5A3.25 3.25 0 0 0 3 6.25V7h18v-.75A3.25 3.25 0 0 0 17.75 3H6.25Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              </div>
+              {{ getDate(workDisabilityPeriod.workDisabilityPeriodEndDate) }}
+            </div>
           </div>
           <small class="p-error"
             v-if="submitted && (!workDisabilityPeriod.workDisabilityPeriodStartDate || !workDisabilityPeriod.workDisabilityPeriodEndDate)">
@@ -83,8 +108,7 @@
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
-            @click="onSave">
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary" @click="onSave">
             Save work disability period
           </Button>
         </div>
