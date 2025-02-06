@@ -18,7 +18,7 @@ import { DateTime } from 'luxon';
 export default defineComponent({
   components: {
     Toast,
-    ToastService,
+    ToastService
   },
   name: 'employeeWorkDisabilityInfoForm',
   props: {
@@ -43,7 +43,7 @@ export default defineComponent({
     drawerWorkDisabilityNoteForm: false,
     drawerWorkDisabilityNoteDelete: false,
     workDisabilityNote: null as WorkDisabilityNoteInterface | null,
-    canManageCurrentPeriod: false
+    canManageCurrentPeriod: false,
   }),
   computed: {
   },

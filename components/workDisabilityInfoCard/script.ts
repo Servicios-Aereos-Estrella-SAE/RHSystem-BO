@@ -110,6 +110,10 @@ export default defineComponent({
         yield startDate
         startDate = startDate.plus({ days: 1 })
       }
-    }
+    },
+    getDate(date: string) {
+      const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
+      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+    },
   }
 })

@@ -5,13 +5,10 @@
     <h1>
       Employee Work Disabilities
     </h1>
+
     <div class="head">
       <Button v-if="canManageWorkDisabilities && !isDeleted && canManageWorkDisabilities" class="btn btn-block" @click="addNew">
-        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z"
-            fill="#88a4bf" class="fill-212121"></path>
-        </svg>
+        <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z" fill="#88a4bf" class="fill-000000"></path></svg>
         Add work disability
       </Button>
     </div>
@@ -22,23 +19,27 @@
             :click-on-edit="() => { onEdit(workDisability) }"
             :click-on-delete="() => { onDelete(workDisability) }"
             :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-            :canManageWorkDisabilities="canManageWorkDisabilities" />
+            :canManageWorkDisabilities="canManageWorkDisabilities"
+          />
         </div>
       </div>
-      <Sidebar v-model:visible="drawerWorkDisabilityForm" header="form" position="right"
-      class="work-disability-form-sidebar" :showCloseIcon="true">
-      <employeeWorkDisabilityInfoForm 
-        :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-        :canManageWorkDisabilities="canManageWorkDisabilities"
-        :workDisability="workDisability" :employee="employee" @onWorkDisabilitySave="onSave" @save="onSave" />
-    </Sidebar>
+      <Sidebar v-model:visible="drawerWorkDisabilityForm" header="form" position="right" class="work-disability-form-sidebar" :showCloseIcon="true">
+        <employeeWorkDisabilityInfoForm 
+          :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+          :canManageWorkDisabilities="canManageWorkDisabilities"
+          :workDisability="workDisability" :employee="employee" @onWorkDisabilitySave="onSave" @save="onSave"
+        />
+      </Sidebar>
     </div>
     <ProgressSpinner v-else />
    
 
     <transition name="page">
-      <confirmDelete v-if="drawerWorkDisabilityDelete" @confirmDelete="confirmDelete"
-        @cancelDelete="drawerWorkDisabilityDelete = false" />
+      <confirmDelete
+        v-if="drawerWorkDisabilityDelete"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="drawerWorkDisabilityDelete = false"
+      />
     </transition>
 
 

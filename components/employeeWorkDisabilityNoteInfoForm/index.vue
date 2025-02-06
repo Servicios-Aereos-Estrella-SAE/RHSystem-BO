@@ -3,19 +3,21 @@
     <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <h1>
-      <br/><br/>
       {{ isNewWorkDisabilityNote ? 'Add work disability note' : 'Update work disability note' }}
-     
     </h1>
     
     <div v-if="isReady" class="work-disability-note-form">
       <div class="form-container">
         <div  class="input-box">
           <label for="folio">
-            Description
+            Description note / comments
           </label>
-          <Textarea id="proceedingFileObservations" v-model="workDisabilityNote.workDisabilityNoteDescription" autoResize
-          rows="3" :disabled="!canManageWorkDisabilities" />
+          <Textarea 
+            id="proceedingFileObservations"
+            v-model="workDisabilityNote.workDisabilityNoteDescription"
+            autoResize
+            rows="8"
+            :disabled="!canManageWorkDisabilities" />
           <small class="p-error" v-if="submitted && !workDisabilityNote.workDisabilityNoteDescription">Description is required.</small>
         </div>
         <div class="box-tools-footer">

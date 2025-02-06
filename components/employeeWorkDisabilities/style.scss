@@ -1,5 +1,4 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
 
 .employee-work-disabilities {
   position: relative;
@@ -12,10 +11,12 @@
     margin-bottom: 1.5rem;
     border-bottom: $border-dashed;
     padding-bottom: 1.5rem;
+    padding-top: 0.5rem;
   }
+
   .head {
     display: grid;
-    grid-template-columns: 20rem;
+    grid-template-columns: 1fr;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
 
