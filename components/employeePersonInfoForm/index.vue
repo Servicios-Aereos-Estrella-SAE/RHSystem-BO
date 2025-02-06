@@ -1,12 +1,13 @@
 <template>
-  <div class="box user-info-form">
+  <div class="box employee-person-info-form">
     <Toast />
-    <div v-if="isReady" class="user-form">
+    <div v-if="isReady" class="employee-person-form">
+      Personal Information
       <div class="form-container">
-        <Button class="btn" @click="handlerClickOnEdit">
-          <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z" fill="#88a4bf" class="fill-212121"></path></svg>
+        <Button class="btn" @click="handlerClickOnClose">
+          <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1Zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648Zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648ZM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
         </Button>
-        <div class="input-box">
+       <!--  <div class="input-box">
           <label for="userActive">
             Work Modality
             ( {{ activeSwicht ? 'Onsite' : 'Home Office' }} )
@@ -32,8 +33,8 @@
           <label for="employeeLastName">Last Name</label>
           <InputText v-model="employee.employeeLastName" placeholder="Enter Last Name" :disabled="isDeleted"/>
           <small class="p-error" v-if="submitted && !employee.employeeLastName">Last Name is required.</small>
-        </div>
-        <div class="input-box">
+        </div> -->
+        <!-- <div class="input-box">
           <label for="role">
             Department
           </label>
@@ -63,7 +64,7 @@
               </Button>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="input-box">
           <div class="hire-date-box-container">
             <label for="employeeBirthDate">Birthday</label>
@@ -80,18 +81,86 @@
               </Button>
             </div>
           </div>
-
         </div>
         <div class="input-box">
-          <label for="employeeLastName">Phone</label>
+          <label for="age">Age</label>
+          {{ getAge }}
+        </div>
+        <div class="input-box">
+          <label for="personPhone">Phone</label>
           <InputMask v-model="employee.person.personPhone" mask="(999) 999 99 99" placeholder="Enter employee phone" :disabled="isDeleted"/>
         </div>
         <div class="input-box">
-          <label for="personGender">Gender</label>
-          <Dropdown v-model="employee.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-            placeholder="Select Gender" class="w-full md:w-14rem" :disabled="isDeleted"/>
+          <label for="personPhoneSecondary">Phone secondary</label>
+          <InputMask v-model="employee.person.personPhoneSecondary" mask="(999) 999 99 99" placeholder="Enter employee phone" :disabled="isDeleted"/>
         </div>
         <div class="input-box">
+          <label for="personMaritalStatus">Marital status</label>
+          <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label" optionValue="value"
+            placeholder="Select Marital Status" class="w-full md:w-14rem" :disabled="isDeleted"/>
+        </div>
+        <div class="input-box">
+          <label for="search">
+            Place of birth country
+          </label>
+          <AutoComplete
+          v-model="selectCountry"
+          :suggestions="filteredCountries"
+          :item-value="option => option.personPlaceOfBirthCountry"
+          :optionLabel="option => option.personPlaceOfBirthCountry"
+          @complete="handlerSearchCountries"
+          @change="onCountrySelect"
+        >
+          <template #option="slotProps">  <!-- 'slotProps' es el nombre correcto para acceder a la opción -->
+            <div>
+              <div class="name">
+                {{ slotProps.option.personPlaceOfBirthCountry }}  <!-- Aquí accedemos directamente a la opción -->
+              </div>
+            </div>
+          </template>
+        </AutoComplete>
+        </div>
+        <div class="input-box">
+          <label for="search">
+            Place of birth state
+          </label>
+          <AutoComplete
+            v-model="selectState"
+            :suggestions="filteredStates"
+            :optionLabel="option => option.personPlaceOfBirthState"
+            @complete="handlerSearchStates"
+            @change="onStateSelect"
+          >
+            <template #option="state">
+              <div>
+                <div class="name">
+                  {{ state.option.personPlaceOfBirthState }}
+                </div>
+              </div>
+            </template>
+          </AutoComplete>
+        </div>
+        <div class="input-box">
+          <label for="search">
+            Place of birth city
+          </label>
+          <AutoComplete
+            v-model="selectCity"
+            :suggestions="filteredCities"
+            :optionLabel="option => option.personPlaceOfBirthCity"
+            @complete="handlerSearchCities"
+            @change="onCitySelect"
+          >
+            <template #option="city">
+              <div>
+                <div class="name">
+                  {{ city.option.personPlaceOfBirthCity }}
+                </div>
+              </div>
+            </template>
+          </AutoComplete>
+        </div>
+       <!--  <div class="input-box">
           <label for="employeeLastName">CURP</label>
           <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP" :disabled="isDeleted"/>
           <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal identification is not valid.</small>
@@ -165,7 +234,7 @@
             <p>Drag and drop file to here to upload.</p>
           </template>
         </FileUpload>
-        </div>
+        </div> -->
         <div class="box-tools-footer">
           <!-- <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" /> -->
           <!-- <Button label="Shift exceptions" severity="primary" @click="getShiftExceptions()" /> -->

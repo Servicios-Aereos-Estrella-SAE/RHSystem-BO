@@ -27,6 +27,7 @@ export default defineComponent({
         last: 0,
         rowsPerPage: 50,
         drawerEmployeeForm: false,
+        drawerEmployeePersonForm: false,
         drawerEmployeePhotoForm: false,
         drawerEmployeeDelete: false,
         drawerEmployeeSync: false,
@@ -69,7 +70,7 @@ export default defineComponent({
         'employeeTypeId': function() {
          this.handlerSearchEmployee()
         }
-    },
+    }, 
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -237,6 +238,10 @@ export default defineComponent({
             this.drawerEmployeeForm = false;
             this.drawerEmployeePhotoForm = false;
         },
+        onEditPerson(employee: EmployeeInterface) {
+            this.employee = { ...employee };
+            this.drawerEmployeePersonForm = true;
+        },
         async syncEmployees() {
             this.drawerEmployeeSync = true
         },
@@ -358,8 +363,9 @@ export default defineComponent({
               })
               myGeneralStore.setFullLoader(false)
             }
+          },
+          onClosePerson() {
+            this.drawerEmployeePersonForm = false
           }
-          
-          
     }
 });

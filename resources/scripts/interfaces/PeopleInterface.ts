@@ -11,6 +11,11 @@ interface PeopleInterface {
   personCurp: string | null,
   personRfc: string | null,
   personImssNss: string | null,
+  personPhoneSecondary: string | null,
+  personMaritalStatus: string | null,
+  personPlaceOfBirthCountry: string | null,
+  personPlaceOfBirthState: string | null,
+  personPlaceOfBirthCity: string | null,
   personCreatedAt: Date | string | null,
   personUpdatedAt: Date | string | null,
   personDeletedAt: Date | string | null

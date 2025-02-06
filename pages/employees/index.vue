@@ -117,8 +117,11 @@
 
         <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
           header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
-          <employeeInfoForm :employee="employee" @save="onSave" />
+          <employeeInfoForm v-if="!drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }"/>
+          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }"/>
         </Sidebar>
+
+       
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
           :dismissable="false" header="Employee photo" position="right" class="shift-form-sidebar"

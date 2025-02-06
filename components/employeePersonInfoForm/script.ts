@@ -18,29 +18,34 @@ import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterfa
 import PilotService from '~/resources/scripts/services/PilotService'
 import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
+import type { CountrySearchInterface } from '~/resources/scripts/interfaces/CountrySearchInterface';
+import type { CitySearchInterface } from '~/resources/scripts/interfaces/CitySearchInterface';
+import type { StateSearchInterface } from '~/resources/scripts/interfaces/StateSearchInterface';
 
 export default defineComponent({
   components: {
     Toast,
     ToastService,
   },
-  name: 'employeeInfoForm',
+  name: 'employeePersonInfoForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
     flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: false, default: null },
     clickOnSave: { type: Function, default: null },
-    clickOnEdit: { type: Function, default: null },
+    clickOnClose: { type: Function, default: null },
   },
   data: () => ({
     activeSwicht: true,
     positions: [] as PositionInterface[],
     departments: [] as DepartmentInterface[],
     submitted: false,
-    genders: [
-        { label: 'Male', value: 'Hombre' },
-        { label: 'Female', value: 'Mujer' },
-        { label: 'Not specified', value: 'Otro' }
+    maritalStatus: [
+        { label: 'Soltero (a)', value: 'Single' },
+        { label: 'Casado (a)', value: 'Married' },
+        { label: 'Divorciado (a)', value: 'Divorced' },
+        { label: 'Viudo (a)', value: 'Widower' },
+        { label: 'Unión Libre', value: 'Free Union' }
     ],
     assistDiscriminatorOptions: [
       { label: 'Do not discriminate in assistance report', value: 0 },
@@ -73,8 +78,25 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeReactivate: false,
     employeeTypes: [] as EmployeeTypeService[],
+    filteredCountries: [] as CountrySearchInterface[],
+    filteredStates: [] as StateSearchInterface[],
+    filteredCities: [] as CitySearchInterface[],
+    selectCountry: '',
+    selectState: '',
+    selectCity: '',
   }),
   computed: {
+    getAge() {
+      if (this.employee.person?.personBirthday) {
+        const birthday = (this.employee.person?.personBirthday instanceof Date) 
+        ? DateTime.fromJSDate(this.employee.person?.personBirthday)
+        : DateTime.fromISO(this.employee.person?.personBirthday)
+        const now = DateTime.now()
+        const year = now.diff(birthday, 'years').years
+        return Math.floor(year)
+      }
+      return 0
+    }
   },
   watch: {
     'employee.departmentId': function(newVal) {
@@ -170,6 +192,27 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
+    async handlerSearchCountries(event: any) {
+      if (event.query.trim().length) {
+        const response = await new PersonService().getPlacesBirth(event.query.trim(), 'countries')
+        const list = response.status === 200 ? response._data.data.places : []
+        this.filteredCountries = list
+      }
+    },
+    async handlerSearchStates(event: any) {
+      if (event.query.trim().length) {
+        const response = await new PersonService().getPlacesBirth(event.query.trim(), 'states')
+        const list = response.status === 200 ? response._data.data.places : []
+        this.filteredStates = list
+      }
+    },
+    async handlerSearchCities(event: any) {
+      if (event.query.trim().length) {
+        const response = await new PersonService().getPlacesBirth(event.query.trim(), 'cities')
+        const list = response.status === 200 ? response._data.data.places : []
+        this.filteredCities = list
+      }
+    },
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
       this.positions = await positionService.getPositionsDepartment(departmentId)
@@ -369,6 +412,15 @@ export default defineComponent({
         personCreatedAt: this.employee.person?.personCreatedAt ?? null,
         personUpdatedAt: this.employee.person?.personUpdatedAt ?? null,
         personDeletedAt: null,
+      }
+      if (typeof this.selectCountry === 'string' && this.selectCountry.trim() !== '' && !person.personPlaceOfBirthCountry) {
+        person.personPlaceOfBirthCountry = this.selectCountry
+      }
+      if (typeof this.selectState === 'string' && this.selectState.trim() !== '' && !person.personPlaceOfBirthState) {
+        person.personPlaceOfBirthState = this.selectState
+      }
+      if (typeof this.selectCity === 'string' && this.selectCity.trim() !== '' && !person.personPlaceOfBirthCity) {
+        person.personPlaceOfBirthCity = this.selectCity
       }
       let personResponse = null
       if (!person.personId) {
@@ -593,10 +645,26 @@ export default defineComponent({
         return
       }
     },
-    handlerClickOnEdit () {
-      if (this.clickOnEdit) {
-        this.clickOnEdit()
+    handlerClickOnClose () {
+      if (this.clickOnClose) {
+        this.clickOnClose()
       }
     },
+    onCountrySelect(selectedOption: any) {
+      if (this.employee.person) {
+        this.employee.person.personPlaceOfBirthCountry = selectedOption.value.personPlaceOfBirthCountry
+      }
+    },
+    onStateSelect(selectedOption: any) {
+      if (this.employee.person) {
+        this.employee.person.personPlaceOfBirthState = selectedOption.value.personPlaceOfBirthState
+      }
+    },
+    onCitySelect(selectedOption: any) {
+      if (this.employee.person) {
+        this.employee.person.personPlaceOfBirthCity = selectedOption.value.personPlaceOfBirthCity
+      }
+    }
+    
   }
 })
