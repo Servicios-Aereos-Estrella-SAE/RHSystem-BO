@@ -5,12 +5,9 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import PositionService from '~/resources/scripts/services/PositionService'
-import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PeopleInterface } from '~/resources/scripts/interfaces/PeopleInterface'
 import PersonService from '~/resources/scripts/services/PersonService';
-import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
 import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
 import { DateTime } from 'luxon';
 import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
@@ -41,11 +38,11 @@ export default defineComponent({
     departments: [] as DepartmentInterface[],
     submitted: false,
     maritalStatus: [
-        { label: 'Soltero (a)', value: 'Single' },
-        { label: 'Casado (a)', value: 'Married' },
-        { label: 'Divorciado (a)', value: 'Divorced' },
-        { label: 'Viudo (a)', value: 'Widower' },
-        { label: 'Unión Libre', value: 'Free Union' }
+      { label: 'Soltero (a)', value: 'Single' },
+      { label: 'Casado (a)', value: 'Married' },
+      { label: 'Divorciado (a)', value: 'Divorced' },
+      { label: 'Viudo (a)', value: 'Widower' },
+      { label: 'Unión Libre', value: 'Free Union' }
     ],
     assistDiscriminatorOptions: [
       { label: 'Do not discriminate in assistance report', value: 0 },
@@ -72,8 +69,8 @@ export default defineComponent({
     personBirthday: '' as string,
     displayBirthDateCalendar: false as boolean,
     typesOfContract: [
-        { label: 'Internal', value: 'Internal' },
-        { label: 'External', value: 'External' },
+      { label: 'Internal', value: 'Internal' },
+      { label: 'External', value: 'External' },
     ],
     isDeleted: false,
     drawerEmployeeReactivate: false,
@@ -88,9 +85,9 @@ export default defineComponent({
   computed: {
     getAge() {
       if (this.employee.person?.personBirthday) {
-        const birthday = (this.employee.person?.personBirthday instanceof Date) 
-        ? DateTime.fromJSDate(this.employee.person?.personBirthday)
-        : DateTime.fromISO(this.employee.person?.personBirthday)
+        const birthday = (this.employee.person?.personBirthday instanceof Date)
+          ? DateTime.fromJSDate(this.employee.person?.personBirthday)
+          : DateTime.fromISO(this.employee.person?.personBirthday)
         const now = DateTime.now()
         const year = now.diff(birthday, 'years').years
         return Math.floor(year)
@@ -99,96 +96,35 @@ export default defineComponent({
     }
   },
   watch: {
-    'employee.departmentId': function(newVal) {
-      if (newVal) {
-        this.getPositions(newVal);
-      }
-    },
-    'activeSwicht': function (newVal) {
-      this.employee.employeeWorkSchedule = newVal ? 'Onsite' : 'Remote'
-    },
-    'employee.employeeHireDate' (val: Date) {
-      this.employeeHireDate = this.getHireDateFormatted(val)
-    },
-    'employee.employeeTerminatedDate' (val: Date) {
-      this.employeeTerminatedDate = this.getTerminatedDateFormatted(val)
-    },
-    'employee.person.personBirthday' (val: Date) {
+    'employee.person.personBirthday'(val: Date) {
       this.personBirthday = this.getBirthdayFormatted(val)
     }
   },
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee?.employeeId ? true : false
-    // this.setFormatDates()
-    await Promise.all([
-      this.getBusinessUnits(),
-      this.getDepartments(),
-      this.getEmployeeTypes()
-    ])
 
     if (!this.isNewUser) {
       this.activeSwicht = this.employee.employeeWorkSchedule === 'Onsite' ? true : false
 
-      if (this.employee.employeeHireDate) {
-        const hireDate = DateTime.fromISO(`${this.employee.employeeHireDate}T00:00:00.000-06:00`, { setZone: true })
-          .setZone('America/Mexico_City')
-          .setLocale('en')
-          .toJSDate()
-
-        this.employee.employeeHireDate = hireDate
-        this.employeeHireDate = this.getHireDateFormatted(this.employee.employeeHireDate as Date)
-      }
-
-      if (this.employee.employeeTerminatedDate) {
-        const terminatedDate = DateTime.fromISO(`${this.employee.employeeTerminatedDate.toString().split('T')[0] + 'T00:00:00.000-06:00'}`, { setZone: true })
-          .setZone('America/Mexico_City')
-          .setLocale('en')
-          .toJSDate()
-        this.employee.employeeTerminatedDate = terminatedDate
-        this.employeeTerminatedDate = this.getTerminatedDateFormatted(this.employee.employeeTerminatedDate as Date)
-      }
 
       if (this.employee?.person?.personBirthday) {
-        const year = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[0]
-        const month = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[1]
-        const day = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[2]
-
-        const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
-          .setZone('America/Mexico_City')
-          .setLocale('en')
-          .toJSDate()
-
-        this.employee.person.personBirthday = birthDay
         this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
       }
       if (this.employee.deletedAt) {
         this.isDeleted = true
       }
+      if (this.employee?.person?.personPlaceOfBirthCountry) {
+        this.selectCountry = this.employee?.person?.personPlaceOfBirthCountry
+      }
+      if (this.employee?.person?.personPlaceOfBirthState) {
+        this.selectState = this.employee?.person?.personPlaceOfBirthState
+      }
+      if (this.employee?.person?.personPlaceOfBirthCity) {
+        this.selectCity = this.employee?.person?.personPlaceOfBirthCity
+      }
 
-      await this.getPositions(this.employee.departmentId)
-      if (this.employee.department) {
-        const existCurrentDepartment = this.departments.find(a => a.departmentId === this.employee.departmentId)
-        if (!existCurrentDepartment) {
-          this.departments.push(this.employee.department)
-        }
-      }
-      if (this.employee.position) {
-        const existCurrentPosition = this.positions.find(a => a.positionId === this.employee.positionId)
-        if (!existCurrentPosition) {
-          this.positions.push(this.employee.position)
-        }
-      }
-    } else {
-      this.employee.employeeAssistDiscriminator = 0
-
-      if (this.businessUnits.length > 0) {
-        this.employee.businessUnitId = this.businessUnits[0].businessUnitId
-      }
     }
-    
-    
-
     this.isReady = true
   },
   methods: {
@@ -212,44 +148,6 @@ export default defineComponent({
         const list = response.status === 200 ? response._data.data.places : []
         this.filteredCities = list
       }
-    },
-    async getPositions(departmentId: number) {
-      const positionService = new PositionService()
-      this.positions = await positionService.getPositionsDepartment(departmentId)
-    },
-    async getDepartments() {
-      let response = null
-      const departmentService = new DepartmentService()
-      response = await departmentService.getAllDepartmentList()
-      this.departments = response._data.data.departments
-    },
-    async getEmployeeTypes() {
-      let response = null
-      const employeeTypeService = new EmployeeTypeService()
-      response = await employeeTypeService.getFilteredList('')
-      this.employeeTypes = response._data.data.employeeTypes.data
-      this.setDefaultEmployeeType(response._data.data.employeeTypes.data)
-    },
-    setDefaultEmployeeType(employeeTypes: any) {
-      if (this.pilot) {
-        this.employee.employeeTypeId = employeeTypes.find((employeeType: any) => employeeType.employeeTypeSlug === 'pilot')?.employeeTypeId
-      } else if(this.flightAttendant) {
-        this.employee.employeeTypeId = employeeTypes.find((employeeType: any) => employeeType.employeeTypeSlug === 'flight-attendant')?.employeeTypeId
-      }
-    },
-    onUpload(event: any) {
-      this.employee.employeePhoto = event.files[0];
-    },
-    onSelect(event: any) {
-      this.employee.employeePhoto = event.files[0];
-    },
-    validateFiles(event: any) {
-      let validFiles = event.files;
-      this.files = validFiles;
-      this.$forceUpdate()
-    },
-    getObjectURL(file: any) {
-      return URL.createObjectURL(file);
     },
     dateYear(date: string) {
       if (!date) {
@@ -310,18 +208,7 @@ export default defineComponent({
       }
     },
     getDate(date: string) {
-      return  DateTime.fromJSDate(new Date(date)).toFormat('yyyy-MM-dd');
-    },
-    hasPhotoEmployee() {
-      return (this.pilot && this.pilot.pilotPhoto) || (this.flightAttendant && this.flightAttendant.flightAttendantPhoto)
-    },
-    getUrlPhoto() {
-      if(this.pilot && this.pilot.pilotPhoto) {
-        return this.pilot.pilotPhoto
-      }
-      if(this.flightAttendant && this.flightAttendant.flightAttendantPhoto) {
-        return this.flightAttendant.flightAttendantPhoto
-      }
+      return DateTime.fromJSDate(new Date(date)).toFormat('yyyy-MM-dd');
     },
     async onSave() {
       this.isEmailInvalid = false
@@ -332,36 +219,7 @@ export default defineComponent({
       const personService = new PersonService()
       const pilotService = new PilotService()
       const flightAttendantService = new FlightAttendantService()
-    
-      if (!employeeService.validateEmployeeInfo(this.employee)) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-            life: 5000,
-        })
-        return
-      }
-      if (this.employee.person?.personCurp && !personService.isValidCURP(this.employee.person?.personCurp)) {
-        this.isValidCURP = false
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Personal identification is not valid',
-            life: 5000,
-        })
-        return
-      }
-      if (this.employee.person?.personRfc && !personService.isValidRFC(this.employee.person?.personRfc)) {
-        this.isValidRFC = false
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'RFC is not valid',
-            life: 5000,
-        })
-        return
-      }
+
       if (this.pilot !== null && this.files.length > 1) {
         this.$toast.add({
           severity: 'warn',
@@ -370,7 +228,7 @@ export default defineComponent({
           life: 5000,
         })
         return
-      } else if(this.pilot !== null){
+      } else if (this.pilot !== null) {
         for await (const file of this.files) {
           if (file) {
             const mimeType = file.type;
@@ -413,13 +271,13 @@ export default defineComponent({
         personUpdatedAt: this.employee.person?.personUpdatedAt ?? null,
         personDeletedAt: null,
       }
-      if (typeof this.selectCountry === 'string' && this.selectCountry.trim() !== '' && !person.personPlaceOfBirthCountry) {
+      if (typeof this.selectCountry === 'string' && this.selectCountry.trim() !== '') {
         person.personPlaceOfBirthCountry = this.selectCountry
       }
-      if (typeof this.selectState === 'string' && this.selectState.trim() !== '' && !person.personPlaceOfBirthState) {
+      if (typeof this.selectState === 'string' && this.selectState.trim() !== '') {
         person.personPlaceOfBirthState = this.selectState
       }
-      if (typeof this.selectCity === 'string' && this.selectCity.trim() !== '' && !person.personPlaceOfBirthCity) {
+      if (typeof this.selectCity === 'string' && this.selectCity.trim() !== '') {
         person.personPlaceOfBirthCity = this.selectCity
       }
       let personResponse = null
@@ -440,11 +298,11 @@ export default defineComponent({
           severity: 'error',
           summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         return
       }
-      
+
 
       let employeeResponse = null
       const terminatedDateTemp = this.employee.employeeTerminatedDate
@@ -458,7 +316,7 @@ export default defineComponent({
           severity: 'success',
           summary: `User ${this.employee.employeeId ? 'updated' : 'created'}`,
           detail: employeeResponse._data.message,
-            life: 5000,
+          life: 5000,
         })
         employeeResponse = await employeeService.show(employeeResponse._data.data.employee.employeeId)
         if (employeeResponse?.status === 200 && this.pilot === null && this.flightAttendant === null) {
@@ -478,13 +336,13 @@ export default defineComponent({
             pilotResponse = await pilotService.store(this.pilot, image)
           } else {
             pilotResponse = await pilotService.update(this.pilot, image)
-           }
+          }
           if (pilotResponse.status === 201 || pilotResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
               summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
               detail: pilotResponse._data.message,
-                life: 5000,
+              life: 5000,
             })
             pilotResponse = await pilotService.show(pilotResponse._data.data.pilot.pilotId)
             if (pilotResponse?.status === 200) {
@@ -497,7 +355,7 @@ export default defineComponent({
               severity: 'error',
               summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
               detail: msgError,
-                life: 5000,
+              life: 5000,
             })
           }
         }
@@ -520,7 +378,7 @@ export default defineComponent({
               severity: 'success',
               summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
               detail: FlightAttendantResponse._data.message,
-                life: 5000,
+              life: 5000,
             })
             FlightAttendantResponse = await flightAttendantService.show(FlightAttendantResponse._data.data.flightAttendant.flightAttendantId)
             if (FlightAttendantResponse?.status === 200) {
@@ -533,7 +391,7 @@ export default defineComponent({
               severity: 'error',
               summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
               detail: msgError,
-                life: 5000,
+              life: 5000,
             })
           }
         }
@@ -543,12 +401,12 @@ export default defineComponent({
           severity: 'error',
           summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
       }
       this.employee.employeeTerminatedDate = terminatedDateTemp
     },
-    async onReactivate () {
+    async onReactivate() {
       this.drawerEmployeeReactivate = true
     },
     convertToDateTime(birthday: string | Date | null): Date | null {
@@ -563,20 +421,7 @@ export default defineComponent({
       const date = new Date(birthday);
       return isNaN(date.getTime()) ? null : date;
     },
-    getShiftExceptions() {
-      this.drawerShiftExceptions = true
-    },
-    getShifts() {
-      this.drawerShifts = true
-    },
-    getProceedingFiles() {
-      this.drawerProceedingFiles = true
-    },
-    async getBusinessUnits () {
-      const body = await new BusinessUnitService().index()
-      this.businessUnits =  body.status === 200 ? body._data.data.data || [] : []
-    },
-    getHireDateFormatted (date: Date) {
+    getHireDateFormatted(date: Date) {
       if (!this.employee.employeeHireDate) {
         return ''
       }
@@ -586,7 +431,7 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDDD')
     },
-    getTerminatedDateFormatted (date: Date) {
+    getTerminatedDateFormatted(date: Date) {
       if (!this.employee.employeeTerminatedDate) {
         return ''
       }
@@ -596,7 +441,7 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDDD')
     },
-    getBirthdayFormatted (date: Date) {
+    getBirthdayFormatted(date: Date) {
       if (!this.employee.employeeHireDate) {
         return ''
       }
@@ -606,46 +451,19 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDD')
     },
-    handlerDisplayHireDate () {
+    handlerDisplayHireDate() {
       this.displayHireDateCalendar = true
     },
-    handlerDisplayTerminatedDate () {
+    handlerDisplayTerminatedDate() {
       this.displayTerminatedDateCalendar = true
     },
-    handlerDisplayBirthDate () {
+    handlerDisplayBirthDate() {
       this.displayBirthDateCalendar = true
     },
-    onCancelEmployeeReactivate () {
+    onCancelEmployeeReactivate() {
       this.drawerEmployeeReactivate = false
     },
-    async confirmReactivate () {
-      const employeeService = new EmployeeService()
-      let employeeResponse = await employeeService.reactivate(this.employee)
-      if (employeeResponse.status === 200) {
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Employee Reactivate',
-          detail: employeeResponse._data.message,
-            life: 5000,
-        })
-        employeeResponse = await employeeService.show(employeeResponse._data.data.employee.employeeId)
-        if (employeeResponse?.status === 200) {
-          const employee = employeeResponse._data.data.employee
-          this.drawerEmployeeReactivate = false
-          this.$emit('save', employee as EmployeeInterface)
-        }
-      } else {
-        const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Employee Reactivate',
-          detail: msgError,
-            life: 5000,
-        })
-        return
-      }
-    },
-    handlerClickOnClose () {
+    handlerClickOnClose() {
       if (this.clickOnClose) {
         this.clickOnClose()
       }
@@ -665,6 +483,5 @@ export default defineComponent({
         this.employee.person.personPlaceOfBirthCity = selectedOption.value.personPlaceOfBirthCity
       }
     }
-    
   }
 })
