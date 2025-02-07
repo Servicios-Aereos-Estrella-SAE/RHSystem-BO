@@ -39,7 +39,9 @@ export default defineComponent({
       }
     },
     openFile() {
-      window.open(this.workDisabilityPeriod?.workDisabilityPeriodFile)
+      if (this.workDisabilityPeriod.workDisabilityPeriodFile) {
+        window.open(this.workDisabilityPeriod?.workDisabilityPeriodFile)
+      }
     },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual

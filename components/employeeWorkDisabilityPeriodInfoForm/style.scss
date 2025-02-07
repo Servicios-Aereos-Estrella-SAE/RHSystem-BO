@@ -1,38 +1,30 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
 
-.work-disability-period-info-form {
-  position: relative;
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+.work-disability-info-form {
+  
+  .period-applied {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    
+    .period-applied-date {
+      display: grid;
+      grid-template-columns: 2rem auto;
+      gap: 0.5rem;
+      align-items: center;
 
-  h1 {
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-    border-bottom: $border-dashed;
-    padding-bottom: 1.5rem;
-  }
+      .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-  .box-tools-footer {
-    box-sizing: border-box;
-    display: flex;
-    grid-auto-flow: dense;
-    justify-content: center;
-    grid-template-columns: 1fr;
-    gap: .5rem;
-    margin-top: 0.5rem;
-  }
+        svg {
+          width: 1.5rem;
+        }
+      }
+    }
 
-  .loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
-  }
-  .work-disability-periods-wrapper {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 0.5rem;
+    strong {
+      font-weight: 500;
+    }
   }
 }

@@ -62,6 +62,20 @@
     .no-shift {
       color: transparentize($color: $warning, $amount: 0.25);
     }
+
+    .label-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon {
+        width: 2rem;
+
+        svg {
+          width: 1rem;
+        }
+      }
+    }
   }
 
   .tools {
