@@ -125,6 +125,28 @@ export default defineComponent({
       }
 
     }
+
+    if (this.employee.employeeId) {
+      const employeeService = new EmployeeService()
+      const employeeResponse = await employeeService.show(this.employee.employeeId)
+      if (employeeResponse && employeeResponse.status === 200) {
+        this.employee.person = employeeResponse._data.data.employee.person
+        if (this.employee?.person?.personBirthday) {
+          const year = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[0]
+          const month = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[1]
+          const day = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[2]
+
+          const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
+            .setZone('America/Mexico_City')
+            .setLocale('en')
+            .toJSDate()
+
+          this.employee.person.personBirthday = birthDay
+          this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
+        }
+      }
+    }
+
     this.isReady = true
   },
   methods: {
@@ -216,9 +238,6 @@ export default defineComponent({
       this.isValidCURP = true
       this.isValidRFC = true
       const employeeService = new EmployeeService()
-      const personService = new PersonService()
-      const pilotService = new PilotService()
-      const flightAttendantService = new FlightAttendantService()
 
       if (this.pilot !== null && this.files.length > 1) {
         this.$toast.add({
@@ -292,6 +311,14 @@ export default defineComponent({
           ...this.employee.person,
           personId: personResponse._data.data.person.personId
         } as PeopleInterface
+        const person = personResponse._data.data.person
+        this.$emit('savePerson', person as PeopleInterface)
+        this.$toast.add({
+          severity: 'success',
+          summary: `Person ${person.personId ? 'updated' : 'created'}`,
+          detail: personResponse._data.message,
+          life: 5000,
+        })
       } else {
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
@@ -302,109 +329,6 @@ export default defineComponent({
         })
         return
       }
-
-
-      let employeeResponse = null
-      const terminatedDateTemp = this.employee.employeeTerminatedDate
-      if (!this.employee.employeeId) {
-        employeeResponse = await employeeService.store(this.employee)
-      } else {
-        employeeResponse = await employeeService.update(this.employee)
-      }
-      if (employeeResponse.status === 201) {
-        this.$toast.add({
-          severity: 'success',
-          summary: `User ${this.employee.employeeId ? 'updated' : 'created'}`,
-          detail: employeeResponse._data.message,
-          life: 5000,
-        })
-        employeeResponse = await employeeService.show(employeeResponse._data.data.employee.employeeId)
-        if (employeeResponse?.status === 200 && this.pilot === null && this.flightAttendant === null) {
-          const employee = employeeResponse._data.data.employee
-          this.$emit('save', employee as EmployeeInterface)
-        }
-        let pilotResponse = null
-        if (this.pilot !== null && employeeResponse?.status === 200) {
-          const image = this.files.length > 0 ? this.files[0] : null
-          this.pilot.pilotHireDate = this.employee.employeeHireDate
-          this.pilot.employeeId = employeeResponse._data.data.employee.employeeId
-          this.formatDate('hireDate', true)
-          if (this.pilot.pilotHireDate) {
-            this.pilot.pilotHireDate = this.getDate(this.pilot.pilotHireDate.toString())
-          }
-          if (!this.pilot.pilotId) {
-            pilotResponse = await pilotService.store(this.pilot, image)
-          } else {
-            pilotResponse = await pilotService.update(this.pilot, image)
-          }
-          if (pilotResponse.status === 201 || pilotResponse.status === 200) {
-            this.$toast.add({
-              severity: 'success',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
-              detail: pilotResponse._data.message,
-              life: 5000,
-            })
-            pilotResponse = await pilotService.show(pilotResponse._data.data.pilot.pilotId)
-            if (pilotResponse?.status === 200) {
-              const pilot = pilotResponse._data.data.pilot
-              this.$emit('save', pilot as PilotInterface)
-            }
-          } else {
-            const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
-            this.$toast.add({
-              severity: 'error',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
-              detail: msgError,
-              life: 5000,
-            })
-          }
-        }
-        let FlightAttendantResponse = null
-        if (this.flightAttendant !== null && employeeResponse?.status === 200) {
-          const image = this.files.length > 0 ? this.files[0] : null
-          this.flightAttendant.flightAttendantHireDate = this.employee.employeeHireDate
-          this.flightAttendant.employeeId = employeeResponse._data.data.employee.employeeId
-          this.formatDate('hireDate', false)
-          if (this.flightAttendant.flightAttendantHireDate) {
-            this.flightAttendant.flightAttendantHireDate = this.getDate(this.flightAttendant.flightAttendantHireDate.toString())
-          }
-          if (!this.flightAttendant.flightAttendantId) {
-            FlightAttendantResponse = await flightAttendantService.store(this.flightAttendant, image)
-          } else {
-            FlightAttendantResponse = await flightAttendantService.update(this.flightAttendant, image)
-          }
-          if (FlightAttendantResponse.status === 201 || FlightAttendantResponse.status === 200) {
-            this.$toast.add({
-              severity: 'success',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
-              detail: FlightAttendantResponse._data.message,
-              life: 5000,
-            })
-            FlightAttendantResponse = await flightAttendantService.show(FlightAttendantResponse._data.data.flightAttendant.flightAttendantId)
-            if (FlightAttendantResponse?.status === 200) {
-              const flightAttendant = FlightAttendantResponse._data.data.flightAttendant
-              this.$emit('save', flightAttendant as FlightAttendantInterface)
-            }
-          } else {
-            const msgError = FlightAttendantResponse._data.error ? FlightAttendantResponse._data.error : FlightAttendantResponse._data.message
-            this.$toast.add({
-              severity: 'error',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
-              detail: msgError,
-              life: 5000,
-            })
-          }
-        }
-      } else {
-        const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
-        this.$toast.add({
-          severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
-          detail: msgError,
-          life: 5000,
-        })
-      }
-      this.employee.employeeTerminatedDate = terminatedDateTemp
     },
     async onReactivate() {
       this.drawerEmployeeReactivate = true
@@ -449,7 +373,7 @@ export default defineComponent({
       return DateTime.fromJSDate(date)
         .setZone('America/Mexico_City')
         .setLocale('en')
-        .toFormat('DDD')
+        .toFormat('DDDD')
     },
     handlerDisplayHireDate() {
       this.displayHireDateCalendar = true
