@@ -133,7 +133,7 @@
           </div>
         
           <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm" :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }"/>
-          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }"/>
+          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete"/>
           <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }"/>
         </Sidebar>
 

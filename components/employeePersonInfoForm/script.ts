@@ -19,6 +19,7 @@ import type { StateSearchInterface } from '~/resources/scripts/interfaces/StateS
 import type { EmployeeSpouseInterface } from '~/resources/scripts/interfaces/EmployeeSpouseInterface';
 import EmployeeSpouseService from '~/resources/scripts/services/EmployeeSpouseService';
 import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/EmployeeChildrenInterface';
+import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildrenService';
 
 export default defineComponent({
   components: {
@@ -32,6 +33,8 @@ export default defineComponent({
     flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: false, default: null },
     clickOnSave: { type: Function, default: null },
     clickOnClose: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canDelete: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     activeSwicht: true,
@@ -86,7 +89,9 @@ export default defineComponent({
     selectCity: '',
     employeeSpouse: null as EmployeeSpouseInterface | null,
     employeeChildren: null as EmployeeChildrenInterface | null,
-    drawerEmployeeChildrenForm: false
+    drawerEmployeeChildrenForm: false,
+    drawerEmployeeChildrenDelete: false,
+    employeeChildrenList: [] as EmployeeChildrenInterface[],
   }),
   computed: {
     getAge() {
@@ -137,8 +142,9 @@ export default defineComponent({
     if (this.employee.employeeId) {
       const employeeService = new EmployeeService()
       const employeeResponse = await employeeService.show(this.employee.employeeId)
-     
+
       if (employeeResponse && employeeResponse.status === 200) {
+        this.employeeChildrenList = employeeResponse._data.data.employee.children
         this.employee.person = employeeResponse._data.data.employee.person
         if (this.employee?.person?.personBirthday) {
           const year = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[0]
@@ -156,7 +162,7 @@ export default defineComponent({
         if (employeeResponse._data.data.employee.spouse) {
           this.employeeSpouse = employeeResponse._data.data.employee.spouse
           this.setSpouseBirthday()
-        
+
         }
       }
       if (!this.employeeSpouse) {
@@ -171,8 +177,6 @@ export default defineComponent({
         }
       }
     }
-    
-   
     this.isReady = true
   },
   methods: {
@@ -310,12 +314,12 @@ export default defineComponent({
         const employeeSpouseService = new EmployeeSpouseService()
         if (this.employeeSpouse) {
           if (!employeeSpouseService.validateInfo(this.employeeSpouse)) {
-             this.$toast.add({
-                severity: 'warn',
-                summary: 'Validation data',
-                detail: 'Missing data',
-                life: 5000,
-              })
+            this.$toast.add({
+              severity: 'warn',
+              summary: 'Validation data',
+              detail: 'Missing data',
+              life: 5000,
+            })
             return
           }
           const employeeSpouseBirthday: string | Date | null = this.employeeSpouse.employeeSpouseBirthday ?? null
@@ -333,13 +337,13 @@ export default defineComponent({
               detail: employeeSpouseResponse._data.message,
               life: 5000,
             })
-            
+
             employeeSpouseResponse = await employeeSpouseService.show(employeeSpouseResponse._data.data.employeeSpouse.employeeSpouseId)
             if (employeeSpouseResponse.status === 200) {
               this.employeeSpouse = JSON.parse(JSON.stringify(employeeSpouseResponse._data.data.employeeSpouse.employeeSpouse))
               this.setSpouseBirthday()
             }
-           
+
           } else {
             const msgError = employeeSpouseResponse._data.error ? employeeSpouseResponse._data.error : employeeSpouseResponse._data.message
             this.$toast.add({
@@ -351,7 +355,7 @@ export default defineComponent({
             return
           }
         }
-        
+
       }
       const lastnames = this.employee.employeeLastName.split(' ')
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
@@ -492,7 +496,7 @@ export default defineComponent({
         this.employee.person.personPlaceOfBirthCity = selectedOption.value.personPlaceOfBirthCity
       }
     },
-    addNewChildren () {
+    addNewChildren() {
       if (this.employee.employeeId) {
         const newEmployeeChildren: EmployeeChildrenInterface = {
           employeeChildrenId: null,
@@ -507,8 +511,56 @@ export default defineComponent({
         this.drawerEmployeeChildrenForm = true
       }
     },
-    onSaveChildren() {
+    onEditEmployeeChildren(employeeChildren: EmployeeChildrenInterface) {
+      this.employeeChildren = { ...employeeChildren };
+      this.drawerEmployeeChildrenForm = true;
+    },
+    onDeleteEmployeeChildren(employeeChildren: EmployeeChildrenInterface) {
+      this.employeeChildren = { ...employeeChildren };
+      this.drawerEmployeeChildrenDelete = true;
+    },
+    onCancelEmployeeChildrenDelete() {
+      this.drawerEmployeeChildrenDelete = false
+    },
+    async confirmDeleteEmployeeChildren() {
+      if (this.employeeChildren) {
+        this.drawerEmployeeChildrenDelete = false;
+        const employeeChildrenService = new EmployeeChildrenService();
+        const employeeChildrenResponse = await employeeChildrenService.delete(this.employeeChildren);
 
+        if (employeeChildrenResponse.status === 201) {
+          const index = this.employeeChildrenList.findIndex((employeeChildren: EmployeeChildrenInterface) => employeeChildren.employeeChildrenId === this.employeeChildren?.employeeChildrenId);
+          if (index !== -1) {
+            this.employeeChildrenList.splice(index, 1);
+            this.$forceUpdate();
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete employee children',
+            detail: employeeChildrenResponse._data.message,
+            life: 5000,
+          });
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete employee children',
+            detail: employeeChildrenResponse._data.message,
+            life: 5000,
+          });
+        }
+      }
+    },
+    onSaveChildren(employeeChildren: EmployeeChildrenInterface) {
+      this.employeeChildren = { ...employeeChildren };
+      const index = this.employeeChildrenList.findIndex((a: EmployeeChildrenInterface) => a.employeeChildrenId === this.employeeChildren?.employeeChildrenId);
+      if (index !== -1) {
+        this.employeeChildrenList[index] = employeeChildren;
+        this.$forceUpdate();
+      } else {
+        this.employeeChildrenList.push(employeeChildren);
+        this.$forceUpdate();
+      }
+      this.drawerEmployeeChildrenForm = false;
     }
   }
 })

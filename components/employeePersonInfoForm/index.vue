@@ -47,62 +47,6 @@
             placeholder="Enter employee phone" :disabled="isDeleted" />
         </div>
         <div class="input-box">
-          <label for="personMaritalStatus">Marital status</label>
-          <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label"
-            optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem" :disabled="isDeleted" />
-        </div>
-        <div v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'" class="spouse-info">
-          <h4>Spouse information</h4>
-          <div class="input-box">
-            <label for="employeeSpouseFirstname">First Name</label>
-            <InputText v-model="employeeSpouse.employeeSpouseFirstname" placeholder="Enter First Name" :disabled="isDeleted"/>
-            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseFirstname">First name is required.</small>
-          </div>
-          <div class="input-box">
-            <label for="employeeSpouseLastname">Last Name</label>
-            <InputText v-model="employeeSpouse.employeeSpouseLastname" placeholder="Enter Last Name" :disabled="isDeleted"/>
-            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseLastname">Last name is required.</small>
-          </div>
-          <div class="input-box">
-            <label for="employeeSpouseSecondLastName">Second Last Name</label>
-            <InputText v-model="employeeSpouse.employeeSpouseSecondLastname" placeholder="Enter Second Last Name" :disabled="isDeleted"/>
-            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last name is required.</small>
-          </div>
-          <div class="input-box">
-            <label for="employeeSpouseOcupation">Ocupation</label>
-            <InputText v-model="employeeSpouse.employeeSpouseOcupation" placeholder="Enter Ocupation" :disabled="isDeleted"/>
-            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseOcupation">Ocupation is required.</small>
-          </div>
-          <div class="input-box">
-            <div class="hire-date-box-container">
-              <label for="employeeSpouseBirthDate">Birthday</label>
-              <div v-if="!displaySpouseBirthDateCalendar" class="hire-date-box">
-                <InputText v-model="spouseBirthday" readonly class="capitalize" :disabled="isDeleted" />
-                <Button type="button" class="btn btn-block" id="display-input-hiredate" @click="handlerDisplaySpouseBirthDate"
-                  :disabled="isDeleted">
-                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
-                      fill="#88a4bf" class="fill-212121"></path>
-                  </svg>
-                </Button>
-              </div>
-              <div v-if="displaySpouseBirthDateCalendar" class="hire-date-box-controller">
-                <Calendar v-model="employeeSpouse.employeeSpouseBirthday" placeholder="Select birthday" :disabled="isDeleted" />
-                <Button type="button" class="btn btn-block" id="display-input-hiredate"
-                  @click="displaySpouseBirthDateCalendar = false">
-                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
-                      fill="#88a4bf" class="fill-212121"></path>
-                  </svg>
-                </Button>
-              </div><br>
-            </div><small style="position: absolute;" class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseBirthday">Birthday is required.</small>
-          </div>
-          
-        </div>
-        <div class="input-box">
           <label for="country">
             Place of birth country
           </label>
@@ -151,13 +95,108 @@
             </template>
           </AutoComplete>
         </div>
-        <div v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'" class="spouse-info">
+        <div class="input-box">
+          <label for="personMaritalStatus">Marital status</label>
+          <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label"
+            optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem" :disabled="isDeleted" />
+        </div>
+        <div
+          v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'"
+          class="spouse-info">
+          <h4>Spouse information</h4>
+          <div class="input-box">
+            <label for="employeeSpouseFirstname">First Name</label>
+            <InputText v-model="employeeSpouse.employeeSpouseFirstname" placeholder="Enter First Name"
+              :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseFirstname">First name is
+              required.</small>
+          </div>
+          <div class="input-box">
+            <label for="employeeSpouseLastname">Last Name</label>
+            <InputText v-model="employeeSpouse.employeeSpouseLastname" placeholder="Enter Last Name"
+              :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseLastname">Last name is
+              required.</small>
+          </div>
+          <div class="input-box">
+            <label for="employeeSpouseSecondLastName">Second Last Name</label>
+            <InputText v-model="employeeSpouse.employeeSpouseSecondLastname" placeholder="Enter Second Last Name"
+              :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last name is
+              required.</small>
+          </div>
+          <div class="input-box">
+            <label for="employeeSpouseOcupation">Ocupation</label>
+            <InputText v-model="employeeSpouse.employeeSpouseOcupation" placeholder="Enter Ocupation"
+              :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseOcupation">Ocupation is
+              required.</small>
+          </div>
+          <div class="input-box">
+            <div class="hire-date-box-container">
+              <label for="employeeSpouseBirthDate">Birthday</label>
+              <div v-if="!displaySpouseBirthDateCalendar" class="hire-date-box">
+                <InputText v-model="spouseBirthday" readonly class="capitalize" :disabled="isDeleted" />
+                <Button type="button" class="btn btn-block" id="display-input-hiredate"
+                  @click="handlerDisplaySpouseBirthDate" :disabled="isDeleted">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
+                      fill="#88a4bf" class="fill-212121"></path>
+                  </svg>
+                </Button>
+              </div>
+              <div v-if="displaySpouseBirthDateCalendar" class="hire-date-box-controller">
+                <Calendar v-model="employeeSpouse.employeeSpouseBirthday" placeholder="Select birthday"
+                  :disabled="isDeleted" />
+                <Button type="button" class="btn btn-block" id="display-input-hiredate"
+                  @click="displaySpouseBirthDateCalendar = false">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                      fill="#88a4bf" class="fill-212121"></path>
+                  </svg>
+                </Button>
+              </div><br>
+            </div><small style="position: absolute;" class="p-error"
+              v-if="submitted && !employeeSpouse.employeeSpouseBirthday">Birthday is required.</small>
+          </div>
+
+        </div>
+        <br>
+        <div class="children-info">
           <h4>Children information</h4>
-          <div class="head">
+          <div class="head-page">
+            <div></div>
             <Button v-if="!isDeleted" class="btn btn-block" @click="addNewChildren">
-              <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z" fill="#88a4bf" class="fill-000000"></path></svg>
+              <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                  fill="#88a4bf" class="fill-000000"></path>
+              </svg>
               Add children
             </Button>
+          </div>
+          <div v-if="employeeChildrenList.length > 0" class="employee-children-card-wrapper">
+            <div v-for="(employeeChildren, index) in employeeChildrenList"
+              :key="`employee-children-${employeeChildren.employeeChildrenId}-${index}`">
+              <EmployeeChildrenInfoCard :employeeChildren="employeeChildren" :can-update="canUpdate"
+                :can-delete="canDelete" :click-on-edit="() => { onEditEmployeeChildren(employeeChildren) }"
+                :click-on-delete="() => { onDeleteEmployeeChildren(employeeChildren) }" />
+            </div>
+          </div>
+          <div v-else class="empty">
+            <div>
+              <div class="icon">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M17.25 10a7.25 7.25 0 1 0-2.681 5.63l4.9 4.9.085.073a.75.75 0 0 0 .976-1.133l-4.9-4.901A7.22 7.22 0 0 0 17.25 10ZM11 7a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1 2a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 9Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
+              </div>
+              No children results
+            </div>
           </div>
         </div>
         <div class="box-tools-footer">
@@ -169,13 +208,18 @@
             @cancelReactivate="onCancelEmployeeReactivate" />
         </transition>
 
-        <Sidebar v-model:visible="drawerEmployeeChildrenForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
-          <div v-if="employee && employee.employeeId > 0" >
-            <employeeModalInfoCard :employee="employee"/>
+        <Sidebar v-model:visible="drawerEmployeeChildrenForm" :blockScroll="true" :closeOnEscape="false"
+          :dismissable="false" header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+          <div v-if="employee && employee.employeeId > 0">
+            <employeeModalInfoCard :employee="employee" />
           </div>
-          <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted" @save="onSaveChildren"/>
+          <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted"
+            @save="onSaveChildren" />
         </Sidebar>
+        <transition name="page">
+          <confirmDelete v-if="drawerEmployeeChildrenDelete" @confirmDelete="confirmDeleteEmployeeChildren"
+            @cancelDelete="onCancelEmployeeChildrenDelete" />
+        </transition>
       </div>
     </div>
     <div v-else class="loader">

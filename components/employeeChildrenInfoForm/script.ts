@@ -20,9 +20,9 @@ export default defineComponent({
   data: () => ({
     submitted: false,
     genders: [
-        { label: 'Male', value: 'Hombre' },
-        { label: 'Female', value: 'Mujer' },
-        { label: 'Other', value: 'Otro' }
+      { label: 'Male', value: 'Hombre' },
+      { label: 'Female', value: 'Mujer' },
+      { label: 'Other', value: 'Otro' }
     ],
     isNewChildren: false,
     isReady: false,
@@ -34,7 +34,7 @@ export default defineComponent({
   watch: {
     'employeeChildren.employeeChildrenBirthday'(val: Date) {
       this.childrenBirthday = this.getBirthdayFormatted(val)
-  },
+    },
   },
   async mounted() {
     this.isReady = false
@@ -43,7 +43,7 @@ export default defineComponent({
       this.setBirthday()
     }
     this.isReady = true
-   
+
   },
   methods: {
     setBirthday() {
@@ -66,12 +66,12 @@ export default defineComponent({
       const employeeChildrenService = new EmployeeChildrenService()
       if (this.employeeChildren) {
         if (!employeeChildrenService.validateInfo(this.employeeChildren)) {
-           this.$toast.add({
-              severity: 'warn',
-              summary: 'Validation data',
-              detail: 'Missing data',
-              life: 5000,
-            })
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Missing data',
+            life: 5000,
+          })
           return
         }
         const employeeChildrenBirthday: string | Date | null = this.employeeChildren.employeeChildrenBirthday ?? null
@@ -89,10 +89,9 @@ export default defineComponent({
             detail: employeeChildrenResponse._data.message,
             life: 5000,
           })
-          
+
           employeeChildrenResponse = await employeeChildrenService.show(employeeChildrenResponse._data.data.employeeChildren.employeeChildrenId)
-         
-         
+          this.$emit('save', employeeChildrenResponse._data.data.employeeChildren.employeeChildren as EmployeeChildrenInterface)
         } else {
           const msgError = employeeChildrenResponse._data.error ? employeeChildrenResponse._data.error : employeeChildrenResponse._data.message
           this.$toast.add({
