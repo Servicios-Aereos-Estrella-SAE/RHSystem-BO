@@ -1,0 +1,57 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+.children-info-form {
+    margin-top: 2.25rem;
+    position: relative;
+  
+    .hire-date-box-container {
+        width: 100%;
+        display: block;
+      }
+    
+      .hire-date-box {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 4rem;
+        gap: 0.5rem;
+      }
+    
+      .hire-date-box-controller {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 4rem;
+        gap: 0.5rem;
+      }
+    
+      .terminated-date-box-container {
+        width: 100%;
+        display: block;
+      }
+    
+      .terminated-date-box {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 4rem;
+        gap: 0.5rem;
+      }
+    
+      .terminated-date-box-controller {
+        width: 100%;
+        display: grid;
+        grid-template-columns: auto 4rem;
+        gap: 0.5rem;
+      }
+  
+    .box-tools-footer {
+      box-sizing: border-box;
+      display: flex;
+      grid-auto-flow: dense;
+      justify-content: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .5rem;
+      margin-top: 0.5rem;
+      button {
+        width: 100%;
+      }
+    }
+}

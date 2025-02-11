@@ -5,19 +5,12 @@
   margin-top: 2.25rem;
   position: relative;
 
-  .input-box {
-    .password-box {
-      box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 1fr 10rem;
-      gap: .5rem;
-      margin-top: 0.5rem;
-      @media screen and (max-width: $sm) {
-        grid-template-columns: 1fr 8rem;
-      }
-    }
+  .spouse-info {
+    //background-color: #f0f8ff; 
+    border: 1px solid #c1c1c1; 
+    padding: 1rem;
+    border-radius: 8px;
   }
-
   .box-tools-footer {
     box-sizing: border-box;
     display: flex;

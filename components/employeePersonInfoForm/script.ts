@@ -12,12 +12,13 @@ import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/Busin
 import { DateTime } from 'luxon';
 import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
 import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface';
-import PilotService from '~/resources/scripts/services/PilotService'
-import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
 import type { CountrySearchInterface } from '~/resources/scripts/interfaces/CountrySearchInterface';
 import type { CitySearchInterface } from '~/resources/scripts/interfaces/CitySearchInterface';
 import type { StateSearchInterface } from '~/resources/scripts/interfaces/StateSearchInterface';
+import type { EmployeeSpouseInterface } from '~/resources/scripts/interfaces/EmployeeSpouseInterface';
+import EmployeeSpouseService from '~/resources/scripts/services/EmployeeSpouseService';
+import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/EmployeeChildrenInterface';
 
 export default defineComponent({
   components: {
@@ -68,6 +69,8 @@ export default defineComponent({
     displayTerminatedDateCalendar: false as boolean,
     personBirthday: '' as string,
     displayBirthDateCalendar: false as boolean,
+    spouseBirthday: '' as string,
+    displaySpouseBirthDateCalendar: false as boolean,
     typesOfContract: [
       { label: 'Internal', value: 'Internal' },
       { label: 'External', value: 'External' },
@@ -81,6 +84,9 @@ export default defineComponent({
     selectCountry: '',
     selectState: '',
     selectCity: '',
+    employeeSpouse: null as EmployeeSpouseInterface | null,
+    employeeChildren: null as EmployeeChildrenInterface | null,
+    drawerEmployeeChildrenForm: false
   }),
   computed: {
     getAge() {
@@ -98,6 +104,9 @@ export default defineComponent({
   watch: {
     'employee.person.personBirthday'(val: Date) {
       this.personBirthday = this.getBirthdayFormatted(val)
+    },
+    'employeeSpouse.employeeSpouseBirthday'(val: Date) {
+      this.spouseBirthday = this.getBirthdayFormatted(val)
     }
   },
   async mounted() {
@@ -123,12 +132,12 @@ export default defineComponent({
       if (this.employee?.person?.personPlaceOfBirthCity) {
         this.selectCity = this.employee?.person?.personPlaceOfBirthCity
       }
-
     }
 
     if (this.employee.employeeId) {
       const employeeService = new EmployeeService()
       const employeeResponse = await employeeService.show(this.employee.employeeId)
+     
       if (employeeResponse && employeeResponse.status === 200) {
         this.employee.person = employeeResponse._data.data.employee.person
         if (this.employee?.person?.personBirthday) {
@@ -144,12 +153,44 @@ export default defineComponent({
           this.employee.person.personBirthday = birthDay
           this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
         }
+        if (employeeResponse._data.data.employee.spouse) {
+          this.employeeSpouse = employeeResponse._data.data.employee.spouse
+          this.setSpouseBirthday()
+        
+        }
+      }
+      if (!this.employeeSpouse) {
+        this.employeeSpouse = {
+          employeeSpouseId: null,
+          employeeSpouseFirstname: '',
+          employeeSpouseLastname: '',
+          employeeSpouseSecondLastname: '',
+          employeeSpouseBirthday: '',
+          employeeSpouseOcupation: '',
+          employeeId: this.employee.employeeId
+        }
       }
     }
-
+    
+   
     this.isReady = true
   },
   methods: {
+    setSpouseBirthday() {
+      if (this.employeeSpouse?.employeeSpouseBirthday) {
+        const year = `${this.employeeSpouse?.employeeSpouseBirthday}`.split('T')[0].split('-')[0]
+        const month = `${this.employeeSpouse?.employeeSpouseBirthday}`.split('T')[0].split('-')[1]
+        const day = `${this.employeeSpouse?.employeeSpouseBirthday}`.split('T')[0].split('-')[2]
+
+        const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
+          .setZone('America/Mexico_City')
+          .setLocale('en')
+          .toJSDate()
+
+        this.employeeSpouse.employeeSpouseBirthday = birthDay
+        this.spouseBirthday = this.getBirthdayFormatted(this.employeeSpouse?.employeeSpouseBirthday as Date)
+      }
+    },
     async handlerSearchCountries(event: any) {
       if (event.query.trim().length) {
         const response = await new PersonService().getPlacesBirth(event.query.trim(), 'countries')
@@ -265,8 +306,53 @@ export default defineComponent({
         }
       }
 
-
-      // convert employee last name to last name and second last name
+      if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
+        const employeeSpouseService = new EmployeeSpouseService()
+        if (this.employeeSpouse) {
+          if (!employeeSpouseService.validateInfo(this.employeeSpouse)) {
+             this.$toast.add({
+                severity: 'warn',
+                summary: 'Validation data',
+                detail: 'Missing data',
+                life: 5000,
+              })
+            return
+          }
+          const employeeSpouseBirthday: string | Date | null = this.employeeSpouse.employeeSpouseBirthday ?? null
+          this.employeeSpouse.employeeSpouseBirthday = this.convertToDateTime(employeeSpouseBirthday)
+          let employeeSpouseResponse = null
+          if (!this.employeeSpouse.employeeSpouseId) {
+            employeeSpouseResponse = await employeeSpouseService.store(this.employeeSpouse)
+          } else {
+            employeeSpouseResponse = await employeeSpouseService.update(this.employeeSpouse)
+          }
+          if (employeeSpouseResponse.status === 201 || employeeSpouseResponse.status === 200) {
+            this.$toast.add({
+              severity: 'success',
+              summary: `Employee spouse ${this.employeeSpouse.employeeSpouseId ? 'updated' : 'created'}`,
+              detail: employeeSpouseResponse._data.message,
+              life: 5000,
+            })
+            
+            employeeSpouseResponse = await employeeSpouseService.show(employeeSpouseResponse._data.data.employeeSpouse.employeeSpouseId)
+            if (employeeSpouseResponse.status === 200) {
+              this.employeeSpouse = JSON.parse(JSON.stringify(employeeSpouseResponse._data.data.employeeSpouse.employeeSpouse))
+              this.setSpouseBirthday()
+            }
+           
+          } else {
+            const msgError = employeeSpouseResponse._data.error ? employeeSpouseResponse._data.error : employeeSpouseResponse._data.message
+            this.$toast.add({
+              severity: 'error',
+              summary: `Employee spouse ${this.employeeSpouse.employeeSpouseId ? 'updated' : 'created'}`,
+              detail: msgError,
+              life: 5000,
+            })
+            return
+          }
+        }
+        
+      }
       const lastnames = this.employee.employeeLastName.split(' ')
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
 
@@ -366,10 +452,6 @@ export default defineComponent({
         .toFormat('DDDD')
     },
     getBirthdayFormatted(date: Date) {
-      if (!this.employee.employeeHireDate) {
-        return ''
-      }
-
       return DateTime.fromJSDate(date)
         .setZone('America/Mexico_City')
         .setLocale('en')
@@ -383,6 +465,9 @@ export default defineComponent({
     },
     handlerDisplayBirthDate() {
       this.displayBirthDateCalendar = true
+    },
+    handlerDisplaySpouseBirthDate() {
+      this.displaySpouseBirthDateCalendar = true
     },
     onCancelEmployeeReactivate() {
       this.drawerEmployeeReactivate = false
@@ -406,6 +491,24 @@ export default defineComponent({
       if (this.employee.person) {
         this.employee.person.personPlaceOfBirthCity = selectedOption.value.personPlaceOfBirthCity
       }
+    },
+    addNewChildren () {
+      if (this.employee.employeeId) {
+        const newEmployeeChildren: EmployeeChildrenInterface = {
+          employeeChildrenId: null,
+          employeeId: this.employee.employeeId,
+          employeeChildrenFirstname: '',
+          employeeChildrenLastname: '',
+          employeeChildrenSecondLastname: '',
+          employeeChildrenGender: '',
+          employeeChildrenBirthday: null
+        }
+        this.employeeChildren = newEmployeeChildren
+        this.drawerEmployeeChildrenForm = true
+      }
+    },
+    onSaveChildren() {
+
     }
   }
 })
