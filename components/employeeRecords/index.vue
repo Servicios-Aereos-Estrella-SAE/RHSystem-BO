@@ -1,21 +1,17 @@
 <template>
   <div v-if="isReady" class="employee-records">
     <Toast />
-    <h1>
+    <h2>
       Employee Records
-    </h1>
+    </h2>
 
     <div v-if="isReady" class="employee">
-      <div class="">
+      <div>
         <div class="employee-record-wrapper">
           <div v-for="(properties, category) in employeeRecordCategories" :key="category" class="panel">
             <h3>{{ category }}</h3>
-
-            <!-- Iterate over the properties within each category -->
             <div v-for="(property, index) in properties" :key="index" class="property">
               <label :for="'input-' + category + '-' + index">{{ property.name }}</label>
-
-              <!-- Create inputs based on the type -->
               <div v-if="property.type === 'Text'" class="input-box">
                 <InputText :id="'input-' + category + '-' + index" v-model="property.value" />
               </div>
@@ -26,7 +22,7 @@
                     File
                   </label>
                   <Button v-if="property.value" label="Open file" severity="primary"
-                    @click="openFile(property.value)" />
+                    @click="openFile(property.value)" /><br /><br />
                   <FileUpload v-model="property.files" name="demo[]" url="/api/upload"
                     @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000" :maxFileCount="1"
                     :fileLimit="1" @select="validateFiles($event,property)" :key="'file-' + index"
@@ -49,18 +45,18 @@
                 </div>
               </div>
 
-              <div v-if="property.type === 'Number'">
+              <div v-if="property.type === 'Number'" class="input-box">
                 <InputNumber :id="'input-' + category + '-' + index" v-model="property.value" mode="decimal" />
               </div>
 
-              <div v-if="property.type === 'Decimal'">
-                <InputNumber :id="'input-' + category + '-' + index" v-model="property.value" mode="decimal"
-                  step="0.01" />
+              <div v-if="property.type === 'Decimal'" class="input-box">
+                <InputNumber :id="'input-' + category + '-' + index" v-model="property.value" :minFractionDigits="2"
+                  fluid />
               </div>
 
-              <div v-if="property.type === 'Currency'">
-                <InputMask :id="'input-' + category + '-' + index" v-model="property.value" mask="9999999.99"
-                  placeholder="0.00" />
+              <div v-if="property.type === 'Currency'" class="input-box">
+                <InputNumber :id="'input-' + category + '-' + index" v-model="property.value" mode="currency"
+                  currency="MXN" fluid />
               </div>
             </div>
           </div>

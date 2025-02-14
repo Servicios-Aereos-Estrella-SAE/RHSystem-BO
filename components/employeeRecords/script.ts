@@ -30,59 +30,105 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.getCategories()
+    await this.getCategoriesEmployee()
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
-    async getCategories() {
+    async getCategoriesEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.employeeRecordCategories = []
       if (this.employee.employeeId) {
         const employeeRecordPropertyService = new EmployeeRecordPropertyService()
         const employeeRecordPropertyResponse = await employeeRecordPropertyService.getCategories(this.employee.employeeId)
         this.employeeRecordCategories = employeeRecordPropertyResponse._data.data.employeeRecordCategories
       }
+      myGeneralStore.setFullLoader(false)
     },
     async onSave() {
       if (this.employee.employeeId) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
         const employeeRecordService = new EmployeeRecordService()
+        const promises = []
+
         for (const [category, items] of Object.entries(this.employeeRecordCategories)) {
           for (const item of items as any[]) {
-            const employeeRecord: EmployeeRecordInterface = {
-              employeeRecordId: item.employeeRecordId,
-              employeeRecordPropertyId: item.employeeRecordPropertyId,
-              employeeId: this.employee.employeeId,
-              employeeRecordValue: item.value,
-              employeeRecordActive: 1
-            }
-            let employeeRecordResponse = null
             const file = item.files.length > 0 ? item.files[0] : null
-            if (!item.employeeRecordId) {
-              employeeRecordResponse = await employeeRecordService.store(employeeRecord, file)
-            } else {
-              employeeRecordResponse = await employeeRecordService.update(employeeRecord, file)
-            }
-            if (employeeRecordResponse.status === 201 || employeeRecordResponse.status === 200) {
-              this.$toast.add({
-                severity: 'success',
-                summary: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
-                detail: employeeRecordResponse._data.message,
-                life: 5000,
-              })
-            } else {
-              const msgError = employeeRecordResponse._data.error ? employeeRecordResponse._data.error : employeeRecordResponse._data.message
-              this.$toast.add({
-                severity: 'error',
-                summary: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
-                detail: msgError,
-                life: 5000,
-              })
+            if (item.employeeRecordId || item.value || file) {
+              const employeeRecord: EmployeeRecordInterface = {
+                employeeRecordId: item.employeeRecordId,
+                employeeRecordPropertyId: item.employeeRecordPropertyId,
+                employeeId: this.employee.employeeId,
+                employeeRecordValue: item.value,
+                employeeRecordActive: 1
+              }
+
+              const request = !item.employeeRecordId
+                ? employeeRecordService.store(employeeRecord, file)
+                : employeeRecordService.update(employeeRecord, file)
+
+              promises.push(
+                request
+                  .then((response) => {
+                    if (response.status === 201 || response.status === 200) {
+                      return {
+                        success: true,
+                        message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                      }
+                    } else {
+                      const msgError = response._data.error ? response._data.error : response._data.message;
+                      return {
+                        success: false,
+                        message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                        error: msgError
+                      }
+                    }
+                  })
+                  .catch((error) => {
+                    return {
+                      success: false,
+                      message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                      error: error.message || 'Unknown error'
+                    }
+                  })
+              )
             }
           }
         }
+        try {
+          const results = await Promise.all(promises)
+          const errors = results.filter((result) => !result.success);
+          if (errors.length > 0) {
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error saving employee records',
+              detail: errors.map((e) => e.error).join(', '),
+              life: 5000,
+            })
+          } else {
+            this.$toast.add({
+              severity: 'success',
+              summary: 'All employee records were saved successfully',
+              detail: 'The records were created or updated successfully.',
+              life: 5000,
+            })
+          }
+        } catch (error: any) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error saving employee records',
+            detail: error.message || 'There was a problem processing the employee records.',
+            life: 5000,
+          })
+        }
+        myGeneralStore.setFullLoader(false)
+        await this.getCategoriesEmployee()
       }
-
-    },
+    }
+    ,
     validateFiles(event: any, property: any) {
       let validFiles = event.files;
       property.files = validFiles;
