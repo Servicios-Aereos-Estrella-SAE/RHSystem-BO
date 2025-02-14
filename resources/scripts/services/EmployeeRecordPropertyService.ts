@@ -30,4 +30,20 @@ export default class EmployeeRecordPropertyService {
 
     return responseRequest
   }
+
+  async getCategories(employeeId: number) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/employee-record-properties/get-categories-by-employee`, {
+      headers,
+      query: {
+        employeeId
+      },
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 }
