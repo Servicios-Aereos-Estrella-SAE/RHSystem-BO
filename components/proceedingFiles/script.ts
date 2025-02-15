@@ -196,7 +196,7 @@ export default defineComponent({
         proceedingFileTypeId: null,
         parentId: null
       }
-      this.proceedingFileTypesList.push(folderRecord)
+      this.proceedingFileTypesList.unshift(folderRecord)
     },
     async handlerDoubleClick(folder: ProceedingFileTypeInterface) {
       this.folderSelected = folder

@@ -127,8 +127,10 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
         await this.getCategoriesEmployee()
       }
-    }
-    ,
+    },
+    addNew(employeeRecordPropertyId: number) {
+
+    },
     validateFiles(event: any, property: any) {
       let validFiles = event.files;
       property.files = validFiles;
