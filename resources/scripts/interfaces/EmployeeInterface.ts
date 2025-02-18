@@ -3,6 +3,7 @@ import type { BusinessUnitInterface } from "./BusinessUnitInterface"
 import type { DepartmentInterface } from "./DepartmentInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 import type { PositionInterface } from "./PositionInterface"
+import type { EmployeeAddressInterface } from "./EmployeeAddressInterface"
 
 interface EmployeeInterface {
   employeeId: number | null,
@@ -35,6 +36,7 @@ interface EmployeeInterface {
   department?: DepartmentInterface,
   position?: PositionInterface,
   businessUnit?: BusinessUnitInterface
+  address?: EmployeeAddressInterface[]
 }
 
 export type { EmployeeInterface }
