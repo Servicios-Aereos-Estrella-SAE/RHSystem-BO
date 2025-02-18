@@ -1,0 +1,167 @@
+@import '/resources/styles/variables.scss';
+
+
+.aircraft-datetime-action {
+  display: grid;
+  grid-template-columns: 4rem auto;
+  gap: 0.25rem;
+  opacity: 0.5;
+
+  .times {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+
+    .time {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+
+      .time-label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        border: $border-dashed;
+        border-radius: calc($radius / 2);
+        box-sizing: border-box;
+        padding: 0.25rem;
+        height: 3rem;
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .datetime-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+
+    .time-action {
+      display: grid;
+      grid-template-columns: 1.75rem auto;
+      gap: 0.75rem;
+      background-color: $gray;
+      border-radius: calc($radius / 2);
+      box-sizing: border-box;
+      padding: 0.5rem;
+      height: 3rem;
+      align-items: start;
+
+      .icon {
+        display: flex;
+        justify-content: center;
+        height: 1.75rem;
+        align-items: center;
+        background-color: $icon;
+        border-radius: calc($radius / 2);
+
+        &.inactive {
+          opacity: 0;
+        }
+
+        :deep(svg) {
+          width: 1rem;
+        }
+      }
+
+      .info {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+        align-items: center;
+
+        .title {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          font-size: 0.7rem;
+        }
+
+        .subtitle {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          font-size: 0.6rem;
+          text-wrap: pretty;
+          display: -webkit-box;
+          overflow: hidden;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+        }
+      }
+    }
+  }
+
+  &.departure {
+    opacity: 1;
+    
+    .time-label {
+      border-color: $success !important;
+      color: $success;
+      font-weight: 500;
+    }
+
+    .time-action {
+      background-color: transparentize($color: $success, $amount: 0.5);
+
+      .icon {
+        background-color: $success;
+      }
+    }
+  }
+
+  &.flight {
+    opacity: 1;
+    
+    .time-label {
+      border-color: #23a793 !important;
+      color: #23a793;
+      font-weight: 500;
+    }
+
+    .time-action {
+      background-color: transparentize($color: #23a793, $amount: 0.75);
+
+      .icon {
+        background-color: #23a793;
+      }
+    }
+  }
+
+  &.arrive {
+    opacity: 1;
+    
+    .time-label {
+      border-color: $info !important;
+      color: $info;
+      font-weight: 500;
+    }
+
+    .time-action {
+      background-color: transparentize($color: $info, $amount: 0.5);
+
+      .icon {
+        background-color: $info;
+      }
+    }
+  }
+
+  &.pernocta {
+    opacity: 1;
+    
+    .time-label {
+      border-color: #116181 !important;
+      color: #116181;
+      font-weight: 500;
+    }
+
+    .time-action {
+      background-color: transparentize($color: #116181, $amount: 0.7);
+
+      .icon {
+        background-color: #116181;
+      }
+    }
+  }
+}

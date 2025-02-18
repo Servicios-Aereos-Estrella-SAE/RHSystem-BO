@@ -1,5 +1,5 @@
 <template>
-  <div v-if="reservation && customers.length">
+  <div v-if="reservation">
     <div class="box head-page">
         <div class="input-box">
           <label for="search">
@@ -30,6 +30,7 @@
           </div>
         </div>
       </div>
+
       <div class="box reservation-card-wrapper" v-if="reservation && reservation.reservationLegs">
         <h2>
           Itinerary
@@ -48,6 +49,7 @@
           />
         </div>
       </div>
+
       <div class="box reservation-card-wrapper">
         <h2>
           Flight Attendance
@@ -82,7 +84,7 @@
       </div>
       <div class="box reservation-card-wrapper" v-if="reservation">
         <h2>
-          Quote Costo
+          Quote Cost
         </h2>
         <div class="input-box">
             <label for="exception-type">
