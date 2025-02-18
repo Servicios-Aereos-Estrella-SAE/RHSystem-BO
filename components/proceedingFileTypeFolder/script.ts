@@ -1,16 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { AircraftInterface } from '~/resources/scripts/interfaces/AircraftInterface'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice'
-import Calendar from 'primevue/calendar'
-import { useMyGeneralStore } from '~/store/general'
-import type { AircraftProceedingFileInterface } from '~/resources/scripts/interfaces/AircraftProceedingFileInterface';
-import type { ProceedingFileInterface } from '~/resources/scripts/interfaces/ProceedingFileInterface';
-import AircraftProceedingFileService from '~/resources/scripts/services/AircraftProceedingFileService';
 import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces/ProceedingFileTypeInterface';
-import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFileTypeService';
-import ProceedingFile from '~/resources/scripts/models/ProceedingFile';
 
 
 export default defineComponent({
@@ -30,16 +20,21 @@ export default defineComponent({
   mounted() {
   },
   methods: {
-    async handlerDoubleClick () {
+    async handlerDoubleClick() {
       this.clicks++
       if (this.clicks === 1) {
-        this.timer = setTimeout( () => {
+        this.timer = setTimeout(() => {
           this.clicks = 0
         }, this.delay)
       } else {
         clearTimeout(this.timer)
         this.clicks = 0
-        this.$emit('dblclick', this.folder)
+        if (this.folder.proceedingFileTypeSlug === 'employee-records') {
+          this.$emit('dblclickRecords', this.folder)
+        } else {
+          this.$emit('dblclick', this.folder)
+        }
+
       }
     }
   }
