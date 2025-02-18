@@ -8,6 +8,7 @@ import { useMyGeneralStore } from '~/store/general'
 import EmployeeRecordPropertyService from '~/resources/scripts/services/EmployeeRecordPropertyService'
 import EmployeeRecordService from '~/resources/scripts/services/EmployeeRecordService'
 import type { EmployeeRecordInterface } from '~/resources/scripts/interfaces/EmployeeRecordInterface'
+import type { EmployeeRecordPropertyInterface } from '~/resources/scripts/interfaces/EmployeeRecordPropertyInterface'
 
 export default defineComponent({
   components: {
@@ -21,7 +22,10 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
-    employeeRecordCategories: [] as Array<any>,
+    employeeRecordCategories: [] as Array<any>,//Array<EmployeeRecordCategoryInterface>,
+    drawerEmployeeRecordDelete: false,
+    employeeRecord: null as EmployeeRecordInterface | null,
+    employeeRecordProperty: null as EmployeeRecordPropertyInterface | null,
   }),
   computed: {
 
@@ -54,47 +58,48 @@ export default defineComponent({
         const employeeRecordService = new EmployeeRecordService()
         const promises = []
 
-        for (const [category, items] of Object.entries(this.employeeRecordCategories)) {
-          for (const item of items as any[]) {
-            const file = item.files.length > 0 ? item.files[0] : null
-            if (item.employeeRecordId || item.value || file) {
-              const employeeRecord: EmployeeRecordInterface = {
-                employeeRecordId: item.employeeRecordId,
-                employeeRecordPropertyId: item.employeeRecordPropertyId,
-                employeeId: this.employee.employeeId,
-                employeeRecordValue: item.value,
-                employeeRecordActive: 1
-              }
+        for (const [category, properties] of Object.entries(this.employeeRecordCategories)) {
+          for (const item of properties as any[]) {
+            for (const value of item.values as any[]) {
+              const file = value.files.length > 0 ? value.files[0] : null
+              if (value.employeeRecordId || value.employeeRecordValue || file) {
+                const employeeRecord: EmployeeRecordInterface = {
+                  employeeRecordId: value.employeeRecordId,
+                  employeeRecordPropertyId: item.employeeRecordPropertyId,
+                  employeeId: this.employee.employeeId,
+                  employeeRecordValue: value.employeeRecordValue,
+                  employeeRecordActive: 1
+                }
+                const request = !value.employeeRecordId
+                  ? employeeRecordService.store(employeeRecord, file)
+                  : employeeRecordService.update(employeeRecord, file)
 
-              const request = !item.employeeRecordId
-                ? employeeRecordService.store(employeeRecord, file)
-                : employeeRecordService.update(employeeRecord, file)
-
-              promises.push(
-                request
-                  .then((response) => {
-                    if (response.status === 201 || response.status === 200) {
-                      return {
-                        success: true,
-                        message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                promises.push(
+                  request
+                    .then((response) => {
+                      if (response.status === 201 || response.status === 200) {
+                        return {
+                          success: true,
+                          message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                        }
+                      } else {
+                        const msgError = response._data.error ? response._data.error : response._data.message;
+                        return {
+                          success: false,
+                          message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                          error: msgError
+                        }
                       }
-                    } else {
-                      const msgError = response._data.error ? response._data.error : response._data.message;
+                    })
+                    .catch((error) => {
                       return {
                         success: false,
                         message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
-                        error: msgError
+                        error: error.message || 'Unknown error'
                       }
-                    }
-                  })
-                  .catch((error) => {
-                    return {
-                      success: false,
-                      message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
-                      error: error.message || 'Unknown error'
-                    }
-                  })
-              )
+                    })
+                )
+              }
             }
           }
         }
@@ -128,12 +133,66 @@ export default defineComponent({
         await this.getCategoriesEmployee()
       }
     },
-    addNew(employeeRecordPropertyId: number) {
-
+    addNew(employeeRecordProperty: any) {
+      employeeRecordProperty.values.push({
+        employeeRecordId: null,
+        employeeRecordValue: '',
+        files: []
+      })
     },
-    validateFiles(event: any, property: any) {
+    onDelete(employeeRecord: EmployeeRecordInterface, employeeRecordProperty: EmployeeRecordPropertyInterface) {
+      this.employeeRecord = { ...employeeRecord };
+      this.employeeRecordProperty = { ...employeeRecordProperty };
+      this.drawerEmployeeRecordDelete = true;
+    },
+    onCancelDelete() {
+      this.drawerEmployeeRecordDelete = false
+    },
+    async confirmDelete() {
+      if (this.employeeRecord && this.employeeRecordProperty) {
+        this.drawerEmployeeRecordDelete = false
+        if (this.employeeRecord.employeeRecordId) {
+          const employeeRecordService = new EmployeeRecordService();
+          const employeeRecordResponse = await employeeRecordService.delete(this.employeeRecord)
+          if (employeeRecordResponse.status === 200) {
+            this.deleteEmployeeRecord()
+            this.$toast.add({
+              severity: 'success',
+              summary: 'Delete employee record',
+              detail: employeeRecordResponse._data.message,
+              life: 5000,
+            });
+          } else {
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Delete employee record',
+              detail: employeeRecordResponse._data.message,
+              life: 5000,
+            });
+          }
+        } else {
+          this.deleteEmployeeRecord()
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete employee record',
+            detail: 'Employee record deleted',
+            life: 5000,
+          });
+        }
+      }
+    },
+    deleteEmployeeRecord() {
+      if (this.employeeRecordProperty) {
+        const index = this.employeeRecordProperty.values.findIndex((employeeRecord: EmployeeRecordInterface) => employeeRecord.employeeRecordId === this.employeeRecord?.employeeRecordId)
+        if (index !== -1) {
+          this.employeeRecordProperty.values.splice(index, 1);
+          this.$forceUpdate();
+        }
+      }
+    },
+    validateFiles(event: any, value: any) {
       let validFiles = event.files;
-      property.files = validFiles;
+      value.files = validFiles;
       this.$forceUpdate()
     },
     openFile(path: string) {
