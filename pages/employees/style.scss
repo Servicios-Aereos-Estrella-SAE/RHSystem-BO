@@ -66,6 +66,42 @@
       width: 100%;
     }
   }
- 
+}
 
+.employee-info {
+  padding-top: 1.5rem;
+}
+
+.box-tools {
+  box-sizing: border-box;
+  display: flex;
+  grid-auto-flow: dense;
+  justify-content: center;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .5rem;
+  margin-top: 0.5rem;
+  margin-bottom: -2rem;
+
+  .btn {
+    width: 100%;
+
+    svg {
+
+      path {
+        fill: $icon !important;
+      }
+    }
+
+    &.btn-active {
+      background-color: $primary;
+      color: white;
+
+      svg {
+  
+        path {
+          fill: #fff !important;
+        }
+      }
+    }
+  }
 }

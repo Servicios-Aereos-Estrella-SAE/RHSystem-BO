@@ -2,7 +2,7 @@
   <div v-if="isReady" class="employee-records">
     <Toast />
     <h2>
-      Employee Records
+      Employee Record
     </h2>
 
     <div v-if="isReady" class="employee">
@@ -43,7 +43,7 @@
                         :maxFileCount="1" :fileLimit="1" @select="validateFiles($event,value)"
                         :key="'file-' + indexCategory + '-' + indexProperty + '-' + indexValue"
                         :showUploadButton="false">
-                        <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+                        <template #content="{ files, removeFileCallback }">
                           <div v-for="(file, indexFile) in files"
                             :key="indexFile + '-' + indexCategory + '-' + indexProperty + '-' + indexValue"
                             class="p-d-flex p-ai-center p-mb-2">

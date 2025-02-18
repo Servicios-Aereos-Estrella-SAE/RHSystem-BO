@@ -115,38 +115,64 @@
           </div>
         </div>
 
-        <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
-          <div v-if="employee && employee.employeeId > 0" >
+        <Sidebar
+          v-model:visible="drawerEmployeeForm"
+          :blockScroll="true"
+          :closeOnEscape="false"
+          :dismissable="false"
+          header="Employee form"
+          position="right"
+          class="shift-form-sidebar"
+          :showCloseIcon="true"
+        >
+          <div v-if="employee && employee.employeeId > 0" class="employee-info">
             <employeeModalInfoCard :employee="employee"/>
           </div>
-          <div v-if="employee && employee.employeeId > 0" class="box-tools">
+
+          <div v-if="employee && employee.employeeId > 0 && isRootUser" class="box-tools">
             <Button :class="{'btn-active': isActive('employee')}" class="btn" @click="onEditEmployee">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.94 5 19 10.06 9.062 20a2.25 2.25 0 0 1-.999.58l-5.116 1.395a.75.75 0 0 1-.92-.921l1.395-5.116a2.25 2.25 0 0 1 .58-.999L13.938 5Zm7.09-2.03a3.578 3.578 0 0 1 0 5.06l-.97.97L15 3.94l.97-.97a3.578 3.578 0 0 1 5.06 0Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              Employee
             </Button>
             <Button :class="{'btn-active': isActive('person')}" class="btn" @click="onEditPerson">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11 15c0-.35.06-.687.17-1H4.253a2.249 2.249 0 0 0-2.249 2.249v.92c0 .572.179 1.13.51 1.596C4.057 20.929 6.58 22 10 22c.397 0 .783-.014 1.156-.043A2.997 2.997 0 0 1 11 21v-6ZM10 2.005a5 5 0 1 1 0 10 5 5 0 0 1 0-10ZM12 15a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-6Zm2.5 1a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-6Zm0 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-6Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              Personal
             </Button>
             <Button :class="{'btn-active': isActive('address')}" class="btn" @click="onEditAddress">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.55 2.533a2.25 2.25 0 0 1 2.9 0l6.75 5.695c.508.427.8 1.056.8 1.72v9.802a1.75 1.75 0 0 1-1.75 1.75h-3a1.75 1.75 0 0 1-1.75-1.75v-5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0-.75.75v5a1.75 1.75 0 0 1-1.75 1.75h-3A1.75 1.75 0 0 1 3 19.75V9.947c0-.663.292-1.292.8-1.72l6.75-5.694Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              Address
             </Button>
           </div>
         
           <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm" :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }"/>
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete"/>
           <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }"/>
+
         </Sidebar>
 
        
 
-        <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
+        <Sidebar
+          v-model:visible="drawerEmployeePhotoForm"
+          :blockScroll="true"
+          :closeOnEscape="false"
           :dismissable="false" header="Employee photo" position="right" class="shift-form-sidebar"
-          :showCloseIcon="true">
+          :showCloseIcon="true"
+        >
           <employeePhotoForm :employee="employee" @save="onSave" />
         </Sidebar>
 
-        <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false" header="Employee shifts calendar" position="right" class="sidebar-shifts">
-          <employeeShift :employee="employee"
+        <Sidebar
+          v-model:visible="drawerShifts"
+          :blockScroll="true"
+          :closeOnEscape="false"
+          :dismissable="false"
+          header="Employee shifts calendar"
+          position="right"
+          class="sidebar-shifts"
+        >
+          <employeeShift
+            :employee="employee"
             :can-manage-vacation="canManageVacation"
             :can-manage-exception-request="canManageExceptionRequest" 
             :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
@@ -154,15 +180,24 @@
           />
         </Sidebar>
 
-        <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
+        <Sidebar
+          v-model:visible="drawerProceedingFiles"
+          :blockScroll="true"
+          :closeOnEscape="false"
+          :dismissable="false"
+          header="Employee proceeding files"
+          position="right"
+          class="proceeding-file-sidebar"
+        >
           <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"/>
-          <!-- <employeeProceedingFile :employee="employee" /> -->
         </Sidebar>
 
         <transition name="page">
-          <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
-            @cancelDelete="onCancelEmployeeDelete" />
+          <confirmDelete
+            v-if="drawerEmployeeDelete"
+            @confirmDelete="confirmDelete"
+            @cancelDelete="onCancelEmployeeDelete"
+          />
         </transition>
 
         <Dialog v-model:visible="drawerEmployeeSync" :style="{ width: '450px' }" header="Confirm" :modal="true">
@@ -192,22 +227,6 @@ export default Script
 
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-.box-tools {
-    box-sizing: border-box;
-    display: flex;
-    grid-auto-flow: dense;
-    justify-content: center;
-    grid-template-columns: repeat(2, 1fr);
-    gap: .5rem;
-    margin-top: 0.5rem;
-    button {
-      width: 100%;
-    }
-    .btn-active {
-    background-color: $primary; /* Color for the active button */
-    color: white;
-  }
-  }
 .shift-form-sidebar {
   width: 90% !important;
   max-width: 50rem !important;

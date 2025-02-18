@@ -60,6 +60,11 @@ export default defineComponent({
         activeButton: 'employee'
     }),
     computed: {
+        isRootUser () {
+            const myGeneralStore = useMyGeneralStore()
+            const flag = myGeneralStore.isRoot
+            return flag
+        }
     },
     created() { },
     watch: {

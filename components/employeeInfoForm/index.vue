@@ -127,7 +127,7 @@
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
           :custom-upload="true" :showUploadButton="false" :maxFileSize="6000000" :fileLimit="1" @select="validateFiles">
-          <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+          <template #content="{ files, removeFileCallback }">
             <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
               <img v-if="file && file.type.startsWith('image/')" role="presentation"
                 class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
