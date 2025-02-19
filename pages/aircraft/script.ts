@@ -2,6 +2,7 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import AircraftService from '../../resources/scripts/services/AircraftService';
 import type { AircraftInterface } from '~/resources/scripts/interfaces/AircraftInterface';
 import { useMyGeneralStore } from '~/store/general';
+import type { AircraftMaintenanceInterface } from '~/resources/scripts/interfaces/AircraftMaintenanceInterface';
 
 export default defineComponent({
     name: 'Aircrafts',
@@ -22,7 +23,10 @@ export default defineComponent({
         canCreate: false,
         canUpdate: false,
         canDelete: false,
-        drawerProceedingFiles: false as boolean
+        aircraftMaintenance: null as AircraftMaintenanceInterface | null,
+        drawerProceedingFiles: false as boolean,
+        drawerMaintenance: false as boolean,
+        drawerMaintenanceForm: false as boolean
     }),
     async mounted() {
         const myGeneralStore = useMyGeneralStore()
@@ -30,18 +34,18 @@ export default defineComponent({
         const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
         const permissions = await myGeneralStore.getAccess(systemModuleSlug)
         if (myGeneralStore.isRoot) {
-          this.canCreate = true
-          this.canUpdate = true
-          this.canDelete = true
+            this.canCreate = true
+            this.canUpdate = true
+            this.canDelete = true
         } else {
-          this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
-          this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
-          this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+            this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+            this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+            this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
         }
         myGeneralStore.setFullLoader(false)
         await this.handlerSearchAircraft()
     },
-    
+
     methods: {
         addNew() {
             const newAircraft: AircraftInterface = {
@@ -53,6 +57,10 @@ export default defineComponent({
                 aircraftCreatedAt: new Date(),
                 aircraftUpdatedAt: new Date(),
                 aircraftDeletedAt: null,
+                aircraftOperatorId: null,
+                aircraftProperty: null,
+                reservations: [],
+                pilots: [],
                 aircraftActive: 1
             }
             this.aircraft = newAircraft;
@@ -86,7 +94,7 @@ export default defineComponent({
             }
             this.drawerAircraftForm = false;
         },
-        onSaveGallery(){
+        onSaveGallery() {
         },
         onDelete(aircraft: AircraftInterface) {
             this.aircraft = { ...aircraft };
@@ -100,10 +108,10 @@ export default defineComponent({
             if (!aircraft) {
                 console.error('No aircraft provided');
                 return;
-              }
+            }
             this.aircraft = { ...aircraft };
             this.drawerAircraftFormGallery = true;
-            
+
         },
         async confirmDelete() {
             if (this.aircraft) {
@@ -131,13 +139,52 @@ export default defineComponent({
                 }
             }
         },
-        handlerOpenProceedingFiles (aircraft: AircraftInterface) {
+        editMaintenance(aircraftMaintenance: AircraftMaintenanceInterface) {
+            this.drawerMaintenance = false;
+            this.drawerMaintenanceForm = true;
+            this.aircraftMaintenance = { ...aircraftMaintenance } as AircraftMaintenanceInterface;
+        },
+        addNewMaintenance(aircraft: AircraftInterface) {
+            this.drawerMaintenance = false;
+            let currentDayMoreSeven = new Date();
+            currentDayMoreSeven.setDate(currentDayMoreSeven.getDate() + 7);
+
+            const newAircraftMaintenance = {
+                aircraftMaintenanceId: null,
+                aircraftId: aircraft?.aircraftId ?? 0,
+                maintenanceTypeId: 0,
+                aircraftMaintenanceStartDate: new Date(),
+                aircraftMaintenanceEndDate: currentDayMoreSeven,
+                maintenanceUrgencyLevelId: 1,
+                aircraftMaintenanceStatusId: 2,
+                aircraftMaintenanceNotes: '',
+                aircraftMaintenanceCreatedAt: new Date(),
+                aircraftMaintenanceUpdatedAt: new Date(),
+                aircraftMaintenanceDeletedAt: null
+            } as AircraftMaintenanceInterface;
+            this.aircraftMaintenance = newAircraftMaintenance;
+            this.drawerMaintenanceForm = true;
+        },
+        saveAircraftMaintenance(aircraftMaintenance: AircraftMaintenanceInterface) {
+            this.drawerMaintenanceForm = false;
+            this.drawerMaintenance = true;
+            console.info('aircraftMaintenance', aircraftMaintenance);
+        },
+        handlerOpenProceedingFiles(aircraft: AircraftInterface) {
             if (!aircraft) {
                 console.error('No aircraft provided');
                 return;
-              }
+            }
             this.aircraft = { ...aircraft };
             this.drawerProceedingFiles = true;
+        },
+        handlerOpenMaintenance(aircraft: AircraftInterface) {
+            if (!aircraft) {
+                console.error('No aircraft provided');
+                return;
+            }
+            this.aircraft = { ...aircraft };
+            this.drawerMaintenance = true;
         }
     },
 });
