@@ -28,7 +28,7 @@ export default Script
 
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 
 .aircraft-class-info-card {
     position: relative;

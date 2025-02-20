@@ -1,6 +1,7 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 .pilots-page {
+
     h2 {
         font-size: 1rem;
         font-weight: 500;
@@ -35,14 +36,17 @@
             display: grid;
             grid-template-columns: auto auto;
             gap: 0.5rem;
+
             .flex {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
+
                 .input-wrapper {
                     width: 90%;
                 }
             }
+
             .btn-add {
               // Ajustes de tamaño y espaciado
               width: 3.7rem;

@@ -34,7 +34,7 @@
 
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 
 .shift-info-card {
   position: relative;

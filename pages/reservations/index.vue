@@ -5,9 +5,10 @@
 
       <Head>
         <Title>
-          Reservations
+          Aircraft Reservations
         </Title>
       </Head>
+
       <NuxtLayout name="backoffice">
         <div class="wrapper-reservations-index">
           <div class="reservations-wrapper">
