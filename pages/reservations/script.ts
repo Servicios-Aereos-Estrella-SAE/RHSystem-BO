@@ -325,9 +325,6 @@ export default defineComponent({
       }
       this.drawerCustomerForm = true
     },
-    showDetails(reservationId: number) {
-      this.router.push({ path: '/reservations/' + reservationId })
-    },
     onDelete(reservation: ReservationInterface) {
       this.reservation = { ...reservation }
       this.drawerReservationDelete = true

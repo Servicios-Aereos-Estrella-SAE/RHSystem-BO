@@ -3,146 +3,77 @@
 
 .itinerary-info-form {
   position: relative;
-  margin-bottom: 1rem;
-  input {
-      padding: 0.5rem 0.5rem 0.5rem 2rem !important;
-      width: 100% !important;
+  border-radius: $radius;
+  border: $border-dashed;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  h2 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-bottom: $border-dashed;
+    padding-bottom: 1rem;
   }
-  .input-text-row {
-    margin-top: 1rem;
+
+  .itinerary-form {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); 
-    gap: 1rem; // Espacio entre columnas, ajústalo a tu gusto
-    @media screen and (max-width: $ipad) {
-      grid-template-columns: repeat(3, 1fr); 
-      
-    }
-    @media screen and (max-width: $sm) {
-      grid-template-columns: repeat(2, 1fr); 
-    }
-    @media screen and (max-width: $phone) {
-      grid-template-columns: 1fr;
-      
-    }
-    .input-box {
-      position: relative!important;
-      display: inline-block!important; // o block, según tu diseño
-      // Ajusta el ancho y alto si quieres un estilo particular
-      border-radius: $border;
-      width: 100%;
-      max-width: 300px; // Ejemplo
-      .btn-stop{
-        background-color: $silver;
-        border-color: $silverLight;
-        span.icon {
-          margin-right: 0.5rem;
-        }
-      }
-      
-      &>.icon {
-        position: absolute;
-        width: 1rem;
-        left: 0.5rem;   // Separa el ícono del borde izquierdo
-        top: 50%;
-        transform: translateY(20%); // Centra verticalmente el ícono
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        // Ajustar el tamaño del ícono si deseas
-        svg {
-          width: 1rem;
-          height: 1rem;
-          color: $icon;  // O usa fill si tu SVG lo permite
-        }
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+
+    .legs-form {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+
+      @media screen and (max-width: $tablet) {
+        grid-template-columns: 1fr;
       }
 
-      &>.icon.translate5 {
-        transform: translateY(5%);
-      }
+      .leg-form {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
 
-      &>.icon.translate-30 {
-        transform: translateY(-30%) !important;
+        @media screen and (max-width: $tablet) {
+          grid-template-columns: 1fr;
+        }
       }
-      
-      // Sólo si es requerido => asterisco en rojo
+    }
+
+    .travel-info-form {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .buttons-leg {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+  }
+
+  .input-box {
+
+    &.required {
+
       .input-label {
-        display: block;
-        font-weight: 300;
-      }
-      &.required {
-        .input-label {
-          font-weight: 300;
-          &::before {
-            content: "*";
-            color: $danger;
-            margin-right: 0.3rem;
-          }
-        }
-      }
-      input {
-        width: 100%;
-        padding: 0.5rem 0.5rem 0.5rem 2rem;
-        // ↑ Deja espacio a la izquierda para que no se monte el texto con el icono
-        box-sizing: border-box;
-        // Borde, color, tipografía, etc. a tu gusto:
-        font-size: 1rem;
-        &::placeholder {
-          font-size: 0.8rem;
-        }
-      }
-      .btn-group {
-        display: flex;      // Para que los botones estén en línea
-        gap: 0.5rem;        // Espacio entre botones
-        &.btn-group-with-stops {
-          margin-top: 2rem;
-        }
-        .btn {
-          // Tamaño de cada botón
-          width: 2.9rem;
-          height: 2.9rem;
-          // Estilos básicos
-          border: none;
-          border-radius: 0.5rem; // o 50% si los quieres 100% circulares
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          .icon {
-            // Para centrar ícono y controlar color/tamaño
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem; // Ajusta el tamaño del ícono
-          }
-        }
-        .btn-left,
-        .btn-right {
-          background-color: #f8d9d9; // rojo clarito (ajusta a tu preferencia)
-          .icon {
-            color: $danger; // rojo más intenso
-          }
-        }
 
-        /* Botón del medio: gris con ícono azul */
-        .btn-middle {
-          background-color: $silverLight; // gris
-          .icon {
-            color: $primary; // azul
-          }
-        }
-
-        // Si quieres un hover o focus específico
-        .btn:hover {
-          opacity: 0.9; // efecto simple
+        &::before {
+          content: "*";
+          color: $danger;
+          margin-right: 0.3rem;
         }
       }
     }
   }
 }
+
 /* Ocultar el ícono del calendario en Safari/macOS */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator,
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   display: none;
-  -webkit-appearance: none; /* A veces es necesario para Safari */
+  -webkit-appearance: none;
+  /* A veces es necesario para Safari */
 }

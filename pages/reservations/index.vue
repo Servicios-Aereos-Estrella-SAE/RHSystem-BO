@@ -50,7 +50,6 @@
                 <div v-for="(_reservation, index) in reservations"
                   :key="`employee-${_reservation.reservationId}-${index}`">
                   <ReservationInfoCard :reservation="_reservation" :can-update="canUpdate" :can-delete="canDelete"
-                    @click-on-detail="showDetails(_reservation.reservationId)"
                     @click-on-delete="onDelete(_reservation)" />
                 </div>
               </div>
