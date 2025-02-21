@@ -135,6 +135,15 @@ export default defineComponent({
         })
         return
       }
+      if (!this.workDisabilityPeriod.workDisabilityPeriodId && this.files.length === 0) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
       for await (const file of this.files) {
         if (file) {
           const mimeType = file.type;

@@ -48,6 +48,8 @@
               </div>
             </template>
           </FileUpload>
+          <small class="p-error" v-if="submitted && isNewWorkDisabilityPeriod && files.length === 0">File is
+            required.</small>
         </div>
         <div class="input-box">
           <button v-if="workDisabilityPeriod.workDisabilityPeriodFile" type="button" class="btn btn-block" @click="openFile">
