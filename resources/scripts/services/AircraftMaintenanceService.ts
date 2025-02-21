@@ -1,6 +1,7 @@
 import type { ToastServiceMethods } from "primevue/toastservice";
 import type { AircraftMaintenanceInterface } from "../interfaces/AircraftMaintenanceInterface";
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+import { DateTime } from "luxon";
 
 export default class AircraftMaintenanceService {
   protected API_PATH: string;
@@ -87,7 +88,7 @@ export default class AircraftMaintenanceService {
     return responseRequest;
   }
 
-  validateInformation(aircraftMaintenance: AircraftMaintenanceInterface, toast: ToastServiceMethods) {
+  validateInformation(aircraftMaintenance: AircraftMaintenanceInterface, toast: ToastServiceMethods, aircraftMaintenanceStatusCompleted: number | null | undefined) {
     // Validate information
     if (!aircraftMaintenance.aircraftId) {
       return false;
@@ -107,6 +108,16 @@ export default class AircraftMaintenanceService {
     if (!aircraftMaintenance.aircraftMaintenanceStatusId) {
       return false;
     }
+    if (!aircraftMaintenance.aircraftMaintenanceFinishDate && aircraftMaintenance.aircraftMaintenanceStatusId === aircraftMaintenanceStatusCompleted && aircraftMaintenance.aircraftMaintenanceId) {
+      // show toast error when status is completed the finish date is required
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'The finish date is required',
+        life: 5000
+      });
+      return false;
+    }
     // validate that start date is before end date
     if (aircraftMaintenance.aircraftMaintenanceStartDate > aircraftMaintenance.aircraftMaintenanceEndDate) {
       toast.add({
@@ -117,6 +128,9 @@ export default class AircraftMaintenanceService {
       });
       return false;
     }
+    // aircraftMaintenance.aircraftMaintenanceStartDate = DateTime.fromISO(aircraftMaintenance.aircraftMaintenanceStartDate as string, { zone: 'utc' }).toString()
+    // aircraftMaintenance.aircraftMaintenanceEndDate = DateTime.fromISO(aircraftMaintenance.aircraftMaintenanceEndDate as string, { zone: 'utc' }).toString();
+
     return true;
   }
 }

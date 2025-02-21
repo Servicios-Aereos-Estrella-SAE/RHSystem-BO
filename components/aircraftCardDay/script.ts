@@ -6,6 +6,7 @@ import Tooltip from 'primevue/tooltip';
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 import type { CalendarDayReservation } from '~/resources/scripts/interfaces/CalendarDayReservation';
 import type { ReservationLegInterface } from '~/resources/scripts/interfaces/ReservationLegInterface';
+import type { AircraftMaintenanceInterface } from '~/resources/scripts/interfaces/AircraftMaintenanceInterface';
 export default defineComponent({
   name: 'aircraftCardDay',
   directives: {
@@ -30,7 +31,7 @@ export default defineComponent({
       const legsToday = allLegs.filter(leg => {
         let legDateStr = '';
         let legDateArriveStr = '';
-        
+
         if (typeof leg.reservationLegDepartureDate === 'string' && typeof leg.reservationLegArriveDate === 'string') {
           // Asumimos que ya viene como "YYYY-MM-DD"
           legDateStr = leg.reservationLegDepartureDate;
@@ -58,7 +59,7 @@ export default defineComponent({
         if (a.reservationLegDepartureTime && b.reservationLegDepartureTime) {
           const departureDateA = new Date(a.reservationLegDepartureDate as string);
           const departureDateB = new Date(b.reservationLegDepartureDate as string);
-          
+
           const dateTimeA = toDateTime(departureDateA, a.reservationLegDepartureTime as string);
           const dateTimeB = toDateTime(departureDateB, b.reservationLegDepartureTime as string);
           return dateTimeA.getTime() - dateTimeB.getTime();
@@ -69,6 +70,25 @@ export default defineComponent({
       return legsToday;
 
     },
+    aircraftMaintenanceFromToday() {
+      const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd');
+      const aircraftMaintenances = this.calendarDay.aircraftMaintenances;
+      const maintenanceToday = aircraftMaintenances.filter(maintenance => {
+        const maintenanceStartDate = new Date(maintenance.aircraftMaintenanceStartDate as string);
+        const maintenanceEndDate = maintenance.aircraftMaintenanceFinishDate === null ? null : new Date(maintenance.aircraftMaintenanceEndDate as string);
+        // set maintenanceStartDate and maintenanceEndDate to 00:00:00
+        maintenanceStartDate.setHours(0, 0, 0, 0);
+        const dateCardDate = new Date(dateCard);
+        dateCardDate.setHours(0, 0, 0, 0);
+        if (maintenanceEndDate) {
+          maintenanceEndDate.setHours(0, 0, 0, 0);
+          return dateCardDate >= maintenanceStartDate && dateCardDate <= maintenanceEndDate;
+        } else {
+          return dateCardDate >= maintenanceStartDate
+        }
+      });
+      return maintenanceToday;
+    },
     hasPeroctation() {
       const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd');
       const aircraft = this.calendarDay.aircraft;
@@ -76,33 +96,33 @@ export default defineComponent({
 
       // Recorremos todas las reservas del avión
       const foundOvernight = reservations.some(reservation => {
-      const legs = reservation.reservationLegs || [];
+        const legs = reservation.reservationLegs || [];
 
         // Verificamos si hay ALGUNA llegada antes de dateCard
         // if (this.calendarDay.formattedDate === 'Feb 11, 2025') {
-          
+
         //   debugger;
         // }
         const legsArrivingBefore = legs
-        .filter((leg) => {
-          let arriveStr = '';
-          if (typeof leg.reservationLegArriveDate === 'string') {
-            arriveStr = leg.reservationLegArriveDate;
-          } else if (leg.reservationLegArriveDate instanceof Date) {
-            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
-          }
-          // Retorna true si la fecha de llegada es lexicográficamente < dateCard
-          return arriveStr < dateCard;
-        })
-        // 2. Convertimos en un objeto que guarde la fecha real (Date) o el string,
-        //    para ordenarlo fácilmente.
-        .map((leg) => {
-          let arriveStr = '';
-          if (typeof leg.reservationLegArriveDate === 'string') {
-            arriveStr = leg.reservationLegArriveDate;
-          } else if (leg.reservationLegArriveDate instanceof Date) {
-            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
-          }
+          .filter((leg) => {
+            let arriveStr = '';
+            if (typeof leg.reservationLegArriveDate === 'string') {
+              arriveStr = leg.reservationLegArriveDate;
+            } else if (leg.reservationLegArriveDate instanceof Date) {
+              arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
+            }
+            // Retorna true si la fecha de llegada es lexicográficamente < dateCard
+            return arriveStr < dateCard;
+          })
+          // 2. Convertimos en un objeto que guarde la fecha real (Date) o el string,
+          //    para ordenarlo fácilmente.
+          .map((leg) => {
+            let arriveStr = '';
+            if (typeof leg.reservationLegArriveDate === 'string') {
+              arriveStr = leg.reservationLegArriveDate;
+            } else if (leg.reservationLegArriveDate instanceof Date) {
+              arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
+            }
             return {
               ...leg,
               arriveStr,
@@ -165,6 +185,22 @@ export default defineComponent({
         hour12: true
       });
     },
+    getFormattedRangeDate(maintenance: AircraftMaintenanceInterface) {
+      const startDate = this.formattedDate(maintenance.aircraftMaintenanceStartDate);
+      const endDate = maintenance.aircraftMaintenanceFinishDate ? this.formattedDate(maintenance.aircraftMaintenanceFinishDate) : this.formattedDate(maintenance.aircraftMaintenanceEndDate);
+      return `${startDate} - ${endDate}`;
+    },
+
+    formattedDate(date: string | Date | null) {
+      // formated aircraftMaintenance.aircraftMaintenanceStartDate with Luxon
+      if (date) {
+        // parse date to Luxon DateTime
+        const dateTime = DateTime.fromISO(date as string)
+        // format date with name of day, name of month, day, year and time
+        return dateTime.toFormat('dd/MM/yyyy')
+      }
+    },
+
     formatDate(dateString: string) {
       if (!dateString) return '';
       // Formatear la fecha en "YYYY-MM-DD" a "MMM DD, YYYY"

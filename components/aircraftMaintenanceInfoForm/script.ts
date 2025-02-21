@@ -38,6 +38,7 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
+    isEdit: false,
     submitted: false,
     employeeCalendar: [] as AssistDayInterface[],
     inputSelectedDate: new Date(),
@@ -59,6 +60,10 @@ export default defineComponent({
     monthName() {
       const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
+    },
+    IdStatusCompleted() {
+      const statusCompleted = this.aircraftMaintenanceStatuses.find((status) => status.aircraftMaintenanceStatusName === 'Completed')
+      return statusCompleted?.aircraftMaintenanceStatusId
     },
     period() {
       const daysList = []
@@ -103,19 +108,21 @@ export default defineComponent({
     if (this.aircraftMaintenance?.aircraftMaintenanceId) {
       if (this.aircraftMaintenance?.aircraftMaintenanceStartDate && this.aircraftMaintenance?.aircraftMaintenanceEndDate) {
         const startDateString = DateTime
-          .fromISO(this.aircraftMaintenance?.aircraftMaintenanceStartDate as string, { setZone: true, zone: 'utc' })
-          .toISODate(); // "2025-02-26"
+          .fromISO(this.aircraftMaintenance?.aircraftMaintenanceStartDate as string, { setZone: true, zone: 'utc' }).toJSDate()
 
         const endDateString = DateTime
-          .fromISO(this.aircraftMaintenance?.aircraftMaintenanceEndDate as string, { zone: 'utc' })
-          .toISODate(); // "2025-02-26"
-
-        console.log('startDateString', startDateString);
-        console.log('endDateString', endDateString);
-
+          .fromISO(this.aircraftMaintenance?.aircraftMaintenanceEndDate as string, { zone: 'utc' }).toJSDate()
         // Asigna el string al modelo que usa el input calendar
-        this.aircraftMaintenance.aircraftMaintenanceStartDate = startDateString as string;
-        this.aircraftMaintenance.aircraftMaintenanceEndDate = endDateString as string;
+        this.aircraftMaintenance.aircraftMaintenanceStartDate = startDateString
+        this.aircraftMaintenance.aircraftMaintenanceEndDate = endDateString
+        this.isEdit = true
+      }
+    } else {
+      this.isEdit = false
+      // set default this.aircraftMaintenance.aircraftMaintenanceStatusId = find status 'In Progress'
+      const aircraftMaintenanceStatusInProgress = this.aircraftMaintenanceStatuses.find((status) => status.aircraftMaintenanceStatusName === 'In Progress')
+      if (aircraftMaintenanceStatusInProgress && this.aircraftMaintenance) {
+        this.aircraftMaintenance.aircraftMaintenanceStatusId = aircraftMaintenanceStatusInProgress.aircraftMaintenanceStatusId!
       }
     }
     this.isReady = true
@@ -124,7 +131,15 @@ export default defineComponent({
   watch: {
     inputSelectedDate() {
       this.handlerCalendarChange()
+    },
+    'aircraftMaintenance.aircraftMaintenanceId'() {
+      if (this.aircraftMaintenance?.aircraftMaintenanceId) {
+        this.isEdit = true
+      } else {
+        this.isEdit = false
+      }
     }
+
   },
   methods: {
     async onSuccessShiftAssigned(employeeShiftResponse: any) {
@@ -165,9 +180,8 @@ export default defineComponent({
     },
     async onSave() {
       this.submitted = true
-
       const aircraftMaintenanceService = new AircraftMaintenanceService()
-      if (aircraftMaintenanceService.validateInformation(this.aircraftMaintenance!, this.$toast)) {
+      if (aircraftMaintenanceService.validateInformation(this.aircraftMaintenance!, this.$toast, this.IdStatusCompleted)) {
         const response = (this.aircraftMaintenance!.aircraftMaintenanceId ?
           await aircraftMaintenanceService.update(this.aircraftMaintenance!) :
           await aircraftMaintenanceService.store(this.aircraftMaintenance!))

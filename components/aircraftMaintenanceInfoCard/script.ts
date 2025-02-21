@@ -35,8 +35,8 @@ export default defineComponent({
       const date = this.aircraftMaintenance.aircraftMaintenanceEndDate;
       if (date) {
         console.log('date', date) // date 2025-02-26T00:00:00.000Z
-        const dateTime = DateTime.fromISO(date as string, { zone: 'utc' })
-        return dateTime.toFormat('cccc, LLLL dd, yyyy')
+        const dateTime = DateTime.fromISO(date as string)
+        return dateTime.toFormat('cccc, LLLL dd, yyyy hh:mma')
       }
     },
     formattedStartDate() {
@@ -44,11 +44,20 @@ export default defineComponent({
       const date = this.aircraftMaintenance.aircraftMaintenanceStartDate;
       if (date) {
         // parse date to Luxon DateTime
-        const dateTime = DateTime.fromISO(date as string, { zone: 'utc' })
-        // format date with name of day, name of month, day, year
-        return dateTime.toFormat('cccc, LLLL dd, yyyy')
+        const dateTime = DateTime.fromISO(date as string)
+        // format date with name of day, name of month, day, year and time
+        return dateTime.toFormat('cccc, LLLL dd, yyyy hh:mma')
       }
     },
+    formattedFinishDate() {
+      const date = this.aircraftMaintenance.aircraftMaintenanceFinishDate;
+      if (date) {
+        // parse date to Luxon DateTime
+        const dateTime = DateTime.fromISO(date as string)
+        // format date with name of day, name of month, day, year and time
+        return dateTime.toFormat('cccc, LLLL dd, yyyy hh:mma')
+      }
+    }
   },
   created() {
   },
