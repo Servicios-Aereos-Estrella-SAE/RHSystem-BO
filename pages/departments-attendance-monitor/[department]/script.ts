@@ -698,7 +698,7 @@ export default defineComponent({
         this.statusInfo = statusInfo
       } catch (error) { }
     },
-    async getExcel() {
+    async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const departmentId = this.departmenSelected?.departmentId || 0
@@ -728,13 +728,13 @@ export default defineComponent({
       }
 
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId)
+      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, departmentId, reportType)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'Department Assistance Report.xlsx')
+        link.setAttribute('download', `Department ${reportType}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
