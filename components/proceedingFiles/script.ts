@@ -41,17 +41,20 @@ export default defineComponent({
     filterFolderText: '' as string,
     filterFileText: '' as string,
     drawerProceedingFileTypeEmailForm: false as boolean,
+    drawerEmployeeRecords: false
   }),
   computed: {
-    foldersFiltered (): ProceedingFileTypeInterface[] {
+    foldersFiltered(): ProceedingFileTypeInterface[] {
+
       if (!this.filterFolderText) {
         return this.proceedingFileTypesList
       }
 
-      const filtered: ProceedingFileTypeInterface[] = this.proceedingFileTypesList.filter(folder =>  folder.proceedingFileTypeSlug.includes(this.filterFolderText))
+      const filtered: ProceedingFileTypeInterface[] = this.proceedingFileTypesList.filter(folder => folder.proceedingFileTypeSlug.includes(this.filterFolderText))
+
       return filtered
     },
-    childrenFoldersFiltered () {
+    childrenFoldersFiltered() {
       if (!this.folderSelected) {
         return []
       }
@@ -61,11 +64,11 @@ export default defineComponent({
       }
 
       if (this.folderSelected && this.folderSelected.children && this.folderSelected.children.length > 0) {
-        const filtered: ProceedingFileTypeInterface[] = this.folderSelected.children.filter(folder =>  folder.proceedingFileTypeSlug.includes(this.filterFolderText))
+        const filtered: ProceedingFileTypeInterface[] = this.folderSelected.children.filter(folder => folder.proceedingFileTypeSlug.includes(this.filterFolderText))
         return filtered
       }
     },
-    filesFolderFiltered (): EmployeeProceedingFileInterface[] {
+    filesFolderFiltered(): EmployeeProceedingFileInterface[] {
       if (!this.filterFileText) {
         return this.employeeProceedingFilesList
       }
@@ -107,7 +110,7 @@ export default defineComponent({
       const proceedingFileTypeResponse: any = await proceedingFileTypeService.show(typeId)
       this.folderSelected = proceedingFileTypeResponse._data.data.proceedingFileType || null
     },
-    addEmails () {
+    addEmails() {
       if (!this.folderSelected) {
         return
       }
@@ -135,7 +138,7 @@ export default defineComponent({
     async onSave(employeeProceedingFile: EmployeeProceedingFileInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.employeeProceedingFile = {...employeeProceedingFile}
+      this.employeeProceedingFile = { ...employeeProceedingFile }
       const index = this.employeeProceedingFilesList.findIndex((employeeProceedingFile: EmployeeProceedingFileInterface) => employeeProceedingFile.employeeProceedingFileId === this.employeeProceedingFile?.employeeProceedingFileId)
       if (index !== -1) {
         this.employeeProceedingFilesList[index] = employeeProceedingFile
@@ -185,14 +188,30 @@ export default defineComponent({
       const proceedingFileTypeService = new ProceedingFileTypeService()
       const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
+      const folderRecord: ProceedingFileTypeInterface = {
+        proceedingFileTypeName: 'Records',
+        proceedingFileTypeAreaToUse: '',
+        proceedingFileTypeActive: 1,
+        proceedingFileTypeSlug: 'employee-records',
+        proceedingFileTypeId: null,
+        parentId: null
+      }
+      this.proceedingFileTypesList.unshift(folderRecord)
     },
-    async handlerDoubleClick (folder: ProceedingFileTypeInterface) {
+    async handlerDoubleClick(folder: ProceedingFileTypeInterface) {
       this.folderSelected = folder
       this.filesLoader = true
       await this.getEmployeeProceedingFiles()
       this.filesLoader = false
     },
-    async handlerUnselectFolder () {
+    async handlerRecordsDoubleClick(folder: ProceedingFileTypeInterface) {
+      this.folderSelected = folder
+      this.filesLoader = true
+      this.drawerEmployeeRecords = true
+      this.filesLoader = false
+    },
+    async handlerUnselectFolder() {
+      this.drawerEmployeeRecords = false
       if (this.folderSelected && this.folderSelected.parentId) {
         await this.getEmployeeProceedingFilesType(this.folderSelected.parentId)
         await this.getEmployeeProceedingFiles()
@@ -212,7 +231,7 @@ export default defineComponent({
       slug = slug.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       slug = slug.replace(/[^a-z0-9\s-]/g, ' ').trim()
       slug = slug.replace(/[\s-]+/g, '-')
-  
+
       return slug
     }
   }

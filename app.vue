@@ -1,25 +1,8 @@
 <template>
   <div>
-    <NuxtPage />
+    <NuxtPage translate="no" />
   </div>
 </template>
-
-<script setup lang="ts">
-// import { useMyGeneralStore } from './store/general';
-
-//   const myGeneralStore = useMyGeneralStore()
-//   const businessName = ref(myGeneralStore.activeSystemBusinessName)
-//   const businessFavicon = ref(myGeneralStore.favicon)
-
-//   useHead({
-//     titleTemplate: (titleChunk: any) => {
-//       return titleChunk ? `${businessName.value} | ${titleChunk}` : 'Business BackOffice';
-//     },
-//     link: [
-//       { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
-//     ]
-//   })
-</script>
 
 <style>
 .page-enter-active,
