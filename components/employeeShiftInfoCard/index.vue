@@ -33,7 +33,7 @@
 
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 @import './style';
 
 </style>

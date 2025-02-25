@@ -1,4 +1,12 @@
 {
     "conventionalCommits.scopes": [
-    ]
+    ],
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always"
+    }
 }

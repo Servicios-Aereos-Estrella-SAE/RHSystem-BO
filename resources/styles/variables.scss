@@ -1,11 +1,11 @@
 @import '/resources/styles/colors.scss';
+@import 'primeicons/primeicons.css';
 
 $font: 'Inter', sans-serif;
 $shadow: 0.1rem 0.1rem 0.2rem $gray;
 $border: 1px solid $border-color;
 $border-dashed: 1px dashed $border-color;
 $radius: 0.75rem;
-$font-color: #7A899C;
 
 @import '/resources/styles/breakpoints.scss';
 @import '/resources/styles/form.scss';
@@ -47,9 +47,9 @@ $font-color: #7A899C;
   text-align: center;
   border-radius: $radius;
   background-color: transparentize($color: $gray, $amount: 0.5);
-  
+
   .icon {
-      
+
     svg {
       width: 4rem;
     }

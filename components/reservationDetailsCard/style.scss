@@ -1,202 +1,178 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
 
-.aircraft-selected-info{
+.aircraft-selected-info {
   width: 100%;
   height: auto;
 
-  .aircraft-info{
-    
-    .aircraft-title{
-      font-size: .8rem;
-      font-weight: bold;
-      color: $text;
-      font-family: $font;
-    }
+  h2 {
+    font-size: .8rem;
+    font-weight: 550;
+    margin-bottom: 1rem;
+  }
 
-    .aircraft-image{
+  .aircraft-info {
+
+    .aircraft-image {
       width: 100%;
-      
-      img{
-        object-fit: cover;  /* recorta la imagen para llenar el contenedor */
-        object-position: center; /* centro de la imagen */
-        border-radius: 15px;
-        width: 100%;
-        height: 30vh;
-      }
-    }
-
-    .banner {
+      height: 13rem;
+      position: relative;
       background-color: $gray;
       border-radius: $radius;
-      position: relative;
-      height: 8rem;
       box-sizing: border-box;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
+
+      @media screen and (max-width: $tablet) {
+        height: 15rem;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        border-radius: $radius;
+      }
 
       svg {
-        width: 7rem;
-        transform: rotate(-30deg);
+        width: 5rem;
       }
     }
 
-    .details{
+    .details {
       display: flex;
-      flex-direction: column;  // Apilar de arriba hacia abajo
+      flex-direction: column;
       gap: 0;
+      border-radius: $radius;
+      box-sizing: border-box;
+      padding: 1rem;
+      border: $border-dashed;
 
-      // margin-top: -20px;
-      .aircraft-details-info{
-
+      .aircraft-details-info {
         padding: 0;
         margin: 0;
-        color: $font-color;
-        font-family: $font;
         font-size: .7rem;
         text-align: center;
-        line-height: 1rem;
+        line-height: 1.15rem;
         display: flex;
         justify-content: space-between;
-        p{
+        opacity: 0.75;
+        font-weight: normal;
+
+        p {
           margin: 0;
           padding: 0;
         }
       }
     }
+  }
 
-    .maps-info{
-      width: 100%;
-      height: auto;
-      .maps-header{
-        margin: 0;
-        display: flex;
-        justify-content: space-between;
-        font-size: .8rem;
-      font-weight: 500;
-      color: $font-color;
-      font-family: $font;
-      }
-      .btn-map{
-        background: none;
-        border: none;
-        color: $secondary;
-        font-size: .8rem;
-        font-weight: bold;
-        font-family: $font;
-        cursor: pointer;
+  .detail-itinerary {
+    margin-top: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
 
-      }
-      iframe{
-        width: 100%;
-        height: 100%;
-        border-radius: 15px;
-      }
-
-    }
-
-    .detail-itinerary{
-      margin-top: 1.5rem;
-      margin-bottom: 1.5rem;
-      
-      .itinerary-info{
-        display: flex;
-        flex-direction: column;
-        .title-itinerary
-        {
-          font-size: .8rem;
-          font-weight: bold;
-          color: $font-color;
-          font-family: $font;
-          p{
-            margin: 0;
-            padding: 0;
-          }
-        }
-        
-        .itinerary-details{
-          display: grid;
-          grid-template-columns: 3rem 1fr;
-          justify-content: space-between;
-          font-size: .7rem;
-          color: $icon;
-          font-family: $font;
-        p{
-          margin: 3px;
-        }
-
-          .icon-itinerary{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            color: $icon;
-          }
-        }
-      }
-    }
-
-    .line-dash{
-      margin-top: -7px;
-      hr {
-        border: none; 
-        border-top: 1px dashed $black;
-      }    
-    }
-
-    .info-cost{
+    .itinerary-info {
       display: flex;
       flex-direction: column;
-      gap: 0;
-      padding: 10px;
-      margin-top: -10px;
-      
-      .info-cost-details{
-        display: flex;
-        flex-direction: column;
-       
-        .info-cost-item{
-          font-size: .7rem;
-          font-weight: 500;
-          color: $font-color;
-          font-family: $font;
-          display: flex;
-          justify-content: space-between;
-          p{
-            margin: 3px;
-          }
+      border: $border-dashed;
+      border-radius: $radius;
+      padding: 1rem;
+      box-sizing: border-box;
 
-          .color-text{
-            color: $primary;
-            font-family: $font;
-            font-weight: bold;
+      .initerary-airports {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .itinerary-details {
+        display: grid;
+        grid-template-columns: 2.25rem 1fr;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        background-color: $gray;
+        padding: 0.5rem;
+        box-sizing: border-box;
+        border-radius: calc($radius/2);
+
+        &.departure {
+          background-color: transparentize($color: $success, $amount: 0.5);
+
+          .icon-itinerary {
+            background-color: $success;
           }
         }
-      
+
+        &.arrive {
+          background-color: transparentize($color: $info, $amount: 0.5);
+
+          .icon-itinerary {
+            background-color: $info;
+          }
+        }
+
+        .icon-itinerary {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: $gray;
+          height: 2.25rem;
+          border-radius: calc($radius/2);
+
+          svg {
+            width: 1rem;
+          }
+        }
+
+        .airport-info-wrapper {
+          display: flex;
+          align-items: center;
+          font-weight: normal;
+        }
       }
     }
+  }
 
-    .bnt-save{
-      padding: 10px;
-    
-      .btn-quote{
-        margin-top: 1rem;
-        background: $primary;
-        color: $white;
-        font-size: .8rem;
+  .info-cost {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0.5rem;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    .info-cost-details {
+      display: flex;
+      flex-direction: column;
+
+      .info-cost-item {
+        font-size: .7rem;
         font-weight: 500;
         font-family: $font;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        padding: 0.7rem;
-        text-align: center;
-        width: 100%;
-      }
-    }
+        display: flex;
+        justify-content: space-between;
 
+        p {
+          line-height: 0rem;
+        }
+
+        .color-text {
+          color: $primary;
+          font-family: $font;
+          font-weight: bold;
+        }
+      }
+
+    }
+  }
+
+  .btn-save {
+    margin-top: 1rem;
   }
 }
-
