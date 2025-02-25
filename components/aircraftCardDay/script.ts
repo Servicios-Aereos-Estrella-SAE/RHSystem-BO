@@ -1,11 +1,10 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
-import Tooltip from 'primevue/tooltip';
-import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
-import type { CalendarDayReservation } from '~/resources/scripts/interfaces/CalendarDayReservation';
-import type { ReservationLegInterface } from '~/resources/scripts/interfaces/ReservationLegInterface';
+import Tooltip from 'primevue/tooltip'
+import type { CalendarDayReservation } from '~/resources/scripts/interfaces/CalendarDayReservation'
+import type { ReservationLegInterface } from '~/resources/scripts/interfaces/ReservationLegInterface'
+import { DateTime } from 'luxon'
+
 export default defineComponent({
   name: 'aircraftCardDay',
   directives: {
@@ -15,120 +14,62 @@ export default defineComponent({
     calendarDay: { type: Object as PropType<CalendarDayReservation>, required: true },
   },
   data: () => ({
-    commentsSidebar: false as boolean,
-    dayExceptions: [] as ShiftExceptionInterface[]
+    dateTimeLine: [] as any[]
   }),
   computed: {
-    legsFromToday() {
-      const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd');;        // fecha a comparar ("YYYY-MM-DD")
-      const aircraft = this.calendarDay.aircraft;
-      const reservations = aircraft.reservations || [];
-      // 1. Obtener todos los legs de todas las reservaciones
-      const allLegs = reservations.flatMap(reservation => reservation.reservationLegs || [] as ReservationLegInterface[]);
-
-      // 2. Filtrar sólo los legs cuya fecha de despegue sea == dateCard
-      const legsToday = allLegs.filter(leg => {
-        let legDateStr = '';
-        let legDateArriveStr = '';
-        
-        if (typeof leg.reservationLegDepartureDate === 'string' && typeof leg.reservationLegArriveDate === 'string') {
-          // Asumimos que ya viene como "YYYY-MM-DD"
-          legDateStr = leg.reservationLegDepartureDate;
-          legDateArriveStr = leg.reservationLegArriveDate;
-        } else if (leg.reservationLegDepartureDate instanceof Date && leg.reservationLegArriveDate instanceof Date) {
-          // Convertir el objeto Date a "YYYY-MM-DD"
-          legDateStr = leg.reservationLegDepartureDate.toISOString().split('T')[0];
-          legDateArriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
-        }
-
-        return legDateStr === dateCard || legDateArriveStr === dateCard;
-      });
-
-
-      const toDateTime = (dateObj: Date, timeString: string) => {
-        const d = new Date(dateObj);
-        const [hh, mm] = timeString.split(':');
-        d.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0);
-        return d;
-      };
-      // 3. Ordenar por hora de salida (de la más temprana a la más tardía)
-      legsToday.sort((a, b) => {
-        // Asumiendo "HH:MM" con ceros a la izquierda, la comparación de string funciona bien.
-        // O podrías convertir a minutos: a.reservationLegDepartureTime.split(':') etc.
-        if (a.reservationLegDepartureTime && b.reservationLegDepartureTime) {
-          const departureDateA = new Date(a.reservationLegDepartureDate as string);
-          const departureDateB = new Date(b.reservationLegDepartureDate as string);
-          
-          const dateTimeA = toDateTime(departureDateA, a.reservationLegDepartureTime as string);
-          const dateTimeB = toDateTime(departureDateB, b.reservationLegDepartureTime as string);
-          return dateTimeA.getTime() - dateTimeB.getTime();
-        }
-      });
-
-      // 4. Regresar (o setear en una variable) los legs filtrados y ordenados
-      return legsToday;
-
-    },
-    hasPeroctation() {
-      const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd');
-      const aircraft = this.calendarDay.aircraft;
-      const reservations = aircraft.reservations || [];
+    isPernoctaDay() {
+      const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd')
+      const aircraft = this.calendarDay.aircraft
+      const reservations = aircraft.reservations || []
+      let lastArrival: any = null
 
       // Recorremos todas las reservas del avión
       const foundOvernight = reservations.some(reservation => {
-      const legs = reservation.reservationLegs || [];
+        const legs = reservation.reservationLegs || []
 
-        // Verificamos si hay ALGUNA llegada antes de dateCard
-        // if (this.calendarDay.formattedDate === 'Feb 11, 2025') {
-          
-        //   debugger;
-        // }
-        const legsArrivingBefore = legs
-        .filter((leg) => {
-          let arriveStr = '';
+        const legsArrivingBefore = legs.filter((leg) => {
+          let arriveStr = ''
+
           if (typeof leg.reservationLegArriveDate === 'string') {
-            arriveStr = leg.reservationLegArriveDate;
+            arriveStr = leg.reservationLegArriveDate
           } else if (leg.reservationLegArriveDate instanceof Date) {
-            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
+            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0]
           }
-          // Retorna true si la fecha de llegada es lexicográficamente < dateCard
-          return arriveStr < dateCard;
+
+          return arriveStr < dateCard // Retorna true si la fecha de llegada es lexicográficamente < dateCard
         })
-        // 2. Convertimos en un objeto que guarde la fecha real (Date) o el string,
-        //    para ordenarlo fácilmente.
-        .map((leg) => {
-          let arriveStr = '';
+        .map((leg) => { // 2. Convertimos en un objeto que guarde la fecha real (Date) o el string, para ordenarlo fácilmente.
+          let arriveStr = ''
+
           if (typeof leg.reservationLegArriveDate === 'string') {
-            arriveStr = leg.reservationLegArriveDate;
+            arriveStr = leg.reservationLegArriveDate
           } else if (leg.reservationLegArriveDate instanceof Date) {
-            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0];
+            arriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0]
           }
-            return {
-              ...leg,
-              arriveStr,
-            };
-          });
+
+          return { ...leg, arriveStr }
+        })
 
         // 3. Ordenamos `legsArrivingBefore` de más reciente a más antigua
         //    (descendente) para encontrar la llegada *más cercana* a dateCard
         legsArrivingBefore.sort((a, b) => {
-          // a.arriveStr > b.arriveStr => -1, para ordenar desc
-          if (a.arriveStr > b.arriveStr) return -1;
-          else if (a.arriveStr < b.arriveStr) return 1;
-          return 0;
-        });
-        const lastArrivalBefore = legsArrivingBefore[0];
+          if (a.arriveStr > b.arriveStr) return -1
+          else if (a.arriveStr < b.arriveStr) return 1
+          return 0
+        })
+
+        const lastArrivalBefore = legsArrivingBefore[0]
 
         // Verificamos si hay ALGUNA salida después de dateCard
         const departsAfter = legs.some(leg => {
-          let departStr = '';
+          let departStr = ''
           if (typeof leg.reservationLegDepartureDate === 'string') {
-            departStr = leg.reservationLegDepartureDate;
+            departStr = leg.reservationLegDepartureDate
           } else if (leg.reservationLegDepartureDate instanceof Date) {
-            departStr = leg.reservationLegDepartureDate.toISOString().split('T')[0];
+            departStr = leg.reservationLegDepartureDate.toISOString().split('T')[0]
           }
-          return departStr > dateCard;
-        });
+          return departStr > dateCard
+        })
 
         // Si en la misma reserva hay un leg que llegue antes
         // y otro (o el mismo) que salga después => pernocta
@@ -138,37 +79,261 @@ export default defineComponent({
           departsAfter
         ) {
           // Si todo esto se cumple, ya podemos decir que hay pernocta
-          return true;
+          lastArrival = lastArrivalBefore
+          return true
         }
 
         // Si esta reservación no cumple, pasamos a la siguiente
-        return false;
-      });
+        return false
+      })
 
-      return foundOvernight;
-    }
+      return { isPernocta: foundOvernight, lastArrival }
+    },
+    legsFromToday() {
+      const dateCard = this.calendarDay.date.toFormat('yyyy-MM-dd')
+      const aircraft = this.calendarDay.aircraft
+      const reservations = aircraft.reservations || []
+      const allLegs = reservations.flatMap(reservation => reservation.reservationLegs || [] as ReservationLegInterface[])
+      const legsToday = allLegs.filter(leg => {
+        let legDateStr = ''
+        let legDateArriveStr = ''
+        
+        if (typeof leg.reservationLegDepartureDate === 'string' && typeof leg.reservationLegArriveDate === 'string') {
+          legDateStr = leg.reservationLegDepartureDate
+          legDateArriveStr = leg.reservationLegArriveDate
+        } else if (leg.reservationLegDepartureDate instanceof Date && leg.reservationLegArriveDate instanceof Date) {
+          legDateStr = leg.reservationLegDepartureDate.toISOString().split('T')[0]
+          legDateArriveStr = leg.reservationLegArriveDate.toISOString().split('T')[0]
+        }
+
+        return legDateStr === dateCard || legDateArriveStr === dateCard
+      })
+
+
+      const toDateTime = (dateObj: Date, timeString: string) => {
+        const d = new Date(dateObj)
+        const [hh, mm] = timeString.split(':')
+        d.setHours(parseInt(hh, 10), parseInt(mm, 10), 0, 0)
+        return d
+      }
+
+      legsToday.sort((a, b) => {
+        if (a.reservationLegDepartureTime && b.reservationLegDepartureTime) {
+          const departureDateA = new Date(a.reservationLegDepartureDate as string)
+          const departureDateB = new Date(b.reservationLegDepartureDate as string)
+          
+          const dateTimeA = toDateTime(departureDateA, a.reservationLegDepartureTime as string)
+          const dateTimeB = toDateTime(departureDateB, b.reservationLegDepartureTime as string)
+          return dateTimeA.getTime() - dateTimeB.getTime()
+        }
+
+        return 0
+      })
+
+      return legsToday
+
+    },
   },
   mounted() {
-    console.log(this.legsFromToday, 'legsFromToday' + this.calendarDay.formattedDate);
+    this.makeReservationTimeLine()
   },
   methods: {
-    formatTime(timeString: string) {
-      if (!timeString) return '';
-      // Crear un objeto Date "falso" usando 1970-01-01
-      //  => Soporta "HH:MM" o "HH:MM:SS"
-      const dateObj = new Date(`1970-01-01T${timeString}`);
+    makeReservationTimeLine () {
+      const dateTimeLine = []
 
-      // Formatear en 12 horas, ejemplo "12:00 AM"
-      return dateObj.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
+      for (let index = 0; index < 24; index++) {
+        let action = ''
+        let actionTitle = ''
+        let actionSubtitle = ''
+
+        const actionLegDeparture = this.legsFromToday.find(leg => `${leg.reservationLegDepartureTime}`.split(':')[0] === `${index}`.padStart(2, '0'))
+        const postPernoctas = this.getPernoctasPostArrive()
+
+        postPernoctas.hours.forEach((fh) => {
+          if (parseInt(fh) === index) {
+            action = 'pernocta'
+            actionTitle = 'Pernocta'
+            actionSubtitle = `${postPernoctas.destination.airportDestination.airportIcaoCode} (${postPernoctas.destination.airportDestination.airportDisplayLocationName})`
+          }
+        })
+
+        const prePernoctas = this.getPernoctasPreDeparture()
+
+        prePernoctas.hours.forEach((fh) => {
+          if (parseInt(fh) === index) {
+            action = 'pernocta'
+            actionTitle = 'Pernocta'
+            actionSubtitle = `${prePernoctas.origin.airportDeparture.airportIcaoCode} (${prePernoctas.origin.airportDeparture.airportDisplayLocationName})`
+          }
+        })
+        
+        if (actionLegDeparture) {
+          action = 'departure'
+          actionTitle = 'Departure'
+          actionSubtitle = `${actionLegDeparture.airportDeparture?.airportIcaoCode} (${actionLegDeparture.airportDeparture?.airportDisplayLocationName})`
+        }
+
+        const flightHours = this.getFlightHours()
+
+        flightHours.hours.forEach((fh) => {
+          if (parseInt(fh) === index) {
+            action = 'flight'
+            actionTitle = 'At flight'
+            actionSubtitle = `${flightHours.origin.airportDeparture?.airportIcaoCode} - ${flightHours.destination.airportDestination?.airportIcaoCode}`
+          }
+        })
+
+        const actionLegArrive = this.legsFromToday.find(leg => `${leg.reservationLegArriveTime}`.split(':')[0] === `${index}`.padStart(2, '0'))
+
+        if (actionLegArrive) {
+          action = 'arrive'
+          actionTitle = 'Arrive'
+          actionSubtitle = `${actionLegArrive.airportDestination?.airportIcaoCode} (${actionLegArrive.airportDestination?.airportDisplayLocationName})`
+        }
+
+        if (this.isPernoctaDay.isPernocta && this.legsFromToday.length === 0) {
+          action = 'pernocta'
+          actionTitle = 'Pernocta'
+          actionSubtitle = this.isPernoctaDay.lastArrival ? `${this.isPernoctaDay.lastArrival?.airportDestination?.airportIcaoCode} (${this.isPernoctaDay.lastArrival?.airportDestination?.airportDisplayLocationName})` : '---'
+        }
+
+        dateTimeLine.push({
+          hour: index,
+          hourLabel: `${`${index}`.padStart(2, '0')}:00`,
+          action,
+          actionTitle,
+          actionSubtitle
+        })
+      }
+
+      this.dateTimeLine = dateTimeLine
     },
-    formatDate(dateString: string) {
-      if (!dateString) return '';
-      // Formatear la fecha en "YYYY-MM-DD" a "MMM DD, YYYY"
-      return DateTime.fromISO(dateString).toFormat('MMM dd, yy');
+    getFlightHours () {
+      const flightHrs = {
+        hours: [] as any[],
+        origin: null as any,
+        destination: null as any
+      }
+
+      if (this.legsFromToday.length > 0) {
+        const departureLeg = this.legsFromToday[0]
+        const arrivalLeg = this.legsFromToday.length >= 1 ? this.legsFromToday[this.legsFromToday.length - 1] : null
+
+        const dtDeparture = DateTime.fromObject({
+          year: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[0]),
+          month: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[1]),
+          day: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[2]),
+          hour: parseInt(`${departureLeg.reservationLegDepartureTime}`.split(':')[0]),
+          minute: parseInt(`${departureLeg.reservationLegDepartureTime}`.split(':')[1])
+        })
+
+        if (departureLeg && arrivalLeg) {
+          flightHrs.origin = departureLeg
+          flightHrs.destination = arrivalLeg
+
+          const dtArrive = DateTime.fromObject({
+            year: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[0]),
+            month: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[1]),
+            day: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[2]),
+            hour: parseInt(`${arrivalLeg.reservationLegArriveTime}`.split(':')[0]),
+            minute: parseInt(`${arrivalLeg.reservationLegArriveTime}`.split(':')[1])
+          })
+  
+          const hoursDiff = dtArrive.diff(dtDeparture, 'hours').hours
+  
+          if (hoursDiff > 1) {
+            for (let hr = 0; hr < hoursDiff; hr++) {
+              const flightHour = dtDeparture.plus({ hour: (hr + 1) }).toFormat('HH')
+              flightHrs.hours.push(flightHour)
+            }
+          }
+        }
+      }
+      
+      return flightHrs
+    },
+    getPernoctasPreDeparture () {
+      const pernoctas = {
+        hours: [] as any[],
+        origin: null as any
+      }
+
+      if (this.legsFromToday.length > 0) {
+        const departureLeg = this.legsFromToday[0]
+
+        if (departureLeg && departureLeg.airportDeparture?.airportIcaoCode !== 'MMTO') {
+          pernoctas.origin = departureLeg
+
+          const startTimeDayArrive = DateTime.fromObject({
+            year: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[0]),
+            month: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[1]),
+            day: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[2]),
+            hour: 0,
+            minute: 0,
+            second: 0
+          })
+
+          const dtDeparture = DateTime.fromObject({
+            year: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[0]),
+            month: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[1]),
+            day: parseInt(`${departureLeg.reservationLegDepartureDate}`.split('-')[2]),
+            hour: parseInt(`${departureLeg.reservationLegDepartureTime}`.split(':')[0]),
+            minute: parseInt(`${departureLeg.reservationLegDepartureTime}`.split(':')[1])
+          })
+  
+          const diffToPercocta = dtDeparture.diff(startTimeDayArrive, 'hours').hours
+  
+          if (diffToPercocta >= 1) {
+            for (let hr = 0; hr < diffToPercocta; hr++) {  
+              pernoctas.hours.push(`${hr}`)
+            }
+          }
+        }
+      }
+
+      return pernoctas
+    },
+    getPernoctasPostArrive () {
+      const pernoctas = {
+        hours: [] as any[],
+        destination: null as any
+      }
+
+      if (this.legsFromToday.length > 0) {
+        const arrivalLeg = this.legsFromToday[0]
+
+        if (arrivalLeg && arrivalLeg.airportDestination?.airportIcaoCode !== 'MMTO') {
+          pernoctas.destination = arrivalLeg
+  
+          const dtArrive = DateTime.fromObject({
+            year: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[0]),
+            month: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[1]),
+            day: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[2]),
+            hour: parseInt(`${arrivalLeg.reservationLegArriveTime}`.split(':')[0]),
+            minute: parseInt(`${arrivalLeg.reservationLegArriveTime}`.split(':')[1])
+          })
+  
+          const endTimeDayArrive = DateTime.fromObject({
+            year: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[0]),
+            month: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[1]),
+            day: parseInt(`${arrivalLeg.reservationLegArriveDate}`.split('-')[2]),
+            hour: 23,
+            minute: 59,
+            second: 59
+          })
+  
+          const diffToPercocta = endTimeDayArrive.diff(dtArrive, 'hours').hours
+          
+          if (diffToPercocta >= 1) {
+            for (let hr = 0; hr < diffToPercocta; hr++) {
+              const percnotaHour = dtArrive.plus({ hour: (hr) }).toFormat('HH')
+              pernoctas.hours.push(percnotaHour)
+            }
+          }
+        }
+      }
+
+      return pernoctas
     }
   }
 })

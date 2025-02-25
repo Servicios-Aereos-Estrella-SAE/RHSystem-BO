@@ -13,7 +13,7 @@
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
           :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
-          <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+          <template #content="{ files, removeFileCallback }">
             <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
               <img v-if="file && file.type.startsWith('image/')" role="presentation"
                 class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
@@ -42,13 +42,8 @@
           <small class="p-error" v-if="submitted && !aircraftOperator.aircraftOperatorName">Name is required.</small>
         </div>
         <div class="input-box">
-          <label for="aircraftOperatorFiscalName">Full Name</label>
+          <label for="aircraftOperatorFiscalName">Fiscal Name</label>
           <InputText v-model="aircraftOperator.aircraftOperatorFiscalName" placeholder="Enter Fiscal Name" />
-        </div>
-        <div class="input-box">
-          <label for="aircraftOperatorLastName">Slug</label>
-          <InputText readonly disabled v-model="aircraftOperator.aircraftOperatorSlug" placeholder="slug" />
-          <small class="p-error" v-if="submitted && aircraftOperator.aircraftOperatorSlug && !isValidPhone">Slug is not valid.</small>
         </div>
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />

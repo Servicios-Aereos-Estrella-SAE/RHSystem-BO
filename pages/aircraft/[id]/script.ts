@@ -53,22 +53,17 @@ export default defineComponent({
             if (aircraftId) {
                 // parse string periodSelected 
                 const dateFilterReservations = DateTime.fromISO(this.periodSelected.toISOString()).toFormat('yyyy-MM-dd');
-                console.log(dateFilterReservations)
                 const response = await this.aircraftService.show(parseInt(aircraftId as string), dateFilterReservations)
-                console.log(response)
                 if (response.status === 200) {
                     this.aircraft = response._data.data.aircraft
-                    console.log(this.aircraft)
                 }
                 this.generateDaysOfMonth()
-                console.log(this.calendarDayReservation, 'calendarDayReservation')
             }
         },
         async handlerSearchAircraft(event: any) {
             if (event.query.trim().length) {
                 const response = await this.aircraftService.getFilteredList(event.query.trim(), 1, 99999999999);
                 const list = response.status === 200 ? response._data.data.data : [];
-                console.log(list);
                 this.filterAircrafts = list;
             }
         },
@@ -79,12 +74,10 @@ export default defineComponent({
         },
         generateDaysOfMonth() {
             this.calendarDayReservation = [] as CalendarDayReservation[];
-            console.log(this.calendarDayReservation, 'calendarDayReservation')
 
             // get startOfMonth form this.periodSelected and endOfMonth
             const startOfMonth = DateTime.fromISO(this.periodSelected.toISOString()).startOf('month');
             const endOfMonth = DateTime.fromISO(this.periodSelected.toISOString()).endOf('month');
-            console.log(startOfMonth, endOfMonth)
 
             let currentDate = startOfMonth;
 

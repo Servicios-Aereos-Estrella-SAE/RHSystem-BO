@@ -126,4 +126,20 @@ export default class PersonService {
     if (lngDigito === 10) { return 0 }
     return lngDigito
   }
+
+  async getPlacesBirth (searchText: string, field: string) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    await $fetch(`${this.API_PATH}/persons-get-places-of-birth`, {
+      headers,
+      query: {
+        search: searchText,
+        field
+      },
+      onResponse ({ response }) { responseRequest = response },
+      onRequestError ({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 }
