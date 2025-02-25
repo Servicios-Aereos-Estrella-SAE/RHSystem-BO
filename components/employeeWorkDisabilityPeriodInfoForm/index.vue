@@ -63,8 +63,10 @@
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
-          <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio
+          <small class="p-error" v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio
             is required.
+          </small>
+          <small class="p-error" v-if="submitted && workDisabilityPeriod.workDisabilityPeriodTicketFolio && !isValidTicketFolio">Required folio with the format of 2 uppercase letters and 6 numbers.
           </small>
         </div>
         <div class="input-box">
@@ -79,14 +81,14 @@
         </div>
         <div class="input-box">
           <label for="requested-date">
-            Period for shift exceptions
+            Date start
           </label>
           <Calendar
             v-if="isNewWorkDisabilityPeriod"
-            v-model="dates"
-            selectionMode="range"
+            v-model="workDisabilityPeriod.workDisabilityPeriodStartDate"
+           
             dateFormat="yy-mm-dd"
-            placeholder="Select date range"
+            placeholder="Select date start"
             class="w-full md:w-14rem"
             :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod"
           />
@@ -106,9 +108,19 @@
           </div>
           <small class="p-error"
             v-if="submitted && (!workDisabilityPeriod.workDisabilityPeriodStartDate || !workDisabilityPeriod.workDisabilityPeriodEndDate)">
-            Dates are required.
+            Date is required.
           </small>
         </div>
+        <div v-if="isNewWorkDisabilityPeriod" class="input-box">
+          <label for="description">
+              Days to apply
+          </label>
+          <InputNumber v-model="daysToApply" inputId="daysToApply"
+               />
+          <small class="p-error" v-if="submitted && !daysToApply">
+              Days to apply is required.
+          </small>
+      </div>
         <div class="box-tools-footer">
           <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary" @click="onSave">
             Save work disability period
