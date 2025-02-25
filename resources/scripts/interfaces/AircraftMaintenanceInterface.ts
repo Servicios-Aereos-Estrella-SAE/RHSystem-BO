@@ -1,6 +1,7 @@
 import type { AircraftInterface } from "./AircraftInterface";
 import type { MaintenanceUrgencyLevelInterface } from "./MaintenanceUrgencyLevelInterface";
 import type { AircraftMaintenanceStatusInterface } from "./AircraftMaintenanceStatusInterface";
+import type { MaintenanceTypeInterface } from "./MaintenanceTypeInterface";
 
 export interface AircraftMaintenanceInterface {
   aircraftMaintenanceId: number | null;
@@ -8,6 +9,7 @@ export interface AircraftMaintenanceInterface {
   maintenanceTypeId: number;
   aircraftMaintenanceStartDate: Date | string;
   aircraftMaintenanceEndDate: Date | string;
+  aircraftMaintenanceFinishDate: Date | string | null;
   maintenanceUrgencyLevelId: number;
   aircraftMaintenanceStatusId: number;
   aircraftMaintenanceNotes: string | null;
@@ -17,4 +19,5 @@ export interface AircraftMaintenanceInterface {
   aircraft: AircraftInterface | null;
   aircraftMaintenanceUrgencyLevel: MaintenanceUrgencyLevelInterface | null;
   aircraftMaintenanceStatus: AircraftMaintenanceStatusInterface | null;
+  maintenanceType: MaintenanceTypeInterface | null;
 }

@@ -14,6 +14,9 @@
     <div class="employee-number">
       {{ `End date: ${formattedEndDate}` }}
     </div>
+    <div class="employee-number" v-if="aircraftMaintenance.aircraftMaintenanceFinishDate">
+      {{ `Finish date: ${formattedFinishDate}` }}
+    </div>
     <Tag 
       :style="'margin-right: .8rem; background-color:' + aircraftMaintenance.aircraftMaintenanceStatus.aircraftMaintenanceStatusBg + ';'
         + 'color:' + aircraftMaintenance.aircraftMaintenanceStatus.aircraftMaintenanceStatusColor + ';'" 

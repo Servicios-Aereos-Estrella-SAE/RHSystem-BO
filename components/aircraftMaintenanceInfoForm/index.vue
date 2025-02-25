@@ -50,6 +50,7 @@
         </label>
         <Dropdown
           :options="aircraftMaintenanceStatuses"
+          :disabled="!isEdit"
           optionLabel="aircraftMaintenanceStatusName"
           optionValue="aircraftMaintenanceStatusId"
           placeholder="Select a maintenance status" filter 
@@ -65,7 +66,7 @@
           Maintenance Start Date
         </label>
         <div class="hire-date-box-controller">
-          <Calendar placeholder="Select Start Date" v-model="aircraftMaintenance.aircraftMaintenanceStartDate"/>
+          <Calendar hourFormat="12" showTime placeholder="Select Start Date" v-model="aircraftMaintenance.aircraftMaintenanceStartDate"/>
           <small class="p-error" v-if="submitted && !aircraftMaintenance.aircraftMaintenanceStartDate">
             Maintenance Start Date is required.
           </small>
@@ -76,9 +77,20 @@
           Maintenance End Date
         </label>
         <div class="hire-date-box-controller">
-          <Calendar placeholder="Select Start Date" v-model="aircraftMaintenance.aircraftMaintenanceEndDate"/>
+          <Calendar hourFormat="12" showTime placeholder="Select Start Date" v-model="aircraftMaintenance.aircraftMaintenanceEndDate"/>
           <small class="p-error" v-if="submitted && !aircraftMaintenance.aircraftMaintenanceEndDate">
             Maintenance End Date is required.
+          </small>
+        </div>
+      </div>
+      <div class="input-box" v-show="isEdit && aircraftMaintenance.aircraftMaintenanceStatusId === IdStatusCompleted">
+        <label for="maintenanceType">
+          Maintenance Finish Date
+        </label>
+        <div class="hire-date-box-controller">
+          <Calendar hourFormat="12" showTime placeholder="Select Start Date" v-model="aircraftMaintenance.aircraftMaintenanceFinishDate"/>
+          <small class="p-error" v-if="submitted && !aircraftMaintenance.aircraftMaintenanceFinishDate && isEdit && aircraftMaintenance.aircraftMaintenanceStatusId === IdStatusCompleted">
+            Maintenance Finish Date is required.
           </small>
         </div>
       </div>
