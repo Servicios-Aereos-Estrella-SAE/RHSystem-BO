@@ -1,5 +1,4 @@
 import type { PilotInterface } from "./PilotInterface";
-import Aircraft from '../../../../API-SAE/app/models/aircraft';
 import type { AircraftPropertyInterface } from "./AircraftPropertyInterface";
 import type { ReservationInterface } from "./ReservationInterface";
 
