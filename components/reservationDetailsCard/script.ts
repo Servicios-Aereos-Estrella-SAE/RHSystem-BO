@@ -36,6 +36,16 @@ export default defineComponent({
     },
     handlerClickOnSave() {
       this.$emit('onSave')
+    },
+    currencyFormat (value: number | string) {
+      const val = parseFloat(`${value}`)
+      const amount = new Intl.NumberFormat().format(val)
+      return amount
+    },
+    taxFormat (value: number | string) {
+      const val = parseFloat(`${value}`) * 100
+      const amount = `${parseFloat(val.toString()).toFixed(0)}%`
+      return amount
     }
   },
 })

@@ -85,8 +85,14 @@
           <label>
             Subtotal
           </label>
-          <InputText :disabled="reservation.reservationId && !canUpdate" type="number"
-            v-model="reservation.reservationSubtotal" />
+          <InputNumber
+            v-model="reservation.reservationSubtotal"
+            fluid mode="currency"
+            currency="USD"
+            locale="en-US"
+            :minFractionDigits="2"
+            :disabled="reservation.reservationId && !canUpdate"
+          />
         </div>
         <div class="input-box required">
           <label>
@@ -100,8 +106,14 @@
           <label>
             Total
           </label>
-          <InputText :disabled="reservation.reservationId && !canUpdate" v-model="reservation.reservationTotal"
-            readonly />
+          <InputNumber
+            v-model="reservation.reservationTotal"
+            fluid mode="currency"
+            currency="USD"
+            locale="en-US"
+            :minFractionDigits="2"
+            :disabled="reservation.reservationId && !canUpdate"
+          />
         </div>
       </div>
     </div>

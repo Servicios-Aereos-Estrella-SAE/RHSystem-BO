@@ -71,15 +71,22 @@
           <label for="someField" class="input-label">
             Pax
           </label>
-          <InputText :disabled="editMode && !canUpdate" type="number" v-model="reservationLeg.reservationLegPax"
-            placeholder="3" />
+          <InputNumber
+            v-model="reservationLeg.reservationLegPax"
+            locale="en-US"
+            :disabled="editMode && !canUpdate"
+          />
           <small class="p-error" v-if="isSubmitted && !reservationLeg.reservationLegPax">Pax is required</small>
         </div>
         <div class="input-box required">
           <label for="someField" class="input-label">
-            Leg travel time
+            Leg travel time (minutes)
           </label>
-          <InputText :disabled="editMode && !canUpdate" type="number" v-model="reservationLeg.reservationLegTravelTime" />
+          <InputNumber
+            v-model="reservationLeg.reservationLegTravelTime"
+            locale="en-US"
+            :disabled="editMode && !canUpdate"
+          />
           <small class="p-error" v-if="isSubmitted && !reservationLeg.reservationLegTravelTime">Travel time is
             required</small>
         </div>
@@ -87,8 +94,12 @@
           <label for="someField" class="input-label">
             Distance (NM)
           </label>
-          <InputText :disabled="editMode && !canUpdate" type="number" v-model='reservationLeg.reservationLegDistanceMn'
-            placeholder="MN" />
+          <InputNumber
+            v-model='reservationLeg.reservationLegDistanceMn'
+            locale="en-US"
+            :minFractionDigits="2"
+            :disabled="editMode && !canUpdate"
+          />
           <small class="p-error" v-if="isSubmitted && !reservationLeg.reservationLegDistanceMn">Distance is
             required</small>
         </div>
