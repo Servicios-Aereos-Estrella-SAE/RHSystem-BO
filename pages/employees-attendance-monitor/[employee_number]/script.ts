@@ -708,7 +708,7 @@ export default defineComponent({
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
-    async getExcel() {
+    async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
@@ -737,13 +737,13 @@ export default defineComponent({
       }
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, employeeID)
+      const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, employeeID, reportType)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'Employee Assistance Report.xlsx')
+        link.setAttribute('download', `Employee ${reportType}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
