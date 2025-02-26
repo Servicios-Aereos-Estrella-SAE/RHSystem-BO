@@ -10,6 +10,9 @@ import WorkDisabilityPeriodService from '~/resources/scripts/services/WorkDisabi
 import WorkDisabilityTypeService from '~/resources/scripts/services/WorkDisabilityTypeService';
 import { DateTime } from 'luxon';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
+import type { WorkDisabilityPeriodExpenseInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodExpenseInterface';
+import WorkDisabilityPeriodExpenseService from '~/resources/scripts/services/WorkDisabilityPeriodExpenseService';
+import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface';
 
 export default defineComponent({
   components: {
@@ -26,13 +29,17 @@ export default defineComponent({
   },
   data: () => ({
     workDisabilityTypeList: [] as WorkDisabilityTypeInterface[],
+    workDisabilityPeriodExpensesList: [] as WorkDisabilityPeriodExpenseInterface[],
     submitted: false,
     isNewWorkDisabilityPeriod: false,
     isReady: false,
     isDeleted: false,
     files: [] as Array<any>,
     dates: [] as Array<any>,
-    canManageCurrentPeriod: false
+    canManageCurrentPeriod: false,
+    drawerWorkDisabilityPeriodExpenseForm: false,
+    drawerWorkDisabilityPeriodExpenseDelete: false,
+    workDisabilityPeriodExpense: null as WorkDisabilityPeriodExpenseInterface | null,
   }),
   computed: {
   },
@@ -70,6 +77,11 @@ export default defineComponent({
           this.dates.push(endNewDate)
           this.workDisabilityPeriod.workDisabilityPeriodEndDate = endNewDate
         }
+      }
+      const workDisabilityPeriodService = new WorkDisabilityPeriodService()
+      const workDisabilityPeriodResponse = await workDisabilityPeriodService.show(this.workDisabilityPeriod.workDisabilityPeriodId)
+      if (workDisabilityPeriodResponse.status === 200) {
+        this.workDisabilityPeriodExpensesList = workDisabilityPeriodResponse._data.data.workDisabilityPeriod.workDisabilityPeriodExpenses
       }
     }
     let hasAccess = false
@@ -263,6 +275,66 @@ export default defineComponent({
         yield startDate
         startDate = startDate.plus({ days: 1 })
       }
-    }
+    },
+    addNewExpense() {
+      const newWorkDisabilityPeriodExpense = {
+        workDisabilityPeriodId: this.workDisabilityPeriod.workDisabilityPeriodId
+      } as WorkDisabilityPeriodExpenseInterface
+      this.workDisabilityPeriodExpense = newWorkDisabilityPeriodExpense
+      this.drawerWorkDisabilityPeriodExpenseForm = true
+    },
+    onSaveExpense(workDisabilityPeriodExpense: WorkDisabilityPeriodExpenseInterface) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.workDisabilityPeriodExpense = { ...workDisabilityPeriodExpense }
+      const index = this.workDisabilityPeriodExpensesList.findIndex((workDisabilityPeriodExpense: WorkDisabilityPeriodExpenseInterface) => workDisabilityPeriodExpense.workDisabilityPeriodExpenseId === this.workDisabilityPeriodExpense?.workDisabilityPeriodExpenseId)
+      if (index !== -1) {
+        this.workDisabilityPeriodExpensesList[index] = workDisabilityPeriodExpense
+        this.$forceUpdate()
+      } else {
+        this.workDisabilityPeriodExpensesList.push(workDisabilityPeriodExpense)
+        this.$forceUpdate()
+      }
+      this.$emit('save', workDisabilityPeriodExpense)
+      this.drawerWorkDisabilityPeriodExpenseForm = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
+    onEditExpense(workDisabilityPeriodExpense: WorkDisabilityPeriodExpenseInterface) {
+      this.workDisabilityPeriodExpense = { ...workDisabilityPeriodExpense }
+      this.drawerWorkDisabilityPeriodExpenseForm = true
+    },
+    onDeleteExpense(workDisabilityPeriodExpense: WorkDisabilityPeriodExpenseInterface) {
+      this.workDisabilityPeriodExpense = { ...workDisabilityPeriodExpense }
+
+      this.drawerWorkDisabilityPeriodExpenseDelete = true
+    },
+    async confirmDeleteExpense() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.workDisabilityPeriodExpense) {
+        myGeneralStore.workDisabilityId = this.workDisabilityPeriodExpense.workDisabilityId
+        this.drawerWorkDisabilityPeriodExpenseDelete = false
+        const workDisabilityPeriodExpenseService = new WorkDisabilityPeriodExpenseService()
+        const workDisabilityPeriodExpenseResponse = await workDisabilityPeriodExpenseService.delete(this.workDisabilityPeriodExpense)
+        if (workDisabilityPeriodExpenseResponse.status === 200) {
+          const index = this.workDisabilityPeriodExpensesList.findIndex((workDisabilityPeriodExpense: WorkDisabilityPeriodExpenseInterface) => workDisabilityPeriodExpense.workDisabilityPeriodExpenseId === this.workDisabilityPeriodExpense?.workDisabilityPeriodExpenseId)
+          if (index !== -1) {
+            this.workDisabilityPeriodExpensesList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$emit('onWorkDisabilitySave', {} as WorkDisabilityInterface, [])
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete work disability period expense',
+            detail: workDisabilityPeriodExpenseResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    },
   }
 })
