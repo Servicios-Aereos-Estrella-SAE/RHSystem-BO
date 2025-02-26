@@ -230,7 +230,7 @@ export default defineComponent({
         airportDepartureId: null,
         reservationLegPax: 0,
         reservationLegDistanceMn: 0,
-        reservationLegTravelTime: null,
+        reservationLegTravelTime: 0,
       } as ReservationLegInterface)
     },
     setReservationIdToLegs(id: number) {
@@ -284,7 +284,12 @@ export default defineComponent({
           personImssNss: 'JIGR960217H78',
           personCreatedAt: new Date(),
           personUpdatedAt: new Date(),
-          personDeletedAt: null
+          personDeletedAt: null,
+          personPhoneSecondary: null,
+          personMaritalStatus: null,
+          personPlaceOfBirthCountry: null,
+          personPlaceOfBirthState: null,
+          personPlaceOfBirthCity: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,
@@ -310,7 +315,12 @@ export default defineComponent({
           personImssNss: '',
           personCreatedAt: new Date(),
           personUpdatedAt: new Date(),
-          personDeletedAt: null
+          personDeletedAt: null,
+          personPhoneSecondary: null,
+          personMaritalStatus: null,
+          personPlaceOfBirthCountry: null,
+          personPlaceOfBirthState: null,
+          personPlaceOfBirthCity: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,

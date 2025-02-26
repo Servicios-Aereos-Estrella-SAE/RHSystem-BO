@@ -135,11 +135,27 @@ export default defineComponent({
       }
     },
   },
+  created() {
+    if (this.reservation) {
+      this.reservation.reservationSubtotal = Number(this.reservation.reservationSubtotal)
+      this.reservation.reservationTax = Number(this.reservation.reservationTax)
+      this.reservation.reservationTotal = Number(this.reservation.reservationTotal)
+      this.reservation.reservationTaxFactor = Number(this.reservation.reservationTaxFactor)
+    }
+  },
   async mounted() {
-    await this.handlerSearchPilot()
-    await this.handlerSearchFlightAttendant()
-    await this.handlerSearchCustomer()
-    await this.handlerSearchAircraft()
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+
+    await Promise.all([
+      this.handlerSearchPilot(),
+      this.handlerSearchFlightAttendant(),
+      this.handlerSearchCustomer(),
+      this.handlerSearchAircraft()
+    ])
+
+    myGeneralStore.setFullLoader(false)
+
     if (this.reservation?.reservationLegs?.length === 0) {
       this.reservationLegsAdd()
     }
@@ -149,12 +165,9 @@ export default defineComponent({
   },
   methods: {
     async handlerSearchCustomer() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
       const response = await new CustomerService().getFilteredList('', 1, 999999999)
       const list = response.status === 200 ? response._data.data.customers.data : []
       this.customers = list
-      myGeneralStore.setFullLoader(false)
     },
     setPilotsDefaultSelected() {
       const aircraftSelected = this.aircraft.find((a: AircraftInterface) => a.aircraftId === this.reservation?.aircraftId) ?? null
@@ -194,7 +207,12 @@ export default defineComponent({
           personImssNss: 'JIGR960217H78',
           personCreatedAt: new Date(),
           personUpdatedAt: new Date(),
-          personDeletedAt: null
+          personDeletedAt: null,
+          personPhoneSecondary: null,
+          personMaritalStatus: null,
+          personPlaceOfBirthCountry: null,
+          personPlaceOfBirthState: null,
+          personPlaceOfBirthCity: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,
@@ -220,7 +238,12 @@ export default defineComponent({
           personImssNss: '',
           personCreatedAt: new Date(),
           personUpdatedAt: new Date(),
-          personDeletedAt: null
+          personDeletedAt: null,
+          personPhoneSecondary: null,
+          personMaritalStatus: null,
+          personPlaceOfBirthCountry: null,
+          personPlaceOfBirthState: null,
+          personPlaceOfBirthCity: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,
@@ -241,12 +264,9 @@ export default defineComponent({
       this.aircraft = list
     },
     async handlerSearchPilot() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
       const response = await new PilotService().getFilteredList('', 1, 999999999)
       const list = response.status === 200 ? response._data.data.pilots.data : []
       this.pilots = list
-      myGeneralStore.setFullLoader(false)
     },
     reservationLegsRemove(reservationLeg: ReservationLegInterface, index: number) {
       this.reservation?.reservationLegs?.splice(index, 1)
@@ -283,16 +303,13 @@ export default defineComponent({
         airportDepartureId: lastLeg ? lastLeg.airportDestinationId : null,
         reservationLegPax: 0,
         reservationLegDistanceMn: 0,
-        reservationLegTravelTime: null,
+        reservationLegTravelTime: 0,
       } as ReservationLegInterface)
     },
     async handlerSearchFlightAttendant() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
       const response = await new FlightAttendantService().getFilteredList('', 1, 999999999)
       const list = response.status === 200 ? response._data.data.flightAttendants.data : []
       this.flightAttendants = list
-      myGeneralStore.setFullLoader(false)
     },
     addNewNote() {
       if (this.reservation) {

@@ -69,7 +69,6 @@ export default defineComponent({
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
-    // myGeneralStore.setFullLoader(true)
     const systemModuleSlug = this.$route.path.split('/')[1]
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
@@ -107,8 +106,6 @@ export default defineComponent({
       }
       this.reservation = reservationFind.status === 200 ? reservationFind._data.data.reservation : null
     }
-
-    myGeneralStore.setFullLoader(false)
   },
   methods: {
     addNewNote() {
