@@ -37,14 +37,13 @@ export default defineComponent({
     positions: [] as PositionInterface[],
     departments: [] as DepartmentInterface[],
     submitted: false,
-    genders: [
-      { label: 'Male', value: 'Hombre' },
-      { label: 'Female', value: 'Mujer' },
-      { label: 'Not specified', value: 'Otro' }
-    ],
     assistDiscriminatorOptions: [
       { label: 'Do not discriminate in assistance report', value: 0 },
       { label: 'Yes, discriminate in assistance report', value: 1 }
+    ],
+    workModalityOptions: [
+      { label: 'Onsite', value: true },
+      { label: 'Home Office', value: false }
     ],
     currenEmployee: null as EmployeeInterface | null,
     passwordConfirm: '',
@@ -54,9 +53,7 @@ export default defineComponent({
     isNewUser: false,
     isReady: false,
     isEmailInvalid: false,
-    drawerShiftExceptions: false,
     drawerShifts: false,
-    drawerProceedingFiles: false,
     isValidCURP: true,
     isValidRFC: true,
     businessUnits: [] as BusinessUnitInterface[],
@@ -518,14 +515,8 @@ export default defineComponent({
       const date = new Date(birthday);
       return isNaN(date.getTime()) ? null : date;
     },
-    getShiftExceptions() {
-      this.drawerShiftExceptions = true
-    },
     getShifts() {
       this.drawerShifts = true
-    },
-    getProceedingFiles() {
-      this.drawerProceedingFiles = true
     },
     async getBusinessUnits() {
       const body = await new BusinessUnitService().index()

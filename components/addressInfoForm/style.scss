@@ -2,13 +2,27 @@
 @import 'primeicons/primeicons.css';
 
 .address-info-form {
-  margin-top: 2.25rem;
+  margin-top: 3rem;
   position: relative;
 
   .input-box {
     .address-type {
       display: none;
     }
+  }
+
+  .inputs-group {
+    box-sizing: border-box;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+  }
+
+  h2 {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 1.75rem;
+    margin-top: 1.75rem;
   }
 
   .box-tools-footer {

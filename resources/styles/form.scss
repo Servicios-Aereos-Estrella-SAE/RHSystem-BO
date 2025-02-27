@@ -42,6 +42,13 @@
 
 :deep(.p-dropdown) {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  .p-dropdown-label {
+    width: 1rem;
+    max-width: 100%;
+  }
 }
 
 :deep(.p-inputotp-input) {
