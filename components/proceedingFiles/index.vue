@@ -48,12 +48,11 @@
               :key="`proceeding-file-folder-${index}`"
               :folder="folder"
               @dblclick="handlerDoubleClick(folder)"
-              @dblclickRecords="handlerRecordsDoubleClick(folder)"
             />
           </div>
 
           <div v-if="!filesLoader" class="files-wrapper">
-            <div v-if="folderSelected && !drawerEmployeeRecords">
+            <div v-if="folderSelected">
               <div v-if="canManageFiles" class="files-header">
                 <div></div>
                 <Button  class="btn btn-block" @click="addNew">
@@ -91,9 +90,6 @@
                 Select other folder or add a file
               </div>
             </div>
-            <div v-else-if="drawerEmployeeRecords">
-              <employeeRecords :employee="employee"/>
-            </div>
           </div>
 
           <ProgressSpinner v-if="filesLoader"/>
@@ -109,7 +105,7 @@
               :dismissable="false"
               :showCloseIcon="true"
             >
-              <employeeProceedingFileInfoForm 
+              <employeeProceedingFileInfoForm
                 :employee="employee"
                 :employeeProceedingFile="employeeProceedingFile"
                 :canReadOnlyFiles="canReadOnlyFiles"

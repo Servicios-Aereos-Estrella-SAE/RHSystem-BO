@@ -40,12 +40,10 @@ export default defineComponent({
     filesLoader: false as boolean,
     filterFolderText: '' as string,
     filterFileText: '' as string,
-    drawerProceedingFileTypeEmailForm: false as boolean,
-    drawerEmployeeRecords: false
+    drawerProceedingFileTypeEmailForm: false as boolean
   }),
   computed: {
     foldersFiltered(): ProceedingFileTypeInterface[] {
-
       if (!this.filterFolderText) {
         return this.proceedingFileTypesList
       }
@@ -188,15 +186,6 @@ export default defineComponent({
       const proceedingFileTypeService = new ProceedingFileTypeService()
       const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
-      const folderRecord: ProceedingFileTypeInterface = {
-        proceedingFileTypeName: 'Records',
-        proceedingFileTypeAreaToUse: '',
-        proceedingFileTypeActive: 1,
-        proceedingFileTypeSlug: 'employee-records',
-        proceedingFileTypeId: null,
-        parentId: null
-      }
-      this.proceedingFileTypesList.unshift(folderRecord)
     },
     async handlerDoubleClick(folder: ProceedingFileTypeInterface) {
       this.folderSelected = folder
@@ -204,14 +193,7 @@ export default defineComponent({
       await this.getEmployeeProceedingFiles()
       this.filesLoader = false
     },
-    async handlerRecordsDoubleClick(folder: ProceedingFileTypeInterface) {
-      this.folderSelected = folder
-      this.filesLoader = true
-      this.drawerEmployeeRecords = true
-      this.filesLoader = false
-    },
     async handlerUnselectFolder() {
-      this.drawerEmployeeRecords = false
       if (this.folderSelected && this.folderSelected.parentId) {
         await this.getEmployeeProceedingFilesType(this.folderSelected.parentId)
         await this.getEmployeeProceedingFiles()
