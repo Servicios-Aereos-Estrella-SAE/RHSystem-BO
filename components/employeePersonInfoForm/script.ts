@@ -2,24 +2,24 @@ import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PeopleInterface } from '~/resources/scripts/interfaces/PeopleInterface'
-import PersonService from '~/resources/scripts/services/PersonService';
-import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
-import { DateTime } from 'luxon';
-import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
-import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface';
-import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
-import type { CountrySearchInterface } from '~/resources/scripts/interfaces/CountrySearchInterface';
-import type { CitySearchInterface } from '~/resources/scripts/interfaces/CitySearchInterface';
-import type { StateSearchInterface } from '~/resources/scripts/interfaces/StateSearchInterface';
-import type { EmployeeSpouseInterface } from '~/resources/scripts/interfaces/EmployeeSpouseInterface';
-import EmployeeSpouseService from '~/resources/scripts/services/EmployeeSpouseService';
-import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/EmployeeChildrenInterface';
-import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildrenService';
+import PersonService from '~/resources/scripts/services/PersonService'
+import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface'
+import { DateTime } from 'luxon'
+import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService'
+import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterface'
+import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface'
+import type { CountrySearchInterface } from '~/resources/scripts/interfaces/CountrySearchInterface'
+import type { CitySearchInterface } from '~/resources/scripts/interfaces/CitySearchInterface'
+import type { StateSearchInterface } from '~/resources/scripts/interfaces/StateSearchInterface'
+import type { EmployeeSpouseInterface } from '~/resources/scripts/interfaces/EmployeeSpouseInterface'
+import EmployeeSpouseService from '~/resources/scripts/services/EmployeeSpouseService'
+import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/EmployeeChildrenInterface'
+import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildrenService'
 
 export default defineComponent({
   components: {
@@ -92,6 +92,11 @@ export default defineComponent({
     drawerEmployeeChildrenForm: false,
     drawerEmployeeChildrenDelete: false,
     employeeChildrenList: [] as EmployeeChildrenInterface[],
+    genders: [
+      { label: 'Male', value: 'Hombre' },
+      { label: 'Female', value: 'Mujer' },
+      { label: 'Not specified', value: 'Otro' }
+    ],
   }),
   computed: {
     getAge() {
@@ -275,7 +280,7 @@ export default defineComponent({
       }
     },
     getDate(date: string) {
-      return DateTime.fromJSDate(new Date(date)).toFormat('yyyy-MM-dd');
+      return DateTime.fromJSDate(new Date(date)).toFormat('yyyy-MM-dd')
     },
     async onSave() {
       this.isEmailInvalid = false
@@ -295,8 +300,8 @@ export default defineComponent({
       } else if (this.pilot !== null) {
         for await (const file of this.files) {
           if (file) {
-            const mimeType = file.type;
-            const isAudioOrVideo = mimeType.startsWith('image/');
+            const mimeType = file.type
+            const isAudioOrVideo = mimeType.startsWith('image/')
             if (!isAudioOrVideo) {
               this.$toast.add({
                 severity: 'warn',
@@ -425,15 +430,15 @@ export default defineComponent({
     },
     convertToDateTime(birthday: string | Date | null): Date | null {
       if (birthday === '' || birthday === null || birthday === undefined) {
-        return null;
+        return null
       }
       // Si el cumpleaños ya es un objeto Date, retorna directamente
       if (birthday instanceof Date) {
-        return birthday;
+        return birthday
       }
       // Si el cumpleaños es una cadena de texto, intenta convertirla a Date
-      const date = new Date(birthday);
-      return isNaN(date.getTime()) ? null : date;
+      const date = new Date(birthday)
+      return isNaN(date.getTime()) ? null : date
     },
     getHireDateFormatted(date: Date) {
       if (!this.employee.employeeHireDate) {
@@ -512,55 +517,55 @@ export default defineComponent({
       }
     },
     onEditEmployeeChildren(employeeChildren: EmployeeChildrenInterface) {
-      this.employeeChildren = { ...employeeChildren };
-      this.drawerEmployeeChildrenForm = true;
+      this.employeeChildren = { ...employeeChildren }
+      this.drawerEmployeeChildrenForm = true
     },
     onDeleteEmployeeChildren(employeeChildren: EmployeeChildrenInterface) {
-      this.employeeChildren = { ...employeeChildren };
-      this.drawerEmployeeChildrenDelete = true;
+      this.employeeChildren = { ...employeeChildren }
+      this.drawerEmployeeChildrenDelete = true
     },
     onCancelEmployeeChildrenDelete() {
       this.drawerEmployeeChildrenDelete = false
     },
     async confirmDeleteEmployeeChildren() {
       if (this.employeeChildren) {
-        this.drawerEmployeeChildrenDelete = false;
-        const employeeChildrenService = new EmployeeChildrenService();
-        const employeeChildrenResponse = await employeeChildrenService.delete(this.employeeChildren);
+        this.drawerEmployeeChildrenDelete = false
+        const employeeChildrenService = new EmployeeChildrenService()
+        const employeeChildrenResponse = await employeeChildrenService.delete(this.employeeChildren)
 
         if (employeeChildrenResponse.status === 201) {
-          const index = this.employeeChildrenList.findIndex((employeeChildren: EmployeeChildrenInterface) => employeeChildren.employeeChildrenId === this.employeeChildren?.employeeChildrenId);
+          const index = this.employeeChildrenList.findIndex((employeeChildren: EmployeeChildrenInterface) => employeeChildren.employeeChildrenId === this.employeeChildren?.employeeChildrenId)
           if (index !== -1) {
-            this.employeeChildrenList.splice(index, 1);
-            this.$forceUpdate();
+            this.employeeChildrenList.splice(index, 1)
+            this.$forceUpdate()
           }
           this.$toast.add({
             severity: 'success',
             summary: 'Delete employee children',
             detail: employeeChildrenResponse._data.message,
             life: 5000,
-          });
+          })
         } else {
           this.$toast.add({
             severity: 'error',
             summary: 'Delete employee children',
             detail: employeeChildrenResponse._data.message,
             life: 5000,
-          });
+          })
         }
       }
     },
     onSaveChildren(employeeChildren: EmployeeChildrenInterface) {
-      this.employeeChildren = { ...employeeChildren };
-      const index = this.employeeChildrenList.findIndex((a: EmployeeChildrenInterface) => a.employeeChildrenId === this.employeeChildren?.employeeChildrenId);
+      this.employeeChildren = { ...employeeChildren }
+      const index = this.employeeChildrenList.findIndex((a: EmployeeChildrenInterface) => a.employeeChildrenId === this.employeeChildren?.employeeChildrenId)
       if (index !== -1) {
-        this.employeeChildrenList[index] = employeeChildren;
-        this.$forceUpdate();
+        this.employeeChildrenList[index] = employeeChildren
+        this.$forceUpdate()
       } else {
-        this.employeeChildrenList.push(employeeChildren);
-        this.$forceUpdate();
+        this.employeeChildrenList.push(employeeChildren)
+        this.$forceUpdate()
       }
-      this.drawerEmployeeChildrenForm = false;
+      this.drawerEmployeeChildrenForm = false
     }
   }
 })

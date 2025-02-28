@@ -44,6 +44,7 @@
   width: 100%;
   max-width: 100%;
   border: 1px solid #e3ebf6;
+  box-sizing: border-box;
 
   .p-dropdown-trigger {
 
@@ -53,6 +54,11 @@
         fill: #c3cbd6;
       }
     }
+  }
+
+  .p-dropdown-label {
+    width: 1rem;
+    max-width: 100%;
   }
 }
 
