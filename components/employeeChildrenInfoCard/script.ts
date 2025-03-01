@@ -21,7 +21,9 @@ export default defineComponent({
   methods: {
     getDate(date: string) {
       const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+      return dateWorDisabilityPeriod
+        .setLocale('en')
+        .toFormat('DDD')
     },
     handlerClickOnEdit() {
       if (this.clickOnEdit) {

@@ -5,13 +5,11 @@
         {{ `${employeeChildren.employeeChildrenLastname || ''}` }}
         {{ `${employeeChildren.employeeChildrenSecondLastname || ''}` }}
     </div>
-    <div class="employee-number">
+    <div class="child-gender">
       {{ `Gender: ${employeeChildren.employeeChildrenGender}` }}
     </div>
 
-    <div class="line"></div>
-
-    <div class="info business-unit">
+    <div class="birthday">
       {{ `Birthday: ${getDate(employeeChildren.employeeChildrenBirthday)}` }}
     </div>
 

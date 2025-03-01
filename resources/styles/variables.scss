@@ -61,3 +61,17 @@ $radius: 0.75rem;
     font-weight: 500;
   }
 }
+
+@mixin grid-columns($columns) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: 0.5rem;
+  box-sizing: border-box;
+}
+
+@for $i from 1 through 12 {
+  .group-#{$i} {
+    box-sizing: border-box;
+    @include grid-columns($i);
+  }
+}
