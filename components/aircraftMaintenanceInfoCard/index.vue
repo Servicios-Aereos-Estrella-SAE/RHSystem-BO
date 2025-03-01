@@ -7,14 +7,14 @@
       {{ `${aircraftMaintenance.aircraft.aircraftProperty.aircraftPropertiesName} | ${aircraftMaintenance.aircraft.aircraftRegistrationNumber }`  }}
     </div>
     <div class="line"></div>
-    <div class="employee-number">
+    <div class="maintenance-number">
       {{ `Start: ${formattedStartDate}` }}
     </div>
 
-    <div class="employee-number">
+    <div class="maintenance-number">
       {{ `End date: ${formattedEndDate}` }}
     </div>
-    <div class="employee-number" v-if="aircraftMaintenance.aircraftMaintenanceFinishDate">
+    <div class="maintenance-number" v-if="aircraftMaintenance.aircraftMaintenanceFinishDate">
       {{ `Finish date: ${formattedFinishDate}` }}
     </div>
     <Tag 

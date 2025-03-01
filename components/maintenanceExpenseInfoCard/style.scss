@@ -1,8 +1,8 @@
 @import '/resources/styles/variables.scss';
 @import 'primeicons/primeicons.css';
 
-.user-info-card {
-  margin-top: 2.25rem;
+.expense-info-card {
+  margin-top: 1.25rem;
   position: relative;
   // min-height: 23.5rem;
   padding: 1.5rem;
@@ -90,7 +90,7 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
-    padding-top: 2rem;
+    padding-top: 1rem;
     font-size: 0.8rem;
 
     @media screen and (max-width: $ipad) {

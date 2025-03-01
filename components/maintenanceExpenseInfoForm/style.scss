@@ -4,18 +4,6 @@
   margin-top: 2.25rem;
   position: relative;
 
-  .expense-wrapper {
-    box-sizing: border-box;
-    display: grid;
-    grid-auto-flow: dense;
-    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-    gap: .5rem;
-
-    @media screen and (max-width: $phone) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
   .employee-shift-wrapper {
     box-sizing: border-box;
     display: grid;
@@ -69,36 +57,6 @@
 
   .text {
     text-align: center;
-  }
-}
-
-.subhead-maintenance {
-  margin-top: 1rem;
-  display: grid;
-  gap: 0.5rem;
-  grid-template-columns: 4rem auto 4rem;
-  border-bottom: $border-dashed;
-  border-top: $border-dashed;
-  padding-bottom: 1rem;
-  padding-top: 1rem;
-
-  @media screen and (max-width: $phone) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .month-year {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 500;
-
-    @media screen and (max-width: $phone) {
-      display: none;
-    }
-
-    .text {
-      text-align: center;
-    }
   }
 }
 
@@ -160,4 +118,25 @@
   justify-content: center;
   align-items: center;
   min-height: 50vh;
+}
+
+
+
+.text-decoration-none {
+  text-decoration: none;
+  color: $white;
+
+  .btn-view-file {
+    margin-bottom: 1rem;
+    font-size: .8rem;
+
+    svg {
+      margin-right: .3rem;
+    }
+  }
+}
+
+
+.iframe-expense {
+  margin-top: 2rem;
 }

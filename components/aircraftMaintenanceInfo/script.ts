@@ -23,6 +23,7 @@ export default defineComponent({
   name: 'aircraftMaintenanceInfo',
   props: {
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
+    rand: { type: Number, required: true }
   },
   data: () => ({
     isReady: false,
@@ -89,6 +90,9 @@ export default defineComponent({
   watch: {
     inputSelectedDate() {
       this.handlerCalendarChange()
+    },
+    rand() {
+      this.updatedFetchMaintenanceAircraft()
     }
   },
   methods: {
