@@ -6,8 +6,7 @@
       :click-on-edit="() => { }" :click-on-delete="() => { }" :canReadOnlyWorkDisabilities="false"
       :canManageWorkDisabilities="false" :onlySeeInfo="true" />
     <h1>
-      {{ isNewWorkDisabilityPeriodExpense ? 'Add work disability period expense' : 'Update work disability period
-      expense' }}
+      {{ isNewWorkDisabilityPeriodExpense ? 'Add work disability period expense' : 'Update work disability period expense' }}
     </h1>
 
     <div v-if="isReady" class="work-disability-period-expense-form">

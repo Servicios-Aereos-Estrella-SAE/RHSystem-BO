@@ -1,0 +1,59 @@
+@import '/resources/styles/variables.scss';
+
+.employee-contract-info-form {
+  padding-top: 1rem;
+
+  h1 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border-bottom: $border-dashed;
+    padding-bottom: 1.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .period-applied {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+
+    .period-applied-date {
+      display: grid;
+      grid-template-columns: 2rem auto;
+      gap: 0.5rem;
+      align-items: center;
+
+      .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+          width: 1.5rem;
+        }
+      }
+    }
+
+    strong {
+      font-weight: 500;
+    }
+  }
+
+  .date-box-container {
+    width: 100%;
+    display: block;
+  }
+
+  .date-box {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
+
+  .date-box-controller {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
+}
