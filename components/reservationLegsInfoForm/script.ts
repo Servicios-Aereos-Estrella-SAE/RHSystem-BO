@@ -34,6 +34,9 @@ export default defineComponent({
     airports: [] as AirportInterface[],
     airportService: new AirportService(),
   }),
+  created() {
+    this.reservationLeg.reservationLegDistanceMn = Number(this.reservationLeg.reservationLegDistanceMn)
+  },
   async mounted() {
     await this.handlerSearchAirport();
   },
@@ -49,7 +52,7 @@ export default defineComponent({
         this.reservationLeg.airportDestination = this.airports.find((airport) => airport.airportId === this.reservationLeg.airportDestinationId) || null;
       },
       deep: true,
-    },
+    }
   },
   methods: {
     async handlerSearchAirport() {

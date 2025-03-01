@@ -95,9 +95,9 @@
             Distance (NM)
           </label>
           <InputNumber
-            v-model='reservationLeg.reservationLegDistanceMn'
+            v-model="reservationLeg.reservationLegDistanceMn"
             locale="en-US"
-            :minFractionDigits="2"
+            :minFractionDigits="0"
             :disabled="editMode && !canUpdate"
           />
           <small class="p-error" v-if="isSubmitted && !reservationLeg.reservationLegDistanceMn">Distance is
