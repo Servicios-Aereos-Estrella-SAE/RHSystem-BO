@@ -46,7 +46,8 @@ export default defineComponent({
       if (existWorkDisability) {
         this.workDisability = existWorkDisability
         this.drawerWorkDisabilityForm = true
-      }
+      } 
+      myGeneralStore.workDisabilityId = null
     }
     this.isReady = true
   },

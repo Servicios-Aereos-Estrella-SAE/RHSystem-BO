@@ -1,3 +1,4 @@
+import type { InsuranceCoverageTypeInterface } from "./InsuranceCoverageTypeInterface"
 import type { WorkDisabilityPeriodInterface } from "./WorkDisabilityPeriodInterface"
 
 export interface WorkDisabilityInterface {
@@ -9,5 +10,6 @@ export interface WorkDisabilityInterface {
   workDisabilityUpdatedAt?: string,
   deletedAt?: string,
   workDisabilityPeriods?: [WorkDisabilityPeriodInterface]
+  insuranceCoverageType?: InsuranceCoverageTypeInterface
   }
   

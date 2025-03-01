@@ -10,6 +10,7 @@ import WorkDisabilityPeriodService from '~/resources/scripts/services/WorkDisabi
 import WorkDisabilityTypeService from '~/resources/scripts/services/WorkDisabilityTypeService';
 import { DateTime } from 'luxon';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
+import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface';
 
 export default defineComponent({
   components: {
@@ -19,6 +20,7 @@ export default defineComponent({
   name: 'WorkDisabilityPeriodInfoForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    workDisability: { type: Object as PropType<WorkDisabilityInterface>, required: true },
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
@@ -31,18 +33,20 @@ export default defineComponent({
     isReady: false,
     isDeleted: false,
     files: [] as Array<any>,
-    dates: [] as Array<any>,
-    canManageCurrentPeriod: false
+    canManageCurrentPeriod: false,
+    isValidTicketFolio: false,
+    isInternalDisability: false,
+    daysToApply: 0 as number
   }),
   computed: {
   },
   watch: {
-    dates(newRange) {
-      if (newRange.length === 2) {
-        this.workDisabilityPeriod.workDisabilityPeriodStartDate = newRange[0]
-        this.workDisabilityPeriod.workDisabilityPeriodEndDate = newRange[1]
-      }
-    }
+    'workDisabilityPeriod.workDisabilityPeriodTicketFolio': {
+      handler: function (val: string) {
+        this.isValidFolio(val)
+      },
+      immediate: true
+    },
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -53,13 +57,15 @@ export default defineComponent({
       this.isDeleted = true
     }
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
+    if (this.workDisability.insuranceCoverageType?.insuranceCoverageTypeSlug === 'incapacidad-interna') {
+      this.isInternalDisability = true
+    }
     if (this.workDisabilityPeriod.workDisabilityPeriodId) {
       await this.validateDisabilityDateRange()
       if (this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
         const startIsoDate = this.workDisabilityPeriod.workDisabilityPeriodStartDate.toString()
         const startNewDate = DateTime.fromISO(startIsoDate, { zone: 'utc' }).toISODate()
         if (startNewDate) {
-          this.dates.push(startNewDate)
           this.workDisabilityPeriod.workDisabilityPeriodStartDate = startNewDate
         }
       }
@@ -67,7 +73,6 @@ export default defineComponent({
         const endIsoDate = this.workDisabilityPeriod.workDisabilityPeriodEndDate.toString()
         const endNewDate = DateTime.fromISO(endIsoDate, { zone: 'utc' }).toISODate()
         if (endNewDate) {
-          this.dates.push(endNewDate)
           this.workDisabilityPeriod.workDisabilityPeriodEndDate = endNewDate
         }
       }
@@ -81,7 +86,6 @@ export default defineComponent({
 
     myGeneralStore.setFullLoader(false)
     this.isReady = true
-
   },
   methods: {
     getDate(date: string) {
@@ -96,6 +100,32 @@ export default defineComponent({
     async onSave() {
       this.submitted = true
       const workDisabilityPeriodService = new WorkDisabilityPeriodService()
+      if (!this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
+      if (!this.workDisabilityPeriod.workDisabilityPeriodId) {
+        if (!this.daysToApply) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Missing data',
+            life: 5000,
+          })
+          return
+        }
+        const newDate = new Date(this.workDisabilityPeriod.workDisabilityPeriodStartDate)
+        const daysToApply = this.daysToApply > 1 ? this.daysToApply - 1  : 0
+        newDate.setDate(newDate.getDate() + daysToApply);
+        this.workDisabilityPeriod.workDisabilityPeriodEndDate = newDate.toString()
+      }
+
       if (!this.workDisabilityPeriod.workDisabilityTypeId) {
         this.$toast.add({
           severity: 'warn',
@@ -106,17 +136,7 @@ export default defineComponent({
         return
       }
 
-      if (!this.workDisabilityPeriod.workDisabilityPeriodTicketFolio) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-          life: 5000,
-        })
-        return
-      }
-
-      if (!this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
+      if (!this.isInternalDisability && !this.workDisabilityPeriod.workDisabilityPeriodTicketFolio) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
@@ -135,6 +155,26 @@ export default defineComponent({
         })
         return
       }
+      if (!this.workDisabilityPeriod.workDisabilityPeriodId && this.files.length === 0) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      this.isValidTicketFolio = true
+      if (this.workDisabilityPeriod.workDisabilityPeriodTicketFolio && !this.isValidFolio(this.workDisabilityPeriod.workDisabilityPeriodTicketFolio)) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+
       for await (const file of this.files) {
         if (file) {
           const mimeType = file.type;
@@ -186,7 +226,7 @@ export default defineComponent({
         const severityType = workDisabilityPeriodResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Work disability ${this.workDisabilityPeriod.workDisabilityPeriodId ? 'update' : 'create'}`,
+          summary: `Work disability period ${this.workDisabilityPeriod.workDisabilityPeriodId ? 'update' : 'create'}`,
           detail: msgError,
           life: 5000,
         })
@@ -263,6 +303,11 @@ export default defineComponent({
         yield startDate
         startDate = startDate.plus({ days: 1 })
       }
+    },
+    isValidFolio(value: string) {
+      const regex = /^[A-Z]{2}[0-9]{6}$/
+      this.isValidTicketFolio = regex.test(value)
+      return this.isValidTicketFolio
     }
   }
 })

@@ -84,6 +84,7 @@
           :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
           :canManageWorkDisabilities="canManageWorkDisabilities"
           :workDisabilityPeriod="workDisabilityPeriod" :employee="employee"
+          :workDisability="workDisability"
           @onWorkDisabilityPeriodSave="onSavePeriod" />
       </Sidebar>
       <Sidebar v-model:visible="drawerWorkDisabilityNoteForm" header="form" position="right"
