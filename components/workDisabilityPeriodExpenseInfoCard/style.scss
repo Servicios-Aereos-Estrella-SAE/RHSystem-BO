@@ -1,0 +1,58 @@
+@import '/resources/styles/variables.scss';
+
+.work-disability-period-expense-info-card {
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  position: relative;
+  box-sizing: border-box;
+
+  .work-disability-period-expense-amount {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .attached-file {
+    color: $icon;
+    font-size: 0.9rem;
+    display: block;
+    display: grid;
+    grid-template-columns: 2rem auto;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: $border;
+    border-radius: calc($radius / 2);
+    
+    &.active {
+      color: $info;
+      cursor: pointer;
+    }
+
+    .icon  {
+      background-color: $gray;
+      border-radius: calc($radius / 2);
+      height: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        width: 1rem;
+      }
+    }
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border-top: $border-dashed;
+    padding-top: 0.75rem !important;
+    margin-top: 0.75rem !important;
+  }
+}
