@@ -126,8 +126,13 @@
         :dismissable="false"
         :showCloseIcon="true"
       >
-        <!-- <aircraftProceedingFile :aircraft="aircraft" /> -->
-        <aircraftMaintenanceInfo @editMaintenance="editMaintenance" v-if="aircraft && drawerMaintenance" :aircraft="aircraft" @addMaintenance="addNewMaintenance"/>
+        <aircraftMaintenanceInfo 
+          :rand="randInfo" 
+          @editMaintenance="editMaintenance" 
+          v-if="aircraft && drawerMaintenance" 
+          :aircraft="aircraft" 
+          @addMaintenance="addNewMaintenance"
+        />
       </Sidebar>
 
       <Sidebar
@@ -141,7 +146,21 @@
         :showCloseIcon="true"
       >
         <!-- <aircraftProceedingFile :aircraft="aircraft" /> -->
-        <aircraftMaintenanceInfoForm @onSave="saveAircraftMaintenance" v-if="aircraft && aircraftMaintenance" :aircraft="aircraft" :aircraftMaintenance="aircraftMaintenance"/>
+        <aircraftMaintenanceInfoForm :rand="randInfo" @editMaintenanceExpense="editMaintenanceExpense" @addMaintenanceExpense="addNewMaintenanceExpense" @onSave="saveAircraftMaintenance" v-if="aircraft && aircraftMaintenance" :aircraft="aircraft" :aircraftMaintenance="aircraftMaintenance"/>
+      </Sidebar>
+
+      <Sidebar
+        v-model:visible="drawerMaintenanceExpense"
+        header="Maintenances Expense Form"
+        position="right"
+        class="aircraft-maintenance-form-sidebar"
+        :blockScroll="true"
+        :closeOnEscape="false"
+        :dismissable="false"
+        :showCloseIcon="true"
+      >
+        <!-- <aircraftProceedingFile :aircraft="aircraft" /> -->
+        <maintenanceExpenseInfoForm @onSave="saveMaintenanceExpense" v-if="maintenanceExpense" :aircraft="aircraft" :maintenanceExpense="maintenanceExpense"/>
       </Sidebar>
 
       <transition name="page">

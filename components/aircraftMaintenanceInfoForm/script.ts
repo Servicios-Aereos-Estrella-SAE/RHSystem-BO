@@ -1,20 +1,11 @@
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 import type { PropType } from 'vue'
-import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice'
 import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon';
-import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
-import ShiftService from '~/resources/scripts/services/ShiftService';
-import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
-import type { VacationPeriodInterface } from '~/resources/scripts/interfaces/VacationPeriodInterface';
-import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
-import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface';
-import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService';
-import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import type { AircraftInterface } from '~/resources/scripts/interfaces/AircraftInterface';
 import type { AircraftMaintenanceInterface } from '~/resources/scripts/interfaces/AircraftMaintenanceInterface';
@@ -24,8 +15,11 @@ import MaintenanceUrgencyLevelService from '~/resources/scripts/services/Mainten
 import type { AircraftMaintenanceStatusInterface } from '~/resources/scripts/interfaces/AircraftMaintenanceStatusInterface';
 import AircraftMaintenanceStatusService from '~/resources/scripts/services/AircraftMaintenanceStatusService';
 import AircraftMaintenanceService from '~/resources/scripts/services/AircraftMaintenanceService';
+import MaintenanceExpenseService from '~/resources/scripts/services/MaintenanceExpenseService';
+import type { MaintenanceExpenseInterface } from '~/resources/scripts/interfaces/MaintenanceExpenseInterface';
 
 export default defineComponent({
+  emits: ['addMaintenance', 'addMaintenanceExpense', 'onSave', 'editMaintenanceExpense'],
   components: {
     Toast,
     ToastService,
@@ -35,6 +29,7 @@ export default defineComponent({
   props: {
     aircraft: { type: Object as PropType<AircraftInterface>, required: true },
     aircraftMaintenance: { type: Object as PropType<AircraftMaintenanceInterface>, required: false },
+    rand: { type: Number, required: true }
   },
   data: () => ({
     isReady: false,
@@ -44,7 +39,10 @@ export default defineComponent({
     inputSelectedDate: new Date(),
     selectedDate: DateTime.now() as DateTime,
     displayInputCalendar: false as boolean,
+    drawerMaintenanceDelete: false as boolean,
+    maintenanceExpense: null as MaintenanceExpenseInterface | null,
     maintenanceTypes: [] as MaintenanceTypeInterface[],
+    maintenanceExpenses: [] as MaintenanceExpenseInterface[],
     maintenanceUrgencyLevels: [] as MaintenanceTypeInterface[],
     aircraftMaintenanceStatuses: [] as AircraftMaintenanceStatusInterface[],
   }),
@@ -117,6 +115,7 @@ export default defineComponent({
         this.aircraftMaintenance.aircraftMaintenanceEndDate = endDateString
         this.isEdit = true
       }
+      await this.fetchMaintenanceExpense();
     } else {
       this.isEdit = false
       // set default this.aircraftMaintenance.aircraftMaintenanceStatusId = find status 'In Progress'
@@ -138,8 +137,10 @@ export default defineComponent({
       } else {
         this.isEdit = false
       }
+    },
+    rand() {
+      this.fetchMaintenanceExpense()
     }
-
   },
   methods: {
     async onSuccessShiftAssigned(employeeShiftResponse: any) {
@@ -155,6 +156,33 @@ export default defineComponent({
       })
 
       myGeneralStore.setFullLoader(false)
+    },
+    onEditMaintenanceExpense(maintenanceExpense: MaintenanceExpenseInterface) {
+      this.$emit('editMaintenanceExpense', maintenanceExpense)
+    },
+    onDeleteMaintenanceExpense(maintenanceExpense: MaintenanceExpenseInterface) {
+      this.maintenanceExpense = maintenanceExpense
+      this.drawerMaintenanceDelete = true
+    },
+    deleteMaintenanceExpense() {
+      const maintenanceExpenseService = new MaintenanceExpenseService()
+      maintenanceExpenseService.delete(this.maintenanceExpense!)
+      // find by id and remove from array
+      const index = this.maintenanceExpenses.findIndex((maintenance) => maintenance.maintenanceExpenseId === this.maintenanceExpense?.maintenanceExpenseId)
+      if (index > -1) {
+        this.maintenanceExpenses.splice(index, 1)
+      }
+      this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Maintenance expense deleted', life: 3000 });
+      this.drawerMaintenanceDelete = false
+      this.maintenanceExpense = null
+    },
+    async fetchMaintenanceExpense() {
+      const maintenanceExpenseService = new MaintenanceExpenseService()
+      const maintenanceExpenseServiceResponse = await maintenanceExpenseService.getFilteredList(this.aircraftMaintenance?.aircraftMaintenanceId as number, '', 1, 99999)
+      this.maintenanceExpenses = maintenanceExpenseServiceResponse.data
+    },
+    hnadleAddNewMaintenanceExpense() {
+      this.$emit('addMaintenanceExpense', this.aircraftMaintenance)
     },
     onClickAddMaintenance() {
       this.$emit('addMaintenance', this.aircraft)

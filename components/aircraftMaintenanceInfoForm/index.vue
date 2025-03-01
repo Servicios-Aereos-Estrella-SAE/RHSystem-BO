@@ -1,8 +1,8 @@
 <template>
-  <div v-if="isReady" class="box employee-shifts">
+  <div v-if="isReady" class="box maintenance-shifts">
     <Toast />
     <!-- <Calendar view="month" dateFormat="MM" /> -->
-    <div class="head-calendar">
+    <div class="head-maintenance">
       <div></div>
       <div></div>
       <div class="month-year">
@@ -101,12 +101,40 @@
       </div>
       <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
+          <Button v-if="aircraftMaintenance.aircraftMaintenanceId" label="Add maintenance expense" severity="primary" @click="hnadleAddNewMaintenanceExpense" />
+      </div>
+      <div class="subhead-maintenance" v-if="maintenanceExpenses.length > 0">
+          <div></div>
+          <div class="month-year">
+            <span v-show="!displayInputCalendar" class="text">
+              Maintenance Expenses
+            </span>
+          </div>
+          <div></div>
+      </div>
+      <div class="expense-wrapper">
+        <maintenanceExpenseInfoCard
+          v-for="(maintenanceExpense, index) in maintenanceExpenses"
+          :key="`maintenance-expense-${maintenanceExpense.maintenanceExpenseId}-${index}`"
+          :maintenance-expense="maintenanceExpense"
+          :can-update="true"
+          :can-delete="true"
+          @click-on-edit="onEditMaintenanceExpense"
+          @click-on-delete="onDeleteMaintenanceExpense"
+        />
       </div>
     </div>
   </div>
   <div v-else class="loader">
     <ProgressSpinner />
   </div>
+  <transition name="page">
+    <confirmDelete
+      v-if="drawerMaintenanceDelete"
+      @confirmDelete="deleteMaintenanceExpense"
+      @cancelDelete="drawerMaintenanceDelete = false"
+    />
+  </transition>
 </template>
 
 <script>
@@ -120,49 +148,4 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
-
-  .employee-shift-form-sidebar {
-    width: 100% !important;
-    max-width: 35rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-
-  .shift-exception-sidebar {
-    width: 100% !important;
-    max-width: 33rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-
-  .shift-vacations-sidebar {
-    width: 100% !important;
-    max-width: 27rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-
-  .shift-vacations-manage-sidebar {
-    width: 100% !important;
-    max-width: 27rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-
-  .work-disabilities-sidebar {
-    width: 100% !important;
-    max-width: 33rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
 </style>
