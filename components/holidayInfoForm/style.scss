@@ -4,58 +4,47 @@
 .holiday-info-form {
   margin-top: 2.25rem;
   position: relative;
+  box-sizing: border-box;
+
+  h2 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: block;
+    border-bottom: solid $background 0.5rem;
+    margin: -1.25rem;
+    padding: 1.25rem;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+  
   .icon-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-  }
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(5, 1fr);
+    box-sizing: border-box;
+    gap: 0.5rem;
 
-  .icon-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    border: 1px solid transparent;
-    padding: 10px;
-    border-radius: 5px;
-    width: 100px; /* Fixed width for uniformity */
-    text-align: center;
-  }
-
-  .icon-item.selected {
-    border-color: $primary;
-    border-width: 1.2px;
-  }
-
-  .input-box {
-    .label-container {
-      display: flex;
-      align-items: center;
-    }
-    .icon-preview-box {
-      width: 40px;
-      height: 40px;
+    .icon-item {
+      border: $border-dashed;
+      height: 4rem;
       display: flex;
       justify-content: center;
       align-items: center;
-    }
+      border-radius: calc($radius / 2);
+      cursor: pointer;
 
-    .icon-preview {
-      max-width: 5rem;
-      max-height: 5rem;
-      width: 1rem;
-      height: 1rem;
-      display: flex;
-      margin-left: 0.5rem; /* Ajusta según sea necesario */
-    }
-    .password-box {
-      box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 1fr 10rem;
-      gap: .5rem;
-      margin-top: 0.5rem;
-      @media screen and (max-width: $sm) {
-        grid-template-columns: 1fr 8rem;
+      :deep(svg) {
+        width: 2rem;
+      }
+
+      &.selected {
+        background-color: transparentize($color: $info, $amount: 0.9);
+
+        :deep(svg) {
+          path {
+            fill: $info;
+          }
+        }
       }
     }
   }
@@ -67,9 +56,6 @@
     justify-content: center;
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
-    margin-top: 0.5rem;
-    button {
-      width: 100%;
-    }
+    margin-top: 1.5rem;
   }
 }

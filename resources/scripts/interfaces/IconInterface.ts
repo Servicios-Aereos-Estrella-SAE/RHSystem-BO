@@ -7,3 +7,5 @@ interface IConInterface {
   iconUpdatedAt: Date | string,
   deletedAt: Date | string | null,
 }
+
+export type { IConInterface }
