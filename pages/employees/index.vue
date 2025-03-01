@@ -167,14 +167,19 @@
               </svg>
               Address
             </Button>
+            <Button :class="{ 'btn-active': isActive('records') }" class="btn" @click="onEditRecords">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.715 11c.427 0 .855.084 1.257.25C21.59 6.077 17.27 2 12 2 6.477 2 2 6.477 2 12c0 5.184 3.945 9.447 8.997 9.95a2.117 2.117 0 0 1 .064-.543l.458-1.83c.162-.648.497-1.24.97-1.712l5.902-5.903A3.28 3.28 0 0 1 20.713 11h.002Zm0 1h-.002c-.585 0-1.17.223-1.615.67l-5.902 5.902a2.684 2.684 0 0 0-.707 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.684 2.684 0 0 0 1.248-.707l5.902-5.902A2.285 2.285 0 0 0 20.715 12Z" fill="#ffffff" class="fill-212121"></path></svg>
+              Records
+            </Button>
           </div>
 
-          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm" :employee="employee" @save="onSave"
+          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords" :employee="employee" @save="onSave"
             :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
           <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
             :click-on-close="() => { onCloseAddress() }" />
+          <employeeRecords v-if="drawerRecords" :employee="employee"/>
         </Sidebar>
 
 

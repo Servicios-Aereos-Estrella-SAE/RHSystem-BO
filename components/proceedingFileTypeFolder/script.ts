@@ -29,12 +29,7 @@ export default defineComponent({
       } else {
         clearTimeout(this.timer)
         this.clicks = 0
-        if (this.folder.proceedingFileTypeSlug === 'employee-records') {
-          this.$emit('dblclickRecords', this.folder)
-        } else {
-          this.$emit('dblclick', this.folder)
-        }
-
+        this.$emit('dblclick', this.folder)
       }
     }
   }

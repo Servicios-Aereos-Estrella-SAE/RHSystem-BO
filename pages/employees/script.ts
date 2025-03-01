@@ -1,20 +1,20 @@
-import { DateTime } from 'luxon';
+import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
-import type { AddressInterface } from '~/resources/scripts/interfaces/AddressInterface';
-import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface';
-import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
-import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface";
-import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface";
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface';
-import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
-import AddressTypeService from '~/resources/scripts/services/AddressTypeService';
-import DepartmentService from '~/resources/scripts/services/DepartmentService';
-import EmployeeService from "~/resources/scripts/services/EmployeeService";
-import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService';
-import PositionService from '~/resources/scripts/services/PositionService';
-import { useMyGeneralStore } from "~/store/general";
-import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService';
-import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface';
+import type { AddressInterface } from '~/resources/scripts/interfaces/AddressInterface'
+import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface"
+import type { EmployeWorkScheduleInterface } from "~/resources/scripts/interfaces/EmployeeWorkScheduleInterface"
+import type { PeopleInterface } from "~/resources/scripts/interfaces/PeopleInterface"
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface"
+import AddressTypeService from '~/resources/scripts/services/AddressTypeService'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
+import EmployeeService from "~/resources/scripts/services/EmployeeService"
+import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService'
+import PositionService from '~/resources/scripts/services/PositionService'
+import { useMyGeneralStore } from "~/store/general"
+import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService'
+import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 
 export default defineComponent({
     name: 'Employees',
@@ -31,24 +31,25 @@ export default defineComponent({
         first: 0,
         last: 0,
         rowsPerPage: 50,
-        drawerEmployeeForm: false,
-        drawerEmployeePersonForm: false,
-        drawerAddressForm: false,
-        drawerEmployeePhotoForm: false,
-        drawerEmployeeDelete: false,
-        drawerEmployeeSync: false,
-        canCreate: false,
-        canUpdate: false,
-        canDelete: false,
-        canManageVacation: false,
-        canManageExceptionRequest: false,
-        canReadOnlyFiles: false,
-        canManageFiles: false,
-        canReadOnlyWorkDisabilities: false,
-        canManageWorkDisabilities: false,
-        drawerShifts: false,
-        drawerProceedingFiles: false,
-        hasAccessToManageShifts: false,
+        drawerEmployeeForm: false as boolean,
+        drawerEmployeePersonForm: false as boolean,
+        drawerAddressForm: false as boolean,
+        drawerRecords: false as boolean,
+        drawerEmployeePhotoForm: false as boolean,
+        drawerEmployeeDelete: false as boolean,
+        drawerEmployeeSync: false as boolean,
+        canCreate: false as boolean,
+        canUpdate: false as boolean,
+        canDelete: false as boolean,
+        canManageVacation: false as boolean,
+        canManageExceptionRequest: false as boolean,
+        canReadOnlyFiles: false as boolean,
+        canManageFiles: false as boolean,
+        canReadOnlyWorkDisabilities: false as boolean,
+        canManageWorkDisabilities: false as boolean,
+        drawerShifts: false as boolean,
+        drawerProceedingFiles: false as boolean,
+        hasAccessToManageShifts: false as boolean,
         positions: [] as PositionInterface[],
         departments: [] as DepartmentInterface[],
         departmentId: null as number | null,
@@ -73,7 +74,7 @@ export default defineComponent({
             this.positions = []
             this.handlerSearchEmployee()
             if (newVal) {
-                this.getPositions(newVal);
+                this.getPositions(newVal)
             }
         },
         'positionId': function () {
@@ -141,11 +142,11 @@ export default defineComponent({
             myGeneralStore.setFullLoader(true)
             const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
             const onlyInactive = this.status === 'Terminated' ? true : false
-            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId);
-            const list = response.status === 200 ? response._data.data.employees.data : [];
-            this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0;
-            this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0;
-            this.filteredEmployees = list;
+            const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId)
+            const list = response.status === 200 ? response._data.data.employees.data : []
+            this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
+            this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0
+            this.filteredEmployees = list
             myGeneralStore.setFullLoader(false)
         },
         async getWorkSchedules() {
@@ -153,13 +154,13 @@ export default defineComponent({
             this.workSchedules = response.status === 200 ? response._data.data.employeeWorkSchedules : []
         },
         onPhoto(employee: EmployeeInterface) {
-            this.employee = { ...employee };
-            this.drawerEmployeePhotoForm = true;
+            this.employee = { ...employee }
+            this.drawerEmployeePhotoForm = true
         },
         onPageChange(event: any) {
-            this.currentPage = event.page + 1;
-            this.rowsPerPage = event.rows;
-            this.handlerSearchEmployee();
+            this.currentPage = event.page + 1
+            this.rowsPerPage = event.rows
+            this.handlerSearchEmployee()
         },
         addNew() {
             const person: PeopleInterface = {
@@ -216,62 +217,62 @@ export default defineComponent({
             this.drawerAddressForm = false
         },
         onEdit(employee: EmployeeInterface) {
-            this.employee = { ...employee };
-            this.drawerEmployeeForm = true;
+            this.employee = { ...employee }
+            this.drawerEmployeeForm = true
             this.activeButton = 'employee'
             this.drawerEmployeePersonForm = false
             this.drawerAddressForm = false
         },
         onDelete(employee: EmployeeInterface) {
-            this.employee = { ...employee };
-            this.drawerEmployeeDelete = true;
+            this.employee = { ...employee }
+            this.drawerEmployeeDelete = true
             this.drawerEmployeePersonForm = false
             this.drawerAddressForm = false
         },
         async confirmDelete() {
             if (this.employee) {
-                this.drawerEmployeeDelete = false;
-                const employeeService = new EmployeeService();
-                const employeeResponse = await employeeService.delete(this.employee);
+                this.drawerEmployeeDelete = false
+                const employeeService = new EmployeeService()
+                const employeeResponse = await employeeService.delete(this.employee)
 
                 if (employeeResponse.status === 201) {
-                    const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId);
+                    const index = this.filteredEmployees.findIndex((employee: EmployeeInterface) => employee.employeeId === this.employee?.employeeId)
                     if (index !== -1) {
-                        this.filteredEmployees.splice(index, 1);
-                        this.$forceUpdate();
+                        this.filteredEmployees.splice(index, 1)
+                        this.$forceUpdate()
                     }
                     this.$toast.add({
                         severity: 'success',
                         summary: 'Delete employee',
                         detail: employeeResponse._data.message,
                         life: 5000,
-                    });
+                    })
                 } else {
                     this.$toast.add({
                         severity: 'error',
                         summary: 'Delete employee',
                         detail: employeeResponse._data.message,
                         life: 5000,
-                    });
+                    })
                 }
             }
         },
         onSave(employee: EmployeeInterface) {
-            this.employee = { ...employee };
-            const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId);
+            this.employee = { ...employee }
+            const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId)
             if (index !== -1) {
                 if (this.status === 'Terminated' && !this.employee.deletedAt) {
                     this.filteredEmployees.splice(index, 1)
                 } else {
-                    this.filteredEmployees[index] = employee;
+                    this.filteredEmployees[index] = employee
                 }
-                this.$forceUpdate();
+                this.$forceUpdate()
             } else {
-                this.filteredEmployees.push(employee);
-                this.$forceUpdate();
+                this.filteredEmployees.push(employee)
+                this.$forceUpdate()
             }
-            this.drawerEmployeeForm = false;
-            this.drawerEmployeePhotoForm = false;
+            this.drawerEmployeeForm = false
+            this.drawerEmployeePhotoForm = false
         },
         async syncEmployees() {
             this.drawerEmployeeSync = true
@@ -289,7 +290,7 @@ export default defineComponent({
                     detail: employeeResponse._data.message,
                     life: 5000,
                 })
-                await this.handlerSearchEmployee();
+                await this.handlerSearchEmployee()
             } else {
                 this.$toast.add({
                     severity: 'error',
@@ -312,52 +313,52 @@ export default defineComponent({
             this.drawerEmployeeDelete = false
         },
         async getExcel() {
-            const myGeneralStore = useMyGeneralStore();
-            myGeneralStore.setFullLoader(true);
-            const filterStartDate = `2000-01-01`;
-            const filterEndDate = new Date().toISOString().split('T')[0];
+            const myGeneralStore = useMyGeneralStore()
+            myGeneralStore.setFullLoader(true)
+            const filterStartDate = `2000-01-01`
+            const filterEndDate = new Date().toISOString().split('T')[0]
             const onlyInactive = this.status === 'Terminated' ? true : false
             try {
-                const employeeService = new EmployeeService();
+                const employeeService = new EmployeeService()
                 const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
-                const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive, this.employeeTypeId, workSchedule, this.currentPage, this.rowsPerPage);
+                const assistResponse = await employeeService.getExcelAll(this.search, this.departmentId, this.positionId, filterStartDate, filterEndDate, onlyInactive, this.employeeTypeId, workSchedule, this.currentPage, this.rowsPerPage)
 
                 if (assistResponse) {
                     const reportDesc = onlyInactive ? '_terminated' : ''
-                    const blob = await assistResponse._data;
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', `Employee_Report${reportDesc}.xlsx`);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    const blob = await assistResponse._data
+                    const url = window.URL.createObjectURL(blob)
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', `Employee_Report${reportDesc}.xlsx`)
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
 
                     this.$toast.add({
                         severity: 'success',
                         summary: 'Excel Report',
                         detail: 'Excel file created successfully',
                         life: 5000,
-                    });
+                    })
                 } else {
-                    const msgError = assistResponse?._data?.error || assistResponse?._data?.message || 'Unknown error';
+                    const msgError = assistResponse?._data?.error || assistResponse?._data?.message || 'Unknown error'
                     this.$toast.add({
                         severity: 'error',
                         summary: 'Excel Report',
                         detail: msgError,
                         life: 5000,
-                    });
+                    })
                 }
             } catch (error) {
-                console.error('Error generating Excel file:', error);
+                console.error('Error generating Excel file:', error)
                 this.$toast.add({
                     severity: 'error',
                     summary: 'Excel Report',
                     detail: 'Error generating Excel file',
                     life: 5000,
-                });
+                })
             } finally {
-                myGeneralStore.setFullLoader(false);
+                myGeneralStore.setFullLoader(false)
             }
         },
         async getVacationExcel() {
@@ -399,12 +400,20 @@ export default defineComponent({
         onEditEmployee() {
             this.drawerEmployeePersonForm = false
             this.drawerAddressForm = false
-            this.activeButton = 'employee';
+            this.drawerRecords = false
+            this.activeButton = 'employee'
         },
         onEditPerson() {
             this.drawerEmployeePersonForm = true
             this.drawerAddressForm = false
-            this.activeButton = 'person';
+            this.drawerRecords = false
+            this.activeButton = 'person'
+        },
+        onEditRecords() {
+            this.drawerEmployeePersonForm = false
+            this.drawerAddressForm = false
+            this.drawerRecords = true
+            this.activeButton = 'records'
         },
         onClosePerson() {
             this.drawerEmployeePersonForm = false
@@ -461,16 +470,17 @@ export default defineComponent({
                 this.address = newAddress
             }
 
-            this.drawerAddressForm = true;
-            this.activeButton = 'address';
-            this.drawerEmployeePersonForm = false;
+            this.drawerAddressForm = true
+            this.activeButton = 'address'
+            this.drawerEmployeePersonForm = false
+            this.drawerRecords = false
         },
         onCloseAddress() {
             this.drawerAddressForm = false
         },
         async onSaveAddress(address: AddressInterface) {
             this.address = address
-            this.drawerAddressForm = false;
+            this.drawerAddressForm = false
             this.activeButton = 'employee'
             if (this.employee?.employeeId) {
                 const existEmployeeAddress = this.employee?.address?.find(a => a.addressId === this.address?.addressId)
@@ -488,7 +498,7 @@ export default defineComponent({
                             summary: 'Error',
                             detail: 'There was an error saving the relation employee address',
                             life: 5000
-                        });
+                        })
                     } else {
                         this.employee.address?.push(employeeAddressResponse._data.data.employeeAddress)
                     }
@@ -498,7 +508,7 @@ export default defineComponent({
             }
         },
         isActive(button: string) {
-            return this.activeButton === button;
+            return this.activeButton === button
         },
     }
-});
+})
