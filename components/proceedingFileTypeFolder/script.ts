@@ -31,6 +31,8 @@ export default defineComponent({
         this.clicks = 0
         if (this.folder.proceedingFileTypeSlug === 'employee-records') {
           this.$emit('dblclickRecords', this.folder)
+        } else if (this.folder.proceedingFileTypeSlug === 'employee-contracts') {
+          this.$emit('dblclickContracts', this.folder)
         } else {
           this.$emit('dblclick', this.folder)
         }
