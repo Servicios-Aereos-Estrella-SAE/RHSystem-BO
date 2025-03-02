@@ -141,7 +141,7 @@
         </div>
 
         <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true" @hide="onSidebarInfoHide">
           <div v-if="employee && employee.employeeId > 0" class="employee-info">
             <employeeModalInfoCard :employee="employee" />
           </div>

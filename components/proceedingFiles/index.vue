@@ -36,7 +36,7 @@
       <div class="employee">
         <div class="form-container">
           <employeeModalInfoCard :employee="employee" />
-          <div class="box head-page">
+          <div v-if="displaySearchInput" class="box head-page">
             <div></div>
             <div class="input-search">
               <div class="input-box">

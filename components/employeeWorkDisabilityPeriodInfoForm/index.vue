@@ -88,7 +88,7 @@
           <label for="requested-date">
             Date start
           </label>
-          <Calendar v-if="isNewWorkDisabilityPeriod" v-model="dates" selectionMode="range" dateFormat="yy-mm-dd"
+          <Calendar v-if="isNewWorkDisabilityPeriod" v-model="workDisabilityPeriod.workDisabilityPeriodStartDate" dateFormat="yy-mm-dd"
             placeholder="Select date range" class="w-full md:w-14rem"
             :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" />
           <div v-else class="period-applied">
@@ -166,7 +166,7 @@
         </div>
         <div v-else class="work-disability-period-expenses-wrapper">
           <div class="empty-data">
-            No expenses
+            No expenses recorded yet
           </div>
         </div>
         <Sidebar v-model:visible="drawerWorkDisabilityPeriodExpenseForm" header="form" position="right"

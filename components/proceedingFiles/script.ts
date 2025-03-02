@@ -12,7 +12,6 @@ import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFi
 import ProceedingFile from '~/resources/scripts/models/ProceedingFile';
 import type { EmployeeProceedingFileInterface } from '~/resources/scripts/interfaces/EmployeeProceedingFileInterface';
 
-
 export default defineComponent({
   components: {
     Toast,
@@ -78,6 +77,15 @@ export default defineComponent({
         this.slugify(folder.proceedingFile?.proceedingFileUuid || '').includes(this.filterFileText)
       )
       return filtered
+    },
+    displaySearchInput() {
+      let display = true
+
+      if (this.folderSelected && this.folderSelected.proceedingFileTypeSlug === 'employee-contracts') {
+        display = false
+      }
+
+      return display
     }
   },
   async mounted() {
