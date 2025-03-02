@@ -1,22 +1,21 @@
 <template>
   <div>
     <Toast />
-    <div class="pilots-page">
-
+    <div class="reservations-page-wrapper">
       <Head>
         <Title>
-          Reservations
+          Reservation Details
         </Title>
       </Head>
       <NuxtLayout name="backoffice">
         <div class="wrapper-reservations" v-if="reservation">
           <div class="reservations-wrapper">
             <ReservationInfoForm
-              v-if="reservation" 
+              v-if="reservation"
               :reservation="reservation"
-              :editMode="editMode" 
-              :submitted="submitted" 
-              :canUpdate="canUpdate" 
+              :editMode="editMode"
+              :submitted="submitted"
+              :canUpdate="canUpdate"
               @deleteReservationLeg="deleteReservationLeg"
               @deleteReservationNote="deleteReservationNote"
             />
@@ -40,6 +39,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
+
   .customer-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;

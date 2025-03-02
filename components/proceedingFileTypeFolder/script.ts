@@ -29,8 +29,8 @@ export default defineComponent({
       } else {
         clearTimeout(this.timer)
         this.clicks = 0
-        if (this.folder.proceedingFileTypeSlug === 'employee-records') {
-          this.$emit('dblclickRecords', this.folder)
+        if (this.folder.proceedingFileTypeSlug === 'employee-contracts') {
+          this.$emit('dblclickContracts', this.folder)
         } else {
           this.$emit('dblclick', this.folder)
         }

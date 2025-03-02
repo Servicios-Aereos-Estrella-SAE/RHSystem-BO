@@ -52,6 +52,7 @@
                 :click-on-delete="() => { onDelete(aircraft) }" 
                 :click-on-gallery="() => {onGallery(aircraft) }"
                 @openProceedingFiles="handlerOpenProceedingFiles"
+                @openMaintenance="handlerOpenMaintenance"
               />
             </div>
           </div>
@@ -115,6 +116,53 @@
         <aircraftProceedingFile :aircraft="aircraft" />
       </Sidebar>
 
+      <Sidebar
+        v-model:visible="drawerMaintenance"
+        header="Aircraft Maintenances"
+        position="right"
+        class="proceeding-file-sidebar"
+        :blockScroll="true"
+        :closeOnEscape="false"
+        :dismissable="false"
+        :showCloseIcon="true"
+      >
+        <aircraftMaintenanceInfo 
+          :rand="randInfo" 
+          @editMaintenance="editMaintenance" 
+          v-if="aircraft && drawerMaintenance" 
+          :aircraft="aircraft" 
+          @addMaintenance="addNewMaintenance"
+        />
+      </Sidebar>
+
+      <Sidebar
+        v-model:visible="drawerMaintenanceForm"
+        header="Aircraft Maintenances Form"
+        position="right"
+        class="aircraft-maintenance-form-sidebar"
+        :blockScroll="true"
+        :closeOnEscape="false"
+        :dismissable="false"
+        :showCloseIcon="true"
+      >
+        <!-- <aircraftProceedingFile :aircraft="aircraft" /> -->
+        <aircraftMaintenanceInfoForm :rand="randInfo" @editMaintenanceExpense="editMaintenanceExpense" @addMaintenanceExpense="addNewMaintenanceExpense" @onSave="saveAircraftMaintenance" v-if="aircraft && aircraftMaintenance" :aircraft="aircraft" :aircraftMaintenance="aircraftMaintenance"/>
+      </Sidebar>
+
+      <Sidebar
+        v-model:visible="drawerMaintenanceExpense"
+        header="Maintenances Expense Form"
+        position="right"
+        class="aircraft-maintenance-form-sidebar"
+        :blockScroll="true"
+        :closeOnEscape="false"
+        :dismissable="false"
+        :showCloseIcon="true"
+      >
+        <!-- <aircraftProceedingFile :aircraft="aircraft" /> -->
+        <maintenanceExpenseInfoForm @onSave="saveMaintenanceExpense" v-if="maintenanceExpense" :aircraft="aircraft" :maintenanceExpense="maintenanceExpense"/>
+      </Sidebar>
+
       <transition name="page">
         <confirmDelete
           v-if="drawerAircraftDelete"
@@ -144,7 +192,7 @@
     flex-wrap: wrap;
   }
 
-  .aircraft-form-sidebar {
+  .aircraft-form-sidebar, .aircraft-maintenance-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;
 
@@ -152,4 +200,5 @@
       width: 100% !important;
     }
   }
+  
 </style>

@@ -14,6 +14,11 @@
     overflow-y: auto;
     font-size: 0.8rem;
 
+    .tag {
+      margin-top: .3rem;
+      margin-left: .1rem;
+    }
+
     &:hover {
       transition: all 0.4s;
       background-color: transparentize($color: $gray, $amount: 0.25);
@@ -48,7 +53,7 @@
       display: grid;
       grid-template-columns: auto 5rem;
       gap: 0.5rem;
-      
+
       .week-day {
         display: block;
         margin-top: 0.5rem;
@@ -130,6 +135,7 @@
           opacity: 0.15;
         }
       }
+
       .time {
         // background-color: $gray;
         font-size: 0.7rem;
@@ -137,6 +143,7 @@
         margin-top: .25rem;
         margin-bottom: 0;
       }
+
       .legs {
         // background-color: $gray;
         padding: 0.35rem;

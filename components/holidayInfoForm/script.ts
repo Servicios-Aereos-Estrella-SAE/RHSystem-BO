@@ -1,7 +1,6 @@
-import type { ShiftInterface } from "~/resources/scripts/interfaces/ShiftInterface";
 import HolidayService from "~/resources/scripts/services/HolidayService"
-import IConInterface from '~/resources/scripts/interfaces/IconInterface'
-import IconInterface from '~/resources/scripts/interfaces/IconInterface';
+import type { IConInterface } from '~/resources/scripts/interfaces/IconInterface'
+
 export default defineComponent({
   
   name: 'HolidayInfoForm',
@@ -14,10 +13,11 @@ export default defineComponent({
     submitted: false,
     selectedCities: '',
     isVisibleIcons: true as boolean,
-    iconSelected: null as IconInterface | null,
+    iconSelected: null as IConInterface | null,
     isUpdate: false,
     icons: [] as IConInterface[],
-    holidayService: new HolidayService()
+    holidayService: new HolidayService(),
+    alertConfirmDelete: false as boolean,
   }),
   async mounted() {
     this.isUpdate = this.holiday.holidayId ? true : false
@@ -25,7 +25,7 @@ export default defineComponent({
     const dtDateOnly = new Date(_date.valueOf() + _date.getTimezoneOffset() * 60 * 1000);
     this.holiday.holidayDate = dtDateOnly//new Date(this.holiday.holidayDate).toLocaleString('en-US', { timeZone: 'America/Mexico_city' })
     await this.getListIcons()
-    this.iconSelected = this.isUpdate ? this.icons.find((icon: IconInterface) => icon.iconId === this.holiday.holidayIconId) : null
+    this.iconSelected = (this.isUpdate ? this.icons.find((icon: IConInterface) => icon.iconId === this.holiday.holidayIconId) : null) as IConInterface | null
     this.isVisibleIcons = this.isUpdate ? false : true
   },
   methods: {
@@ -75,7 +75,7 @@ export default defineComponent({
     validForm() {
       return this.holiday && this.holiday.holidayName && this.holiday.holidayDate && this.holiday.holidayIcon && (this.holiday.holidayFrequency > 0 && this.holiday.holidayFrequency <= 100)
     },
-    selectIcon(icon: IconInterface) {
+    selectIcon(icon: IConInterface) {
       this.holiday.holidayIconId = icon.iconId;
       this.holiday.holidayIcon = icon.iconSvg
       this.iconSelected = icon
@@ -83,11 +83,18 @@ export default defineComponent({
     goBackToIcons() {
       this.isVisibleIcons = true
       this.submitted = false
+    },
+    handlerSetDelete () {
+      this.alertConfirmDelete = true
+    },
+    handlerConfirmDelete () {
+      this.alertConfirmDelete = false
+      this.$emit('confirmDelete', JSON.parse(JSON.stringify(this.holiday)) as HolidayInterface)
     }
   },
   computed: {
     iconsComputed: function () {
-      return this.icons.map((_icon: IconInterface) => ({
+      return this.icons.map((_icon: IConInterface) => ({
           ..._icon,
           iconLabel: _icon.iconName + ' ' + _icon.iconSvg
       }));

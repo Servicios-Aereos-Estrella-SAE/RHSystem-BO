@@ -687,7 +687,7 @@ export default defineComponent({
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
     },
-    async getExcel() {
+    async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
@@ -716,13 +716,13 @@ export default defineComponent({
       }
 
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelAll(startDay, endDay)
+      const assistResponse = await assistService.getExcelAll(startDay, endDay, reportType)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'All Department Assistance Report.xlsx')
+        link.setAttribute('download', `All Department ${reportType}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

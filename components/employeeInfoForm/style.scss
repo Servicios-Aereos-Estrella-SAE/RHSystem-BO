@@ -1,11 +1,24 @@
 @import '/resources/styles/variables.scss';
-@import 'primeicons/primeicons.css';
+
 
 .user-info-form {
-  margin-top: 2.25rem;
+  margin-top: 3rem;
   position: relative;
 
+  .form-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    box-sizing: border-box;
+
+    @media screen and (max-width: $tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .input-box {
+    box-sizing: border-box;
+
     .password-box {
       box-sizing: border-box;
       display: grid;
@@ -14,6 +27,22 @@
       margin-top: 0.5rem;
       @media screen and (max-width: $sm) {
         grid-template-columns: 1fr 8rem;
+      }
+    }
+  }
+
+  .inputs-group {
+    box-sizing: border-box;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+  }
+
+  .group-emp-fiscal {
+
+    .group-3 {
+      @media screen and (max-width: $sm) {
+        grid-template-columns: 1fr;
       }
     }
   }

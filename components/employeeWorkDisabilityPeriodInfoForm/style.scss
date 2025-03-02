@@ -1,11 +1,11 @@
 @import '/resources/styles/variables.scss';
 
 .work-disability-info-form {
-  
+
   .period-applied {
     margin-top: 1rem;
     font-size: 0.8rem;
-    
+
     .period-applied-date {
       display: grid;
       grid-template-columns: 2rem auto;
@@ -27,4 +27,25 @@
       font-weight: 500;
     }
   }
+  .work-disability-period-expenses-wrapper {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 0.5rem;
+
+    .empty-data {
+      margin-top: 1rem;
+      text-align: center;
+      background-color: $gray;
+      padding: 2rem;
+      color: $icon;
+      border-radius: $radius;
+      font-size: 0.8rem;
+      height: 10rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
 }

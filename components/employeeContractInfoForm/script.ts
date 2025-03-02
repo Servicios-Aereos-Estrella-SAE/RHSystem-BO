@@ -1,0 +1,249 @@
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+import { useMyGeneralStore } from '~/store/general';
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface';
+import EmployeeContractService from '~/resources/scripts/services/EmployeeContractService';
+import { DateTime } from 'luxon';
+import EmployeeContractTypeService from '~/resources/scripts/services/EmployeeContractTypeService';
+import type { EmployeeContractTypeInterface } from '~/resources/scripts/interfaces/EmployeeContractTypeInterface';
+
+export default defineComponent({
+  components: {
+    Toast,
+    ToastService,
+  },
+  name: 'EmployeeContractInfoForm',
+  props: {
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    employeeContract: { type: Object as PropType<EmployeeContractInterface>, required: true },
+    clickOnSave: { type: Function, default: null }
+  },
+  data: () => ({
+    employeeContractTypeList: [] as EmployeeContractTypeInterface[],
+    submitted: false,
+    isNewEmployeeContract: false,
+    isReady: false,
+    isDeleted: false,
+    files: [] as Array<any>,
+    dates: [] as Array<any>,
+    employeeContractStatusOptions: [
+      { label: 'Active', value: 'active' },
+      { label: 'Expired', value: 'expired' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ],
+    startDate: '' as string,
+    displayStartDateCalendar: false as boolean,
+    endDate: '' as string,
+    displayEndDateCalendar: false as boolean,
+    isContractPermanent: false
+  }),
+  computed: {
+  },
+  watch: {
+    dates(newRange) {
+      if (newRange.length === 2) {
+        this.employeeContract.employeeContractStartDate = newRange[0]
+        this.employeeContract.employeeContractEndDate = newRange[1]
+      }
+    }
+  },
+  async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    myGeneralStore.setFullLoader(true)
+    this.isReady = false
+    this.isNewEmployeeContract = !this.employeeContract.employeeContractId ? true : false
+    if (this.employee.deletedAt) {
+      this.isDeleted = true
+    }
+    this.employeeContractTypeList = await this.getEmployeeContractTypes()
+    if (this.employeeContract.employeeContractId) {
+      this.verifyContractPermanent()
+      if (this.employeeContract.employeeContractStartDate) {
+        const startIsoDate = this.employeeContract.employeeContractStartDate.toString()
+        const startNewDate = DateTime.fromISO(startIsoDate, { zone: 'utc' }).toISODate()
+        if (startNewDate) {
+          this.employeeContract.employeeContractStartDate = startNewDate
+        }
+      }
+      if (this.employeeContract.employeeContractEndDate) {
+        const endIsoDate = this.employeeContract.employeeContractEndDate.toString()
+        const endNewDate = DateTime.fromISO(endIsoDate, { zone: 'utc' }).toISODate()
+        if (endNewDate) {
+          this.employeeContract.employeeContractEndDate = endNewDate
+        }
+      }
+    }
+    myGeneralStore.setFullLoader(false)
+    this.isReady = true
+
+  },
+  methods: {
+    getDate(date: string | Date) {
+      if (!date) {
+        return ''
+      }
+      if (typeof date === 'string' && !date.includes('T')) {
+        date = new Date(date)
+      }
+      const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'utc' })
+      return dateEmployeeContract.setLocale('en').toFormat('DDDD')
+    },
+    async getEmployeeContractTypes() {
+      const response = await new EmployeeContractTypeService().getFilteredList('', 1, 100)
+      const list: EmployeeContractTypeInterface[] = response.status === 200 ? response._data.data.employeeContractTypes.data : []
+      return list
+    },
+    async onSave() {
+      this.submitted = true
+      const employeeContractService = new EmployeeContractService()
+      if (!this.employeeContract.employeeContractId && this.files.length === 0) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.employeeContractTypeId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.employeeContractFolio) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.employeeContractStartDate) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.isContractPermanent && !this.employeeContract.employeeContractEndDate) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        });
+        return
+      }
+      if (!this.employeeContract.employeeContractStatus) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.employeeContractMonthlyNetSalary || this.employeeContract.employeeContractMonthlyNetSalary === 0) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      for await (const file of this.files) {
+        if (file) {
+          const mimeType = file.type;
+          const isAudioOrVideo = mimeType.startsWith('audio/') || mimeType.startsWith('video/');
+          if (isAudioOrVideo) {
+            this.$toast.add({
+              severity: 'warn',
+              summary: 'File invalid',
+              detail: 'Audio or video files are not allowed.',
+              life: 5000,
+            })
+            return
+          }
+        }
+      }
+      const files = this.files.length > 0 ? this.files[0] : null
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      let employeeContractResponse = null
+      const employeeContractStartDateTemp = this.employeeContract.employeeContractStartDate
+      if (this.employeeContract.employeeContractStartDate) {
+        this.employeeContract.employeeContractStartDate = DateTime.fromJSDate(new Date(this.employeeContract.employeeContractStartDate))
+          .toFormat('yyyy-MM-dd');
+      }
+      const employeeContractEndDateTemp = this.employeeContract.employeeContractEndDate
+      if (this.employeeContract.employeeContractEndDate) {
+        this.employeeContract.employeeContractEndDate = DateTime.fromJSDate(new Date(this.employeeContract.employeeContractEndDate))
+          .toFormat('yyyy-MM-dd');
+      }
+      if (!this.employeeContract.employeeContractId) {
+        employeeContractResponse = await employeeContractService.store(this.employeeContract, files)
+      } else {
+        employeeContractResponse = await employeeContractService.update(this.employeeContract, files)
+      }
+
+      if (employeeContractResponse.status === 201 || employeeContractResponse.status === 200) {
+        employeeContractResponse = await employeeContractService.show(employeeContractResponse._data.data.employeeContract.employeeContractId)
+        if (employeeContractResponse.status === 200) {
+          const employeeContract = employeeContractResponse._data.data.employeeContract
+          this.$emit('onEmployeeContractSave', employeeContract as EmployeeContractInterface)
+        }
+      } else {
+        const msgError = employeeContractResponse._data.error ? employeeContractResponse._data.error : employeeContractResponse._data.message
+        const severityType = employeeContractResponse.status === 500 ? 'error' : 'warn'
+        this.$toast.add({
+          severity: severityType,
+          summary: `Employee contract ${this.employeeContract.employeeContractId ? 'update' : 'create'}`,
+          detail: msgError,
+          life: 5000,
+        })
+      }
+      this.employeeContract.employeeContractStartDate = employeeContractStartDateTemp
+      this.employeeContract.employeeContractEndDate = employeeContractEndDateTemp
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
+    validateFiles(event: any) {
+      let validFiles = event.files;
+      this.files = validFiles;
+      this.$forceUpdate()
+    },
+    getObjectURL(file: any) {
+      return URL.createObjectURL(file);
+    },
+    openFile() {
+      window.open(this.employeeContract?.employeeContractFile)
+    },
+    handlerDisplayStartDate() {
+      this.displayStartDateCalendar = true
+    },
+    handlerDisplayEndDate() {
+      this.displayEndDateCalendar = true
+    },
+    verifyContractPermanent() {
+      this.isContractPermanent = false
+      const employeeContractType = this.employeeContractTypeList.find(
+        ({ employeeContractTypeId }) => employeeContractTypeId === this.employeeContract.employeeContractTypeId
+      )
+      if (employeeContractType?.employeeContractTypeSlug === 'permanent') {
+        this.isContractPermanent = true
+      }
+    }
+  }
+})

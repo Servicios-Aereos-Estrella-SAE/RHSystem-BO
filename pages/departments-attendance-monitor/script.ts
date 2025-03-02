@@ -693,7 +693,7 @@ export default defineComponent({
         this.statusInfo = statusInfo
       } catch (error) { }
     },
-    async getExcel() {
+    async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
@@ -722,15 +722,16 @@ export default defineComponent({
       }
 
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelAll(startDay, endDay)
+      const assistResponse = await assistService.getExcelAll(startDay, endDay, reportType)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'All Department Assistance Report.xlsx')
+        link.setAttribute('download', `All Department ${reportType}.xlsx`)
         document.body.appendChild(link)
         link.click()
+        console.log(link)
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',

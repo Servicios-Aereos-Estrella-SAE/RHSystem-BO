@@ -17,7 +17,7 @@ interface ReservationLegInterface {
   reservationLegDeletedAt: Date | string | null;
   reservationLegPax: number;
   reservationLegDistanceMn: number | null;
-  reservationLegTravelTime: string | null;
+  reservationLegTravelTime: number;
 
   // Relaciones
   reservation?: ReservationInterface | null;

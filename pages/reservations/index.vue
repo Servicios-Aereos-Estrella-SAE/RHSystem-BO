@@ -5,9 +5,10 @@
 
       <Head>
         <Title>
-          Reservations
+          Aircraft Reservations
         </Title>
       </Head>
+
       <NuxtLayout name="backoffice">
         <div class="wrapper-reservations-index">
           <div class="reservations-wrapper">
@@ -17,7 +18,8 @@
                   <label for="search">
                     Search reservations
                   </label>
-                  <InputText v-model="search" placeholder="Airport name or customer name" @keypress.enter="handlerSearch" />
+                  <InputText v-model="search" placeholder="Airport name or customer name"
+                    @keypress.enter="handlerSearch" />
                 </div>
                 <button class="btn btn-block" @click="handlerSearch">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -27,9 +29,15 @@
                   </svg>
                 </button>
               </div>
+              <div></div>
               <div class="input-box">
                 <Button v-if="canCreate" class="btn btn-block" @click="addNewReservation">
-                  <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z" fill="#88a4bf" class="fill-000000"></path></svg>
+                  <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                      fill="#88a4bf" class="fill-000000"></path>
+                  </svg>
                   Add New Reservation
                 </Button>
               </div>
@@ -39,17 +47,16 @@
                 Reservations
               </h2>
               <div v-if="reservations.length && canRead" class="reservation-card-info-wrapper">
-                <div v-for="(_reservation, index) in reservations" :key="`employee-${_reservation.reservationId}-${index}`">
-                  <ReservationInfoCard  :reservation="_reservation"
-                    :can-update="canUpdate" :can-delete="canDelete"
-                    @click-on-detail="showDetails(_reservation.reservationId)"
+                <div v-for="(_reservation, index) in reservations"
+                  :key="`employee-${_reservation.reservationId}-${index}`">
+                  <ReservationInfoCard :reservation="_reservation" :can-update="canUpdate" :can-delete="canDelete"
                     @click-on-delete="onDelete(_reservation)" />
                 </div>
               </div>
               <div></div>
               <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
-              :alwaysShow="false" template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-              currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" @page="onPageChange" />
+                :alwaysShow="false" template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" @page="onPageChange" />
             </div>
           </div>
         </div>
@@ -61,25 +68,25 @@
     </div>
   </div>
 </template>
+
 <script>
-  import Reservations from './script.ts'
-  export default Reservations
+import Reservations from './script.ts'
+export default Reservations
 </script>
 
 <style lang="scss" scoped>
-  @import './style';
+@import './style';
 </style>
 
 <style lang="scss">
-  @import '/resources/styles/variables.scss';
- 
-  .customer-form-sidebar {
+@import '/resources/styles/variables.scss';
+
+.customer-form-sidebar {
+  width: 100% !important;
+  max-width: 50rem !important;
+
+  @media screen and (max-width: $sm) {
     width: 100% !important;
-    max-width: 50rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
   }
+}
 </style>
-

@@ -12,7 +12,6 @@ import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFi
 import ProceedingFile from '~/resources/scripts/models/ProceedingFile';
 import type { EmployeeProceedingFileInterface } from '~/resources/scripts/interfaces/EmployeeProceedingFileInterface';
 
-
 export default defineComponent({
   components: {
     Toast,
@@ -41,11 +40,10 @@ export default defineComponent({
     filterFolderText: '' as string,
     filterFileText: '' as string,
     drawerProceedingFileTypeEmailForm: false as boolean,
-    drawerEmployeeRecords: false
+    drawerEmployeeContracts: false
   }),
   computed: {
     foldersFiltered(): ProceedingFileTypeInterface[] {
-
       if (!this.filterFolderText) {
         return this.proceedingFileTypesList
       }
@@ -79,6 +77,15 @@ export default defineComponent({
         this.slugify(folder.proceedingFile?.proceedingFileUuid || '').includes(this.filterFileText)
       )
       return filtered
+    },
+    displaySearchInput() {
+      let display = true
+
+      if (this.folderSelected && this.folderSelected.proceedingFileTypeSlug === 'employee-contracts') {
+        display = false
+      }
+
+      return display
     }
   },
   async mounted() {
@@ -188,15 +195,15 @@ export default defineComponent({
       const proceedingFileTypeService = new ProceedingFileTypeService()
       const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
-      const folderRecord: ProceedingFileTypeInterface = {
-        proceedingFileTypeName: 'Records',
+      const folderContract: ProceedingFileTypeInterface = {
+        proceedingFileTypeName: 'Contracts',
         proceedingFileTypeAreaToUse: '',
         proceedingFileTypeActive: 1,
-        proceedingFileTypeSlug: 'employee-records',
+        proceedingFileTypeSlug: 'employee-contracts',
         proceedingFileTypeId: null,
         parentId: null
       }
-      this.proceedingFileTypesList.unshift(folderRecord)
+      this.proceedingFileTypesList.unshift(folderContract)
     },
     async handlerDoubleClick(folder: ProceedingFileTypeInterface) {
       this.folderSelected = folder
@@ -204,14 +211,14 @@ export default defineComponent({
       await this.getEmployeeProceedingFiles()
       this.filesLoader = false
     },
-    async handlerRecordsDoubleClick(folder: ProceedingFileTypeInterface) {
+    async handlerContractsDoubleClick(folder: ProceedingFileTypeInterface) {
       this.folderSelected = folder
       this.filesLoader = true
-      this.drawerEmployeeRecords = true
+      this.drawerEmployeeContracts = true
       this.filesLoader = false
     },
     async handlerUnselectFolder() {
-      this.drawerEmployeeRecords = false
+      this.drawerEmployeeContracts = false
       if (this.folderSelected && this.folderSelected.parentId) {
         await this.getEmployeeProceedingFilesType(this.folderSelected.parentId)
         await this.getEmployeeProceedingFiles()
