@@ -44,9 +44,6 @@
               </div>
             </template>
           </FileUpload>
-          <small class="p-error" v-if="submitted && (!employeeContract.employeeContractId && files.length === 0)">
-            File is required.
-          </small>
         </div>
         <div class="input-box">
           <button v-if="employeeContract.employeeContractFile" type="button" class="btn btn-block" @click="openFile">
@@ -162,6 +159,22 @@
           <small class="p-error" v-if="submitted && !employeeContract.employeeContractMonthlyNetSalary">Monthly net
             salary is
             required.</small>
+        </div>
+        <div class="input-box">
+          <label for="role">
+            Department
+          </label>
+          <Dropdown v-model="employeeContract.departmentId" :options="departments" optionLabel="departmentName"
+            optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
+            :invalid="submitted && !employeeContract.departmentId" />
+          <small class="p-error" v-if="submitted && !employeeContract.departmentId">Department is required.</small>
+        </div>
+        <div class="input-box">
+          <label for="positionId">Position</label>
+          <Dropdown v-model="employeeContract.positionId" :options="positions" optionLabel="positionName"
+            optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
+            :invalid="submitted && !employeeContract.positionId" />
+          <small class="p-error" v-if="submitted && !employeeContract.positionId">Position is required.</small>
         </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">

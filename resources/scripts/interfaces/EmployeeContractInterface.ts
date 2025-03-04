@@ -10,6 +10,8 @@ interface EmployeeContractInterface {
   employeeContractFile: string
   employeeContractTypeId: number | null
   employeeId: number | null
+  departmentId: number | null
+  positionId: number | null
   employeeContractCreatedAt?: Date | string | null
   employeeContractUpdatedAt?: Date | string | null
   employeeContractDeletedAt?: Date | string | null
