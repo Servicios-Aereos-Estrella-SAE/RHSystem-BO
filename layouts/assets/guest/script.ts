@@ -8,23 +8,31 @@ export default defineComponent({
   data: () => ({
   }),
   computed: {
-    getBackgroundImageBanner(){
+    getBackgroundImageBanner() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImageBanner = myGeneralStore.backgroundImageBannner
       return backgroundImageBanner
     },
+    getPrimaryColor() {
+      const myGeneralStore = useMyGeneralStore()
+      const color = myGeneralStore.backgroundColor
+      return color
+    },
   },
-  created() {
+  async created() {
     const myGeneralStore = useMyGeneralStore()
+    await myGeneralStore.getSystemSettings()
+
     const businessName = ref(myGeneralStore.activeSystemBusinessName)
     const businessFavicon = ref(myGeneralStore.favicon)
 
     useHead({
-        titleTemplate: `${ businessName.value } BO | %s`,
-        link: [
-            { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
-        ]
+      titleTemplate: `${businessName.value} BO | %s`,
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
+      ]
     })
+
     // const colorMode = useColorMode()
   },
   async mounted() {

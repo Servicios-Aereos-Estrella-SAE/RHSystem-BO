@@ -6,23 +6,9 @@
 
   @media screen and (max-width: $phone) {
     padding: 2rem;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
 
     div {
       width: 100%;
-    }
-  }
-
-  .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    img {
-      width: 100%;
-      max-width: 13rem;
     }
   }
 

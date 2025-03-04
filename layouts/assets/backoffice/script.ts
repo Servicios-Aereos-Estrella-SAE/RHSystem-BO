@@ -13,22 +13,27 @@ export default defineComponent({
     authAccess: false
   }),
   computed: {
-    getBackgroundImageBanner(){
+    getBackgroundImageBanner() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImageBanner = myGeneralStore.backgroundImageBannner
       return backgroundImageBanner
+    },
+    getPrimaryColor() {
+      const myGeneralStore = useMyGeneralStore()
+      const color = myGeneralStore.backgroundColor
+      return color
     },
     displayContent() {
       const myGeneralStore = useMyGeneralStore()
       const displayContent = myGeneralStore.displayContent
       return displayContent
     },
-    asideVisibilityStatus () {
+    asideVisibilityStatus() {
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.displayAside
       return status
     },
-    statusFullLoader () {
+    statusFullLoader() {
       const myGeneralStore = useMyGeneralStore()
       const status = myGeneralStore.fullLoader
       return status
@@ -45,14 +50,16 @@ export default defineComponent({
     })
 
     const myGeneralStore = useMyGeneralStore()
+    await myGeneralStore.getSystemSettings()
+
     const businessName = ref(myGeneralStore.activeSystemBusinessName)
     const businessFavicon = ref(myGeneralStore.favicon)
 
     useHead({
-        titleTemplate: `${ businessName.value } BO | %s`,
-        link: [
-            { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
-        ]
+      titleTemplate: `${businessName.value} BO | %s`,
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
+      ]
     })
   },
   mounted() {
@@ -66,7 +73,7 @@ export default defineComponent({
     //     colorMode: this.$colorMode.preference,
     //   })
     // }
-    async validateSession () {
+    async validateSession() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       if (!session) {
@@ -75,16 +82,16 @@ export default defineComponent({
         this.authAccess = true
       }
     },
-    async setAuthUser () {
+    async setAuthUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface
       this.authUser = authUser
     },
-    async handlerLogout () {
+    async handlerLogout() {
       try {
         const { signOut } = useAuth()
-        await signOut({callbackUrl: '/'})
+        await signOut({ callbackUrl: '/' })
       } catch (error) {
         this.$router.push({ path: "/" })
       }
