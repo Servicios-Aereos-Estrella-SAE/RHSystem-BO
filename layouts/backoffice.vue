@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :style="`--primary: ${getPrimaryColor};`">
     <transition name="page">
       <loader v-if="statusFullLoader" />
     </transition>
