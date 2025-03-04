@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div class="guest-layout-wrapper">
+  <div :style="`--primary: ${getPrimaryColor};`">
+    <div class="guest-layout-wrapper" :style="`background-image: url(${getBackgroundImageBanner});`">
+      <div class="banner-wrapper">
+        <img :src="getBackgroundImageBanner" alt="banner">
+      </div>
       <div class="form-wrapper">
         <slot />
-      </div>
-      <div class="banner-wrapper">
-        <img :src="getBackgroundImageBanner" alt="SAE">
       </div>
     </div>
   </div>

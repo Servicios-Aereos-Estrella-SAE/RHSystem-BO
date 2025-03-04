@@ -35,7 +35,11 @@
                 <br>
                 Try again
               </Message>
-              <Button v-ripple label="Log In" class="btn-block" @click="handlerLogin" />
+
+              <button class="btn btn-primary btn-block btn-block" @click="handlerLogin">
+                Log In
+              </button>
+
               <div class="form-bottom">
                 <nuxt-link to="/password-recovery">
                   Forgot your password? click here to recover

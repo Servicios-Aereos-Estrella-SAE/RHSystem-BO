@@ -1,4 +1,8 @@
-$primary: #093057;
+:root {
+  --primary: #093057;
+}
+
+$primary: var(--primary);
 $primaryDark: #05223f;
 $secondary: #246fd7;
 $accent: #303e67;
