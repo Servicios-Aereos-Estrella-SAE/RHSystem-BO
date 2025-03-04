@@ -1,7 +1,7 @@
 <template>
   <div class="page-loader" :style="`z-index: ${zIndexValue};`">
     <div>
-      <img src="/public/isotipo-v1-loader.png" alt="">
+      <img :src="getFavicon" alt="">
       <div class="loader-text">
         Loading content....
       </div>

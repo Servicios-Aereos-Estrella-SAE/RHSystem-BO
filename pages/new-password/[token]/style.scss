@@ -2,18 +2,7 @@
 
 .guest-page {
   width: 100%;
-  padding: 5rem;
-
-  @media screen and (max-width: $phone) {
-    padding: 2rem;
-    height: 100dvh;
-    display: flex;
-    align-items: center;
-
-    div {
-      width: 100%;
-    }
-  }
+  padding: 2rem;
 
   .invalid {
     text-align: center;
@@ -30,23 +19,6 @@
 
     p {
       text-wrap: pretty;
-    }
-  }
-
-  .logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 8rem;
-
-    @media screen and (max-width: $phone) {
-      margin-bottom: 3rem !important;
-      margin-top: 20rem !important;
-    }
-
-    img {
-      width: 100%;
-      max-width: 13rem;
     }
   }
 
