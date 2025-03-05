@@ -55,14 +55,12 @@
               <Dropdown v-model="employee.departmentId" :options="departments" optionLabel="departmentName"
                 optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
                 :invalid="submitted && !employee.departmentId" disabled />
-              <small class="p-error" v-if="submitted && !employee.departmentId">Department is required.</small>
             </div>
             <div class="input-box">
               <label for="positionId">Position</label>
               <Dropdown v-model="employee.positionId" :options="positions" optionLabel="positionName"
                 optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
                 :invalid="submitted && !employee.positionId" disabled />
-              <small class="p-error" v-if="submitted && !employee.positionId">Position is required.</small>
             </div>
           </div>
           <div class="input-box">

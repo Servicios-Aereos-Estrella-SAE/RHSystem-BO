@@ -45,6 +45,7 @@ export default defineComponent({
     isContractPermanent: false,
     positions: [] as PositionInterface[],
     departments: [] as DepartmentInterface[],
+    maxDate: new Date() as Date,
   }),
   computed: {
   },
@@ -123,10 +124,11 @@ export default defineComponent({
       if (!date) {
         return ''
       }
+
       if (typeof date === 'string' && !date.includes('T')) {
         date = new Date(date)
       }
-      const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'utc' })
+      const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'local' })
       return dateEmployeeContract.setLocale('en').toFormat('DDDD')
     },
     async getEmployeeContractTypes() {

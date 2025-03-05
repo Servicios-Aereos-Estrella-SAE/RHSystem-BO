@@ -396,8 +396,6 @@ export default defineComponent({
         })
         return
       }
-
-
       let employeeResponse = null
       const terminatedDateTemp = this.employee.employeeTerminatedDate
       if (!this.employee.employeeId) {

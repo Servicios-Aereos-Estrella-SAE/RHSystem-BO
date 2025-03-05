@@ -13,6 +13,27 @@
     font-size: 0.9rem;
   }
 
+  .department {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .position {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
   .employee-contract-uuid {
     text-align: left;
     font-weight: normal;

@@ -24,7 +24,7 @@ export default defineComponent({
       if (!date) {
         return ''
       }
-      const employeeContractDate = DateTime.fromISO(date, { zone: 'utc' })
+      const employeeContractDate = DateTime.fromJSDate(new Date(date), { zone: 'local' })
       return employeeContractDate.setLocale('en').toFormat('DDDD')
     },
     handlerClickOnEdit() {

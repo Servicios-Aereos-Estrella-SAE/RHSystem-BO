@@ -63,6 +63,8 @@ export default defineComponent({
         employeeContractFile: '',
         employeeContractTypeId: null,
         employeeId: this.employee.employeeId ? this.employee.employeeId : null,
+        departmentId: null,
+        positionId: null,
       }
       this.employeeContract = newEmployeeContract
       this.drawerEmployeeContractForm = true
@@ -80,6 +82,7 @@ export default defineComponent({
         this.employeeContractsList.push(employeeContract)
         this.$forceUpdate()
       }
+      this.$emit('onEmployeeContractSave', employeeContract as EmployeeContractInterface)
       this.drawerEmployeeContractForm = false
       myGeneralStore.setFullLoader(false)
     },
@@ -110,6 +113,7 @@ export default defineComponent({
             detail: employeeContractResponse._data.message,
             life: 5000,
           })
+          this.$emit('onEmployeeContractSave', this.employeeContract as EmployeeContractInterface)
         } else {
           this.$toast.add({
             severity: 'error',

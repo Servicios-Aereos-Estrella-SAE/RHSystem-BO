@@ -7,6 +7,18 @@
           {{ employeeContract.employeeContractType.employeeContractTypeName }}
         </div>
       </div>
+      <div v-if="employeeContract.department" class="department">
+        <div class="capitalize ellipsis">
+          Department:
+          {{ employeeContract.department.departmentName }}
+        </div>
+      </div>
+      <div v-if="employeeContract.position" class="position">
+        <div class="capitalize ellipsis">
+          Position:
+          {{ employeeContract.position.positionName }}
+        </div>
+      </div>
       <div class="employee-contract-uuid">
         <div>
           UUID:

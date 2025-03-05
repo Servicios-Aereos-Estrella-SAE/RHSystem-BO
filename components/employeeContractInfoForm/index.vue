@@ -59,7 +59,7 @@
           <label for="uuid">
             Uuid
           </label>
-          <InputText v-model="employeeContract.employeeContractUuid" />
+          <InputText v-model="employeeContract.employeeContractUuid" disabled />
         </div>
         <div class="input-box">
           <label for="folio">
@@ -96,7 +96,8 @@
             </div>
             <div v-if="displayStartDateCalendar" class="date-box-controller">
               <Calendar v-if="displayStartDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="employeeContract.employeeContractStartDate" placeholder="Select start date" />
+                v-model.lazy="employeeContract.employeeContractStartDate" placeholder="Select start date"
+                :maxDate="maxDate" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayStartDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
