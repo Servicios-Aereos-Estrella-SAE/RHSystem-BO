@@ -12,6 +12,7 @@ interface EmployeeContractInterface {
   employeeId: number | null
   departmentId: number | null
   positionId: number | null
+  payrollBusinessUnitId: number | null
   employeeContractCreatedAt?: Date | string | null
   employeeContractUpdatedAt?: Date | string | null
   employeeContractDeletedAt?: Date | string | null

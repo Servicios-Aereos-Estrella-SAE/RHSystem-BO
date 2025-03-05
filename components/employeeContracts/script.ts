@@ -48,7 +48,7 @@ export default defineComponent({
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const employeeContractService = new EmployeeContractService()
       const employeeContractResponse = await employeeContractService.getByEmployee(employeeId)
-      this.employeeContractsList = employeeContractResponse.data.data
+      this.employeeContractsList = employeeContractResponse.data
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -65,6 +65,7 @@ export default defineComponent({
         employeeId: this.employee.employeeId ? this.employee.employeeId : null,
         departmentId: null,
         positionId: null,
+        payrollBusinessUnitId: null,
       }
       this.employeeContract = newEmployeeContract
       this.drawerEmployeeContractForm = true

@@ -65,7 +65,8 @@
           <label for="folio">
             Folio
           </label>
-          <InputText v-model="employeeContract.employeeContractFolio" />
+          <InputText v-model="employeeContract.employeeContractFolio"
+            :invalid="submitted && !employeeContract.employeeContractFolio" />
           <small class="p-error" v-if="submitted && !employeeContract.employeeContractFolio">Folio
             is required.
           </small>
@@ -76,7 +77,8 @@
           </label>
           <Dropdown v-model="employeeContract.employeeContractTypeId" :options="employeeContractTypeList"
             optionLabel="employeeContractTypeName" optionValue="employeeContractTypeId" placeholder="" filter
-            class="w-full md:w-14rem" @change="verifyContractPermanent" />
+            class="w-full md:w-14rem" @change="verifyContractPermanent"
+            :invalid="submitted && !employeeContract.employeeContractTypeId" />
           <small class="p-error" v-if="submitted && !employeeContract.employeeContractTypeId">Employee contract type is
             required.</small>
         </div>
@@ -97,7 +99,7 @@
             <div v-if="displayStartDateCalendar" class="date-box-controller">
               <Calendar v-if="displayStartDateCalendar" dateFormat="yy-mm-dd"
                 v-model.lazy="employeeContract.employeeContractStartDate" placeholder="Select start date"
-                :maxDate="maxDate" />
+                :maxDate="maxDate" :invalid="submitted && !employeeContract.employeeContractStartDate" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayStartDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +130,8 @@
             </div>
             <div v-if="displayEndDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEndDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="employeeContract.employeeContractEndDate" placeholder="Select end date" />
+                v-model.lazy="employeeContract.employeeContractEndDate" placeholder="Select end date"
+                :invalid="submitted && !isContractPermanent && !employeeContract.employeeContractEndDate" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEndDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -149,14 +152,15 @@
             Status
           </label>
           <Dropdown v-model="employeeContract.employeeContractStatus" :options="employeeContractStatusOptions"
-            optionLabel="label" optionValue="value" placeholder="Select" class="w-full md:w-14rem" />
+            optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem"
+            :invalid="submitted && !employeeContract.employeeContractStatus" />
           <small class="p-error" v-if="submitted && !employeeContract.employeeContractStatus">Status is
             required.</small>
         </div>
         <div class="input-box">
           <label for="monthlNetSalary">Monthly net salary</label>
           <InputNumber v-model="employeeContract.employeeContractMonthlyNetSalary" fluid mode="currency" currency="MXN"
-            locale="es-MX" />
+            locale="es-MX" :invalid="submitted && !employeeContract.employeeContractMonthlyNetSalary" />
           <small class="p-error" v-if="submitted && !employeeContract.employeeContractMonthlyNetSalary">Monthly net
             salary is
             required.</small>
@@ -176,6 +180,15 @@
             optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
             :invalid="submitted && !employeeContract.positionId" />
           <small class="p-error" v-if="submitted && !employeeContract.positionId">Position is required.</small>
+        </div>
+        <div class="input-box">
+          <label for="personGender">Payroll Business Unit</label>
+          <Dropdown v-model="employeeContract.payrollBusinessUnitId" :options="businessUnits"
+            optionLabel="businessUnitName" optionValue="businessUnitId" placeholder="Select a Payroll Business Unit"
+            class="w-full md:w-14rem" :disabled="isDeleted"
+            :invalid="submitted && !employeeContract.payrollBusinessUnitId" />
+          <small class="p-error" v-if="submitted && !employeeContract.payrollBusinessUnitId">Payroll business unit is
+            required.</small>
         </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">

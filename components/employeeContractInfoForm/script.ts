@@ -13,6 +13,8 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface';
 import PositionService from '~/resources/scripts/services/PositionService';
 import DepartmentService from '~/resources/scripts/services/DepartmentService';
+import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
+import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
 
 export default defineComponent({
   components: {
@@ -45,6 +47,7 @@ export default defineComponent({
     isContractPermanent: false,
     positions: [] as PositionInterface[],
     departments: [] as DepartmentInterface[],
+    businessUnits: [] as BusinessUnitInterface[],
     maxDate: new Date() as Date,
   }),
   computed: {
@@ -71,6 +74,7 @@ export default defineComponent({
       this.isDeleted = true
     }
     this.getDepartments()
+    this.getBusinessUnits()
     this.employeeContractTypeList = await this.getEmployeeContractTypes()
     if (this.employeeContract.employeeContractId) {
       this.verifyContractPermanent()
@@ -110,15 +114,19 @@ export default defineComponent({
 
   },
   methods: {
-    async getPositions(departmentId: number) {
-      const positionService = new PositionService()
-      this.positions = await positionService.getPositionsDepartment(departmentId)
-    },
     async getDepartments() {
       let response = null
       const departmentService = new DepartmentService()
       response = await departmentService.getAllDepartmentList()
       this.departments = response._data.data.departments
+    },
+    async getPositions(departmentId: number) {
+      const positionService = new PositionService()
+      this.positions = await positionService.getPositionsDepartment(departmentId)
+    },
+    async getBusinessUnits() {
+      const body = await new BusinessUnitService().index()
+      this.businessUnits = body.status === 200 ? body._data.data.data || [] : []
     },
     getDate(date: string | Date) {
       if (!date) {
@@ -149,6 +157,15 @@ export default defineComponent({
         return
       }
       if (!this.employeeContract.positionId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.payrollBusinessUnitId) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',

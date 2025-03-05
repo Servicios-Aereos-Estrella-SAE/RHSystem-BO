@@ -20,6 +20,20 @@
     margin-top: 0.25rem;
   }
 
+  .position {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .business-unit {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
   .ellipsis {
     white-space: nowrap;
     overflow: hidden;
@@ -27,12 +41,7 @@
     width: 100%;
   }
 
-  .position {
-    text-align: left;
-    font-weight: normal;
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-  }
+
 
   .employee-contract-uuid {
     text-align: left;

@@ -19,6 +19,12 @@
           {{ employeeContract.position.positionName }}
         </div>
       </div>
+      <div v-if="employeeContract.payrollBusinessUnit" class="business-unit">
+        <div class="capitalize ellipsis">
+          Payroll Business Unit:
+          {{ employeeContract.payrollBusinessUnit.businessUnitName }}
+        </div>
+      </div>
       <div class="employee-contract-uuid">
         <div>
           UUID:
