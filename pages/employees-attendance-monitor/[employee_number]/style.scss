@@ -1,7 +1,7 @@
 @import '/resources/styles/variables.scss';
 
 .dashboard-page {
-  
+
   .dashboard-wrapper {
     min-height: 100dvh;
     box-sizing: border-box;
@@ -87,7 +87,7 @@
       }
 
       &.sync {
-        grid-template-columns: 30rem auto;
+        grid-template-columns: auto;
         padding: 1rem;
         border-radius: calc($radius / 2);
 
@@ -113,7 +113,7 @@
           display: flex;
           gap: 0.5rem;
           justify-content: flex-end;
-          
+
           @media screen and (max-width: $phone) {
             justify-content: flex-start;
             margin-top: 1rem;
@@ -155,7 +155,7 @@
           font-size: 0.8rem;
         }
       }
-      
+
       .indicators {
         border-top: $border-dashed;
         padding-top: 1rem;

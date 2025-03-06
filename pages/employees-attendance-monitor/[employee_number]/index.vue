@@ -130,15 +130,6 @@
         </div>
 
         <div class="box head-page sync">
-          <h6>
-            <span>
-              Last attendance recorded at
-              {{ assistSyncStatusDate }}
-              <small>
-                ( Checking every 5 minutes )
-              </small>
-            </span>
-          </h6>
           <div class="subhead-tools">
             <div v-if="visualizationMode && canAddAssistManual" class="input-box">
               <Button class="btn btn-block" severity="success" @click="addNewAssist">
@@ -152,25 +143,32 @@
             </div>
             <div v-if="visualizationMode" class="input-box">
               <Button class="btn btn-block" severity="success" @click="getExcel('Assistance Report')">
-                Assistance Report
+                Detailed
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z" fill="#88a4bf" class="fill-000000"></path></svg>
               </Button>
             </div>
             <div v-if="visualizationMode" class="input-box">
               <Button class="btn btn-block" severity="success" @click="getExcel('Incident Summary')">
-                Incident Summary
+                Summary
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z" fill="#88a4bf" class="fill-000000"></path></svg>
               </Button>
             </div>
             <div v-if="visualizationMode" class="input-box">
               <Button class="btn btn-block" severity="success" @click="getExcel('Incident Summary Payroll')">
-                Incident Summary Payroll
+                Payroll
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"><path d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z" fill="#88a4bf" class="fill-000000"></path></svg>
               </Button>
             </div>
           </div>
         </div>
-        
+
+        <Message class="sync" :closable="false">
+          Last attendance recorded at
+          {{ assistSyncStatusDate }}
+          <br>
+          ( Checking every 5 minutes )
+        </Message>
+
         <div>
           <div v-if="employeeCalendar.length > 0" class="general-graphs" :class="{ 'only-calendar': employee.employeeAssistDiscriminator === 1 }">
             <div v-if="employee.employeeAssistDiscriminator !== 1" class="box">
@@ -222,7 +220,7 @@
             <div v-if="visualizationMode" class="box report-wrapper">
               <div class="head">
                 <h2>
-                  {{ calendarTitle }} 
+                  {{ calendarTitle }}
                 </h2>
               </div>
               <div class="days-wrapper">
@@ -243,32 +241,6 @@
             </div>
           </div>
         </div>
-        <!-- <div v-else class="general-graphs">
-          <div class="jumbotron">
-            <div>
-              <div class="icon">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm-.004 8.25a1 1 0 0 0-.992.885l-.007.116.003 5.502.007.117a1 1 0 0 0 1.987-.002L13 16.75l-.003-5.501-.007-.117a1 1 0 0 0-.994-.882ZM12 6.5a1.251 1.251 0 1 0 0 2.503A1.251 1.251 0 0 0 12 6.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
-              </div>
-              <span>
-                This employee does not have
-                <br>
-                attendance statistics enabled
-              </span>
-            </div>
-          </div>
-          <div class="jumbotron">
-            <div>
-              <div class="icon">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm-.004 8.25a1 1 0 0 0-.992.885l-.007.116.003 5.502.007.117a1 1 0 0 0 1.987-.002L13 16.75l-.003-5.501-.007-.117a1 1 0 0 0-.994-.882ZM12 6.5a1.251 1.251 0 1 0 0 2.503A1.251 1.251 0 0 0 12 6.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
-              </div>
-              <span>
-                This employee does not have 
-                <br>
-                attendance calendar recording enabled
-              </span>
-            </div>
-          </div>
-        </div> -->
         <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
           <EmployeeAssistInfoForm
             :assist="assist"
@@ -300,11 +272,19 @@
       width: 100% !important;
     }
   }
-:deep(.graph-label) {
-  color: red;
-}
 
-.graph-label {
-  color: red;
-}
+  :deep(.graph-label) {
+    color: red;
+  }
+
+  .graph-label {
+    color: red;
+  }
+
+  .sync {
+
+    .p-message-text {
+      font-size: 0.7rem !important;
+    }
+  }
 </style>
