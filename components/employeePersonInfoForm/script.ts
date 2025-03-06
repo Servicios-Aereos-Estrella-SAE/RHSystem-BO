@@ -20,6 +20,9 @@ import type { EmployeeSpouseInterface } from '~/resources/scripts/interfaces/Emp
 import EmployeeSpouseService from '~/resources/scripts/services/EmployeeSpouseService'
 import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/EmployeeChildrenInterface'
 import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildrenService'
+import UserService from '~/resources/scripts/services/UserService'
+import type { EmployeeEmergencyContactInterface } from '~/resources/scripts/interfaces/EmployeeEmergencyContactInterface'
+import EmployeeEmergencyContactService from '~/resources/scripts/services/EmployeeEmergencyContactService'
 
 export default defineComponent({
   components: {
@@ -97,6 +100,7 @@ export default defineComponent({
       { label: 'Female', value: 'Mujer' },
       { label: 'Not specified', value: 'Otro' }
     ],
+    employeeEmergencyContact: null as EmployeeEmergencyContactInterface | null,
   }),
   computed: {
     getAge() {
@@ -167,7 +171,9 @@ export default defineComponent({
         if (employeeResponse._data.data.employee.spouse) {
           this.employeeSpouse = employeeResponse._data.data.employee.spouse
           this.setSpouseBirthday()
-
+        }
+        if (employeeResponse._data.data.employee.emergencyContact) {
+          this.employeeEmergencyContact = employeeResponse._data.data.employee.emergencyContact
         }
       }
       if (!this.employeeSpouse) {
@@ -178,6 +184,18 @@ export default defineComponent({
           employeeSpouseSecondLastname: '',
           employeeSpouseBirthday: '',
           employeeSpouseOcupation: '',
+          employeeSpousePhone: '',
+          employeeId: this.employee.employeeId
+        }
+      }
+      if (!this.employeeEmergencyContact) {
+        this.employeeEmergencyContact = {
+          employeeEmergencyContactId: null,
+          employeeEmergencyContactFirstname: '',
+          employeeEmergencyContactLastname: '',
+          employeeEmergencyContactSecondLastname: '',
+          employeeEmergencyContactRelationship: '',
+          employeeEmergencyContactPhone: '',
           employeeId: this.employee.employeeId
         }
       }
@@ -314,6 +332,19 @@ export default defineComponent({
           }
         }
       }
+      const userService = new UserService()
+      if (this.employee.person?.personEmail) {
+        if (!userService.validateEmail(this.employee.person.personEmail)) {
+          this.isEmailInvalid = true
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Email not valid',
+            life: 5000,
+          })
+          return
+        }
+      }
 
       if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
         const employeeSpouseService = new EmployeeSpouseService()
@@ -360,7 +391,48 @@ export default defineComponent({
             return
           }
         }
+      }
+      const employeeEmergencyContactService = new EmployeeEmergencyContactService()
+      if (this.employeeEmergencyContact) {
+        if (!employeeEmergencyContactService.validateInfo(this.employeeEmergencyContact)) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Missing data',
+            life: 5000,
+          })
+          return
+        }
 
+        let employeeEmergencyContactResponse = null
+        if (!this.employeeEmergencyContact.employeeEmergencyContactId) {
+          employeeEmergencyContactResponse = await employeeEmergencyContactService.store(this.employeeEmergencyContact)
+        } else {
+          employeeEmergencyContactResponse = await employeeEmergencyContactService.update(this.employeeEmergencyContact)
+        }
+        if (employeeEmergencyContactResponse.status === 201 || employeeEmergencyContactResponse.status === 200) {
+          this.$toast.add({
+            severity: 'success',
+            summary: `Employee emergency contact ${this.employeeEmergencyContact.employeeEmergencyContactId ? 'updated' : 'created'}`,
+            detail: employeeEmergencyContactResponse._data.message,
+            life: 5000,
+          })
+
+          employeeEmergencyContactResponse = await employeeEmergencyContactService.show(employeeEmergencyContactResponse._data.data.employeeEmergencyContact.employeeEmergencyContactId)
+          if (employeeEmergencyContactResponse.status === 200) {
+            this.employeeEmergencyContact = JSON.parse(JSON.stringify(employeeEmergencyContactResponse._data.data.employeeEmergencyContact.employeeEmergencyContact))
+          }
+
+        } else {
+          const msgError = employeeEmergencyContactResponse._data.error ? employeeEmergencyContactResponse._data.error : employeeEmergencyContactResponse._data.message
+          this.$toast.add({
+            severity: 'error',
+            summary: `Employee emergency contact ${this.employeeEmergencyContact.employeeEmergencyContactId ? 'updated' : 'created'}`,
+            detail: msgError,
+            life: 5000,
+          })
+          return
+        }
       }
       const lastnames = this.employee.employeeLastName.split(' ')
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
@@ -373,6 +445,7 @@ export default defineComponent({
         personGender: this.employee.person?.personGender ?? null,
         personBirthday: this.convertToDateTime(personBirthday),
         personPhone: this.employee.person?.personPhone ?? null,
+        personEmail: this.employee.person?.personEmail ?? null,
         personCurp: this.employee.person?.personCurp ?? null,
         personRfc: this.employee.person?.personRfc ?? null,
         personImssNss: this.employee.person?.personImssNss ?? null,

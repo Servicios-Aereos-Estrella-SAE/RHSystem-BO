@@ -72,8 +72,7 @@ export default defineComponent({
     formatDateWithYearDifference(date: string) {
       const originalDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
       let nextYearDate = originalDate.plus({ years: 1 })
-      nextYearDate = originalDate.plus({ days: -1 })
-
+      nextYearDate = nextYearDate.plus({ days: -1 })
       const formattedOriginalDate = originalDate.toFormat('MMMM dd, yyyy')
       const formattedNextYearDate = nextYearDate.toFormat('MMMM dd, yyyy')
 

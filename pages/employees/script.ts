@@ -171,6 +171,7 @@ export default defineComponent({
         personGender: "",
         personBirthday: null,
         personCurp: null,
+        personEmail: null,
         personPhone: "",
         personRfc: null,
         personImssNss: null,
@@ -200,6 +201,7 @@ export default defineComponent({
         employeeWorkSchedule: "Onsite",
         personId: 0,
         employeeTypeId: 0,
+        employeeBusinessEmail: null,
         employeePhoto: null,
         employeeLastSynchronizationAt: new Date(),
         employeeCreatedAt: new Date(),
@@ -510,7 +512,7 @@ export default defineComponent({
     isActive(button: string) {
       return this.activeButton === button
     },
-    onSidebarInfoHide () {
+    onSidebarInfoHide() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
