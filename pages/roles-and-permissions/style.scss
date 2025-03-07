@@ -1,55 +1,167 @@
 @import '/resources/styles/variables.scss';
 
 .roles-and-permissions-page {
+  box-sizing: border-box;
+
+  .module-permissions-wrapper {
+    display: grid;
+    grid-template-columns: 30rem auto 30rem;
+    gap: 0.5rem;
+    box-sizing: border-box;
+
+    @media screen and (max-width: $desktop) {
+      grid-template-columns: 22rem 1fr 22rem;
+    }
+
+    @media screen and (max-width: $ipad) {
+      grid-template-columns: 1fr;
+    }
 
     h2 {
-        font-size: 1rem;
-        font-weight: 500;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-bottom: $border-dashed;
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
     }
 
-    .roles-and-permissions-wrapper {
-        min-height: 100dvh;
+    .roles-wrapper {
+      display: flex;
+      flex-flow: column;
+      gap: 0.5rem;
+
+      .role {
+        border: $border;
         box-sizing: border-box;
-
-        
-        .roles-and-permissions-card-wrapper {
-            box-sizing: border-box;
-            display: grid;
-            grid-auto-flow: dense;
-            grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-            gap: .5rem;
-            margin-top: 0.5rem;
-          
-        }
-    }
-   
-
-    }
-    .permissions {
-        box-sizing: border-box;
+        border-radius: calc($radius / 2);
+        cursor: pointer;
         display: grid;
-        grid-auto-flow: dense;
-        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-        gap: .5rem;
-        margin-top: 0.5rem;
-    }
-    .permission {
-        margin-top: 0.5rem;
-        label {
-            padding-left: 1rem;
+        grid-template-columns: auto 7rem;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        height: 4rem;
+
+        &.active {
+          background-color: $info;
+          font-weight: 500;
+          color: white;
+
+          .btn-to-edit {
+            display: inherit;
+          }
         }
-    }
-    .box-tools-footer {
-        box-sizing: border-box;
-        display: flex;
-        grid-auto-flow: dense;
-        justify-content: center;
-        grid-template-columns: repeat(2, 1fr);
-        gap: .5rem;
-        margin-top: 0.5rem;
-        button {
-          width: 100%;
+
+        .buttons {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+        }
+
+        .role-name {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          padding-left: 1rem;
+          font-size: 0.85rem;
+
+          @media screen and (max-width: $desktop) {
+            font-size: 0.7rem;
+          }
+        }
+
+        .btn-to-edit {
+          display: none;
+          box-shadow: none;
         }
       }
+    }
+
+    .modules-wrapper {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      box-sizing: border-box;
+
+      @media screen and (max-width: $desktop) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media screen and (max-width: $desktop) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .module {
+        border-radius: $radius;
+        border: $border-dashed;
+        box-sizing: border-box;
+        padding: 1rem;
+
+        h3 {
+          font-size: 0.85rem;
+          font-weight: 500;
+          background-color: $gray;
+          height: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: calc($radius / 2);
+          margin: -1rem;
+          margin-bottom: 1rem;
+          border-bottom-right-radius: 0;
+          border-bottom-left-radius: 0;
+
+          @media screen and (max-width: $desktop) {
+            font-size: 0.7rem;
+          }
+        }
+      }
+
+      .permissions-wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+
+        .permission {
+          padding: 0.5rem;
+          border-radius: calc($radius / 2);
+          border: $border-dashed;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          label {
+            font-size: 0.8rem;
+
+            @media screen and (max-width: $desktop) {
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+    }
+
+    .departments-wrapper {
+      display: flex;
+      flex-flow: column;
+      gap: 0.5rem;
+
+      .depto {
+        border: $border-dashed;
+        box-sizing: border-box;
+        padding: 0.5rem;
+        border-radius: calc($radius / 2);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        label {
+          font-size: 0.8rem;
+
+          @media screen and (max-width: $desktop) {
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
+  }
+}

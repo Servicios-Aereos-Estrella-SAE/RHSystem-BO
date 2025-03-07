@@ -1,12 +1,13 @@
-import type { DepartmentInterface } from "~/resources/scripts/interfaces/DepartmentInterface";
-import type { RoleInterface } from "~/resources/scripts/interfaces/RoleInterface";
-import type { RoleModuleInterface } from "~/resources/scripts/interfaces/RoleModuleInterface";
-import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfaces/RoleSystemPermissionInterface";
-import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
-import DepartmentService from "~/resources/scripts/services/DepartmentService";
-import RoleService from "~/resources/scripts/services/RoleService";
-import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
-import { useMyGeneralStore } from "~/store/general";
+import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import type { RoleInterface } from '~/resources/scripts/interfaces/RoleInterface'
+import type { RoleModuleInterface } from '~/resources/scripts/interfaces/RoleModuleInterface'
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
+import RoleService from '~/resources/scripts/services/RoleService'
+import SystemModuleService from '~/resources/scripts/services/SystemModuleService'
+import { useMyGeneralStore } from '~/store/general'
+
 export default defineComponent({
   name: 'RolesAndPermissions',
   props: {},
@@ -19,6 +20,7 @@ export default defineComponent({
     departmentPermissions: []  as number[][],
     roleSelected: 0,
     canUpdate: false,
+    activeEdit: false
   }),
   computed: {
     groupedDepartments() {
@@ -41,13 +43,18 @@ export default defineComponent({
     } else {
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
     }
-  
-    await this.getSystemModules()
-    await this.getRoles()
-    await this.getDepartments()
+
+    await this.init()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
+    async init () {
+      await Promise.all([
+        this.getSystemModules(),
+        this.getRoles(),
+        this.getDepartments(),
+      ])
+    },
     async getSystemModules() {
       const response = await new SystemModuleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.systemModules.data : []
@@ -66,7 +73,7 @@ export default defineComponent({
         }
         departmentPermissions[index] = departments
       }
-     this.departmentPermissions = departmentPermissions 
+     this.departmentPermissions = departmentPermissions
     },
     async getRoles() {
       const response = await new RoleService().getFilteredList('', 1, 100)
@@ -80,7 +87,7 @@ export default defineComponent({
             if (rolePermission.systemPermissions) {
               const p = rolePermission.systemPermissions
               if (p.systemModule) {
-                const same = roleModule.modules.findIndex((rm: { systemModuleId: number; }) => rm.systemModuleId === p.systemModule.systemModuleId)
+                const same = roleModule.modules.findIndex((rm: { systemModuleId: number }) => rm.systemModuleId === p.systemModule.systemModuleId)
                 if (same < 0) {
                   roleModule.modules.push({
                     ...p.systemModule,
@@ -98,12 +105,12 @@ export default defineComponent({
       }
       const permissions = [] as number[][]
       for await (const [i, r] of roleModules.entries()) {
-        permissions[i] = [];
+        permissions[i] = []
 
         for (const m of r.modules) {
           m.permissions.forEach((element) => {
             permissions[i].push(element.systemPermissionId)
-          });
+          })
         }
       }
       this.permissions = permissions
@@ -126,25 +133,41 @@ export default defineComponent({
             throw new Error(response._data.message || 'Failed to assign role')
           }
         })
-    
+
         await Promise.all(promises)
-    
+
         this.$toast.add({
           severity: 'success',
           summary: 'Roles assigned',
           detail: 'All roles were assigned successfully.',
           life: 5000,
-        });
+        })
+        this.activeEdit = false
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'There was an error assigning roles.';
+        const errorMessage = error instanceof Error ? error.message : 'There was an error assigning roles.'
         this.$toast.add({
           severity: 'warn',
           summary: 'Roles assigned',
           detail: errorMessage,
           life: 5000,
-        });
+        })
       }
+
       myGeneralStore.setFullLoader(false)
+    },
+    async onCancelEdit() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.init()
+      this.activeEdit = false
+      myGeneralStore.setFullLoader(false)
+    },
+    handlerSelectRole(index: number) {
+      if (this.activeEdit) {
+        return
+      }
+
+      this.roleSelected = index
     }
   }
-});
+})
