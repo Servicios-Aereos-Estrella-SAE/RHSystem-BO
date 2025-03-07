@@ -1,35 +1,34 @@
 <template>
-  <div class="box shift-info-form">
+  <div class="shift-info-form">
     <Toast />
     <div v-if="shift" class="shift-form">
+      <h1>
+        {{ formTitle }}
+      </h1>
+
       <div class="form-container">
-        <div class="input-box">
+        <div v-if="shiftName" class="input-box">
           <label for="shiftName">Shift Name</label>
-          <InputText id="shiftName" v-model="shift.shiftName" :invalid="submitted && !shift.shiftName" />
-          <small class="p-error" v-if="submitted && !shift.shiftName">Shift name is required.</small>
+          <div class="shift-name">
+            {{ shift.shiftName }}
+          </div>
         </div>
+
         <div class="input-box">
-          <label for="shiftDayStart">Start Day</label>
-          <select id="shiftDayStart" v-model="shift.shiftDayStart" :class="{ 'p-errors': submitted && !shift.shiftDayStart }">
-            <option value="" disabled>Select Day</option>
-            <option value="1">Monday</option>
-            <option value="2">Tuesday</option>
-            <option value="3">Wednesday</option>
-            <option value="4">Thursday</option>
-            <option value="5">Friday</option>
-            <option value="6">Saturday</option>
-            <option value="7">Sunday</option>
-          </select>
-          <small class="p-error" v-if="submitted && !shift.shiftDayStart">Start day is required.</small>
+          <label>
+            Shift
+          </label>
+          <Dropdown v-model="shift.shiftCalculateFlag" :options="flags" optionLabel="label" optionValue="value" />
         </div>
+
         <div class="input-box">
           <label for="shiftTimeStart">Start Time</label>
-          <InputText id="shiftTimeStart" v-model="shift.shiftTimeStart" type="time" :invalid="submitted && !shift.shiftTimeStart" />
+          <Calendar id="calendar-timeonly" v-model="timeToStart" timeOnly :invalid="submitted && !shift.shiftTimeStart" />
           <small class="p-error" v-if="submitted && !shift.shiftTimeStart">Start time is required.</small>
         </div>
         <div class="input-box">
           <label for="shiftActiveHours">Active Hours</label>
-          <InputNumber id="shiftActiveHours" v-model="shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" :min="0" :max="72"/>
+          <InputNumber id="shiftActiveHours" v-model="shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours" :min="1" :max="72"/>
           <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
         </div>
         <div class="input-box">
@@ -38,19 +37,25 @@
           <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
         </div>
         <div class="input-box">
-          <label for="shiftRestDays">Rest Days </label>
+          <label for="shiftTimeStart">End Time</label>
+          <Calendar id="calendar-timeonly" v-model.lazy="timeToEnd" timeOnly readonly />
+        </div>
+        <div v-if="shift.shiftCalculateFlag === 'estandar'" class="input-box">
+          <label for="shiftRestDays">
+            Rest Days
+          </label>
           <MultiSelect
             v-model="selectedRestDays"
             :options="daysOfWeeks"
             :optionLabel="'name'"
             :placeholder="'Select Rest Days'"
-            :maxSelectedLabels="7"
+            :maxSelectedLabels="2"
             class="w-full md:w-500"
             filter
           />
           <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">Rest days are required.</small>
         </div>
-        
+
         <div class="card flex justify-center"></div>
 
         <div class="box-tools-footer">

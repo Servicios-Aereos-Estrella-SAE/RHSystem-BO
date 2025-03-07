@@ -8,58 +8,66 @@
     margin-top: 2rem;
     margin-bottom: 2rem;
   }
-  
-  .shift-wrapper {
-    min-height: 100dvh;
+
+  .head-page {
+    display: grid;
+    grid-template-columns: 35rem auto;
+    gap: 0.5rem;
+    justify-content: space-between;
+
+    .btn-add {
+      width: fit-content;
+      align-self: flex-end;
+    }
+
+    @media screen and (max-width: $desktop) {
+      grid-template-columns: 30rem auto;
+    }
+
+    @media screen and (max-width: $tablet) {
+      grid-template-columns: 1fr auto;
+    }
+
+    @media screen and (max-width: $phone) {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  .shifts-wrapper {
     box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: .5rem;
 
-    .head-page {
-      display: grid;
-      grid-template-columns: 20rem auto;
-      gap: 0.5rem;
-      justify-content: space-between;
-
-      .btn-add {
-        width: fit-content;
-        align-self: flex-end;
-      }
-      
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: 15rem auto;
-      }
-
-      @media screen and (max-width: $tablet) {
-        grid-template-columns: 1fr auto;
-      }
-
-      @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr auto;
-      }
+    @media screen and (max-width: $phone) {
+      grid-template-columns: 1fr;
     }
-    .shift-card-wrapper {
+
+    .group-category {
       box-sizing: border-box;
-      display: grid;
-      grid-auto-flow: dense;
-      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-      gap: .5rem;
-      margin-top: 0.5rem;
-    }
+      background-color: white;
+      padding: 1rem;
+      border-radius: $radius;
 
-    .paginator {
-      margin-top: 0.5rem;
-      width: 100%;
-    }
-  }
-  .shift-form-sidebar {
-    width: 100% !important;
-    max-width: 35rem !important;
+      .group-name {
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 500;
+        height: 3rem;
+        border-radius: calc($radius / 2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $gray;
+        margin-bottom: 1rem;
+      }
 
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
+      .shift-cards-wrapper {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
     }
   }
 }
-.side{
-  background-color: blue!important;
-}
-

@@ -6,66 +6,69 @@
         Shifts
       </Title>
     </Head>
+
     <NuxtLayout name="backoffice">
       <div class="shift-wrapper">
         <div class="box head-page">
-          <div class="input-box">
-            <label for="search">
-              Search
-            </label>
-            <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchShift" @keyup.delete="handlerSearchShift"/>
+          <div class="input-search">
+            <div class="input-box">
+              <label for="search">
+                Search
+              </label>
+              <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchShift" @keyup.delete="handlerSearchShift" />
+            </div>
+            <button class="btn btn-block" @click="handlerSearchShift">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#88a4bf" class="fill-212121"></path></svg>
+            </button>
           </div>
           <div class="input-box">
-            <br/>
-            <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+            <button v-if="canCreate" class="btn" @click="addNew">
+              <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                  fill="#88a4bf" class="fill-000000"></path>
+              </svg>
+              Create Shift
+            </button>
           </div>
         </div>
         <div>
           <h2>
             Shifts
           </h2>
-          <div class="shift-card-wrapper">
-            <div v-for="(shift, index) in filteredShifts" :key="`shift-${shift.shiftId || Math.random()}-${index}`">
-              <ShiftInfoCard
-                :shift="shift"
-                :can-update="canUpdate" :can-delete="canDelete" 
-                :click-on-edit="() => { onEdit(shift) }"
-                :click-on-delete="() => { onDelete(shift) }"
-              />
+
+          <div class="shifts-wrapper">
+            <div v-for="(group, index) in groupShifts" :key="`shift-group-${group.category}-${index}`" class="group-category">
+              <div class="group-name">
+                {{ group.category }}
+              </div>
+              <div class="shift-cards-wrapper">
+                <ShiftInfoCard
+                  v-for="(shift, index) in group.shifts" :key="`shift-${group.category}-${index}`"
+                  :shift="shift"
+                  :can-update="canUpdate" :can-delete="canDelete"
+                  :click-on-edit="() => { onEdit(shift) }"
+                  :click-on-delete="() => { onDelete(shift) }"
+                />
+              </div>
             </div>
           </div>
-          
-          <div></div>
-          <Paginator v-if="first > 1"
-              class="paginator"
-              :first="first" 
-              :rows="rowsPerPage" 
-              :totalRecords="totalRecords" 
-              @page="onPageChange"
-            />
-          <!-- Form Shift -->
-          <div class="card flex justify-content-center">
-            <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
-              <shiftInfoForm
-                :shift="shift"
-                @onShiftSave="onSave"
-              />
-            </Sidebar>
-          </div> 
         </div>
       </div>
-      <Dialog v-model:visible="drawerShiftDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
-        <div class="confirmation-content">
-            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="shift">   Are you sure you want to delete
-              ?</span>
-        </div>
-        <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="drawerShiftDelete = false"/>
-            <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-        </template>
-    </Dialog>
     </NuxtLayout>
+
+    <transition name="page">
+      <confirmDelete
+        v-if="drawerShiftDelete"
+        @confirmDelete="confirmDelete"
+        @cancelDelete="drawerShiftDelete = false"
+      />
+    </transition>
+
+    <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+      <shiftInfoForm :shift="shift" @onShiftSave="onSave" />
+    </Sidebar>
   </div>
 </template>
 
@@ -75,29 +78,15 @@
 </script>
 
 <style lang="scss" scoped>
-@import './style';
-
-.shift-card-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.shift-form-sidebar {
-  width: 100% !important;
-  max-width: 50rem !important;
-
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
-  }
-}
+  @import './style';
 </style>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
+  @import '/resources/styles/variables.scss';
 
-.shift-form-sidebar {
+  .shift-form-sidebar {
     width: 100% !important;
-    max-width: 35rem !important;
+    max-width: 25rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
