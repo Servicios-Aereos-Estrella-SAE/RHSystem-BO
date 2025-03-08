@@ -1,0 +1,71 @@
+@import '/resources/styles/variables.scss';
+
+.employee-bank-info-card {
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  position: relative;
+  box-sizing: border-box;
+
+  .employee-bank {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .employee-bank-account-clabe {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .employee-bank-account-number {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .employee-bank-account-currency-type {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .period-applied {
+    font-size: 0.8rem;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    .period-applied-date {
+      display: grid;
+      grid-template-columns: 2rem auto;
+      gap: 0.5rem;
+      align-items: center;
+
+      .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+          width: 1.5rem;
+        }
+      }
+    }
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border-top: $border-dashed;
+    padding-top: 0.75rem !important;
+    margin-top: 0.75rem !important;
+  }
+}

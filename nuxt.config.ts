@@ -95,6 +95,7 @@ export default defineNuxtConfig({
       ENVIRONMENT: process.env.ENVIRONMENT,
       BASE_API_PATH: process.env.BASE_API_PATH,
       SOCKET: process.env.SOCKET,
+      APP_ENCRYPT_KEY: process.env.APP_ENCRYPT_KEY,
     },
   },
 
