@@ -1,0 +1,26 @@
+@import '/resources/styles/variables.scss';
+
+.shift-info-card {
+  position: relative;
+  border: $border-dashed;
+  display: grid;
+  grid-template-columns: auto 7rem;
+  gap: 0.5rem;
+
+  .shift-name {
+    text-align: left;
+    font-weight: normal;
+    font-size: 0.7rem;
+    box-sizing: border-box;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .buttons {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+}

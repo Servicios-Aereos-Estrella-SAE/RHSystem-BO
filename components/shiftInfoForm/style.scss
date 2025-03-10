@@ -1,9 +1,29 @@
 @import '/resources/styles/variables.scss';
 
-
 .shift-info-form {
-  margin-top: 2.25rem;
   position: relative;
+
+  h1 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: block;
+    border-bottom: solid $background 0.5rem;
+    margin: -1.25rem;
+    padding: 1.25rem;
+    padding-bottom: 2rem;
+    padding-top: 3.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .shift-name {
+    border: $border-dashed;
+    font-size: 0.8rem;
+    font-weight: normal;
+    box-sizing: border-box;
+    padding: 1rem;
+    border-radius: $radius;
+    margin-bottom: 1rem;
+  }
 
   .input-box {
     .password-box {

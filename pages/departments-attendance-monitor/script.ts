@@ -296,12 +296,14 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange();
     this.setDefaultVisualizationMode()
 
-    await Promise.all([
-      this.setAssistSyncStatus(),
-      this.setDepartmetList(),
-    ])
+    // if (this.$config.public.ENVIRONMENT === 'production') {
+      await Promise.all([
+        this.setAssistSyncStatus(),
+        this.setDepartmetList(),
+      ])
 
-    await this.setDepartmentPositionEmployeeList()
+      await this.setDepartmentPositionEmployeeList()
+    // }
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
@@ -354,7 +356,6 @@ export default defineComponent({
       } else {
         return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom';
       }
-      return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom'
     },
     setGeneralData() {
       const assists = this.employeeDepartmentList.reduce((acc, val) => acc + (val.assistStatistics.onTimePercentage || 0), 0)
