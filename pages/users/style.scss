@@ -8,14 +8,14 @@
     margin-top: 2rem;
     margin-bottom: 2rem;
   }
-  
+
   .user-wrapper {
     min-height: 100dvh;
     box-sizing: border-box;
 
     .head-page {
       display: grid;
-      grid-template-columns: 40rem 20rem 10rem;
+      grid-template-columns: 35rem 20rem auto 15rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
@@ -30,15 +30,16 @@
         grid-template-columns: 1fr;
       }
 
-      .btn-add {
-        width: fit-content;
+      .buttons {
+        display: flex;
+        align-items: flex-end;
       }
     }
     .user-card-wrapper {
       box-sizing: border-box;
       display: grid;
       grid-auto-flow: dense;
-      grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
       gap: .5rem;
       margin-top: 0.5rem;
     }
@@ -47,11 +48,5 @@
       margin-top: 0.5rem;
       width: 100%;
     }
-
-   
   }
-  
-}
-.side{
-  background-color: blue!important;
 }
