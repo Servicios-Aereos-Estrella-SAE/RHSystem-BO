@@ -15,6 +15,7 @@ import PositionService from '~/resources/scripts/services/PositionService'
 import { useMyGeneralStore } from "~/store/general"
 import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService'
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
+import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 
 export default defineComponent({
   name: 'Employees',
@@ -171,6 +172,7 @@ export default defineComponent({
         personGender: "",
         personBirthday: null,
         personCurp: null,
+        personEmail: null,
         personPhone: "",
         personRfc: null,
         personImssNss: null,
@@ -193,13 +195,14 @@ export default defineComponent({
         departmentSyncId: "",
         positionSyncId: "",
         employeeDeletedAt: null,
-        employeeHireDate: new Date(),
+        employeeHireDate: null,
         companyId: 1,
         departmentId: 0,
         positionId: 0,
         employeeWorkSchedule: "Onsite",
         personId: 0,
         employeeTypeId: 0,
+        employeeBusinessEmail: null,
         employeePhoto: null,
         employeeLastSynchronizationAt: new Date(),
         employeeCreatedAt: new Date(),
@@ -510,10 +513,25 @@ export default defineComponent({
     isActive(button: string) {
       return this.activeButton === button
     },
-    onSidebarInfoHide () {
+    onSidebarInfoHide() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
+    },
+    async onEmployeeContractSave(employeeContract: EmployeeContractInterface) {
+      const employeeService = new EmployeeService()
+      if (employeeContract.employeeId) {
+        const employeeResponse = await employeeService.show(employeeContract.employeeId)
+        if (employeeResponse?.status === 200) {
+          this.employee = employeeResponse._data.data.employee
+          const index = this.filteredEmployees.findIndex((s: EmployeeInterface) => s.employeeId === this.employee?.employeeId)
+          if (index !== -1) {
+            this.filteredEmployees[index] = employeeResponse._data.data.employee
+            this.$forceUpdate()
+          }
+        }
+      }
+
     }
   },
 })

@@ -3,7 +3,7 @@ interface ShiftInterface {
   shiftId: number | null
   shiftName: string
   shiftCalculateFlag?: string | null
-  shiftDayStart: number
+  shiftDayStart: number | null
   shiftTimeStart: string
   shiftActiveHours: number
   shiftRestDays: any

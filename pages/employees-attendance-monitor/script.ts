@@ -288,13 +288,13 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await this.setDefaultVisualizationMode()
-    // if (this.$config.public.ENVIRONMENT === 'production') {
+    if (this.$config.public.ENVIRONMENT === 'production') {
       await Promise.all([
         this.setAssistSyncStatus(),
         this.setDepartmetList(),
         this.setDepartmentPositionEmployeeList()
       ])
-    // }
+    }
 
     this.setGeneralData()
     this.setPeriodData()

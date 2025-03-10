@@ -132,16 +132,7 @@
           </div>
         </div>
 
-        <div class="box head-page sync">
-          <h6>
-            <span>
-              Last attendance recorded at
-              {{ assistSyncStatusDate }}
-              <small>
-                ( Checking every 5 minutes )
-              </small>
-            </span>
-          </h6>
+        <div class="btns-group">
           <div v-if="visualizationMode" class="input-box">
             <Button class="btn btn-block" severity="success" @click="getExcel('Assistance Report')">
               Assistance Report
@@ -161,6 +152,13 @@
             </Button>
           </div>
         </div>
+
+        <Message class="sync" :closable="false">
+          Last attendance recorded at
+          {{ assistSyncStatusDate }}
+          <br>
+          ( Checking every 5 minutes )
+        </Message>
 
         <div class="general-graphs">
           <div class="box">
@@ -225,4 +223,11 @@
 .graph-label {
   color: red;
 }
+
+.sync {
+
+    .p-message-text {
+      font-size: 0.7rem !important;
+    }
+  }
 </style>

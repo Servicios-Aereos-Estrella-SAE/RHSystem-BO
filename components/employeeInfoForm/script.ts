@@ -18,6 +18,7 @@ import type { PilotInterface } from '~/resources/scripts/interfaces/PilotInterfa
 import PilotService from '~/resources/scripts/services/PilotService'
 import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
+import UserService from '~/resources/scripts/services/UserService';
 
 export default defineComponent({
   components: {
@@ -303,6 +304,19 @@ export default defineComponent({
         })
         return
       }
+      const userService = new UserService()
+      if (this.employee.employeeBusinessEmail) {
+        if (!userService.validateEmail(this.employee.employeeBusinessEmail)) {
+          this.isEmailInvalid = true
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Email not valid',
+            life: 5000,
+          })
+          return
+        }
+      }
       if (this.employee.person?.personCurp && !personService.isValidCURP(this.employee.person?.personCurp)) {
         this.isValidCURP = false
         this.$toast.add({
@@ -362,6 +376,7 @@ export default defineComponent({
         personGender: this.employee.person?.personGender ?? null,
         personBirthday: this.convertToDateTime(personBirthday),
         personPhone: this.employee.person?.personPhone ?? null,
+        personEmail: this.employee.person?.personEmail ?? null,
         personCurp: this.employee.person?.personCurp ?? null,
         personRfc: this.employee.person?.personRfc ?? null,
         personImssNss: this.employee.person?.personImssNss ?? null,
@@ -396,8 +411,6 @@ export default defineComponent({
         })
         return
       }
-
-
       let employeeResponse = null
       const terminatedDateTemp = this.employee.employeeTerminatedDate
       if (!this.employee.employeeId) {

@@ -5,8 +5,8 @@ import type { PeopleInterface } from "../interfaces/PeopleInterface"
 export default class EmployeeService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
-  
-  constructor () {
+
+  constructor() {
     const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
@@ -14,7 +14,7 @@ export default class EmployeeService {
       Authorization: `${token.value}`
     }
   }
-  async getFilteredList (searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null) {
+  async getFilteredList(searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees`, {
@@ -29,8 +29,8 @@ export default class EmployeeService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -44,8 +44,8 @@ export default class EmployeeService {
         headers,
         method: 'POST',
         query: { ...employee },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -60,8 +60,8 @@ export default class EmployeeService {
         headers,
         method: 'PUT',
         query: { ...employee },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -74,19 +74,19 @@ export default class EmployeeService {
     try {
       await $fetch(`${this.API_PATH}/employees/${id}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const employee = responseRequest.status === 200 ? responseRequest._data.data.employee : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              employee: employee
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            employee: employee
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -97,19 +97,19 @@ export default class EmployeeService {
     try {
       await $fetch(`${this.API_PATH}/employees/get-by-code/${code}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const employee = responseRequest.status === 200 ? responseRequest._data.data.employee : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              employee: employee
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            employee: employee
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -122,8 +122,8 @@ export default class EmployeeService {
         headers,
         method: 'PUT',
         query: { ...employee },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -143,44 +143,16 @@ export default class EmployeeService {
       console.error('Wrong employee last name');
       return false;
     }
-    if (!employee.departmentId) {
-      console.error('Wrong department id');
-      return false;
-    }
-    if (!employee.positionId) {
-      console.error('Wrong position id');
-      return false;
-    }
-    if (!employee.employeeHireDate) {
-      console.error('Wrong hire date');
-      return false;
-    }
 
     if (!employee.employeeTypeId) {
       console.error('Wrong employee type id');
       return false;
     }
 
-    // if (!employee.person?.personGender) {
-    //   console.error('Wrong Gender:', employee.person?.personGender)
-    //   return false
-    // }
-
-    // if (!employee.employeePayrollNum) {
-    //   console.error('Wrong payroll number');
-    //   return false;
-    // }
-
-    // validate employee.person.personPhone is a valid phone number with 10 digits and dont have letters
-    // if (employee.person?.personPhone && !/^\d{10}$/.test(employee.person.personPhone)) {
-    //   console.error('Wrong phone number');
-    //   return false;
-    // }
-
     return true;
   }
 
-  async getOnlyWithOutUser (searchText: string, department: number | null, position: number | null, page: number = 1, limit: number = 999999999) {
+  async getOnlyWithOutUser(searchText: string, department: number | null, position: number | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -193,8 +165,8 @@ export default class EmployeeService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -207,8 +179,8 @@ export default class EmployeeService {
     await $fetch(`${this.API_PATH}/employees/${employee.employeeId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -222,8 +194,8 @@ export default class EmployeeService {
         headers,
         method: 'POST',
         query: { ...person },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -238,8 +210,8 @@ export default class EmployeeService {
         headers,
         method: 'PUT',
         query: { ...person },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -256,8 +228,8 @@ export default class EmployeeService {
         headers,
         method: 'PUT',
         body: formData,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -271,23 +243,23 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/synchronization/employees`, {
         headers,
         method: 'POST',
-        query: { },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        query: {},
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async getWorkSchedules () {
+  async getWorkSchedules() {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees/get-work-schedules`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -299,7 +271,7 @@ export default class EmployeeService {
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-used`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
@@ -313,7 +285,7 @@ export default class EmployeeService {
     try {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-corresponding`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
@@ -328,7 +300,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-years-worked`, {
         headers,
         query: { year: year },
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
@@ -343,7 +315,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees/${employeeId}/get-vacations-by-period`, {
         headers,
         query: { vacationSettingId: vacationSettingId },
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
@@ -351,7 +323,7 @@ export default class EmployeeService {
     return responseRequest
   }
 
-  async getExcelAll (
+  async getExcelAll(
     searchText: string,
     departmentId: number | null,
     positionId: number | null,
@@ -377,36 +349,36 @@ export default class EmployeeService {
         page: page,
         limit: limit,
       };
-            await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
+      await $fetch(`${this.API_PATH}/employees/employee-generate-excel`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async getVacationExcel (searchText: string, departmentId: number | null, positionId: number | null,
+  async getVacationExcel(searchText: string, departmentId: number | null, positionId: number | null,
     startDate: string | Date,
     endDate: string | Date,
     onlyInactive: boolean
   ) {
     let responseRequest: any = null
     try {
-      const query = { 
+      const query = {
         search: searchText,
         startDate: startDate,
         endDate: endDate,
         departmentId: departmentId,
         positionId: positionId,
         onlyInactive: onlyInactive
-       }
+      }
       await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
         method: 'GET',
         headers: {
@@ -414,13 +386,13 @@ export default class EmployeeService {
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  
+
 }

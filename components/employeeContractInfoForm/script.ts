@@ -9,6 +9,12 @@ import EmployeeContractService from '~/resources/scripts/services/EmployeeContra
 import { DateTime } from 'luxon';
 import EmployeeContractTypeService from '~/resources/scripts/services/EmployeeContractTypeService';
 import type { EmployeeContractTypeInterface } from '~/resources/scripts/interfaces/EmployeeContractTypeInterface';
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface';
+import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface';
+import PositionService from '~/resources/scripts/services/PositionService';
+import DepartmentService from '~/resources/scripts/services/DepartmentService';
+import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
+import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
 
 export default defineComponent({
   components: {
@@ -38,7 +44,11 @@ export default defineComponent({
     displayStartDateCalendar: false as boolean,
     endDate: '' as string,
     displayEndDateCalendar: false as boolean,
-    isContractPermanent: false
+    isContractPermanent: false,
+    positions: [] as PositionInterface[],
+    departments: [] as DepartmentInterface[],
+    businessUnits: [] as BusinessUnitInterface[],
+    maxDate: new Date() as Date,
   }),
   computed: {
   },
@@ -48,7 +58,12 @@ export default defineComponent({
         this.employeeContract.employeeContractStartDate = newRange[0]
         this.employeeContract.employeeContractEndDate = newRange[1]
       }
-    }
+    },
+    'employeeContract.departmentId': function (newVal) {
+      if (newVal) {
+        this.getPositions(newVal);
+      }
+    },
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -58,6 +73,8 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    this.getDepartments()
+    this.getBusinessUnits()
     this.employeeContractTypeList = await this.getEmployeeContractTypes()
     if (this.employeeContract.employeeContractId) {
       this.verifyContractPermanent()
@@ -75,20 +92,51 @@ export default defineComponent({
           this.employeeContract.employeeContractEndDate = endNewDate
         }
       }
+      if (this.employeeContract.departmentId) {
+        await this.getPositions(this.employeeContract.departmentId)
+      }
+
+      if (this.employeeContract.department) {
+        const existCurrentDepartment = this.departments.find(a => a.departmentId === this.employeeContract.departmentId)
+        if (!existCurrentDepartment) {
+          this.departments.push(this.employeeContract.department)
+        }
+      }
+      if (this.employeeContract.position) {
+        const existCurrentPosition = this.positions.find(a => a.positionId === this.employeeContract.positionId)
+        if (!existCurrentPosition) {
+          this.positions.push(this.employeeContract.position)
+        }
+      }
     }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
+    async getDepartments() {
+      let response = null
+      const departmentService = new DepartmentService()
+      response = await departmentService.getAllDepartmentList()
+      this.departments = response._data.data.departments
+    },
+    async getPositions(departmentId: number) {
+      const positionService = new PositionService()
+      this.positions = await positionService.getPositionsDepartment(departmentId)
+    },
+    async getBusinessUnits() {
+      const body = await new BusinessUnitService().index()
+      this.businessUnits = body.status === 200 ? body._data.data.data || [] : []
+    },
     getDate(date: string | Date) {
       if (!date) {
         return ''
       }
+
       if (typeof date === 'string' && !date.includes('T')) {
         date = new Date(date)
       }
-      const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'utc' })
+      const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'local' })
       return dateEmployeeContract.setLocale('en').toFormat('DDDD')
     },
     async getEmployeeContractTypes() {
@@ -99,7 +147,25 @@ export default defineComponent({
     async onSave() {
       this.submitted = true
       const employeeContractService = new EmployeeContractService()
-      if (!this.employeeContract.employeeContractId && this.files.length === 0) {
+      if (!this.employeeContract.departmentId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.positionId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Missing data',
+          life: 5000,
+        })
+        return
+      }
+      if (!this.employeeContract.payrollBusinessUnitId) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',

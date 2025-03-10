@@ -16,13 +16,21 @@
                 placeholder="Enter employee phone" :disabled="isDeleted" />
             </div>
           </div>
+          <div class="input-box">
+            <label for="useremail">
+              Email</label>
+            <InputText id="useremail" v-model="employee.person.personEmail" type="email"
+              :invalid="submitted && isEmailInvalid" :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
+              valid.</small>
+          </div>
         </div>
 
         <div class="inputs-group">
           <div class="input-box">
             <label for="personGender">Gender</label>
             <Dropdown v-model="employee.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-              placeholder="Select Gender" class="w-full md:w-14rem" :disabled="isDeleted"/>
+              placeholder="Select Gender" class="w-full md:w-14rem" :disabled="isDeleted" />
           </div>
           <div class="input-box">
             <div class="hire-date-box-container">
@@ -55,7 +63,14 @@
           <div v-if="employee.person.personBirthday" class="input-box">
             <div class="age-box">
               <span class="icon">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7c1.714 0 2-1.34 2-2.444C14 3.45 13.262 1.5 12 1.5s-2 1.951-2 3.056C10 5.66 10.286 7 12 7ZM3.5 10.25A2.25 2.25 0 0 1 5.75 8h12.5a2.25 2.25 0 0 1 2.25 2.25v.875l-3.634 2.726a1.25 1.25 0 0 1-1.384.077l-2.04-1.2a2.75 2.75 0 0 0-2.884.06l-1.761 1.136a1.25 1.25 0 0 1-1.35.003L3.5 11.408V10.25Z" fill="#fff" class="fill-212121"></path><path d="M3.5 13.188V18.5h-.75a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5h-.75V13l-2.734 2.05a2.75 2.75 0 0 1-3.044.171l-2.04-1.2a1.25 1.25 0 0 0-1.311.027l-1.76 1.136a2.75 2.75 0 0 1-2.971.008L3.5 13.187Z" fill="#fff" class="fill-212121"></path></svg>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 7c1.714 0 2-1.34 2-2.444C14 3.45 13.262 1.5 12 1.5s-2 1.951-2 3.056C10 5.66 10.286 7 12 7ZM3.5 10.25A2.25 2.25 0 0 1 5.75 8h12.5a2.25 2.25 0 0 1 2.25 2.25v.875l-3.634 2.726a1.25 1.25 0 0 1-1.384.077l-2.04-1.2a2.75 2.75 0 0 0-2.884.06l-1.761 1.136a1.25 1.25 0 0 1-1.35.003L3.5 11.408V10.25Z"
+                    fill="#fff" class="fill-212121"></path>
+                  <path
+                    d="M3.5 13.188V18.5h-.75a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5h-.75V13l-2.734 2.05a2.75 2.75 0 0 1-3.044.171l-2.04-1.2a1.25 1.25 0 0 0-1.311.027l-1.76 1.136a2.75 2.75 0 0 1-2.971.008L3.5 13.187Z"
+                    fill="#fff" class="fill-212121"></path>
+                </svg>
               </span>
               <span>
                 {{ getAge }} years old
@@ -121,7 +136,9 @@
             <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label"
               optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem" :disabled="isDeleted" />
           </div>
-          <div v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'" class="spouse-info">
+          <div
+            v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'"
+            class="spouse-info">
             <h2>
               Spouse information
             </h2>
@@ -146,10 +163,16 @@
                   <label for="employeeSpouseSecondLastName">Second Last Name</label>
                   <InputText v-model="employeeSpouse.employeeSpouseSecondLastname" placeholder="Enter Second Last Name"
                     :disabled="isDeleted" />
-                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last name
+                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last
+                    name
                     is
                     required.</small>
                 </div>
+              </div>
+              <div class="input-box">
+                <label for="employeeSpousePhone">Phone</label>
+                <InputMask v-model="employeeSpouse.employeeSpousePhone" mask="(999) 999 99 99" placeholder="Enter phone"
+                  :disabled="isDeleted" />
               </div>
               <div class="input-box">
                 <label for="employeeSpouseOcupation">Ocupation</label>
@@ -187,6 +210,7 @@
                 </div><small style="position: absolute;" class="p-error"
                   v-if="submitted && !employeeSpouse.employeeSpouseBirthday">Birthday is required.</small>
               </div>
+
             </div>
           </div>
 
@@ -207,14 +231,11 @@
               </Button>
             </div>
             <div v-if="employeeChildrenList.length > 0" class="employee-children-card-wrapper">
-              <EmployeeChildrenInfoCard
-                v-for="(employeeChildren, index) in employeeChildrenList"
+              <EmployeeChildrenInfoCard v-for="(employeeChildren, index) in employeeChildrenList"
                 :key="`employee-children-${employeeChildren.employeeChildrenId}-${index}`"
-                :employeeChildren="employeeChildren"
-                :can-update="canUpdate"
-                :can-delete="canDelete" :click-on-edit="() => { onEditEmployeeChildren(employeeChildren) }"
-                :click-on-delete="() => { onDeleteEmployeeChildren(employeeChildren) }"
-              />
+                :employeeChildren="employeeChildren" :can-update="canUpdate" :can-delete="canDelete"
+                :click-on-edit="() => { onEditEmployeeChildren(employeeChildren) }"
+                :click-on-delete="() => { onDeleteEmployeeChildren(employeeChildren) }" />
             </div>
             <div v-else class="empty">
               <div>
@@ -222,11 +243,67 @@
               </div>
             </div>
           </div>
+          <div class="emergency-contact-info">
+            <h2>
+              Emergency contact information
+            </h2>
+
+            <div class="inputs-group">
+              <div class="group-3">
+                <div class="input-box">
+                  <label for="employeeEmergencyContactFirstname">First Name</label>
+                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactFirstname"
+                    placeholder="Enter First Name" :disabled="isDeleted" />
+                  <small class="p-error"
+                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactFirstname">First name is
+                    required.</small>
+                </div>
+                <div class="input-box">
+                  <label for="employeeEmergencyContactLastname">Last Name</label>
+                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactLastname"
+                    placeholder="Enter Last Name" :disabled="isDeleted" />
+                  <small class="p-error"
+                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactLastname">Last name is
+                    required.</small>
+                </div>
+                <div class="input-box">
+                  <label for="employeeEmergencyContactSecondLastName">Second Last Name</label>
+                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactSecondLastname"
+                    placeholder="Enter Second Last Name" :disabled="isDeleted" />
+                  <small class="p-error"
+                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">Second last
+                    name
+                    is
+                    required.</small>
+                </div>
+              </div>
+              <div class="input-box">
+                <label for="employeeEmergencyContactPhone">Phone</label>
+                <InputMask v-model="employeeEmergencyContact.employeeEmergencyContactPhone" mask="(999) 999 99 99"
+                  placeholder="Enter phone" :disabled="isDeleted" />
+                <small class="p-error" v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactPhone">Phone
+                  is
+                  required.</small>
+              </div>
+              <div class="input-box">
+                <label for="employeeEmergencyContactRelationship">Relationship</label>
+                <InputText v-model="employeeEmergencyContact.employeeEmergencyContactRelationship"
+                  placeholder="Enter Relationship" :disabled="isDeleted" />
+                <small class="p-error"
+                  v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactRelationship">Relationship is
+                  required.</small>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="box-tools-footer">
           <button type="button" class="btn btn-primary btn-block" @click="onSave">
-            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" fill="#ffffff" class="fill-212121"></path></svg>
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+                fill="#ffffff" class="fill-212121"></path>
+            </svg>
             Save
           </button>
         </div>
@@ -257,10 +334,10 @@
 
 
 <script>
-import Script from './script.ts'
-export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+  @import './style';
 </style>

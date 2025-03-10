@@ -17,7 +17,8 @@
                   <label for="search">
                     Search employee
                   </label>
-                  <InputText v-model="search" placeholder="Employee name or id" @keypress.enter="handlerSearchEmployee" />
+                  <InputText v-model="search" placeholder="Employee name or id"
+                    @keypress.enter="handlerSearchEmployee" />
                 </div>
                 <button class="btn btn-block" @click="handlerSearchEmployee">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -138,14 +139,19 @@
         </div>
 
         <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true" @hide="onSidebarInfoHide">
+          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true"
+          @hide="onSidebarInfoHide">
           <div v-if="employee && employee.employeeId > 0" class="employee-info">
             <employeeModalInfoCard :employee="employee" />
           </div>
 
           <div v-if="employee && employee.employeeId > 0 && isRootUser" class="box-tools">
             <Button :class="{ 'btn-active': isActive('employee') }" class="btn" @click="onEditEmployee">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.821 6.5h5.929a2.25 2.25 0 0 1 2.229 1.938l.016.158.005.154v9a2.25 2.25 0 0 1-2.096 2.245L19.75 20H4.25a2.25 2.25 0 0 1-2.245-2.096L2 17.75v-7.251l6.207.001.196-.009a2.25 2.25 0 0 0 1.088-.393l.156-.12L13.821 6.5ZM8.207 4c.46 0 .908.141 1.284.402l.156.12 2.103 1.751-3.063 2.553-.085.061a.75.75 0 0 1-.29.106L8.206 9 2 8.999V6.25a2.25 2.25 0 0 1 2.096-2.245L4.25 4h3.957Z" fill="#ffffff" class="fill-212121"></path></svg>
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M13.821 6.5h5.929a2.25 2.25 0 0 1 2.229 1.938l.016.158.005.154v9a2.25 2.25 0 0 1-2.096 2.245L19.75 20H4.25a2.25 2.25 0 0 1-2.245-2.096L2 17.75v-7.251l6.207.001.196-.009a2.25 2.25 0 0 0 1.088-.393l.156-.12L13.821 6.5ZM8.207 4c.46 0 .908.141 1.284.402l.156.12 2.103 1.751-3.063 2.553-.085.061a.75.75 0 0 1-.29.106L8.206 9 2 8.999V6.25a2.25 2.25 0 0 1 2.096-2.245L4.25 4h3.957Z"
+                  fill="#ffffff" class="fill-212121"></path>
+              </svg>
               Work
             </Button>
             <Button :class="{ 'btn-active': isActive('person') }" class="btn" @click="onEditPerson">
@@ -165,18 +171,22 @@
               Address
             </Button>
             <Button :class="{ 'btn-active': isActive('records') }" class="btn" @click="onEditRecords">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.715 11c.427 0 .855.084 1.257.25C21.59 6.077 17.27 2 12 2 6.477 2 2 6.477 2 12c0 5.184 3.945 9.447 8.997 9.95a2.117 2.117 0 0 1 .064-.543l.458-1.83c.162-.648.497-1.24.97-1.712l5.902-5.903A3.28 3.28 0 0 1 20.713 11h.002Zm0 1h-.002c-.585 0-1.17.223-1.615.67l-5.902 5.902a2.684 2.684 0 0 0-.707 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.684 2.684 0 0 0 1.248-.707l5.902-5.902A2.285 2.285 0 0 0 20.715 12Z" fill="#ffffff" class="fill-212121"></path></svg>
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M20.715 11c.427 0 .855.084 1.257.25C21.59 6.077 17.27 2 12 2 6.477 2 2 6.477 2 12c0 5.184 3.945 9.447 8.997 9.95a2.117 2.117 0 0 1 .064-.543l.458-1.83c.162-.648.497-1.24.97-1.712l5.902-5.903A3.28 3.28 0 0 1 20.713 11h.002Zm0 1h-.002c-.585 0-1.17.223-1.615.67l-5.902 5.902a2.684 2.684 0 0 0-.707 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.684 2.684 0 0 0 1.248-.707l5.902-5.902A2.285 2.285 0 0 0 20.715 12Z"
+                  fill="#ffffff" class="fill-212121"></path>
+              </svg>
               Records
             </Button>
           </div>
 
-          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords" :employee="employee" @save="onSave"
-            :click-on-edit="() => { onEditPerson(employee) }" />
+          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords"
+            :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
           <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
             :click-on-close="() => { onCloseAddress() }" />
-          <employeeRecords v-if="drawerRecords" :employee="employee"/>
+          <employeeRecords v-if="drawerRecords" :employee="employee" />
         </Sidebar>
 
 
@@ -197,7 +207,8 @@
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
           header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
-          <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles" />
+          <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
+            @onEmployeeContractSave="onEmployeeContractSave" />
         </Sidebar>
 
         <transition name="page">
@@ -222,41 +233,41 @@
   </div>
 </template>
 <script>
-import Script from './script.ts'
-export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+  @import './style';
 </style>
 
 <style lang="scss">
-@import '/resources/styles/variables.scss';
+  @import '/resources/styles/variables.scss';
 
-.shift-form-sidebar {
-  width: 90% !important;
-  max-width: 40rem !important;
+  .shift-form-sidebar {
+    width: 90% !important;
+    max-width: 40rem !important;
 
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.sidebar-shifts {
-  width: 90% !important;
-  max-width: 120rem !important;
+  .sidebar-shifts {
+    width: 90% !important;
+    max-width: 120rem !important;
 
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.proceeding-file-sidebar {
-  width: 90% !important;
-  max-width: 90rem !important;
+  .proceeding-file-sidebar {
+    width: 90% !important;
+    max-width: 90rem !important;
 
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 </style>
