@@ -6,6 +6,7 @@ interface PeopleInterface {
   personLastname: string,
   personSecondLastname: string,
   personPhone: string | null,
+  personEmail: string | null,
   personGender: string | null,
   personBirthday: Date | string | null,
   personCurp: string | null,

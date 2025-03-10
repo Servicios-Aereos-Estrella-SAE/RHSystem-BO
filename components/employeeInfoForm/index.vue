@@ -44,6 +44,14 @@
               <small class="p-error" v-if="submitted && !employee.employeeLastName">Last Name is required.</small>
             </div>
           </div>
+          <div class="input-box">
+            <label for="useremail">
+              Email</label>
+            <InputText id="useremail" v-model="employee.employeeBusinessEmail" type="email"
+              :invalid="submitted && isEmailInvalid" :disabled="isDeleted" />
+            <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
+              valid.</small>
+          </div>
         </div>
 
         <div class="inputs-group">
@@ -54,22 +62,24 @@
               </label>
               <Dropdown v-model="employee.departmentId" :options="departments" optionLabel="departmentName"
                 optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-                :invalid="submitted && !employee.departmentId" disabled />
+                :invalid="submitted && !employee.departmentId" :disabled="isDeleted" />
+              <small class="p-error" v-if="submitted && !employee.departmentId">Department is required.</small>
             </div>
             <div class="input-box">
               <label for="positionId">Position</label>
               <Dropdown v-model="employee.positionId" :options="positions" optionLabel="positionName"
                 optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
-                :invalid="submitted && !employee.positionId" disabled />
+                :invalid="submitted && !employee.positionId" :disabled="isDeleted" />
+              <small class="p-error" v-if="submitted && !employee.positionId">Position is required.</small>
             </div>
           </div>
           <div class="input-box">
             <div class="hire-date-box-container">
               <label for="employeeHireDate">Hire Date</label>
               <div v-if="!displayHireDateCalendar" class="hire-date-box">
-                <InputText v-model="employeeHireDate" readonly class="capitalize" disabled />
+                <InputText v-model="employeeHireDate" readonly class="capitalize" :disabled="isDeleted" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate" @click="handlerDisplayHireDate"
-                  disabled>
+                  :disabled="isDeleted">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
@@ -79,7 +89,7 @@
               </div>
               <div v-if="displayHireDateCalendar" class="hire-date-box-controller">
                 <Calendar v-if="displayHireDateCalendar" v-model.lazy="employee.employeeHireDate"
-                  placeholder="Select Hire Date" disabled />
+                  placeholder="Select Hire Date" :disabled="isDeleted" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate"
                   @click="displayHireDateCalendar = false">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
