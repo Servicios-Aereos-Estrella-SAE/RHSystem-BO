@@ -11,6 +11,7 @@ import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces
 import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFileTypeService';
 import ProceedingFile from '~/resources/scripts/models/ProceedingFile';
 import type { EmployeeProceedingFileInterface } from '~/resources/scripts/interfaces/EmployeeProceedingFileInterface';
+import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface';
 
 export default defineComponent({
   components: {
@@ -240,6 +241,9 @@ export default defineComponent({
       slug = slug.replace(/[\s-]+/g, '-')
 
       return slug
+    },
+    onEmployeeContractSave(employeeContract: EmployeeContractInterface) {
+      this.$emit('onEmployeeContractSave', employeeContract as EmployeeContractInterface)
     }
   }
 })

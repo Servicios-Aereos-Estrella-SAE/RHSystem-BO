@@ -105,7 +105,7 @@
               </div>
             </div>
             <div v-else-if="drawerEmployeeContracts">
-              <employeeContracts :employee="employee" />
+              <employeeContracts :employee="employee" @onEmployeeContractSave="onEmployeeContractSave" />
             </div>
           </div>
 
@@ -113,20 +113,11 @@
 
           <!-- Employee Proceeding File form -->
           <div class="card flex justify-content-center">
-            <Sidebar
-              v-model:visible="drawerEmployeeProceedingFileForm"
-              position="right"
-              class="employee-proceeding-file-form-sidebar"
-              :blockScroll="true"
-              :closeOnEscape="false"
-              :dismissable="false"
-              :showCloseIcon="true"
-            >
-              <employeeProceedingFileInfoForm
-                :employee="employee"
-                :employeeProceedingFile="employeeProceedingFile"
-                :canReadOnlyFiles="canReadOnlyFiles"
-                :canManageFiles="canManageFiles"
+            <Sidebar v-model:visible="drawerEmployeeProceedingFileForm" position="right"
+              class="employee-proceeding-file-form-sidebar" :blockScroll="true" :closeOnEscape="false"
+              :dismissable="false" :showCloseIcon="true">
+              <employeeProceedingFileInfoForm :employee="employee" :employeeProceedingFile="employeeProceedingFile"
+                :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
                 @onEmployeeProceedingFileSave="onSave" />
             </Sidebar>
           </div>
