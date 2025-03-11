@@ -190,48 +190,38 @@ export default class EmployeeBankService {
   }
 
   validateAccountCLABE(accountClabe: string) {
-    console.log(accountClabe)
     // Verificación de formato: la CLABE debe ser numérica y tener exactamente 18 dígitos
     if (accountClabe.length !== 18 || isNaN(Number(accountClabe))) {
-      console.error('The CLABE must have 18 digits and be numeric.');
-      return false;
+      console.error('The CLABE must have 18 digits and be numeric.')
+      return false
     }
 
     // Los factores para el cálculo del dígito verificador
-    const factors = [3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7];
+    const factors = [3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7]
 
-    let sum = 0;
+    let sum = 0
 
     // Calculamos la suma ponderada de los primeros 17 dígitos
     for (let i = 0; i < 17; i++) {
-      const digit = parseInt(accountClabe[i]);
-      const factor = factors[i];
-      const product = digit * factor;
-      sum += product;
-
-      // Debug: Mostrar el producto de cada dígito por su factor
-      //console.log(`Digit: ${digit}, Factor: ${factor}, Product: ${product}`);
+      const digit = parseInt(accountClabe[i])
+      const factor = factors[i]
+      const product = digit * factor
+      sum += product
     }
 
     // Cálculo del dígito verificador
     const remainder = sum % 10;
-    const checkDigit = remainder === 0 ? 0 : 10 - remainder;
+    const checkDigit = remainder === 0 ? 0 : 10 - remainder
 
     // Obtener el último dígito de la CLABE
-    const lastDigit = parseInt(accountClabe[17]);
-
-    console.log('checkDigit: ' + checkDigit);
-    console.log('last digit: ' + lastDigit);
-    console.log('Sum: ' + sum);
-    console.log('Remainder: ' + remainder);
+    const lastDigit = parseInt(accountClabe[17])
 
     // Comparamos el dígito verificador calculado con el último dígito de la CLABE
     if (checkDigit === lastDigit) {
-      console.log('The CLABE is valid.');
-      return true;
+      return true
     } else {
-      console.log('The CLABE is invalid.');
-      return false;
+      console.error('The CLABE is invalid.');
+      return false
     }
   }
 
@@ -239,66 +229,113 @@ export default class EmployeeBankService {
 
     // Verificación de formato: la cuenta debe ser numérica y tener exactamente 10 dígitos
     if (accountNumber.length !== 10 || isNaN(parseInt(accountNumber))) {
-      console.error('The account number must have exactly 10 digits and be numeric.');
-      return false;
+      console.error('The account number must have exactly 10 digits and be numeric.')
+      return false
     }
-    console.log('Modulo 10');
-    console.log(accountNumber)
     // Cálculo del dígito verificador (usando un algoritmo de módulo 10)
-    const factors = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1];  // Factores para el algoritmo de módulo 10 (simplificado)
-    let sum = 0;
+    const factors = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1]  // Factores para el algoritmo de módulo 10 (simplificado)
+    let sum = 0
 
     // Sumamos los productos de los dígitos por sus factores
     for (let i = 0; i < 10; i++) { // Iteramos hasta el índice 9 (10 elementos)
-      sum += parseInt(accountNumber[i]) * factors[i];
+      sum += parseInt(accountNumber[i]) * factors[i]
     }
 
     // Calculamos el dígito verificador
-    const remainder = sum % 10;
-    const checkDigit = remainder === 0 ? 0 : 10 - remainder;
-
-    console.log('checkDigit:', checkDigit);
-    console.log('ultimo digito:', parseInt(accountNumber[9]));
+    const remainder = sum % 10
+    const checkDigit = remainder === 0 ? 0 : 10 - remainder
 
     // El último dígito (el dígito verificador) debería coincidir con el cálculo
     if (checkDigit === parseInt(accountNumber[9])) {
-      console.log('The account number is valid.');
-      return true;
+      return true
     } else {
-      console.error('The account number is invalid.');
-      return false;
+      console.error('The account number is invalid.')
+      return false
     }
   }
   validateAccountNumberMod11(accountNumber: string) {
     // Verificación de formato: la cuenta debe ser numérica y tener exactamente 10 dígitos
     if (accountNumber.length !== 10 || isNaN(parseInt(accountNumber))) {
-      console.error('The account number must have exactly 10 digits and be numeric.');
-      return false;
+      console.error('The account number must have exactly 10 digits and be numeric.')
+      return false
     }
-    console.log('modulo 11')
-    console.log(accountNumber)
     // Cálculo del dígito verificador (suponiendo que se usa un algoritmo de módulo 11)
-    const factors = [7, 3, 1, 7, 3, 1, 7, 3, 1, 7];
+    const factors = [7, 3, 1, 7, 3, 1, 7, 3, 1, 7]
 
-    let sum = 0;
+    let sum = 0
 
     // Sumamos los productos de los dígitos por sus factores
     for (let i = 0; i < 10; i++) {
-      sum += parseInt(accountNumber[i]) * factors[i];
+      sum += parseInt(accountNumber[i]) * factors[i]
     }
     // Calculamos el dígito verificador
-    const remainder = sum % 11;
-    const checkDigit = remainder === 0 ? 0 : 11 - remainder;
+    const remainder = sum % 11
+    const checkDigit = remainder === 0 ? 0 : 11 - remainder
 
-    console.log('checkDigit:' + checkDigit)
-    console.log('ultimo digito:' + parseInt(accountNumber[9]))
     // El último dígito (el dígito verificador) debería coincidir con el cálculo
     if (checkDigit === parseInt(accountNumber[9])) {
-      console.log('es correcto el numero de cuenta')
-      return true;
+      return true
     } else {
-      console.error('The account number is invalid.');
+      console.error('The account number is invalid.')
+      return false
+    }
+  }
+
+  validCard(accountCardNumber: string) {
+    // Remove all non-num characters (e.g., spaces or hyphens)
+    const s = accountCardNumber.replace(/[^0-9]/g, '');
+
+    // Check if the input length is valid (most cards have between 13 and 19 nums)
+    if (s.length < 13 || s.length > 19) {
       return false;
+    }
+
+    let sum = 0;
+    let sd = false;
+
+    // Loop through the card number nums, starting from the last num
+    for (let i = s.length - 1; i >= 0; i--) {
+      let num = parseInt(s[i], 10);
+
+      if (sd) {
+        num *= 2;
+        if (num > 9) {
+          num -= 9; // If the result is a two-num number, subtract 9
+        }
+      }
+
+      sum += num;
+      sd = !sd; // Toggle the doubling
+    }
+
+    // If the total sum is divisible by 10, it's a valid card number
+    return sum % 10 === 0;
+  }
+
+  getIssuer(accountCardNumber: string) {
+    // Remove all non-digit characters (e.g., spaces or hyphens)
+    const s = accountCardNumber.replace(/[^0-9]/g, '');
+
+    // Check the length of the card number
+    if (s.length < 13 || s.length > 19) {
+      return 'Invalid card length';
+    }
+
+    // Determine the card issuer
+    if (/^4/.test(s)) {
+      return 'Visa';
+    } else if (/^5[1-5]/.test(s)) {
+      return 'MasterCard';
+    } else if (/^3[47]/.test(s)) {
+      return 'American Express';
+    } else if (/^6(?:011|5)/.test(s)) {
+      return 'Discover';
+    } else if (/^3(?:0[0-5]|[68])/.test(s)) {
+      return 'Diners Club';
+    } else if (/^35/.test(s)) {
+      return 'JCB';
+    } else {
+      return '';
     }
   }
 }

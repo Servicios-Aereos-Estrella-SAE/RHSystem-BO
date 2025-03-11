@@ -59,6 +59,8 @@ export default defineComponent({
           employeeBankAccountClabeLastNumbers: '',
           employeeBankAccountNumber: '',
           employeeBankAccountNumberLastNumbers: '',
+          employeeBankAccountCardNumber: '',
+          employeeBankAccountCardNumberLastNumbers: '',
           employeeBankAccountCurrencyType: 'MXN',
           employeeBankAccountType: null,
           employeeId: this.employee.employeeId,
@@ -107,14 +109,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete employee bank',
+            summary: 'Delete employee account bank',
             detail: employeeBankResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete employee bank',
+            summary: 'Delete employee account bank',
             detail: employeeBankResponse._data.message,
             life: 5000,
           })

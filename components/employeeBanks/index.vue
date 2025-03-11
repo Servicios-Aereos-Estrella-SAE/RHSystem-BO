@@ -27,7 +27,7 @@
           </div>
         </div>
         <div v-else class="empty">
-          Empty bank list.
+          Empty bank account list.
           <br>
           Select other folder or add a file
         </div>

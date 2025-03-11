@@ -36,8 +36,9 @@ export default defineComponent({
     endDate: '' as string,
     displayEndDateCalendar: false as boolean,
     isBankPermanent: false,
-    isValidAccountClabe: false,
-    isValidAccountNumber: false
+    isValidAccountClabe: true,
+    isValidAccountNumber: false,
+    isValidAccountCardNumber: true
   }),
   computed: {
   },
@@ -56,12 +57,17 @@ export default defineComponent({
 
         const valueDecrypt = await employeeBankService.decrypt(this.employeeBank.employeeBankAccountClabe, this.$config.public.APP_ENCRYPT_KEY)
         this.employeeBank.employeeBankAccountClabe = valueDecrypt ? valueDecrypt : null
-        //this.formatAccountClabe()
       }
       if (this.employeeBank.employeeBankAccountNumber) {
         const valueDecrypt = await employeeBankService.decrypt(this.employeeBank.employeeBankAccountNumber, this.$config.public.APP_ENCRYPT_KEY)
         this.employeeBank.employeeBankAccountNumber = valueDecrypt ? valueDecrypt : null
-        //this.formatAccountNumber()
+      }
+      if (this.employeeBank.employeeBankAccountCardNumber) {
+        const valueDecrypt = await employeeBankService.decrypt(this.employeeBank.employeeBankAccountCardNumber, this.$config.public.APP_ENCRYPT_KEY)
+        this.employeeBank.employeeBankAccountCardNumber = valueDecrypt ? valueDecrypt : null
+        if (this.employeeBank.employeeBankAccountCardNumber) {
+          this.employeeBank.employeeBankAccountType = employeeBankService.getIssuer(this.employeeBank.employeeBankAccountCardNumber)
+        }
       }
     }
     this.banksList = await this.getBanks()
@@ -89,6 +95,7 @@ export default defineComponent({
       this.submitted = true
       this.isValidAccountClabe = true
       this.isValidAccountNumber = true
+      this.isValidAccountCardNumber = true
       const employeeBankService = new EmployeeBankService()
       if (!this.employeeBank.bankId) {
         this.$toast.add({
@@ -114,28 +121,30 @@ export default defineComponent({
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
-          detail: 'Account clabe not valid',
+          detail: 'Account CLABE is not valid',
           life: 5000,
         })
         return
       }
-      if (!this.employeeBank.employeeBankAccountNumber) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-          life: 5000,
-        })
-        return
-      }
-      this.isValidAccountNumber = employeeBankService.validateAccountNumberMod10(this.employeeBank.employeeBankAccountNumber)
-      if (!this.isValidAccountNumber) {
-        this.isValidAccountNumber = employeeBankService.validateAccountNumberMod11(this.employeeBank.employeeBankAccountNumber)
-        if (!this.isValidAccountNumber) {
+      if (this.employeeBank.employeeBankAccountNumber) {
+        if (this.employeeBank.employeeBankAccountNumber.toString().length !== 10) {
+          this.isValidAccountNumber = false
           this.$toast.add({
             severity: 'warn',
             summary: 'Validation data',
-            detail: 'Account number not valid',
+            detail: 'Account number not is valid',
+            life: 5000,
+          })
+          return
+        }
+      }
+      if (this.employeeBank.employeeBankAccountCardNumber) {
+        this.isValidAccountCardNumber = employeeBankService.validCard(this.employeeBank.employeeBankAccountCardNumber)
+        if (!this.isValidAccountCardNumber) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Account card number not is valid',
             life: 5000,
           })
           return
@@ -179,44 +188,31 @@ export default defineComponent({
       this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
-    formatAccountClabe() {
-      if (!this.employeeBank.employeeBankAccountClabe) {
+    restrictInput(event: any) {
+      const allowedKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete']
+      const key = event.key;
+      if (allowedKeys.includes(key)) {
         return
       }
-      let formatted = this.employeeBank.employeeBankAccountClabe.replace(/\D/g, ''); // Remove non-digits
-
-      // Ensure the account is exactly 18 digits and format it
-      if (formatted.length > 18) {
-        formatted = formatted.substring(0, 18);
-      }
-
-      // Apply the format: Bank Code (3), Branch Code (3), Account Number (11), Control Digit (1)
-      if (formatted.length <= 3) {
-        this.employeeBank.employeeBankAccountClabe = formatted;
-      } else if (formatted.length <= 6) {
-        this.employeeBank.employeeBankAccountClabe = `${formatted.slice(0, 3)} ${formatted.slice(3)}`;
-      } else if (formatted.length <= 17) {
-        this.employeeBank.employeeBankAccountClabe = `${formatted.slice(0, 3)} ${formatted.slice(3, 6)} ${formatted.slice(6, 17)}`;
-      } else {
-        this.employeeBank.employeeBankAccountClabe = `${formatted.slice(0, 3)} ${formatted.slice(3, 6)} ${formatted.slice(6, 17)} ${formatted.slice(17)}`;
+      if (!/\d/.test(key)) {
+        event.preventDefault()
       }
     },
-    formatAccountNumber() {
-      if (!this.employeeBank.employeeBankAccountNumber) {
-        return
-      }
-      let formattedAccountNumber = this.employeeBank.employeeBankAccountNumber.replace(/\D/g, ''); // Remove non-numeric characters
-
-      // Group the account number into blocks of 3 digits (e.g., '000 011 814 128')
-      if (formattedAccountNumber.length <= 3) {
-        this.employeeBank.employeeBankAccountNumber = formattedAccountNumber;
-      } else if (formattedAccountNumber.length <= 6) {
-        this.employeeBank.employeeBankAccountNumber = `${formattedAccountNumber.slice(0, 3)} ${formattedAccountNumber.slice(3)}`;
-      } else if (formattedAccountNumber.length <= 9) {
-        this.employeeBank.employeeBankAccountNumber = `${formattedAccountNumber.slice(0, 3)} ${formattedAccountNumber.slice(3, 6)} ${formattedAccountNumber.slice(6)}`;
-      } else {
-        this.employeeBank.employeeBankAccountNumber = `${formattedAccountNumber.slice(0, 3)} ${formattedAccountNumber.slice(3, 6)} ${formattedAccountNumber.slice(6, 9)} ${formattedAccountNumber.slice(9, 11)}`;
+    validateAccountClabe() {
+      this.isValidAccountClabe = true
+      if (this.employeeBank.employeeBankAccountClabe) {
+        const employeeBankService = new EmployeeBankService()
+        this.isValidAccountClabe = employeeBankService.validateAccountCLABE(this.employeeBank.employeeBankAccountClabe)
       }
     },
+    validateAccountCard() {
+      this.isValidAccountCardNumber = true
+      this.employeeBank.employeeBankAccountType = ''
+      if (this.employeeBank.employeeBankAccountCardNumber) {
+        const employeeBankService = new EmployeeBankService()
+        this.isValidAccountCardNumber = employeeBankService.validCard(this.employeeBank.employeeBankAccountCardNumber)
+        this.employeeBank.employeeBankAccountType = employeeBankService.getIssuer(this.employeeBank.employeeBankAccountCardNumber)
+      }
+    }
   }
 })

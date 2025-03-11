@@ -4,6 +4,8 @@ interface EmployeeBankInterface {
   employeeBankAccountClabeLastNumbers: string
   employeeBankAccountNumber: string | null
   employeeBankAccountNumberLastNumbers: string
+  employeeBankAccountCardNumber: string | null
+  employeeBankAccountCardNumberLastNumbers: string
   employeeBankAccountType: string | null
   employeeBankAccountCurrencyType: string
   employeeId: number

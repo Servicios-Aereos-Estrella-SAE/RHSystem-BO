@@ -9,14 +9,8 @@
       </div>
       <div class="employee-bank-account-clabe">
         <div>
-          Account clabe:
-          *****{{ employeeBank.employeeBankAccountClabeLastNumbers }}
-        </div>
-      </div>
-      <div class="employee-bank-account-number">
-        <div>
-          Account number:
-          *****{{ employeeBank.employeeBankAccountNumberLastNumbers }}
+          Account CLABE:
+          {{ `${employeeBank.employeeBankAccountClabeLastNumbers}`.padStart(18, '*') }}
         </div>
       </div>
       <div class="employee-bank-account-currency-type">

@@ -19,14 +19,14 @@
         </div>
         <div class="input-box">
           <label for="account-clabe">
-            Account clabe
+            Account CLABE
           </label>
-          <InputText v-model="employeeBank.employeeBankAccountClabe" placeholder="Enter CLABE account" maxlength="18" />
-          <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountClabe">Account clabe
+          <InputText v-model="employeeBank.employeeBankAccountClabe" placeholder="Enter CLABE account" maxlength="18"
+            @keydown="restrictInput" @input="validateAccountClabe" />
+          <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountClabe">Account CLABE
             is required.
           </small>
-          <small class="p-error"
-            v-if="submitted && employeeBank.employeeBankAccountClabe && !isValidAccountClabe">Account clabe
+          <small class="p-error" v-if="employeeBank.employeeBankAccountClabe && !isValidAccountClabe">Account CLABE
             not is valid.
           </small>
         </div>
@@ -34,15 +34,27 @@
           <label for="account-number">
             Account number
           </label>
-          <InputText v-model="employeeBank.employeeBankAccountNumber" placeholder="Enter Account Number"
-            maxlength="10" />
-          <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountNumber">Account number
-            is required.
+          <InputText v-model="employeeBank.employeeBankAccountNumber" placeholder="Enter Account Number" maxlength="10"
+            @keydown="restrictInput" />
+          <small class="p-error" v-if="submitted && employeeBank.employeeBankAccountNumber && !isValidAccountNumber">The
+            account number must have 10 digits.
           </small>
-          <small class="p-error"
-            v-if="submitted && employeeBank.employeeBankAccountNumber && !isValidAccountNumber">Account number
-            not is valid.
+        </div>
+        <div class="input-box">
+          <label for="account-number">
+            Account card number
+          </label>
+          <InputText v-model="employeeBank.employeeBankAccountCardNumber" placeholder="Enter Account Card Number"
+            maxlength="16" @keydown="restrictInput" @input="validateAccountCard" />
+          <small class="p-error" v-if="employeeBank.employeeBankAccountCardNumber && !isValidAccountCardNumber">The
+            account card not is valid.
           </small>
+        </div>
+        <div v-if="employeeBank.employeeBankAccountCardNumber" class="input-box">
+          <label for="account-type">
+            Account card type
+          </label>
+          <InputText v-model="employeeBank.employeeBankAccountType" disabled />
         </div>
         <div class="input-box">
           <label for="status">
