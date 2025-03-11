@@ -35,7 +35,7 @@
             Account number
           </label>
           <InputText v-model="employeeBank.employeeBankAccountNumber" placeholder="Enter Account Number"
-            maxlength="11" />
+            maxlength="10" />
           <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountNumber">Account number
             is required.
           </small>

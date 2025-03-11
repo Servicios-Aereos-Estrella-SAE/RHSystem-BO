@@ -44,15 +44,16 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    this.isReady = false
-    this.isNewEmployeeBank = !this.employeeBank.employeeBankId ? true : false
-    if (this.employee.deletedAt) {
-      this.isDeleted = true
-    }
-    if (this.employeeBank.employeeBankId) {
-
+    if (this.employeeBank.employeeBankAccountClabe) {
       const employeeBankService = new EmployeeBankService()
-      if (this.employeeBank.employeeBankAccountClabe) {
+      this.isReady = false
+      this.isNewEmployeeBank = !this.employeeBank.employeeBankId ? true : false
+      if (this.employee.deletedAt) {
+        this.isDeleted = true
+      }
+      if (this.employeeBank.employeeBankId) {
+
+
         const valueDecrypt = await employeeBankService.decrypt(this.employeeBank.employeeBankAccountClabe, this.$config.public.APP_ENCRYPT_KEY)
         this.employeeBank.employeeBankAccountClabe = valueDecrypt ? valueDecrypt : null
         //this.formatAccountClabe()
@@ -108,7 +109,7 @@ export default defineComponent({
         })
         return
       }
-      this.isValidAccountClabe = employeeBankService.validateCLABEAccount(this.employeeBank.employeeBankAccountClabe).valid
+      this.isValidAccountClabe = employeeBankService.validateAccountCLABE(this.employeeBank.employeeBankAccountClabe)
       if (!this.isValidAccountClabe) {
         this.$toast.add({
           severity: 'warn',
@@ -127,15 +128,18 @@ export default defineComponent({
         })
         return
       }
-      this.isValidAccountNumber = employeeBankService.validateAccountNumber(this.employeeBank.employeeBankAccountNumber)
+      this.isValidAccountNumber = employeeBankService.validateAccountNumberMod10(this.employeeBank.employeeBankAccountNumber)
       if (!this.isValidAccountNumber) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Account clabe not valid',
-          life: 5000,
-        })
-        return
+        this.isValidAccountNumber = employeeBankService.validateAccountNumberMod11(this.employeeBank.employeeBankAccountNumber)
+        if (!this.isValidAccountNumber) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Account number not valid',
+            life: 5000,
+          })
+          return
+        }
       }
       if (!this.employeeBank.employeeBankAccountCurrencyType) {
         this.$toast.add({

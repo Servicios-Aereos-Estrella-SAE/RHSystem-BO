@@ -189,45 +189,116 @@ export default class EmployeeBankService {
     }
   }
 
-  validateCLABEAccount(AccountClabe: string) {
-    const cleanedAccount = AccountClabe.replace(/\s+/g, '')
-    // 1. Validate that the CLABE account has exactly 18 digits
-    if (!/^\d{18}$/.test(cleanedAccount)) {
-      return { valid: false, message: 'The CLABE account must have 18 digits.' };
+  validateAccountCLABE(accountClabe: string) {
+    console.log(accountClabe)
+    // Verificación de formato: la CLABE debe ser numérica y tener exactamente 18 dígitos
+    if (accountClabe.length !== 18 || isNaN(Number(accountClabe))) {
+      console.error('The CLABE must have 18 digits and be numeric.');
+      return false;
     }
 
-    // 2. Extract parts of the CLABE account
-    const bankCode = cleanedAccount.slice(0, 3);  // First 3 digits (Bank code)
-    const branchCode = cleanedAccount.slice(3, 6); // Next 3 digits (Branch code)
-    const accountNumber = cleanedAccount.slice(6, 17); // Next 11 digits (Account number)
-    const controlDigit = cleanedAccount.slice(17, 18); // Last digit (Control digit)
+    // Los factores para el cálculo del dígito verificador
+    const factors = [3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7];
 
-    // 3. Logic to validate the control digit (This calculation depends on the bank and is standardized in Mexico)
-    // Here, you can implement an algorithm to validate the control digit if you wish
-    // Or simply assume the control digit is correct in a general context.
+    let sum = 0;
 
-    // To simplify, let's assume the control digit is valid.
-    // If you wish to validate the control digit, you would need to implement the official SAT algorithm.
+    // Calculamos la suma ponderada de los primeros 17 dígitos
+    for (let i = 0; i < 17; i++) {
+      const digit = parseInt(accountClabe[i]);
+      const factor = factors[i];
+      const product = digit * factor;
+      sum += product;
 
-    return {
-      valid: true,
-      bankCode,
-      branchCode,
-      accountNumber,
-      controlDigit
-    };
+      // Debug: Mostrar el producto de cada dígito por su factor
+      //console.log(`Digit: ${digit}, Factor: ${factor}, Product: ${product}`);
+    }
+
+    // Cálculo del dígito verificador
+    const remainder = sum % 10;
+    const checkDigit = remainder === 0 ? 0 : 10 - remainder;
+
+    // Obtener el último dígito de la CLABE
+    const lastDigit = parseInt(accountClabe[17]);
+
+    console.log('checkDigit: ' + checkDigit);
+    console.log('last digit: ' + lastDigit);
+    console.log('Sum: ' + sum);
+    console.log('Remainder: ' + remainder);
+
+    // Comparamos el dígito verificador calculado con el último dígito de la CLABE
+    if (checkDigit === lastDigit) {
+      console.log('The CLABE is valid.');
+      return true;
+    } else {
+      console.log('The CLABE is invalid.');
+      return false;
+    }
   }
 
-  validateAccountNumber(AccountNumber: string) {
-    const accountNumber = AccountNumber.replace(/\D/g, ''); // Remove non-numeric characters
-    if (accountNumber.length !== 11) {
-      console.error('Account number must have exactly 11 digits.')
-      return false
-    } else if (!/^\d{11}$/.test(accountNumber)) {
-      console.error('Account number must be numeric and 11 digits.')
-      return false
+  validateAccountNumberMod10(accountNumber: string) {
+
+    // Verificación de formato: la cuenta debe ser numérica y tener exactamente 10 dígitos
+    if (accountNumber.length !== 10 || isNaN(parseInt(accountNumber))) {
+      console.error('The account number must have exactly 10 digits and be numeric.');
+      return false;
+    }
+    console.log('Modulo 10');
+    console.log(accountNumber)
+    // Cálculo del dígito verificador (usando un algoritmo de módulo 10)
+    const factors = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1];  // Factores para el algoritmo de módulo 10 (simplificado)
+    let sum = 0;
+
+    // Sumamos los productos de los dígitos por sus factores
+    for (let i = 0; i < 10; i++) { // Iteramos hasta el índice 9 (10 elementos)
+      sum += parseInt(accountNumber[i]) * factors[i];
+    }
+
+    // Calculamos el dígito verificador
+    const remainder = sum % 10;
+    const checkDigit = remainder === 0 ? 0 : 10 - remainder;
+
+    console.log('checkDigit:', checkDigit);
+    console.log('ultimo digito:', parseInt(accountNumber[9]));
+
+    // El último dígito (el dígito verificador) debería coincidir con el cálculo
+    if (checkDigit === parseInt(accountNumber[9])) {
+      console.log('The account number is valid.');
+      return true;
     } else {
-      return true
+      console.error('The account number is invalid.');
+      return false;
+    }
+  }
+  validateAccountNumberMod11(accountNumber: string) {
+    // Verificación de formato: la cuenta debe ser numérica y tener exactamente 10 dígitos
+    if (accountNumber.length !== 10 || isNaN(parseInt(accountNumber))) {
+      console.error('The account number must have exactly 10 digits and be numeric.');
+      return false;
+    }
+    console.log('modulo 11')
+    console.log(accountNumber)
+    // Cálculo del dígito verificador (suponiendo que se usa un algoritmo de módulo 11)
+    const factors = [7, 3, 1, 7, 3, 1, 7, 3, 1, 7];
+
+    let sum = 0;
+
+    // Sumamos los productos de los dígitos por sus factores
+    for (let i = 0; i < 10; i++) {
+      sum += parseInt(accountNumber[i]) * factors[i];
+    }
+    // Calculamos el dígito verificador
+    const remainder = sum % 11;
+    const checkDigit = remainder === 0 ? 0 : 11 - remainder;
+
+    console.log('checkDigit:' + checkDigit)
+    console.log('ultimo digito:' + parseInt(accountNumber[9]))
+    // El último dígito (el dígito verificador) debería coincidir con el cálculo
+    if (checkDigit === parseInt(accountNumber[9])) {
+      console.log('es correcto el numero de cuenta')
+      return true;
+    } else {
+      console.error('The account number is invalid.');
+      return false;
     }
   }
 }

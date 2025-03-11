@@ -216,6 +216,7 @@ export default defineComponent({
       this.activeButton = 'employee'
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
+      this.onEditEmployee()
     },
     onEdit(employee: EmployeeInterface) {
       this.employee = { ...employee }
@@ -223,6 +224,7 @@ export default defineComponent({
       this.activeButton = 'employee'
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
+      this.onEditEmployee()
     },
     onDelete(employee: EmployeeInterface) {
       this.employee = { ...employee }
