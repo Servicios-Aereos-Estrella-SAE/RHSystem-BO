@@ -5,7 +5,7 @@
       <div class="form-container">
         <div class="inputs-group group-2">
           <div class="input-box">
-            <label for="personGender">Business Unit</label>
+            <label for="personGender">Work Business Unit</label>
             <Dropdown v-model="employee.businessUnitId" :options="businessUnits" optionLabel="businessUnitName"
               optionValue="businessUnitId" placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted" />
           </div>
@@ -14,13 +14,19 @@
             <InputText v-model="employee.employeeCode" placeholder="Enter Employee Code" :disabled="isDeleted" />
             <small class="p-error" v-if="submitted && !employee.employeeCode">Employee Code is required.</small>
           </div>
-          <div class="input-box" v-show="!pilot && !flightAttendant">
+          <div v-if="displayEmployeeTypeFilter" class="input-box" v-show="!pilot && !flightAttendant">
             <label for="employee-type">
               Employee type
             </label>
-            <Dropdown v-model="employee.employeeTypeId" :options="employeeTypes" optionLabel="employeeTypeName"
-              optionValue="employeeTypeId" placeholder="Select a Employee Type" filter class="w-full md:w-14rem"
-              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted" />
+            <Dropdown
+              v-model="employee.employeeTypeId"
+              optionLabel="employeeTypeName"
+              optionValue="employeeTypeId"
+              placeholder="Select a Employee Type"
+              filter
+              class="w-full md:w-14rem"
+              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted"
+              :options="employeeTypes" />
             <small class="p-error" v-if="submitted && !employee.employeeTypeId">Employee type is required.</small>
           </div>
           <div class="input-box">

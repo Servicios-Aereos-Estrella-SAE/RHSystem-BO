@@ -41,7 +41,7 @@
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                   placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
               </div>
-              <div class="input-box">
+              <div v-if="displayEmployeeTypeFilter" class="input-box">
                 <label for="employee-type">
                   Employee type
                 </label>

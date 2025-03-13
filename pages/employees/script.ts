@@ -66,6 +66,15 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
       return flag
+    },
+    displayEmployeeTypeFilter () {
+      let display = false
+
+      if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
+        display = true
+      }
+
+      return display
     }
   },
   created() { },
