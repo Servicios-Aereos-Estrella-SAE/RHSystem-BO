@@ -51,9 +51,10 @@
           </div>
           <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
             @page="onPageChange" :alwaysShow="false"/>
+
           <!-- Form user -->
           <div class="card flex justify-content-center">
-            <Sidebar v-model:visible="drawerUserForm" position="right" class="user-form-sidebar" :showCloseIcon="true">
+            <Sidebar v-model:visible="drawerUserForm" position="right" header="Users" class="user-form-sidebar" :showCloseIcon="true">
               <userInfoForm :user="user" @onUserSave="onSave" />
             </Sidebar>
           </div>

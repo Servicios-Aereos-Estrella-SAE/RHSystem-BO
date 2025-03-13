@@ -58,7 +58,7 @@ export default defineComponent({
     async handlerSearchRole() {
         const response = await new RoleService().getFilteredList('',1, 100)
         const list = response.status === 200 ? response._data.data.roles.data : []
-        this.filteredRoles = list
+        this.filteredRoles = list.filter((rol: RoleInterface) => rol.roleSlug !== 'root')
     },
     async handlerSearchUser() {
       const response = await new UserService().getFilteredList(this.search, this.selectedRoleId, this.currentPage, this.rowsPerPage)
@@ -66,8 +66,8 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.users.meta.total : 0
       this.first = response.status === 200 ? response._data.data.users.meta.first : 0
       this.last = response.status === 200 ? response._data.data.users.meta.last : 0
-    
-      this.filteredUsers = list
+
+      this.filteredUsers = list.filter((u: UserInterface) => u.role?.roleSlug !== 'root')
       for await (const user of  this.filteredUsers) {
         if (user.personId) {
           const personService = new PersonService()
@@ -125,7 +125,7 @@ export default defineComponent({
       this.user = {...user}
       this.drawerUserDelete = true
     },
-    
+
     async confirmDelete() {
       if (this.user) {
         this.drawerUserDelete = false

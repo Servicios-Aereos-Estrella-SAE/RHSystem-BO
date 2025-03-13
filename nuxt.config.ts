@@ -95,6 +95,7 @@ export default defineNuxtConfig({
       ENVIRONMENT: process.env.ENVIRONMENT,
       BASE_API_PATH: process.env.BASE_API_PATH,
       SOCKET: process.env.SOCKET,
+      SYSTEM_BUSINESS: process.env.SYSTEM_BUSINESS,
     },
   },
 

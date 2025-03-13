@@ -19,7 +19,8 @@ export default defineComponent({
     drawerVacationDelete: false,
     canCreate: false,
     canUpdate: false,
-    canDelete: false
+    canDelete: false,
+    canRead: false
   }),
   computed: {},
   created() {},
@@ -32,11 +33,22 @@ export default defineComponent({
       this.canCreate = true
       this.canUpdate = true
       this.canDelete = true
+      this.canRead = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
       this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
+      this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
     }
+
+    if (!this.canRead) {
+      throw showError({
+        statusCode: 403,
+        fatal: true,
+        message: 'You don´t have access permission'
+      })
+    }
+
     myGeneralStore.setFullLoader(false)
     this.handlerSearchVacation();
   },

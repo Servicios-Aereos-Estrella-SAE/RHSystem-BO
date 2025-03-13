@@ -212,7 +212,8 @@ export default defineComponent({
           personMaritalStatus: null,
           personPlaceOfBirthCountry: null,
           personPlaceOfBirthState: null,
-          personPlaceOfBirthCity: null
+          personPlaceOfBirthCity: null,
+          personEmail: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,
@@ -243,7 +244,8 @@ export default defineComponent({
           personMaritalStatus: null,
           personPlaceOfBirthCountry: null,
           personPlaceOfBirthState: null,
-          personPlaceOfBirthCity: null
+          personPlaceOfBirthCity: null,
+          personEmail: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,

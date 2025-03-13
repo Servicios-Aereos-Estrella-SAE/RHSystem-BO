@@ -20,6 +20,7 @@ export default defineComponent({
     departmentPermissions: []  as number[][],
     roleSelected: 0,
     canUpdate: false,
+    canRead: false,
     activeEdit: false
   }),
   computed: {
@@ -40,8 +41,18 @@ export default defineComponent({
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
       this.canUpdate = true
+      this.canRead = true
     } else {
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+      this.canRead = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+    }
+
+    if (!this.canRead) {
+      throw showError({
+        statusCode: 403,
+        fatal: true,
+        message: 'You don´t have access permission'
+      })
     }
 
     await this.init()

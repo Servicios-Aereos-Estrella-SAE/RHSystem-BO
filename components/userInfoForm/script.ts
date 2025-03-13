@@ -42,12 +42,14 @@ export default defineComponent({
     this.activeSwicht = isActive === 1 ? true : false
     this.isNewUser = !this.user.userId ? true : false
     await this.getRoles()
+
     if (this.user.personId) {
       const personService = new PersonService()
       const personResponse = await personService.getEmployee(this.user.personId)
+
       if (personResponse) {
         if (personResponse._data.data.employee) {
-         this.hasEmployee = true
+          this.hasEmployee = true
         }
       }
     }
@@ -57,19 +59,19 @@ export default defineComponent({
   methods: {
     async getRoles() {
       const response = await new RoleService().getFilteredList('', 1, 100)
-      const list = response.status === 200 ? response._data.data.roles.data : []
-      this.roles = list
+      const list = (response.status === 200 ? response._data.data.roles.data : []) as RoleInterface[]
+      this.roles = list.filter((rol: RoleInterface) => rol.roleSlug !== 'root')
     },
     async getEmployees() {
       let response = null
       if (this.isNewUser || !this.hasEmployee) {
-        response = await new EmployeeService().getOnlyWithOutUser('',null,null)
+        response = await new EmployeeService().getOnlyWithOutUser('', null, null)
       } else {
-        response = await new EmployeeService().getFilteredList('',null, null, null, 1, 9999999, false, null)
+        response = await new EmployeeService().getFilteredList('', null, null, null, 1, 9999999, false, null)
       }
       const list = response.status === 200 ? response._data.data.employees.data : []
       for await (const employee of list) {
-        employee.label = `${employee.employeeFirstName} ${employee.employeeLastName }`
+        employee.label = `${employee.employeeFirstName} ${employee.employeeLastName}`
       }
       this.employees = list
     },
@@ -82,7 +84,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -93,18 +95,18 @@ export default defineComponent({
             severity: 'warn',
             summary: 'Validation data',
             detail: 'Email not valid',
-              life: 5000,
+            life: 5000,
           })
           return
         }
       }
-    
+
       if ((!this.user.userId || this.changePassword) && !this.user.userPassword) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing password',
-            life: 5000,
+          life: 5000,
         })
         return
       }
@@ -114,7 +116,7 @@ export default defineComponent({
             severity: 'warn',
             summary: 'Validation data',
             detail: 'Passwords do not match',
-              life: 5000,
+            life: 5000,
           })
           return
         }
@@ -123,7 +125,7 @@ export default defineComponent({
             severity: 'warn',
             summary: 'Validation data',
             detail: 'Passwords not is valid',
-              life: 5000,
+            life: 5000,
           })
           return
         }
@@ -140,10 +142,10 @@ export default defineComponent({
           severity: 'success',
           summary: `User ${this.user.userId ? 'updated' : 'created'}`,
           detail: userResponse._data.message,
-            life: 5000,
+          life: 5000,
         })
-       
-        userResponse = await  userService.show(userResponse._data.data.user.userId)
+
+        userResponse = await userService.show(userResponse._data.data.user.userId)
         if (userResponse.status === 200) {
           const user = userResponse._data.data.user
           this.$emit('onUserSave', user as UserInterface)
@@ -154,7 +156,7 @@ export default defineComponent({
           severity: 'error',
           summary: `User ${this.user.userId ? 'updated' : 'created'}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
       }
     },
@@ -163,11 +165,17 @@ export default defineComponent({
       this.user.userPassword = ''
       this.passwordConfirm = ''
     },
-   async generatePassword() {
-    const userService = new UserService()
-    const password = userService.generatePassword()
-    this.user.userPassword = password
-    this.passwordConfirm = password
-   }
+    async generatePassword() {
+      const userService = new UserService()
+      const password = userService.generatePassword()
+      this.user.userPassword = password
+      this.passwordConfirm = password
+    },
+    onEmployeeSelect () {
+      if (this.user.personId) {
+        const employee = this.employees.find(emp => emp.personId === this.user.personId)
+        this.user.userEmail = employee ? employee.employeeBusinessEmail : ''
+      }
+    }
   }
 })

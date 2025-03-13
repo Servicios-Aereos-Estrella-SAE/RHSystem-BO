@@ -60,19 +60,25 @@ export default defineComponent({
         },
         addNew() {
             const person: PeopleInterface = {
-                personId: null,
-                personFirstname: "",
-                personLastname: "",
-                personSecondLastname: "",
-                personGender: "",
-                personBirthday: null,
-                personCurp: null,
-                personPhone: "",
-                personRfc: null,
-                personImssNss: null,
-                personCreatedAt: new Date(),
-                personUpdatedAt: new Date(),
-                personDeletedAt: null
+              personId: null,
+              personFirstname: "",
+              personLastname: "",
+              personSecondLastname: "",
+              personGender: "",
+              personBirthday: null,
+              personCurp: null,
+              personPhone: "",
+              personRfc: null,
+              personImssNss: null,
+              personCreatedAt: new Date(),
+              personUpdatedAt: new Date(),
+              personDeletedAt: null,
+              personEmail: null,
+              personPhoneSecondary: null,
+              personMaritalStatus: null,
+              personPlaceOfBirthCountry: null,
+              personPlaceOfBirthState: null,
+              personPlaceOfBirthCity: null
             }
             const newCustomer: CustomerInterface = {
                 customerId: null,
