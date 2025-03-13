@@ -1,5 +1,5 @@
 <template>
-  <div class="box user-info-form">
+  <div class="user-info-form">
     <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <div v-if="isReady" class="user-form">
@@ -12,9 +12,6 @@
           <FileUpload name="photo" accept="image/*" :maxFileSize="maxFileSize"
             @upload="onUpload" @select="onSelect" />
         </div>
-        <!-- <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
-        </div> -->
       </div>
     </div>
   </div>

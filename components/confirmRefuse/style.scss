@@ -62,11 +62,11 @@
     .refuse-color {
         background-color: $warning;
       }
-      
+
       .accept-color {
-        background-color: transparentize($color: $success, $amount: 0.25) !important;
+        background-color: transparentize($color: $info, $amount: 0.25) !important;
       }
-      
+
 
     .title {
       display: block;

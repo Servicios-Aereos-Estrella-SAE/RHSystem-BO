@@ -209,22 +209,12 @@
         </Sidebar>
 
         <transition name="page">
-          <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
-            @cancelDelete="onCancelEmployeeDelete" />
+          <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete" @cancelDelete="onCancelEmployeeDelete" />
         </transition>
 
-        <Dialog v-model:visible="drawerEmployeeSync" :style="{ width: '450px' }" header="Confirm" :modal="true">
-          <div class="confirmation-content">
-            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span>
-              Are you sure you want to sync?
-            </span>
-          </div>
-          <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="drawerEmployeeSync = false" />
-            <Button label="Yes" icon="pi pi-check" text @click="confirmSync()" />
-          </template>
-        </Dialog>
+        <transition name="page">
+          <confirmRefuse v-if="drawerEmployeeSync" :actionType="'accept'" @confirmAccept="confirmSync" @cancelRefused="drawerEmployeeSync = false" />
+        </transition>
       </NuxtLayout>
     </div>
   </div>

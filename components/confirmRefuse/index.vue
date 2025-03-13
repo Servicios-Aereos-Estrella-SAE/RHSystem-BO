@@ -2,7 +2,7 @@
   <div class="dialog-confirm-refused">
     <div class="content-wrapper">
       <div class="content">
-        <div class="icon-wrapper" :class="{ 'refuse-color': actionType === 'refuse', 'accept-color': actionType === 'accept' }"> 
+        <div class="icon-wrapper" :class="{ 'refuse-color': actionType === 'refuse', 'accept-color': actionType === 'accept' }">
           <div class="icon" :class="{ 'refuse-color': actionType === 'refuse', 'accept-color': actionType === 'accept' }">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -31,7 +31,7 @@
           Incorrect value to confirm
         </p>
         <div class="tools">
-          <Button class="btn btn-block " :class="{ 'btn-danger': actionType === 'refuse', 'btn-success': actionType === 'accept' }" @click="handlerConfirmRefused">
+          <Button class="btn btn-block " :class="{ 'btn-danger': actionType === 'refuse', 'btn-info': actionType === 'accept' }" @click="handlerConfirmRefused">
             Confirm {{ actionType === 'refuse' ? 'Refuse' : 'Accept' }}
           </Button>
           <Button class="btn btn-block" @click="handlerCancel">
