@@ -14,6 +14,9 @@ import { DateTime } from 'luxon';
 import type { ProceedingFileStatusInterface } from '~/resources/scripts/interfaces/ProceedingFileStatusInterface';
 import ProceedingFileStatusService from '~/resources/scripts/services/ProceedingFileStatusService';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { ProceedingFileTypePropertyValueInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyValueInterface';
+import type { ProceedingFileTypePropertyInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyInterface';
+import ProceedingFileTypePropertyService from '~/resources/scripts/services/ProceedingFileTypePropertyService';
 
 export default defineComponent({
   components: {
@@ -50,23 +53,27 @@ export default defineComponent({
     displayEffectiveEndDateCalendar: false as boolean,
     inclusionInTheFilesDate: '' as string,
     displayInclusionInTheFilesDateCalendar: false as boolean,
+    proceedingFileTypePropertyCategories: [] as Array<any>,
+    drawerProceedingFileTypePropertyValueDelete: false,
+    proceedingFileTypePropertyValue: null as ProceedingFileTypePropertyValueInterface | null,
+    proceedingFileTypeProperty: null as ProceedingFileTypePropertyInterface | null,
   }),
   computed: {
   },
   watch: {
-    'proceedingFile.proceedingFileExpirationAt' (val: Date) {
+    'proceedingFile.proceedingFileExpirationAt'(val: Date) {
       this.expirationAt = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileSignatureDate' (val: Date) {
+    'proceedingFile.proceedingFileSignatureDate'(val: Date) {
       this.signatureDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileEffectiveStartDate' (val: Date) {
+    'proceedingFile.proceedingFileEffectiveStartDate'(val: Date) {
       this.effectiveStartDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileEffectiveEndDate' (val: Date) {
+    'proceedingFile.proceedingFileEffectiveEndDate'(val: Date) {
       this.effectiveEndDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileInclusionInTheFilesDate' (val: Date) {
+    'proceedingFile.proceedingFileInclusionInTheFilesDate'(val: Date) {
       this.inclusionInTheFilesDate = this.getDateFormatted(val)
     },
   },
@@ -89,12 +96,12 @@ export default defineComponent({
       proceedingFileCompleteProcess: this.employeeProceedingFile.proceedingFile?.proceedingFileCompleteProcess
     } as ProceedingFileInterface
     if (this.proceedingFile.proceedingFileExpirationAt) {
-        const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
-          .setZone('America/Mexico_City')
-          .setLocale('en')
-          .toJSDate()
-        this.proceedingFile.proceedingFileExpirationAt = expirationAt
-        this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
+      const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
+        .setZone('America/Mexico_City')
+        .setLocale('en')
+        .toJSDate()
+      this.proceedingFile.proceedingFileExpirationAt = expirationAt
+      this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
     }
     if (this.proceedingFile.proceedingFileSignatureDate) {
       const signatureDate = DateTime.fromISO(this.proceedingFile.proceedingFileSignatureDate.toString(), { setZone: true })
@@ -330,7 +337,7 @@ export default defineComponent({
       const newDate = DateTime.fromJSDate(new Date(date), { zone: 'local' }).toFormat('yyyy-MM-dd')
       return newDate;
     },
-    getDateFormatted (date: Date) {
+    getDateFormatted(date: Date) {
       if (!date) {
         return ''
       }
@@ -340,20 +347,42 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDD')
     },
-    handlerDisplayExpirationAt () {
+    handlerDisplayExpirationAt() {
       this.displayExpirationAtCalendar = true
     },
-    handlerDisplaySignatureDate () {
+    handlerDisplaySignatureDate() {
       this.displaySignatureDateCalendar = true
     },
-    handlerDisplayEffectiveStartDate () {
+    handlerDisplayEffectiveStartDate() {
       this.displayEffectiveStartDateCalendar = true
     },
-    handlerDisplayEffectiveEndDate () {
+    handlerDisplayEffectiveEndDate() {
       this.displayEffectiveEndDateCalendar = true
     },
-    handlerDisplayInclusionInTheFilesDate () {
+    handlerDisplayInclusionInTheFilesDate() {
       this.displayInclusionInTheFilesDateCalendar = true
+    },
+    validateFilesProperty(event: any, value: any) {
+      let validFiles = event.files;
+      value.files = validFiles;
+      this.$forceUpdate()
+    },
+    openFileProperty(path: string) {
+      window.open(path)
+    },
+    getObjectURLProperty(file: any) {
+      return URL.createObjectURL(file);
+    },
+    async getCategoriesEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.proceedingFileTypePropertyCategories = []
+      if (this.employee.employeeId && this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId) {
+        const proceedingFileTypePropertyService = new ProceedingFileTypePropertyService()
+        const employeeRecordPropertyResponse = await proceedingFileTypePropertyService.getCategories(this.employee.employeeId, this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId)
+        this.proceedingFileTypePropertyCategories = employeeRecordPropertyResponse._data.data.employeeRecordCategories
+      }
+      myGeneralStore.setFullLoader(false)
     },
   }
 })
