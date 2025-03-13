@@ -139,13 +139,13 @@
         </div>
 
         <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true"
+          header="Employee form" position="right" class="employee-sidebar-forms" :showCloseIcon="true"
           @hide="onSidebarInfoHide">
           <div v-if="employee && employee.employeeId > 0" class="employee-info">
             <employeeModalInfoCard :employee="employee" />
           </div>
 
-          <div v-if="employee && employee.employeeId > 0 && isRootUser" class="box-tools">
+          <div v-if="employee && employee.employeeId > 0" class="box-tools">
             <Button :class="{ 'btn-active': isActive('employee') }" class="btn" @click="onEditEmployee">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -180,19 +180,16 @@
             </Button>
           </div>
 
-          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords"
-            :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
-          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
-            :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
-            :click-on-close="() => { onCloseAddress() }" />
+          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords" :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
+          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
+          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
           <employeeRecords v-if="drawerRecords" :employee="employee" />
         </Sidebar>
 
 
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
-          :dismissable="false" header="Employee photo" position="right" class="shift-form-sidebar"
+          :dismissable="false" header="Employee photo" position="right" class="employee-sidebar-photo-form"
           :showCloseIcon="true">
           <employeePhotoForm :employee="employee" @save="onSave" />
         </Sidebar>
@@ -206,7 +203,7 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee proceeding files" position="right" class="proceeding-file-sidebar">
+          header="Employee proceeding files" position="right" class="employee-proceeding-file-sidebar">
           <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
             @onEmployeeContractSave="onEmployeeContractSave" />
         </Sidebar>
@@ -244,9 +241,18 @@
 <style lang="scss">
   @import '/resources/styles/variables.scss';
 
-  .shift-form-sidebar {
+  .employee-sidebar-forms {
     width: 90% !important;
-    max-width: 40rem !important;
+    max-width: 45rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .employee-sidebar-photo-form{
+    width: 90% !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
@@ -262,7 +268,7 @@
     }
   }
 
-  .proceeding-file-sidebar {
+  .employee-proceeding-file-sidebar {
     width: 90% !important;
     max-width: 90rem !important;
 
