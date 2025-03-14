@@ -277,16 +277,15 @@ export default defineComponent({
         employeeProceedingFileResponse = await employeeProceedingFileService.update(this.employeeProceedingFile)
       }
       if (employeeProceedingFileResponse.status === 201 || employeeProceedingFileResponse.status === 200) {
-        this.$toast.add({
-          severity: 'success',
-          summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
-          detail: employeeProceedingFileResponse._data.message,
-          life: 5000,
-        })
-        console.log(employeeProceedingFileResponse._data.data.employeeProceedingFile)
         const proceedingFileId = employeeProceedingFileResponse._data.data.employeeProceedingFile.proceedingFileId as number
         const processCorrect = await this.onSaveProperties(proceedingFileId)
         if (processCorrect) {
+          this.$toast.add({
+            severity: 'success',
+            summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
+            detail: employeeProceedingFileResponse._data.message,
+            life: 5000,
+          })
           employeeProceedingFileResponse = await employeeProceedingFileService.show(employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFileId)
           if (employeeProceedingFileResponse.status === 200) {
             const employeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFile
@@ -389,7 +388,6 @@ export default defineComponent({
         const employeeRecordPropertyResponse = await proceedingFileTypePropertyService.getCategories(this.employee.employeeId, this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId, this.employeeProceedingFile.proceedingFile?.proceedingFileId)
         this.proceedingFileTypePropertyCategories = employeeRecordPropertyResponse._data.data.proceedingFileTypePropertiesCategories
       }
-      console.log(this.proceedingFileTypePropertyCategories)
       myGeneralStore.setFullLoader(false)
     },
     async onSaveProperties(proceedingFileId: number) {
@@ -421,7 +419,6 @@ export default defineComponent({
                   request
                     .then((response) => {
                       if (response.status === 201 || response.status === 200) {
-                        console.log(response)
                         return {
                           success: true,
                           message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
@@ -448,7 +445,6 @@ export default defineComponent({
           }
         }
         try {
-          console.log(promises.length)
           const results = await Promise.all(promises)
           const errors = results.filter((result) => !result.success);
           if (errors.length > 0) {
@@ -460,12 +456,6 @@ export default defineComponent({
             })
           } else {
             processCorrect = true
-            this.$toast.add({
-              severity: 'success',
-              summary: 'All Proceeding file type property values were saved successfully',
-              detail: 'The values were created or updated successfully.',
-              life: 5000,
-            })
           }
         } catch (error: any) {
           this.$toast.add({
