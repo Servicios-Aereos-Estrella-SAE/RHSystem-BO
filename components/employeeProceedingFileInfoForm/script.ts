@@ -17,6 +17,7 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import type { ProceedingFileTypePropertyValueInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyValueInterface';
 import type { ProceedingFileTypePropertyInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyInterface';
 import ProceedingFileTypePropertyService from '~/resources/scripts/services/ProceedingFileTypePropertyService';
+import ProceedingFileTypePropertyValueService from '~/resources/scripts/services/ProceedingFileTypePropertyValueService';
 
 export default defineComponent({
   components: {
@@ -161,6 +162,7 @@ export default defineComponent({
         this.currentEmployeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile
       }
     }
+    await this.getCategoriesEmployee()
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -281,10 +283,15 @@ export default defineComponent({
           detail: employeeProceedingFileResponse._data.message,
           life: 5000,
         })
-        employeeProceedingFileResponse = await employeeProceedingFileService.show(employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFileId)
-        if (employeeProceedingFileResponse.status === 200) {
-          const employeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFile
-          this.$emit('onEmployeeProceedingFileSave', employeeProceedingFile as EmployeeProceedingFileInterface)
+        console.log(employeeProceedingFileResponse._data.data.employeeProceedingFile)
+        const proceedingFileId = employeeProceedingFileResponse._data.data.employeeProceedingFile.proceedingFileId as number
+        const processCorrect = await this.onSaveProperties(proceedingFileId)
+        if (processCorrect) {
+          employeeProceedingFileResponse = await employeeProceedingFileService.show(employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFileId)
+          if (employeeProceedingFileResponse.status === 200) {
+            const employeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFile
+            this.$emit('onEmployeeProceedingFileSave', employeeProceedingFile as EmployeeProceedingFileInterface)
+          }
         }
       } else {
         let msgError = employeeProceedingFileResponse._data.message
@@ -379,10 +386,99 @@ export default defineComponent({
       this.proceedingFileTypePropertyCategories = []
       if (this.employee.employeeId && this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId) {
         const proceedingFileTypePropertyService = new ProceedingFileTypePropertyService()
-        const employeeRecordPropertyResponse = await proceedingFileTypePropertyService.getCategories(this.employee.employeeId, this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId)
-        this.proceedingFileTypePropertyCategories = employeeRecordPropertyResponse._data.data.employeeRecordCategories
+        const employeeRecordPropertyResponse = await proceedingFileTypePropertyService.getCategories(this.employee.employeeId, this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId, this.employeeProceedingFile.proceedingFile?.proceedingFileId)
+        this.proceedingFileTypePropertyCategories = employeeRecordPropertyResponse._data.data.proceedingFileTypePropertiesCategories
       }
+      console.log(this.proceedingFileTypePropertyCategories)
       myGeneralStore.setFullLoader(false)
     },
+    async onSaveProperties(proceedingFileId: number) {
+      let processCorrect = false
+      if (this.employee.employeeId) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const proceedingFileTypePropertyValueService = new ProceedingFileTypePropertyValueService()
+        const promises = []
+
+        for (const [category, properties] of Object.entries(this.proceedingFileTypePropertyCategories)) {
+          for (const item of properties as any[]) {
+            for (const value of item.values as any[]) {
+              const file = value.files.length > 0 ? value.files[0] : null
+              if (value.proceedingFileTypePropertyValueId || value.proceedingFileTypePropertyValueValue || file) {
+                const proceedingFileTypePropertyValue: ProceedingFileTypePropertyValueInterface = {
+                  proceedingFileTypePropertyValueId: value.proceedingFileTypePropertyValueId,
+                  proceedingFileTypePropertyId: item.proceedingFileTypePropertyId,
+                  employeeId: this.employee.employeeId,
+                  proceedingFileId: proceedingFileId,
+                  proceedingFileTypePropertyValueValue: value.proceedingFileTypePropertyValueValue ? value.proceedingFileTypePropertyValueValue : null,
+                  proceedingFileTypePropertyValueActive: 1
+                }
+                const request = !value.proceedingFileTypePropertyValueId
+                  ? proceedingFileTypePropertyValueService.store(proceedingFileTypePropertyValue, file)
+                  : proceedingFileTypePropertyValueService.update(proceedingFileTypePropertyValue, file)
+
+                promises.push(
+                  request
+                    .then((response) => {
+                      if (response.status === 201 || response.status === 200) {
+                        console.log(response)
+                        return {
+                          success: true,
+                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                        }
+                      } else {
+                        const msgError = response._data.error ? response._data.error : response._data.message;
+                        return {
+                          success: false,
+                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                          error: msgError
+                        }
+                      }
+                    })
+                    .catch((error) => {
+                      return {
+                        success: false,
+                        message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                        error: error.message || 'Unknown error'
+                      }
+                    })
+                )
+              }
+            }
+          }
+        }
+        try {
+          console.log(promises.length)
+          const results = await Promise.all(promises)
+          const errors = results.filter((result) => !result.success);
+          if (errors.length > 0) {
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error saving proceeding file type property value',
+              detail: errors.map((e) => e.error).join(', '),
+              life: 5000,
+            })
+          } else {
+            processCorrect = true
+            this.$toast.add({
+              severity: 'success',
+              summary: 'All Proceeding file type property values were saved successfully',
+              detail: 'The values were created or updated successfully.',
+              life: 5000,
+            })
+          }
+        } catch (error: any) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error saving proceeding file type property values',
+            detail: error.message || 'There was a problem processing the proceeding file type property values.',
+            life: 5000,
+          })
+        }
+        myGeneralStore.setFullLoader(false)
+        await this.getCategoriesEmployee()
+      }
+      return processCorrect
+    }
   }
 })

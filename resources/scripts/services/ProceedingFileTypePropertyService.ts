@@ -31,7 +31,7 @@ export default class ProceedingFileTypePropertyService {
     return responseRequest
   }
 
-  async getCategories(employeeId: number, proceedingFileTypeId: number) {
+  async getCategories(employeeId: number, proceedingFileTypeId: number, proceedingFileId: number | null) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -39,6 +39,7 @@ export default class ProceedingFileTypePropertyService {
       headers,
       query: {
         employeeId,
+        proceedingFileId,
         proceedingFileTypeId
       },
       onResponse({ response }) { responseRequest = response },
