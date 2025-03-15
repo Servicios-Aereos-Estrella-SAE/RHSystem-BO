@@ -14,6 +14,10 @@ import { DateTime } from 'luxon';
 import type { ProceedingFileStatusInterface } from '~/resources/scripts/interfaces/ProceedingFileStatusInterface';
 import ProceedingFileStatusService from '~/resources/scripts/services/ProceedingFileStatusService';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { ProceedingFileTypePropertyValueInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyValueInterface';
+import type { ProceedingFileTypePropertyInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyInterface';
+import ProceedingFileTypePropertyService from '~/resources/scripts/services/ProceedingFileTypePropertyService';
+import ProceedingFileTypePropertyValueService from '~/resources/scripts/services/ProceedingFileTypePropertyValueService';
 
 export default defineComponent({
   components: {
@@ -50,23 +54,27 @@ export default defineComponent({
     displayEffectiveEndDateCalendar: false as boolean,
     inclusionInTheFilesDate: '' as string,
     displayInclusionInTheFilesDateCalendar: false as boolean,
+    proceedingFileTypePropertyCategories: [] as Array<any>,
+    drawerProceedingFileTypePropertyValueDelete: false,
+    proceedingFileTypePropertyValue: null as ProceedingFileTypePropertyValueInterface | null,
+    proceedingFileTypeProperty: null as ProceedingFileTypePropertyInterface | null,
   }),
   computed: {
   },
   watch: {
-    'proceedingFile.proceedingFileExpirationAt' (val: Date) {
+    'proceedingFile.proceedingFileExpirationAt'(val: Date) {
       this.expirationAt = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileSignatureDate' (val: Date) {
+    'proceedingFile.proceedingFileSignatureDate'(val: Date) {
       this.signatureDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileEffectiveStartDate' (val: Date) {
+    'proceedingFile.proceedingFileEffectiveStartDate'(val: Date) {
       this.effectiveStartDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileEffectiveEndDate' (val: Date) {
+    'proceedingFile.proceedingFileEffectiveEndDate'(val: Date) {
       this.effectiveEndDate = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileInclusionInTheFilesDate' (val: Date) {
+    'proceedingFile.proceedingFileInclusionInTheFilesDate'(val: Date) {
       this.inclusionInTheFilesDate = this.getDateFormatted(val)
     },
   },
@@ -89,12 +97,12 @@ export default defineComponent({
       proceedingFileCompleteProcess: this.employeeProceedingFile.proceedingFile?.proceedingFileCompleteProcess
     } as ProceedingFileInterface
     if (this.proceedingFile.proceedingFileExpirationAt) {
-        const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
-          .setZone('America/Mexico_City')
-          .setLocale('en')
-          .toJSDate()
-        this.proceedingFile.proceedingFileExpirationAt = expirationAt
-        this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
+      const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
+        .setZone('America/Mexico_City')
+        .setLocale('en')
+        .toJSDate()
+      this.proceedingFile.proceedingFileExpirationAt = expirationAt
+      this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
     }
     if (this.proceedingFile.proceedingFileSignatureDate) {
       const signatureDate = DateTime.fromISO(this.proceedingFile.proceedingFileSignatureDate.toString(), { setZone: true })
@@ -154,6 +162,7 @@ export default defineComponent({
         this.currentEmployeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile
       }
     }
+    await this.getCategoriesEmployee()
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -268,16 +277,20 @@ export default defineComponent({
         employeeProceedingFileResponse = await employeeProceedingFileService.update(this.employeeProceedingFile)
       }
       if (employeeProceedingFileResponse.status === 201 || employeeProceedingFileResponse.status === 200) {
-        this.$toast.add({
-          severity: 'success',
-          summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
-          detail: employeeProceedingFileResponse._data.message,
-          life: 5000,
-        })
-        employeeProceedingFileResponse = await employeeProceedingFileService.show(employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFileId)
-        if (employeeProceedingFileResponse.status === 200) {
-          const employeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFile
-          this.$emit('onEmployeeProceedingFileSave', employeeProceedingFile as EmployeeProceedingFileInterface)
+        const proceedingFileId = employeeProceedingFileResponse._data.data.employeeProceedingFile.proceedingFileId as number
+        const processCorrect = await this.onSaveProperties(proceedingFileId)
+        if (processCorrect) {
+          this.$toast.add({
+            severity: 'success',
+            summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
+            detail: employeeProceedingFileResponse._data.message,
+            life: 5000,
+          })
+          employeeProceedingFileResponse = await employeeProceedingFileService.show(employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFileId)
+          if (employeeProceedingFileResponse.status === 200) {
+            const employeeProceedingFile = employeeProceedingFileResponse._data.data.employeeProceedingFile.employeeProceedingFile
+            this.$emit('onEmployeeProceedingFileSave', employeeProceedingFile as EmployeeProceedingFileInterface)
+          }
         }
       } else {
         let msgError = employeeProceedingFileResponse._data.message
@@ -330,7 +343,7 @@ export default defineComponent({
       const newDate = DateTime.fromJSDate(new Date(date), { zone: 'local' }).toFormat('yyyy-MM-dd')
       return newDate;
     },
-    getDateFormatted (date: Date) {
+    getDateFormatted(date: Date) {
       if (!date) {
         return ''
       }
@@ -340,20 +353,122 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDD')
     },
-    handlerDisplayExpirationAt () {
+    handlerDisplayExpirationAt() {
       this.displayExpirationAtCalendar = true
     },
-    handlerDisplaySignatureDate () {
+    handlerDisplaySignatureDate() {
       this.displaySignatureDateCalendar = true
     },
-    handlerDisplayEffectiveStartDate () {
+    handlerDisplayEffectiveStartDate() {
       this.displayEffectiveStartDateCalendar = true
     },
-    handlerDisplayEffectiveEndDate () {
+    handlerDisplayEffectiveEndDate() {
       this.displayEffectiveEndDateCalendar = true
     },
-    handlerDisplayInclusionInTheFilesDate () {
+    handlerDisplayInclusionInTheFilesDate() {
       this.displayInclusionInTheFilesDateCalendar = true
     },
+    validateFilesProperty(event: any, value: any) {
+      let validFiles = event.files;
+      value.files = validFiles;
+      this.$forceUpdate()
+    },
+    openFileProperty(path: string) {
+      window.open(path)
+    },
+    getObjectURLProperty(file: any) {
+      return URL.createObjectURL(file);
+    },
+    async getCategoriesEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.proceedingFileTypePropertyCategories = []
+      if (this.employee.employeeId && this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId) {
+        const proceedingFileTypePropertyService = new ProceedingFileTypePropertyService()
+        const employeeRecordPropertyResponse = await proceedingFileTypePropertyService.getCategories(this.employee.employeeId, this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId, this.employeeProceedingFile.proceedingFile?.proceedingFileId)
+        this.proceedingFileTypePropertyCategories = employeeRecordPropertyResponse._data.data.proceedingFileTypePropertiesCategories
+      }
+      myGeneralStore.setFullLoader(false)
+    },
+    async onSaveProperties(proceedingFileId: number) {
+      let processCorrect = false
+      if (this.employee.employeeId) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const proceedingFileTypePropertyValueService = new ProceedingFileTypePropertyValueService()
+        const promises = []
+
+        for (const [category, properties] of Object.entries(this.proceedingFileTypePropertyCategories)) {
+          for (const item of properties as any[]) {
+            for (const value of item.values as any[]) {
+              const file = value.files.length > 0 ? value.files[0] : null
+              if (value.proceedingFileTypePropertyValueId || value.proceedingFileTypePropertyValueValue || file) {
+                const proceedingFileTypePropertyValue: ProceedingFileTypePropertyValueInterface = {
+                  proceedingFileTypePropertyValueId: value.proceedingFileTypePropertyValueId,
+                  proceedingFileTypePropertyId: item.proceedingFileTypePropertyId,
+                  employeeId: this.employee.employeeId,
+                  proceedingFileId: proceedingFileId,
+                  proceedingFileTypePropertyValueValue: value.proceedingFileTypePropertyValueValue ? value.proceedingFileTypePropertyValueValue : null,
+                  proceedingFileTypePropertyValueActive: 1
+                }
+                const request = !value.proceedingFileTypePropertyValueId
+                  ? proceedingFileTypePropertyValueService.store(proceedingFileTypePropertyValue, file)
+                  : proceedingFileTypePropertyValueService.update(proceedingFileTypePropertyValue, file)
+
+                promises.push(
+                  request
+                    .then((response) => {
+                      if (response.status === 201 || response.status === 200) {
+                        return {
+                          success: true,
+                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                        }
+                      } else {
+                        const msgError = response._data.error ? response._data.error : response._data.message;
+                        return {
+                          success: false,
+                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                          error: msgError
+                        }
+                      }
+                    })
+                    .catch((error) => {
+                      return {
+                        success: false,
+                        message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                        error: error.message || 'Unknown error'
+                      }
+                    })
+                )
+              }
+            }
+          }
+        }
+        try {
+          const results = await Promise.all(promises)
+          const errors = results.filter((result) => !result.success);
+          if (errors.length > 0) {
+            this.$toast.add({
+              severity: 'error',
+              summary: 'Error saving proceeding file type property value',
+              detail: errors.map((e) => e.error).join(', '),
+              life: 5000,
+            })
+          } else {
+            processCorrect = true
+          }
+        } catch (error: any) {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Error saving proceeding file type property values',
+            detail: error.message || 'There was a problem processing the proceeding file type property values.',
+            life: 5000,
+          })
+        }
+        myGeneralStore.setFullLoader(false)
+        await this.getCategoriesEmployee()
+      }
+      return processCorrect
+    }
   }
 })

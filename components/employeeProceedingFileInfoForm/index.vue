@@ -1,7 +1,7 @@
 <template>
   <div class="box employee-proceeding-file-info-form">
     <Toast />
-    <employeeModalInfoCard :employee="employee"/>
+    <employeeModalInfoCard :employee="employee" />
     <h4>
       {{ isNewEmployeeProceedingFile ? 'New employee proceeding file' : 'Update employee proceeding file' }}
     </h4>
@@ -12,13 +12,14 @@
             {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
           <InputSwitch v-model="activeSwicht" :disabled="!canManageFiles" />
         </div>
-        <div class="input-box">
+        <div v-if="!employeeProceedingFile.proceedingFile?.proceedingFileTypeId" class="input-box">
           <label for="proceeding-file">
             Type
           </label>
           <Dropdown v-model="proceedingFile.proceedingFileTypeId" :options="proceedingFileTypesList"
             optionLabel="proceedingFileTypeName" optionValue="proceedingFileTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :invalid="submitted && !proceedingFile.proceedingFileTypeId" :disabled="!canManageFiles"/>
+            class="w-full md:w-14rem" :invalid="submitted && !proceedingFile.proceedingFileTypeId"
+            :disabled="!canManageFiles" />
           <small class="p-error" v-if="submitted && !proceedingFile.proceedingFileTypeId">Type is required.</small>
         </div>
         <div class="input-box">
@@ -26,8 +27,9 @@
             Proceeding file
           </label>
           <Button v-if="proceedingFile.proceedingFilePath" label="Open file" severity="primary" @click="openFile()" />
-          <FileUpload v-if="canManageFiles" v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
-            :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles" :disabled="!canManageFiles">
+          <FileUpload v-if="canManageFiles" v-model="files" name="demo[]" url="/api/upload"
+            @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000" :fileLimit="1"
+            @select="validateFiles" :disabled="!canManageFiles">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
@@ -50,13 +52,14 @@
         </div>
         <div class="input-box">
           <label for="proceedingFileIdentify">Identify</label>
-          <InputText id="proceedingFileIdentify" v-model="proceedingFile.proceedingFileIdentify" :disabled="!canManageFiles" />
+          <InputText id="proceedingFileIdentify" v-model="proceedingFile.proceedingFileIdentify"
+            :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <div class="date-box-container">
             <label>Expiration at</label>
             <div v-if="!displayExpirationAtCalendar" class="date-box">
-              <InputText v-model="expirationAt" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <InputText v-model="expirationAt" readonly class="capitalize" :disabled="!canManageFiles" />
               <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayExpirationAt">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +71,8 @@
             </div>
             <div v-if="displayExpirationAtCalendar" class="date-box-controller">
               <Calendar v-if="displayExpirationAtCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date" :disabled="!canManageFiles" />
+                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date"
+                :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayExpirationAtCalendar = false" :disabled="!canManageFiles">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -87,7 +91,8 @@
         </div>
         <div class="input-box">
           <label for="proceedingFileAfacRights">AFAC rights</label>
-          <InputText id="proceedingFileAfacRights" v-model="proceedingFile.proceedingFileAfacRights" :disabled="!canManageFiles" />
+          <InputText id="proceedingFileAfacRights" v-model="proceedingFile.proceedingFileAfacRights"
+            :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <div class="date-box-container">
@@ -105,7 +110,8 @@
             </div>
             <div v-if="displaySignatureDateCalendar" class="date-box-controller">
               <Calendar v-if="displaySignatureDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select signature date" :disabled="!canManageFiles" />
+                v-model.lazy="proceedingFile.proceedingFileSignatureDate" placeholder="Select signature date"
+                :disabled="!canManageFiles" />
               <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displaySignatureDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -121,7 +127,7 @@
           <div class="date-box-container">
             <label>Effective start date</label>
             <div v-if="!displayEffectiveStartDateCalendar" class="date-box">
-              <InputText v-model="effectiveStartDate" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <InputText v-model="effectiveStartDate" readonly class="capitalize" :disabled="!canManageFiles" />
               <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayEffectiveStartDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -133,8 +139,8 @@
             </div>
             <div v-if="displayEffectiveStartDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEffectiveStartDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileEffectiveStartDate"
-                placeholder="Select effective start date"  :disabled="!canManageFiles"/>
+                v-model.lazy="proceedingFile.proceedingFileEffectiveStartDate" placeholder="Select effective start date"
+                :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEffectiveStartDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -150,7 +156,7 @@
           <div class="date-box-container">
             <label>Effective end date</label>
             <div v-if="!displayEffectiveEndDateCalendar" class="date-box">
-              <InputText v-model="effectiveEndDate" readonly class="capitalize" :disabled="!canManageFiles"/>
+              <InputText v-model="effectiveEndDate" readonly class="capitalize" :disabled="!canManageFiles" />
               <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayEffectiveEndDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -162,7 +168,8 @@
             </div>
             <div v-if="displayEffectiveEndDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEffectiveEndDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select effective end date" :disabled="!canManageFiles" />
+                v-model.lazy="proceedingFile.proceedingFileEffectiveEndDate" placeholder="Select effective end date"
+                :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEffectiveEndDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -219,7 +226,71 @@
           </label>
           <Dropdown v-model="proceedingFile.proceedingFileStatusId" :options="proceedingFileStatusList"
             optionLabel="proceedingFileStatusName" optionValue="proceedingFileStatusId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageFiles"/>
+            class="w-full md:w-14rem" :disabled="!canManageFiles" />
+        </div>
+        <div>
+          <div class="employee-record-wrapper">
+            <div v-for="(properties, indexCategory) in proceedingFileTypePropertyCategories" :key="indexCategory"
+              class="inputs-group">
+              <div v-for="(property, indexProperty) in properties" :key="indexProperty" class="property">
+                <div class="property-value-wrapper">
+                  <div v-for="(value, indexValue) in property.values" :key="indexValue" class="property-value">
+                    <div class="input">
+                      <div class="input-box">
+                        <label for="proceeding-file-property">
+                          {{ property.name }}
+                        </label>
+                        <div v-if="property.type === 'Text'">
+                          <InputText :id="'input-' + indexCategory + '-' + indexProperty"
+                            v-model="value.proceedingFileTypePropertyValueValue" />
+                        </div>
+                        <div v-if="property.type === 'File'" class="input-box">
+                          <Button v-if="value.proceedingFileTypePropertyValueValue" label="Open file" severity="primary"
+                            @click="openFileProperty(value.proceedingFileTypePropertyValueValue)" /><br
+                            v-if="value.proceedingFileTypePropertyValueValue" />
+                          <FileUpload v-model="value.files" name="demo[]" url="/api/upload"
+                            @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000"
+                            :maxFileCount="1" :fileLimit="1" @select="validateFilesProperty($event, value)"
+                            :key="'file-' + indexCategory + '-' + indexProperty" :showUploadButton="false">
+                            <template #content="{ files, removeFileCallback }">
+                              <div v-for="(file, indexFile) in files"
+                                :key="indexFile + '-' + indexCategory + '-' + indexProperty"
+                                class="p-d-flex p-ai-center p-mb-2">
+                                <img v-if="file && file.type.startsWith('image/')" role="presentation"
+                                  class="p-fileupload-file-thumbnail" :alt="file.name" width="50"
+                                  :src="getObjectURLProperty(file)" />
+                                <span v-if="file">{{ file.name }}</span>
+                                <Button v-if="file" @click="removeFileCallback(indexFile)"
+                                  class="p-ml-auto p-button p-component p-button-text">
+                                  <span class="p-button-icon pi pi-times"></span>
+                                </Button>
+                              </div>
+                            </template>
+                            <template #empty>
+                              <p>Drag and drop file to here to upload.</p>
+                            </template>
+                          </FileUpload>
+                        </div>
+                        <div v-if="property.type === 'Number'">
+                          <InputNumber :id="'input-' + indexCategory + '-' + indexProperty"
+                            v-model="value.proceedingFileTypePropertyValueValue" mode="decimal" />
+                        </div>
+                        <div v-if="property.type === 'Decimal'">
+                          <InputNumber :id="'input-' + indexCategory + '-' + indexProperty"
+                            v-model="value.proceedingFileTypePropertyValueValue" :minFractionDigits="2" fluid />
+                        </div>
+                        <div v-if="property.type === 'Currency'">
+                          <InputNumber :id="'input-' + indexCategory + '-' + indexProperty"
+                            v-model="value.proceedingFileTypePropertyValueValue" mode="currency" currency="MXN" fluid />
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="box-tools-footer">
           <Button v-if="canManageFiles" label="Save" severity="primary" @click="onSave()" />
