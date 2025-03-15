@@ -36,6 +36,7 @@ export default defineComponent({
     drawerEmployeePersonForm: false as boolean,
     drawerAddressForm: false as boolean,
     drawerRecords: false as boolean,
+    drawerBanks: false as boolean,
     drawerEmployeePhotoForm: false as boolean,
     drawerEmployeeDelete: false as boolean,
     drawerEmployeeSync: false as boolean,
@@ -218,6 +219,7 @@ export default defineComponent({
       this.activeButton = 'employee'
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
+      this.onEditEmployee()
     },
     onEdit(employee: EmployeeInterface) {
       this.employee = { ...employee }
@@ -225,6 +227,7 @@ export default defineComponent({
       this.activeButton = 'employee'
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
+      this.onEditEmployee()
     },
     onDelete(employee: EmployeeInterface) {
       this.employee = { ...employee }
@@ -404,19 +407,29 @@ export default defineComponent({
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
+      this.drawerBanks = false
       this.activeButton = 'employee'
     },
     onEditPerson() {
       this.drawerEmployeePersonForm = true
       this.drawerAddressForm = false
       this.drawerRecords = false
+      this.drawerBanks = false
       this.activeButton = 'person'
     },
     onEditRecords() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
+      this.drawerBanks = false
       this.drawerRecords = true
       this.activeButton = 'records'
+    },
+    onEditBanks() {
+      this.drawerEmployeePersonForm = false
+      this.drawerAddressForm = false
+      this.drawerRecords = false
+      this.drawerBanks = true
+      this.activeButton = 'banks'
     },
     onClosePerson() {
       this.drawerEmployeePersonForm = false
@@ -477,6 +490,7 @@ export default defineComponent({
       this.activeButton = 'address'
       this.drawerEmployeePersonForm = false
       this.drawerRecords = false
+      this.drawerBanks = false
     },
     onCloseAddress() {
       this.drawerAddressForm = false
