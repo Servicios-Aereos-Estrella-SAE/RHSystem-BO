@@ -122,8 +122,7 @@
           <label for="description">
               Days to apply
           </label>
-          <InputNumber v-model="daysToApply" inputId="daysToApply"
-               />
+          <InputNumber v-model="daysToApply" inputId="daysToApply" />
           <small class="p-error" v-if="submitted && !daysToApply">
               Days to apply is required.
           </small>

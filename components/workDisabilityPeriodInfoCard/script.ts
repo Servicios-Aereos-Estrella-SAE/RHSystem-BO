@@ -1,11 +1,14 @@
 import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfaces/WorkDisabilityPeriodInterface'
 
 export default defineComponent({
   name: 'workDisabilityPeriodInfoCard',
   props: {
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
@@ -16,15 +19,38 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
-    canManageCurrentPeriod: false
+    canManageCurrentPeriod: false,
+    sessionUser: null as UserInterface | null
   }),
   computed: {
+    displayPeriodActions () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.sessionUser.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!this.isDeleted) {
+        return true
+      }
+
+      return true
+    }
   },
   async mounted() {
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
+    await this.setSessionUser()
     await this.validateDisabilityDateRange()
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     getDate(date: string) {
       const dateWorkDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
       return dateWorkDisabilityPeriod.setLocale('en').toFormat('DDDD')

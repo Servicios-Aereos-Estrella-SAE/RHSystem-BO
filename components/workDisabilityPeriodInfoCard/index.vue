@@ -4,7 +4,7 @@
       <h4 v-if="onlySeeInfo">Period</h4>
       <div class="work-disability-period-type">
         <div v-if="workDisabilityPeriod.workDisabilityType">
-          {{ workDisabilityPeriod.workDisabilityType.workDisabilityTypeName }} 
+          {{ workDisabilityPeriod.workDisabilityType.workDisabilityTypeName }}
           </div>
       </div>
       <div class="work-disability-period-folio">
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div v-if="!isDeleted" class="box-tools-footer">
+    <div v-if="displayPeriodActions" class="box-tools-footer">
       <Button class="btn btn-block" @click="handlerClickOnEdit" >
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path

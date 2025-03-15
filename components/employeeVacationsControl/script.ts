@@ -10,6 +10,7 @@ import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/Exce
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { useMyGeneralStore } from '~/store/general'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   components: {
@@ -33,11 +34,28 @@ export default defineComponent({
     currentIndex: -1,
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
-    isDeleted: false
+    isDeleted: false,
+    sessionUser: null as UserInterface | null
   }),
   computed: {
+    displayAddButton () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.sessionUser?.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (this.canManageVacation && !this.isDeleted && this.canManageException) {
+        return true
+      }
+
+      return false
+    }
   },
   async mounted() {
+    await this.setSessionUser()
     this.isReady = false
     this.currentVacationPeriod = this.vacationPeriod
     await this.getVacations()
@@ -47,6 +65,12 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     async getVacations() {
       this.shiftExceptions = []
       if (this.employee.employeeId && this.currentVacationPeriod) {
@@ -108,7 +132,7 @@ export default defineComponent({
           })
           return
         }
-        const newVacation = {
+        const newVacation: ShiftExceptionInterface = {
           shiftExceptionId: null,
           exceptionTypeId: exceptionTypeId,
           vacationSettingId: this.currentVacationPeriod.vacationSettingId,
@@ -118,7 +142,9 @@ export default defineComponent({
           shiftExceptionCheckInTime: null,
           shiftExceptionCheckOutTime: null,
           daysToApply: 0,
-        } as ShiftExceptionInterface
+          shiftExceptionEnjoymentOfSalary: null,
+          shiftExceptionTimeByTime: null
+        }
         this.countsNewVacation += 1
         this.shiftExceptions.push(newVacation)
       }

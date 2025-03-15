@@ -12,6 +12,7 @@ import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   components: {
@@ -40,25 +41,45 @@ export default defineComponent({
     isDeleted: false,
     drawershiftExceptionsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
-    canManageToPreviousDays: false
+    canManageToPreviousDays: false,
+    sessionUser: null as UserInterface | null
   }),
   computed: {
     selectedExceptionDate() {
       const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
       return day
+    },
+    displayAddButton () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.employee.employeeId === this.sessionUser.person?.employee?.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!this.isDeleted && this.canManageToPreviousDays && this.canManageException) {
+        return true
+      }
+
+      return false
     }
   },
   async mounted() {
     this.isReady = false
+    await this.setSessionUser()
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+
     this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
     this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftEmployee()
+
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+
     if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
       this.canManageToPreviousDays = true
     } else {
@@ -77,11 +98,18 @@ export default defineComponent({
         }
       }
     }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual
       let nextPayDate = today.set({ weekday: 4 })
@@ -147,6 +175,9 @@ export default defineComponent({
         shiftExceptionCheckInTime: null,
         shiftExceptionCheckOutTime: null,
         daysToApply: 0,
+        shiftExceptionEnjoymentOfSalary: null,
+        shiftExceptionTimeByTime: null,
+        vacationSettingId: null
       }
       this.shiftException = newShiftException
       this.drawerShiftExceptionForm = true

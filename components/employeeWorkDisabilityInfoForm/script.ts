@@ -14,6 +14,7 @@ import type { WorkDisabilityNoteInterface } from '~/resources/scripts/interfaces
 import WorkDisabilityNoteService from '~/resources/scripts/services/WorkDisabilityNoteService';
 import WorkDisabilityPeriodService from '~/resources/scripts/services/WorkDisabilityPeriodService';
 import { DateTime } from 'luxon';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -44,14 +45,27 @@ export default defineComponent({
     drawerWorkDisabilityNoteDelete: false,
     workDisabilityNote: null as WorkDisabilityNoteInterface | null,
     canManageCurrentPeriod: false,
+    sessionUser: null as UserInterface | null
   }),
   computed: {
+    displayHeadActions () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.sessionUser.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      return true
+    }
   },
   watch: {
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    await this.setSessionUser()
     this.isReady = false
     this.isNewWorkDisability = !this.workDisability.workDisabilityId ? true : false
     if (this.employee.deletedAt) {
@@ -83,6 +97,12 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     async getInsuranceCoverageTypes(search: string) {
       const response = await new InsuranceCoverageTypeService().getFilteredList(search, 1, 100)
       const list: InsuranceCoverageTypeInterface[] = response.status === 200 ? response._data.data.insuranceCoverageTypes.data : []

@@ -39,7 +39,7 @@ export default defineComponent({
     canManageCurrentPeriod: false,
     isValidTicketFolio: false,
     isInternalDisability: false,
-    daysToApply: 0 as number,
+    daysToApply: 1 as number,
     dates: [] as Array<any>,
     drawerWorkDisabilityPeriodExpenseForm: false,
     drawerWorkDisabilityPeriodExpenseDelete: false,

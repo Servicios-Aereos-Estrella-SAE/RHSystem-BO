@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
 import { useMyGeneralStore } from '~/store/general'
 
@@ -10,6 +12,7 @@ export default defineComponent({
   },
   name: 'vacationsControl',
   props: {
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
     clickOnDelete: { type: Function, default: null },
     canManageVacation: { type: Boolean, required: true },
@@ -26,6 +29,7 @@ export default defineComponent({
     submitted: false,
     canManageToPreviousDays: false,
     currentDate: null as string | null | DateTime | Date,
+    sessionUser: null as UserInterface | null
   }),
   watch: {
     'shiftException.shiftExceptionsDate'(val: Date) {
@@ -36,9 +40,40 @@ export default defineComponent({
     }
   },
   computed: {
+    displayEditVacationDayButton () {
+      if (!this.sessionUser) {
+        return false
+      }
 
+      if ((this.sessionUser.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!(!this.canManageVacation || this.isDeleted || (this.shiftException.shiftExceptionId && !this.canManageToPreviousDays) || !this.canManageException)) {
+        return true
+      }
+
+      return false
+    },
+    displayDestroyVacationDayButton () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.sessionUser.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!(!this.canManageVacation || this.isDeleted || (this.shiftException.shiftExceptionId && !this.canManageToPreviousDays) || !this.canManageException)) {
+        return true
+      }
+
+      return false
+    }
   },
   async mounted() {
+    await this.setSessionUser()
+
     if (this.shiftException.shiftExceptionsDate) {
       const dateTemp = this.shiftException.shiftExceptionsDate.toString()
       const shiftExceptionsDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { zone: 'utc' })
@@ -54,6 +89,12 @@ export default defineComponent({
     this.verifyPermissionManagePreviousDays()
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     verifyPermissionManagePreviousDays() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
