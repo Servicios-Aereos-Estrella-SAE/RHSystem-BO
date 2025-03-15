@@ -20,6 +20,7 @@ export default defineComponent({
     departmentPermissions: []  as number[][],
     roleSelected: 0,
     canUpdate: false,
+    canRead: false,
     activeEdit: false
   }),
   computed: {
@@ -36,24 +37,42 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
-    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
-    if (myGeneralStore.isRoot) {
-      this.canUpdate = true
-    } else {
-      this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
-    }
 
+    await this.validateAccess()
     await this.init()
+
     myGeneralStore.setFullLoader(false)
   },
   methods: {
+    async validateAccess () {
+      const myGeneralStore = useMyGeneralStore()
+      const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+
+      if (myGeneralStore.isRoot) {
+        this.canUpdate = true
+        this.canRead = true
+      } else {
+        this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+        this.canRead = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
+      }
+
+      if (!this.canRead) {
+        throw showError({
+          statusCode: 403,
+          fatal: true,
+          message: 'You don´t have access permission'
+        })
+      }
+    },
     async init () {
       await Promise.all([
         this.getSystemModules(),
-        this.getRoles(),
         this.getDepartments(),
       ])
+
+      await this.getRoles()
+      await this.setRoleDepartmets()
     },
     async getSystemModules() {
       const response = await new SystemModuleService().getFilteredList('', 1, 100)
@@ -64,22 +83,30 @@ export default defineComponent({
       const response = await new DepartmentService().getAllDepartmentList()
       const list = response.status === 200 ? response._data.data.departments : []
       this.departmentList = list
-      const departmentPermissions = [] as number[][]
-      for (let index = 0; index < this.roleList.length; index++) {
-        const role = this.roleList[index]
+    },
+    async setRoleDepartmets () {
+      const DEPARTMENT_PERMISSIONS = [] as number[][]
+      let index = 0
+
+      for await (const role of this.roleList) {
         const departments = [] as Array<number>
+
         for await (const roleDepartment of role.roleDepartments) {
          departments.push(roleDepartment.departmentId)
         }
-        departmentPermissions[index] = departments
+
+        DEPARTMENT_PERMISSIONS[index] = departments
+        index++
       }
-     this.departmentPermissions = departmentPermissions
+
+      this.departmentPermissions = DEPARTMENT_PERMISSIONS
     },
     async getRoles() {
       const response = await new RoleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.roles.data : []
       this.roleList = list.filter((a: RoleInterface) => a.roleSlug !== 'root')
       const roleModules = [] as Array<RoleModuleInterface>
+
       for await (const role of this.roleList) {
         const roleModule = { role, modules: [] as Array<SystemModuleInterface> }
         if (role.roleSystemPermissions) {
@@ -103,7 +130,9 @@ export default defineComponent({
         roleModules.push(roleModule)
 
       }
+
       const permissions = [] as number[][]
+
       for await (const [i, r] of roleModules.entries()) {
         permissions[i] = []
 
@@ -113,6 +142,7 @@ export default defineComponent({
           })
         }
       }
+
       this.permissions = permissions
     },
     async onSave() {

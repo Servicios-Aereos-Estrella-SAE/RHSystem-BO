@@ -28,7 +28,7 @@
             </span>
           </label>
         </div>
-        <div class="box-tools-footer">
+        <div v-if="displayHeadActions" class="box-tools-footer">
           <Button v-if="!isNewWorkDisability && canManageWorkDisabilities" class="btn btn-block" @click="addNewPeriod">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z" fill="#88a4bf" class="fill-212121"></path></svg>
             Add period
@@ -58,6 +58,7 @@
                 :click-on-delete="() => { onDeletePeriod(workDisabilityPeriod) }"
                 :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
                 :canManageWorkDisabilities="canManageWorkDisabilities"
+                :employee="employee"
               />
             </div>
           </div>
@@ -67,11 +68,11 @@
               Notes
             </h2>
             <div v-for="(workDisabilityNote, index) in workDisabilityNotesList" :key="`work-disability-note-${index}`">
-              <workDisabilityNoteInfoCard 
+              <workDisabilityNoteInfoCard
                 :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
                 :canManageWorkDisabilities="canManageWorkDisabilities" :isDeleted="isDeleted"
                 :work-disability-note="workDisabilityNote" :click-on-edit="() => { onEditNote(workDisabilityNote) }"
-                :click-on-delete="() => { onDeleteNote(workDisabilityNote) }" 
+                :click-on-delete="() => { onDeleteNote(workDisabilityNote) }"
               />
             </div>
           </div>
@@ -80,7 +81,7 @@
 
       <Sidebar v-model:visible="drawerWorkDisabilityPeriodForm" header="form" position="right"
         class="work-disability-period-form-sidebar" :showCloseIcon="true">
-        <employeeWorkDisabilityPeriodInfoForm 
+        <employeeWorkDisabilityPeriodInfoForm
           :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
           :canManageWorkDisabilities="canManageWorkDisabilities"
           :workDisabilityPeriod="workDisabilityPeriod" :employee="employee"

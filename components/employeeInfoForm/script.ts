@@ -19,6 +19,7 @@ import PilotService from '~/resources/scripts/services/PilotService'
 import FlightAttendantService from '~/resources/scripts/services/FlightAttendantService'
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
 import UserService from '~/resources/scripts/services/UserService';
+import type { EmployeeTypeInterface } from '~/resources/scripts/interfaces/EmployeeTypeInterface';
 
 export default defineComponent({
   components: {
@@ -70,9 +71,18 @@ export default defineComponent({
     ],
     isDeleted: false,
     drawerEmployeeReactivate: false,
-    employeeTypes: [] as EmployeeTypeService[],
+    employeeTypes: [] as EmployeeTypeInterface[],
   }),
   computed: {
+    displayEmployeeTypeFilter () {
+      let display = false
+
+      if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
+        display = true
+      }
+
+      return display
+    }
   },
   watch: {
     'employee.departmentId': function (newVal) {
@@ -96,6 +106,7 @@ export default defineComponent({
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee?.employeeId ? true : false
+
     if (this.employee.employeeId) {
       const employeeService = new EmployeeService()
       const employeeResponse = await employeeService.show(this.employee.employeeId)
@@ -104,6 +115,7 @@ export default defineComponent({
         this.employee.person = employeeResponse._data.data.employee.person
       }
     }
+
     await Promise.all([
       this.getBusinessUnits(),
       this.getDepartments(),
@@ -145,17 +157,20 @@ export default defineComponent({
         this.employee.person.personBirthday = birthDay
         this.personBirthday = this.getBirthdayFormatted(this.employee.person.personBirthday as Date)
       }
+
       if (this.employee.deletedAt) {
         this.isDeleted = true
       }
 
       await this.getPositions(this.employee.departmentId)
+
       if (this.employee.department) {
         const existCurrentDepartment = this.departments.find(a => a.departmentId === this.employee.departmentId)
         if (!existCurrentDepartment) {
           this.departments.push(this.employee.department)
         }
       }
+
       if (this.employee.position) {
         const existCurrentPosition = this.positions.find(a => a.positionId === this.employee.positionId)
         if (!existCurrentPosition) {
@@ -164,13 +179,16 @@ export default defineComponent({
       }
     } else {
       this.employee.employeeAssistDiscriminator = 0
+      const employeeType = this.employeeTypes.find(type => type.employeeTypeSlug === 'employee')
+
+      if (employeeType) {
+        this.employee.employeeTypeId = employeeType.employeeTypeId as number
+      }
 
       if (this.businessUnits.length > 0) {
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-
-
 
     this.isReady = true
   },

@@ -13,7 +13,7 @@ export default defineComponent({
   props: {
   },
   data: () => ({
-    isReady: true,
+    isReady: false,
     roleSystemPermissions: [] as Array<RoleSystemPermissionInterface>,
     menuGroups: [] as Array<SystemModuleInterface>,
     menu: [] as Array<MenuGroupInterface>
@@ -77,11 +77,13 @@ export default defineComponent({
         })
         }
       }
+
       const logService = new LogService()
       await logService.store(systemModuleSlug)
       await this.getGroupMenu()
 
       myGeneralStore.displayContent = true
+      this.isReady = true
     }, 1000);
   },
   methods: {
@@ -142,9 +144,9 @@ export default defineComponent({
           const isItemActive = systemModulesActive.find(a => a && a.systemModuleId === item.systemModuleId)
 
           if (
-            isItemActive || 
-            item.systemModuleSlug === 'users' || 
-            item.systemModuleSlug === 'system-settings' || 
+            isItemActive ||
+            item.systemModuleSlug === 'users' ||
+            item.systemModuleSlug === 'system-settings' ||
             item.systemModuleSlug === 'roles-and-permissions'
           ) {
             if (!item.systemModulePath.toString().includes('#')) {

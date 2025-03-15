@@ -30,14 +30,12 @@
     .vacation-control {
 
       .read-date {
-        display: grid;
-        grid-template-columns: auto 4rem 4rem;
+        display: flex;
         gap: 0.25rem;
       }
 
       .form-date {
-        display: grid;
-        grid-template-columns: auto 4rem 4rem;
+        display: flex;
         gap: 0.25rem;
       }
     }
@@ -47,7 +45,7 @@
     gap: 1rem; /* Espaciado entre los divs */
     align-items: center; /* Alinea verticalmente */
   }
-  
+
   /* Opcional: Ajustar estilos de los divs si es necesario */
   .input-box {
     flex: 1; /* Hace que ambos divs ocupen el mismo espacio */

@@ -1,8 +1,8 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/WorkDisabilityInterface'
 import WorkDisabilityService from '~/resources/scripts/services/WorkDisabilityService'
 import { useMyGeneralStore } from '~/store/general'
@@ -24,6 +24,7 @@ export default defineComponent({
     isDeleted: false,
     drawerWorkDisabilityForm: false,
     drawerWorkDisabilityDelete: false,
+    sessionUser: null as UserInterface | null
   }),
   watch: {
     async 'statusForm'(value) {
@@ -33,9 +34,25 @@ export default defineComponent({
     }
   },
   computed: {
+    displayAddButton () {
+      if (!this.sessionUser) {
+        return false
+      }
+
+      if ((this.sessionUser.person?.employee?.employeeId === this.employee.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (this.canManageWorkDisabilities && !this.isDeleted && this.canManageWorkDisabilities) {
+        return true
+      }
+
+      return false
+    }
   },
   async mounted() {
     this.isReady = false
+    await this.setSessionUser()
     await this.getWorkDisabilities()
     if (this.employee.deletedAt) {
       this.isDeleted = true
@@ -46,12 +63,18 @@ export default defineComponent({
       if (existWorkDisability) {
         this.workDisability = existWorkDisability
         this.drawerWorkDisabilityForm = true
-      } 
+      }
       myGeneralStore.workDisabilityId = null
     }
     this.isReady = true
   },
   methods: {
+    async setSessionUser () {
+      const { getSession } = useAuth()
+      const session: unknown = await getSession()
+      const authUser = session as UserInterface
+      this.sessionUser = authUser
+    },
     async getWorkDisabilities() {
       this.workDisabilities = []
       if (this.employee.employeeId) {

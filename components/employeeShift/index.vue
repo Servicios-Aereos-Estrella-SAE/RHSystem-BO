@@ -132,13 +132,13 @@
     </Sidebar>
 
     <Sidebar
-    v-model:visible="displaySidebarWorkDisabilities"
-    :blockScroll="true"
-    :dismissable="false"
-    :closeOnEscape="false"
-    header="work disabilities"
-    position="right"
-    class="work-disabilities-sidebar"
+      v-model:visible="displaySidebarWorkDisabilities"
+      :blockScroll="true"
+      :dismissable="false"
+      :closeOnEscape="false"
+      header="work disabilities"
+      position="right"
+      class="work-disabilities-sidebar"
     >
     <employeeWorkDisabilities
       :employee="employee"
@@ -149,7 +149,7 @@
       @save="onSave"
     />
   </Sidebar>
-    
+
   </div>
   <div v-else class="loader">
     <ProgressSpinner />

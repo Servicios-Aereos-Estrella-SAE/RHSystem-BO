@@ -322,7 +322,7 @@ export default defineComponent({
     },
     getStartPeriodDay() {
       const myGeneralStore = useMyGeneralStore()
-      if (myGeneralStore.isRh) {
+      if (myGeneralStore.isRh || myGeneralStore.isAdmin) {
         const datePay = this.getNextPayThursday()
         const payDate = DateTime.fromJSDate(datePay).startOf('day')
         const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })

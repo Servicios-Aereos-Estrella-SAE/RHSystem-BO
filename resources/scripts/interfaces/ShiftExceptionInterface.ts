@@ -19,6 +19,7 @@ interface ShiftExceptionInterface {
   exceptionType?: ExceptionTypeInterface
   employee?: EmployeeInterface
   daysToApply: number | null
+  vacationSettingId: number | null
 }
 
 export type { ShiftExceptionInterface }

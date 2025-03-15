@@ -47,6 +47,19 @@ export default defineComponent({
       } else {
         return null
       }
+    },
+    employeeName () {
+      if (!this.user.person) {
+        return '---'
+      }
+
+      const name = `${this.user.person.personFirstname || ''} ${this.user.person.personLastname || ''} ${this.user.person.personSecondLastname || ''}`
+      return name
+    },
+    employeeInitial () {
+      const name = this.employeeName
+      const first = name.charAt(0)
+      return first.toUpperCase()
     }
   },
   async mounted() {

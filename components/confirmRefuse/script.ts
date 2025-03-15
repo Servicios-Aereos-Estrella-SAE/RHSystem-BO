@@ -4,10 +4,10 @@ export default defineComponent({
   name: 'confirmRefuse',
   props: {
     actionType: {
-        type: String,
-        required: true, 
-        validator: value => ['refuse', 'accept'].includes(value) 
-      }
+      type: String,
+      required: true,
+      validator: value => ['refuse', 'accept'].includes(value as string)
+    }
   },
   data: () => ({
     securityWord: 'confirm',
@@ -15,8 +15,8 @@ export default defineComponent({
     isIncorrect: false
   }),
   computed: {},
-  created() {},
-  mounted() {},
+  created() { },
+  mounted() { },
   methods: {
     handlerConfirmRefused() {
       if (this.securityWord.toLocaleLowerCase() !== this.verifyWord.toLocaleLowerCase()) {
@@ -26,12 +26,12 @@ export default defineComponent({
       this.$emit(this.actionType === 'refuse' ? 'confirmRefuse' : 'confirmAccept');
     },
     handlerConfirmAction() {
-        if (this.securityWord.toLocaleLowerCase() !== this.verifyWord.toLocaleLowerCase()) {
-          this.isIncorrect = true;
-          return;
-        }
-        this.$emit(this.actionType === 'refuse' ? 'confirmRefuse' : 'confirmAccept');
-      },
+      if (this.securityWord.toLocaleLowerCase() !== this.verifyWord.toLocaleLowerCase()) {
+        this.isIncorrect = true;
+        return;
+      }
+      this.$emit(this.actionType === 'refuse' ? 'confirmRefuse' : 'confirmAccept');
+    },
     handlerCancel() {
       this.$emit('cancelRefused')
     }

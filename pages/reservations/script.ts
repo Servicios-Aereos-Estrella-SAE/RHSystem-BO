@@ -140,9 +140,9 @@ export default defineComponent({
 
     if (!this.canRead) {
       throw showError({
-        statusCode: 404,
+        statusCode: 403,
         fatal: true,
-        message: 'You don´t have access to reservations'
+        message: 'You don´t have access permission'
       })
     }
 
@@ -289,7 +289,8 @@ export default defineComponent({
           personMaritalStatus: null,
           personPlaceOfBirthCountry: null,
           personPlaceOfBirthState: null,
-          personPlaceOfBirthCity: null
+          personPlaceOfBirthCity: null,
+          personEmail: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,
@@ -320,7 +321,8 @@ export default defineComponent({
           personMaritalStatus: null,
           personPlaceOfBirthCountry: null,
           personPlaceOfBirthState: null,
-          personPlaceOfBirthCity: null
+          personPlaceOfBirthCity: null,
+          personEmail: null
         }
         const newCustomer: CustomerInterface = {
           customerId: null,

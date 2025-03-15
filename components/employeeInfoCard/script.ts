@@ -18,6 +18,19 @@ export default defineComponent({
   data: () => ({
   }),
   computed: {
+    employeeName () {
+      if (!this.employee.person) {
+        return '---'
+      }
+
+      const name = `${this.employee.person.personFirstname || ''} ${this.employee.person.personLastname || ''} ${this.employee.person.personSecondLastname || ''}`
+      return name
+    },
+    employeeInitial () {
+      const name = this.employeeName
+      const first = name.charAt(0)
+      return first.toUpperCase()
+    }
   },
   mounted() {
   },

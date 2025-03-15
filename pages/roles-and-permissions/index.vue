@@ -30,13 +30,14 @@
                 </button>
               </div>
             </div>
-            <button class="btn btn-block">
+            <button v-if="!activeEdit" class="btn btn-block">
               <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                 <path d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z" fill="#88a4bf" class="fill-000000"></path>
               </svg>
               Create Role
             </button>
           </div>
+
           <div class="box">
             <h2>
               Modules
@@ -57,6 +58,7 @@
               </div>
             </div>
           </div>
+
           <div class="box">
             <h2>
               Departments
@@ -72,52 +74,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="roles-and-permissions-wrapper">
-          <div>
-            <h2>
-              Roles and permissions
-            </h2>
-            <div class="roles-and-permissions-card-wrapper">
-              <Accordion v-model:activeIndex="roleSelected">
-                <AccordionTab :header="role.roleName" v-for="(role, indexRole) in roleList" :key="`role-${role.roleId}-${indexRole}`">
-                  <DataTable :value="systemModulesList" tableStyle="min-width: 50rem">
-                    <Column field="systemModuleName" header="Module">
-                      <template #body="slotProps">
-                        <strong>{{ slotProps.data.systemModuleName }}</strong>
-                      </template>
-                    </Column>
-                    <Column header="Permissions">
-                      <template #body="slotProps">
-                        <div class="permissions">
-                          <div v-for="(permission, indexP) in slotProps.data.systemPermissions"
-                            :key="`permission-${indexRole}-${indexP}`" class="permission">
-                            <Checkbox v-model="permissions[indexRole]" name="permission" :disabled="!canUpdate"
-                              :value="permission.systemPermissionId" />
-                            <label> {{ permission.systemPermissionName }}</label>
-                          </div>
-                        </div>
-                      </template>
-                    </Column>
-                  </DataTable>
-
-                  <DataTable :value="groupedDepartments" tableStyle="min-width: 50rem">
-                    <Column v-for="(dept, index) in groupedDepartments[0]" :key="index" header="Department">
-                      <template #body="slotProps">
-                        <div v-if="slotProps.data[index]">
-                          <Checkbox v-model="departmentPermissions[indexRole]" name="permission" :disabled="!canUpdate"
-                            :value="slotProps.data[index].departmentId" />
-                          <label>&nbsp; {{ slotProps.data[index].departmentName }}</label>
-                        </div>
-                      </template>
-                    </Column>
-                  </DataTable>
-                </AccordionTab>
-              </Accordion>
-            </div>
-          </div>
-        </div> -->
-
     </NuxtLayout>
   </div>
 </template>
