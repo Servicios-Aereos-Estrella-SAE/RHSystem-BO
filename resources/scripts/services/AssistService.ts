@@ -5,7 +5,7 @@ export default class AssistService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     const { token } = useAuth()
 
@@ -15,7 +15,7 @@ export default class AssistService {
     }
   }
 
-  async index (
+  async index(
     date: string | Date,
     dateEnd: string | Date,
     employeeId: number
@@ -24,20 +24,20 @@ export default class AssistService {
     try {
       const headers = { ...this.GENERAL_HEADERS }
       const query = { date, 'date-end': dateEnd, employeeId }
-  
+
       await $fetch(`${this.API_PATH}/v1/assists`, {
         headers,
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
-   
+
     return responseRequest
   }
 
-  async sync () {
+  async sync() {
     let responseRequest: any = null
     const payload = { date: '2024-05-01', page: 1 }
     const headers = { ...this.GENERAL_HEADERS }
@@ -46,13 +46,13 @@ export default class AssistService {
       headers,
       method: 'POST',
       query: { ...payload },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     return responseRequest
   }
 
-  async syncEmployee (startDate: string | Date, endDate: string | Date, empCode: string) {
+  async syncEmployee(startDate: string | Date, endDate: string | Date, empCode: string) {
     let responseRequest: any = null
     const payload = { startDate, endDate, empCode, page: 1 }
     const headers = { ...this.GENERAL_HEADERS }
@@ -60,13 +60,13 @@ export default class AssistService {
       method: 'POST',
       headers,
       query: { ...payload },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     return responseRequest
   }
 
-  async getExcelByEmployee (
+  async getExcelByEmployee(
     date: string | Date,
     dateEnd: string | Date,
     employeeId: number,
@@ -82,15 +82,15 @@ export default class AssistService {
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async getExcelByPosition (
+  async getExcelByPosition(
     date: string | Date,
     dateEnd: string | Date,
     departmentId: number,
@@ -106,15 +106,15 @@ export default class AssistService {
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async getExcelByDepartment (
+  async getExcelByDepartment(
     date: string | Date,
     dateEnd: string | Date,
     departmentId: number,
@@ -130,8 +130,8 @@ export default class AssistService {
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
@@ -139,7 +139,7 @@ export default class AssistService {
   }
 
 
-  async getExcelAll (
+  async getExcelAll(
     date: string | Date,
     dateEnd: string | Date,
     reportType: string
@@ -154,23 +154,23 @@ export default class AssistService {
           ...this.GENERAL_HEADERS,
         },
         query,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response?.json() }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async syncStatus () {
+  async syncStatus() {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/v1/assists/status`, {
       method: 'GET',
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -183,9 +183,9 @@ export default class AssistService {
       await $fetch(`${this.API_PATH}/v1/assists`, {
         method: 'POST',
         headers,
-        query: { ...assist },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...assist },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }

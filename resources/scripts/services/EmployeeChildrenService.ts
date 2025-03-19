@@ -6,7 +6,7 @@ export default class EmployeeChildrenService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -16,60 +16,60 @@ export default class EmployeeChildrenService {
   }
 
 
-  async store (employeeChildren: EmployeeChildrenInterface) {
+  async store(employeeChildren: EmployeeChildrenInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee-children`, {
         headers,
         method: 'POST',
-        query: { ...employeeChildren },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeChildren },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update (employeeChildren: EmployeeChildrenInterface) {
+  async update(employeeChildren: EmployeeChildrenInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee-children/${employeeChildren.employeeChildrenId}`, {
         headers,
         method: 'PUT',
-        query: { ...employeeChildren },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeChildren },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async delete (employeeChildren: EmployeeChildrenInterface) {
+  async delete(employeeChildren: EmployeeChildrenInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-children/${employeeChildren.employeeChildrenId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async show (employeeChildrenId: number) {
+  async show(employeeChildrenId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-children/${employeeChildrenId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const employeeChildren = responseRequest.status === 200 ? responseRequest._data.data : null
 

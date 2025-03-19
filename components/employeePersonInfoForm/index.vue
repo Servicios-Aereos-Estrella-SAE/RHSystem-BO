@@ -255,7 +255,8 @@
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactFirstname"
                     placeholder="Enter First Name" :disabled="isDeleted" />
                   <small class="p-error"
-                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactFirstname">First name is
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactFirstname">First
+                    name is
                     required.</small>
                 </div>
                 <div class="input-box">
@@ -263,7 +264,8 @@
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactLastname"
                     placeholder="Enter Last Name" :disabled="isDeleted" />
                   <small class="p-error"
-                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactLastname">Last name is
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactLastname">Last
+                    name is
                     required.</small>
                 </div>
                 <div class="input-box">
@@ -271,7 +273,8 @@
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactSecondLastname"
                     placeholder="Enter Second Last Name" :disabled="isDeleted" />
                   <small class="p-error"
-                    v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">Second last
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">Second
+                    last
                     name
                     is
                     required.</small>
@@ -281,7 +284,8 @@
                 <label for="employeeEmergencyContactPhone">Phone</label>
                 <InputMask v-model="employeeEmergencyContact.employeeEmergencyContactPhone" mask="(999) 999 99 99"
                   placeholder="Enter phone" :disabled="isDeleted" />
-                <small class="p-error" v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactPhone">Phone
+                <small class="p-error"
+                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactPhone">Phone
                   is
                   required.</small>
               </div>
@@ -290,7 +294,8 @@
                 <InputText v-model="employeeEmergencyContact.employeeEmergencyContactRelationship"
                   placeholder="Enter Relationship" :disabled="isDeleted" />
                 <small class="p-error"
-                  v-if="submitted && !employeeEmergencyContact.employeeEmergencyContactRelationship">Relationship is
+                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactRelationship">Relationship
+                  is
                   required.</small>
               </div>
             </div>

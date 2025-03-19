@@ -101,6 +101,7 @@ export default defineComponent({
       { label: 'Not specified', value: 'Otro' }
     ],
     employeeEmergencyContact: null as EmployeeEmergencyContactInterface | null,
+    emergencyContactIsRequired: false
   }),
   computed: {
     getAge() {
@@ -305,6 +306,7 @@ export default defineComponent({
       this.submitted = true
       this.isValidCURP = true
       this.isValidRFC = true
+      this.emergencyContactIsRequired = false
       const employeeService = new EmployeeService()
 
       if (this.pilot !== null && this.files.length > 1) {
@@ -345,9 +347,8 @@ export default defineComponent({
           return
         }
       }
-
+      const employeeSpouseService = new EmployeeSpouseService()
       if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
-        const employeeSpouseService = new EmployeeSpouseService()
         if (this.employeeSpouse) {
           if (!employeeSpouseService.validateInfo(this.employeeSpouse)) {
             this.$toast.add({
@@ -358,6 +359,27 @@ export default defineComponent({
             })
             return
           }
+        }
+      }
+
+      const employeeEmergencyContactService = new EmployeeEmergencyContactService()
+      if (this.employeeEmergencyContact) {
+        this.emergencyContactIsRequired = employeeEmergencyContactService.hasAtLeastOneField(this.employeeEmergencyContact)
+        if (this.emergencyContactIsRequired && !employeeEmergencyContactService.validateInfo(this.employeeEmergencyContact)) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Missing data',
+            life: 5000,
+          })
+          return
+        }
+      }
+
+
+      if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
+        console.log(this.employee.person.personMaritalStatus)
+        if (this.employeeSpouse) {
           const employeeSpouseBirthday: string | Date | null = this.employeeSpouse.employeeSpouseBirthday ?? null
           this.employeeSpouse.employeeSpouseBirthday = this.convertToDateTime(employeeSpouseBirthday)
           let employeeSpouseResponse = null
@@ -392,18 +414,8 @@ export default defineComponent({
           }
         }
       }
-      const employeeEmergencyContactService = new EmployeeEmergencyContactService()
-      if (this.employeeEmergencyContact) {
-        if (!employeeEmergencyContactService.validateInfo(this.employeeEmergencyContact)) {
-          this.$toast.add({
-            severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Missing data',
-            life: 5000,
-          })
-          return
-        }
 
+      if (this.employeeEmergencyContact && this.emergencyContactIsRequired) {
         let employeeEmergencyContactResponse = null
         if (!this.employeeEmergencyContact.employeeEmergencyContactId) {
           employeeEmergencyContactResponse = await employeeEmergencyContactService.store(this.employeeEmergencyContact)

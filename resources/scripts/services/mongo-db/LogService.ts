@@ -4,7 +4,7 @@ export default class LogService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -12,18 +12,18 @@ export default class LogService {
       Authorization: `${token.value}`
     }
   }
- 
 
-  async store (route: string) {
+
+  async store(route: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/logs/request`, {
         headers,
         method: 'POST',
-        query: { route: route },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { route: route },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
