@@ -1,40 +1,39 @@
 <template>
-  <div class='department-chart'>
+  <div>
     <Toast />
     <Head>
       <Title>Organization Chart</Title>
     </Head>
     <NuxtLayout name='backoffice'>
-      <div class='pilot-wrapper'>
+      <div class='departments-chart-page'>
         <div class='box head-page'>
-          <div class='departments-chart-page'>
+          <div>
             <h3>
               Organization Chart
             </h3>
-
-            <div class='box'>
-              <OrganizationChart :value='data' collapsible>
-                <template #organization='slotProps'>
-                  <div>
-                    <div>
-                      <span>
-                        {{ slotProps.node.data.departmentName }}
-                      </span>
-                    </div>
-                  </div>
-                </template>
-                <template #positions='slotProps'>
-                  <div>
-                    <div>
-                      <span>
-                        {{ slotProps.node.data.positionName }}
-                      </span>
-                    </div>
-                  </div>
-                </template>
-              </OrganizationChart>
-            </div>
           </div>
+        </div>
+        <div class='box chart-wrapper'>
+          <OrganizationChart :value='data' collapsible>
+            <template #organization='slotProps'>
+              <div class="node-card" @dblclick="onNodeSelect(slotProps.node.data)">
+                <div>
+                  <span>
+                    {{ setNodeName(slotProps.node.data.departmentName) }}
+                  </span>
+                </div>
+              </div>
+            </template>
+            <!-- <template #positions='slotProps'>
+              <div>
+                <div>
+                  <span>
+                    {{ slotProps.node.data.positionName }}
+                  </span>
+                </div>
+              </div>
+            </template> -->
+          </OrganizationChart>
         </div>
       </div>
     </NuxtLayout>
@@ -96,10 +95,10 @@ const makeNodeFormat = (department) => {
     children: department.subDepartments.map(sub => makeNodeFormat(sub))
   }
 
-  if (department.departmentsPositions) {
-    const pos = department.departmentsPositions.map(position => makeNodeFormatPosition(position.position))
-    nodeSkull.children.push(...pos)
-  }
+  // if (department.departmentsPositions) {
+  //   const pos = department.departmentsPositions.map(position => makeNodeFormatPosition(position.position))
+  //   nodeSkull.children.push(...pos)
+  // }
 
   return nodeSkull
 }
@@ -142,33 +141,56 @@ const getNodeClass = (node) => {
   // return `level-${nodeLevel}`
 }
 
-onMounted(fetchData)
+const onNodeSelect = (node) => {
+  console.log('🚀 ----------------------------🚀')
+  console.log('🚀 ~ onNodeSelect ~ node:', node.departmentName)
+  console.log('🚀 ----------------------------🚀')
+}
+
+const setNodeName = (name) => {
+  const splitted = name.split('*')
+  const newName = splitted[splitted.length - 1]
+  return newName
+}
+
+onMounted(async () => {
+  await fetchData()
+})
 </script>
 
 <style lang='scss'>
+.departments-chart-page {
+
+  .chart-wrapper {
+    width: calc(var(--screen-width) - 2rem) !important;
+    min-height: 70dvh;
+    overflow: auto;
+  }
+}
+
 .p-organizationchart-node-content {
   padding: 1rem;
   box-sizing: border-box;
   border-radius: 0.3rem;
   font-size: 0.75rem;
   font-weight: 500;
+  // width: 10rem;
+  // height: 4rem;
+  // align-content: center;
 
   &.ceo {
     background-color: #3787d8;
     color: #ffffff;
-    width: 10rem;
   }
 
   &.department {
     background-color: #54789c;
     color: #fff;
-    width: 10rem;
   }
 
   &.position {
     background-color: #f1f5f9;
     color: #88a4bf;
-    width: 10rem;
   }
 
   &.subposition {
@@ -179,7 +201,7 @@ onMounted(fetchData)
 
 
 .department-positions {
-  
+
   .position-name {
     text-align: left;
     font-weight: normal;
@@ -191,31 +213,7 @@ onMounted(fetchData)
   padding: 0 0.15rem;
 }
 
-/* .bg-indigo-100 {
-  background-color: #6f8ce0 !important;
-  padding: 20px;
+.node-card {
+  cursor: pointer;
 }
-
-.bg-purple-100 {
-  background-color: #9a67b3 !important;
-  padding: 20px;
-}
-
-.bg-teal-100 {
-  background-color: #66b2a8 !important;
-  padding: 20px;
-}
-
-.bg-pink-100 {
-  background-color: #f78da7 !important;
-  padding: 20px;
-}
-
-.bg-gray-100 {
-  background-color: #c4c4c4 !important;
-  padding: 20px;
-}
-.position-name{
-  text-align: left;
-} */
 </style>

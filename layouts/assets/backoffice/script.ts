@@ -66,6 +66,8 @@ export default defineComponent({
     // window.addEventListener('focus', async () => {
     //   await this.validateSession()
     // })
+    window.addEventListener('resize', this.updateScreenWidth);
+    this.updateScreenWidth()
   },
   methods: {
     // setcolor () {
@@ -96,5 +98,9 @@ export default defineComponent({
         this.$router.push({ path: "/" })
       }
     },
+    updateScreenWidth () {
+      const width = window.innerWidth
+      document.documentElement.style.setProperty('--screen-width', `${width <= 500 ? width + 12 : width}px`)
+    }
   }
 })

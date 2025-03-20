@@ -7,6 +7,10 @@ $border: 1px solid $border-color;
 $border-dashed: 1px dashed $border-color;
 $radius: 0.75rem;
 
+:root {
+  --screen-width: 0px;
+}
+
 @import '/resources/styles/breakpoints.scss';
 @import '/resources/styles/form.scss';
 @import '/resources/styles/buttons.scss';
