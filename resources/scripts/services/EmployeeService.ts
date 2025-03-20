@@ -43,7 +43,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees`, {
         headers,
         method: 'POST',
-        query: { ...employee },
+        body: { ...employee },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -59,7 +59,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees/${employee.employeeId}`, {
         headers,
         method: 'PUT',
-        query: { ...employee },
+        body: { ...employee },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -121,7 +121,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees/${employee.employeeId}/reactivate`, {
         headers,
         method: 'PUT',
-        query: { ...employee },
+        body: { ...employee },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -193,7 +193,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/persons`, {
         headers,
         method: 'POST',
-        query: { ...person },
+        body: { ...person },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -209,7 +209,7 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/persons/${person.personId}`, {
         headers,
         method: 'PUT',
-        query: { ...person },
+        body: { ...person },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

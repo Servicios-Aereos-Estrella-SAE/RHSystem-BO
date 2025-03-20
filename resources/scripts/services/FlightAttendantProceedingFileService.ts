@@ -6,7 +6,7 @@ export default class FlightAttendantProceedingFileService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -20,8 +20,8 @@ export default class FlightAttendantProceedingFileService {
 
     await $fetch(`${this.API_PATH}/flight-attendants/${flightAttendantId}/proceeding-files`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     const list = responseRequest.status === 200 ? responseRequest._data.data : []
@@ -29,23 +29,23 @@ export default class FlightAttendantProceedingFileService {
   }
 
 
-  async store (flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
+  async store(flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/flight-attendant-proceeding-files`, {
         headers,
         method: 'POST',
-        query: { ...flightAttendantProceedingFile },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...flightAttendantProceedingFile },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update (flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
+  async update(flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -53,37 +53,37 @@ export default class FlightAttendantProceedingFileService {
       await $fetch(`${this.API_PATH}/flight-attendant-proceeding-files/${flightAttendantProceedingFile.flightAttendantProceedingFileId}`, {
         headers,
         method: 'PUT',
-        query: { ...flightAttendantProceedingFile },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...flightAttendantProceedingFile },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async delete (flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
+  async delete(flightAttendantProceedingFile: FlightAttendantProceedingFileInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/flight-attendant-proceeding-files/${flightAttendantProceedingFile.flightAttendantProceedingFileId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async show (flightAttendantProceedingFileId: number) {
+  async show(flightAttendantProceedingFileId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/flight-attendant-proceeding-files/${flightAttendantProceedingFileId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const flightAttendantProceedingFile = responseRequest.status === 200 ? responseRequest._data.data : null
 
@@ -110,15 +110,15 @@ export default class FlightAttendantProceedingFileService {
   }
 
   async getExpiresAndExpiring(dateStart: string, dateEnd: string) {
-    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    const query = { 'dateStart': dateStart, 'dateEnd': dateEnd }
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/flight-attendant-proceeding-files/get-expired-and-expiring`, {
       headers,
       query: query,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     return responseRequest
   }

@@ -60,8 +60,11 @@
             <div class="buttons-group">
               <div class="input-box">
                 <Button v-if="canCreate" class="btn btn-block" @click="addNew">
-                  <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z" fill="#88a4bf" class="fill-000000"></path>
+                  <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                      fill="#88a4bf" class="fill-000000"></path>
                   </svg>
                   Employee
                 </Button>
@@ -171,18 +174,29 @@
               Address
             </Button>
             <Button :class="{ 'btn-active': isActive('records') }" class="btn" @click="onEditRecords">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.002 15.244 17 21.245a.75.75 0 0 1-1.182.613l-3.818-2.687-3.817 2.687a.75.75 0 0 1-1.181-.613l-.002-6A7.966 7.966 0 0 0 12 17a7.966 7.966 0 0 0 5.002-1.756ZM12 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M17.002 15.244 17 21.245a.75.75 0 0 1-1.182.613l-3.818-2.687-3.817 2.687a.75.75 0 0 1-1.181-.613l-.002-6A7.966 7.966 0 0 0 12 17a7.966 7.966 0 0 0 5.002-1.756ZM12 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
               Records
             </Button>
-            <!-- <Button :class="{ 'btn-active': isActive('banks') }" class="btn" @click="onEditBanks">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.968 2.325a1.75 1.75 0 0 1 2.064 0l7.421 5.416c.977.712.474 2.257-.734 2.26H4.28c-1.208-.003-1.71-1.548-.734-2.26l7.421-5.416ZM13 6.25a1 1 0 1 0-2 0 1 1 0 0 0 2 0ZM11.25 16h-2v-5h2v5ZM14.75 16h-2v-5h2v5ZM18.5 16h-2.25v-5h2.25v5ZM18.75 17H5.25A2.25 2.25 0 0 0 3 19.25v.5c0 .415.336.75.75.75h16.5a.75.75 0 0 0 .75-.75v-.5A2.25 2.25 0 0 0 18.75 17ZM7.75 16H5.5v-5h2.25v5Z" fill="#88a4bf" class="fill-212121"></path></svg>
+            <Button :class="{ 'btn-active': isActive('banks') }" class="btn" @click="onEditBanks">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M10.968 2.325a1.75 1.75 0 0 1 2.064 0l7.421 5.416c.977.712.474 2.257-.734 2.26H4.28c-1.208-.003-1.71-1.548-.734-2.26l7.421-5.416ZM13 6.25a1 1 0 1 0-2 0 1 1 0 0 0 2 0ZM11.25 16h-2v-5h2v5ZM14.75 16h-2v-5h2v5ZM18.5 16h-2.25v-5h2.25v5ZM18.75 17H5.25A2.25 2.25 0 0 0 3 19.25v.5c0 .415.336.75.75.75h16.5a.75.75 0 0 0 .75-.75v-.5A2.25 2.25 0 0 0 18.75 17ZM7.75 16H5.5v-5h2.25v5Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
               Banks
-            </Button> -->
+            </Button>
           </div>
 
-          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks" :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
-          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave" :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
+          <employeeInfoForm v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks"
+            :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
+          <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
+            :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
+          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
+            :click-on-close="() => { onCloseAddress() }" />
           <employeeRecords v-if="drawerRecords" :employee="employee" />
           <employeeBanks v-if="drawerBanks" :employee="employee" />
         </Sidebar>
@@ -210,11 +224,13 @@
         </Sidebar>
 
         <transition name="page">
-          <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete" @cancelDelete="onCancelEmployeeDelete" />
+          <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
+            @cancelDelete="onCancelEmployeeDelete" />
         </transition>
 
         <transition name="page">
-          <confirmRefuse v-if="drawerEmployeeSync" :actionType="'accept'" @confirmAccept="confirmSync" @cancelRefused="drawerEmployeeSync = false" />
+          <confirmRefuse v-if="drawerEmployeeSync" :actionType="'accept'" @confirmAccept="confirmSync"
+            @cancelRefused="drawerEmployeeSync = false" />
         </transition>
       </NuxtLayout>
     </div>
@@ -241,7 +257,7 @@
     }
   }
 
-  .employee-sidebar-photo-form{
+  .employee-sidebar-photo-form {
     width: 90% !important;
     max-width: 30rem !important;
 

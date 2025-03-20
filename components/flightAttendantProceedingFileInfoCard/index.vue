@@ -17,12 +17,6 @@
     <div v-else class="proceeding-file-date">
       ---
     </div>
-    <div v-if="flightAttendantProceedingFile.proceedingFile.proceedingFileIdentify" class="proceeding-file-identify">
-      {{ `${flightAttendantProceedingFile.proceedingFile.proceedingFileIdentify}` }}
-    </div>
-    <div v-else class="proceeding-file-identify">
-      ---
-    </div>
   </div>
 </template>
 
@@ -33,6 +27,6 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
-  
+
   @import './style';
 </style>
