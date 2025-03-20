@@ -5,7 +5,7 @@ export default class UserService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -15,7 +15,7 @@ export default class UserService {
   }
 
 
-  async getFilteredList (searchText: string, roleId: number | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList(searchText: string, roleId: number | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -27,54 +27,54 @@ export default class UserService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async store (user: UserInterface) {
+  async store(user: UserInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/users`, {
         headers,
         method: 'POST',
-        query: { ...user },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...user },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update (user: UserInterface) {
+  async update(user: UserInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/users/${user.userId}`, {
         headers,
         method: 'PUT',
-        query: { ...user },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...user },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async delete (user: UserInterface) {
+  async delete(user: UserInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/users/${user.userId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -82,14 +82,14 @@ export default class UserService {
 
 
 
-  async show (userId: number) {
+  async show(userId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/users/${userId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const user = responseRequest.status === 200 ? responseRequest._data.data.user : null
 
@@ -103,7 +103,7 @@ export default class UserService {
     }
   }
 
-  async recovery (userEmail: string) {
+  async recovery(userEmail: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
@@ -111,15 +111,15 @@ export default class UserService {
         headers,
         method: 'POST',
         query: { userEmail: userEmail },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async passwordReset (token: string, userPassword: string) {
+  async passwordReset(token: string, userPassword: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
@@ -127,32 +127,32 @@ export default class UserService {
         headers,
         method: 'POST',
         query: { token: token, userPassword: userPassword },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async verifyToken (token: string) {
+  async verifyToken(token: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/auth/request/verify/${token}`, {
         headers,
         method: 'POST',
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
-      
+
     }
     return responseRequest
   }
 
 
-  validateSamePass (password: string, passwordConfirm: string) {
+  validateSamePass(password: string, passwordConfirm: string) {
     return password === passwordConfirm
   }
 

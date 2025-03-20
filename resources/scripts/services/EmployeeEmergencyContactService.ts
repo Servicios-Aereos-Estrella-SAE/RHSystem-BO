@@ -23,7 +23,7 @@ export default class EmployeeEmergencyContactService {
       await $fetch(`${this.API_PATH}/employee-emergency-contacts`, {
         headers,
         method: 'POST',
-        query: { ...employeeEmergencyContact },
+        body: { ...employeeEmergencyContact },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -39,7 +39,7 @@ export default class EmployeeEmergencyContactService {
       await $fetch(`${this.API_PATH}/employee-emergency-contacts/${employeeEmergencyContact.employeeEmergencyContactId}`, {
         headers,
         method: 'PUT',
-        query: { ...employeeEmergencyContact },
+        body: { ...employeeEmergencyContact },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -84,30 +84,52 @@ export default class EmployeeEmergencyContactService {
   }
 
   validateInfo(employeeEmergencyContact: EmployeeEmergencyContactInterface): boolean {
-    if (!employeeEmergencyContact.employeeEmergencyContactFirstname) {
-      console.error('Wrong firstname');
-      return false;
+
+    const hasAtLeastOneField = this.hasAtLeastOneField(employeeEmergencyContact);
+
+    if (hasAtLeastOneField) {
+      if (!employeeEmergencyContact.employeeEmergencyContactFirstname) {
+        console.error('Wrong firstname');
+        return false;
+      }
+      if (!employeeEmergencyContact.employeeEmergencyContactLastname) {
+        console.error('Wrong lastname');
+        return false;
+      }
+      if (!employeeEmergencyContact.employeeEmergencyContactSecondLastname) {
+        console.error('Wrong secondlastname');
+        return false;
+      }
+      if (!employeeEmergencyContact.employeeEmergencyContactRelationship) {
+        console.error('Wrong relationship');
+        return false;
+      }
+      if (!employeeEmergencyContact.employeeEmergencyContactPhone) {
+        console.error('Wrong phone');
+        return false;
+      }
+      if (!employeeEmergencyContact.employeeId) {
+        console.error('Wrong employee id');
+        return false;
+      }
     }
-    if (!employeeEmergencyContact.employeeEmergencyContactLastname) {
-      console.error('Wrong lastname');
-      return false;
-    }
-    if (!employeeEmergencyContact.employeeEmergencyContactSecondLastname) {
-      console.error('Wrong secondlastname');
-      return false;
-    }
-    if (!employeeEmergencyContact.employeeEmergencyContactRelationship) {
-      console.error('Wrong relationship');
-      return false;
-    }
-    if (!employeeEmergencyContact.employeeEmergencyContactPhone) {
-      console.error('Wrong phone');
-      return false;
-    }
-    if (!employeeEmergencyContact.employeeId) {
-      console.error('Wrong employee id');
-      return false;
-    }
+
     return true;
+  }
+
+  hasAtLeastOneField(employeeEmergencyContact: EmployeeEmergencyContactInterface): boolean {
+    const fields = [
+      employeeEmergencyContact.employeeEmergencyContactFirstname,
+      employeeEmergencyContact.employeeEmergencyContactLastname,
+      employeeEmergencyContact.employeeEmergencyContactSecondLastname,
+      employeeEmergencyContact.employeeEmergencyContactRelationship,
+      employeeEmergencyContact.employeeEmergencyContactPhone,
+    ];
+
+    const hasAtLeastOneField = fields.some(field => field);
+    if (hasAtLeastOneField) {
+      return true
+    }
+    return false
   }
 }

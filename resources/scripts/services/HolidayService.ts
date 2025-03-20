@@ -13,7 +13,7 @@ export default class HolidayService {
     }
   }
 
-  async getFilteredList (searchText: string,firstDate:string | null, lastDate: string | null, page: number = 1, limit: number = 999999999) {
+  async getFilteredList(searchText: string, firstDate: string | null, lastDate: string | null, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -26,33 +26,33 @@ export default class HolidayService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-   async show(id: number) {
+  async show(id: number) {
     let responseRequest: any = null
     try {
       const headers = { ...this.GENERAL_HEADERS }
 
       await $fetch(`${this.API_PATH}/holidays/${id}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const holiday = responseRequest.status === 200 ? responseRequest._data.data : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              holiday: holiday
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            holiday: holiday
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -61,13 +61,12 @@ export default class HolidayService {
     let responseRequest: any = null
     try {
       const headers = { ...this.GENERAL_HEADERS }
-
       await $fetch(`${this.API_PATH}/holidays/${holiday.holidayId}`, {
         headers,
         method: 'PUT',
-        query: { ...holiday },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...holiday },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -76,15 +75,15 @@ export default class HolidayService {
 
   async store(holiday: HolidayInterface, iconId: number = 0) {
     let responseRequest: any = null
-    
+
     try {
       const headers = { ...this.GENERAL_HEADERS }
       await $fetch(`${this.API_PATH}/holidays`, {
         headers,
         method: 'POST',
-        query: { ...holiday },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...holiday },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -97,8 +96,8 @@ export default class HolidayService {
 
     await $fetch(`${this.API_PATH}/icons`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -111,8 +110,8 @@ export default class HolidayService {
     await $fetch(`${this.API_PATH}/holidays/${holiday.holidayId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest

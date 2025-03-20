@@ -4,7 +4,7 @@ import type { ProceedingFileTypeEmailInterface } from "../interfaces/ProceedingF
 export default class ProceedingFileTypeEmailService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
-  
+
   constructor() {
     const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
@@ -22,7 +22,7 @@ export default class ProceedingFileTypeEmailService {
       await $fetch(`${this.API_PATH}/proceeding-file-type-emails`, {
         method: 'POST',
         headers,
-        query: { ...proceedingFileTypeEmail },
+        body: { ...proceedingFileTypeEmail },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -38,7 +38,7 @@ export default class ProceedingFileTypeEmailService {
       await $fetch(`${this.API_PATH}/proceeding-file-type-emails/${proceedingFileTypeEmail.proceedingFileTypeEmailId}`, {
         method: 'PUT',
         headers,
-        query: { ...proceedingFileTypeEmail },
+        body: { ...proceedingFileTypeEmail },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
