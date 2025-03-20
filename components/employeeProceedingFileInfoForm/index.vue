@@ -7,11 +7,6 @@
     </h4>
     <div v-if="isReady" class="employee-proceeding-file-form">
       <div class="form-container">
-        <div class="input-box">
-          <label for="userActive">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
-          <InputSwitch v-model="activeSwicht" :disabled="!canManageFiles" />
-        </div>
         <div v-if="!employeeProceedingFile.proceedingFile?.proceedingFileTypeId" class="input-box">
           <label for="proceeding-file">
             Type

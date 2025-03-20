@@ -20,14 +20,6 @@
           </span>
         </div>
       </div>
-      <div class="opt-val status">
-        <div class="val"
-          :class="{ active: aircraftProceedingFile.proceedingFile.proceedingFileActive === 1, inactive: aircraftProceedingFile.proceedingFile.proceedingFileActive !== 1 }">
-          <span>
-            {{ aircraftProceedingFile.proceedingFile.proceedingFileActive === 1 ? 'File Active' : 'File Inactive' }}
-          </span>
-        </div>
-      </div>
     </div>
     <div class="menu-tools">
       <Button type="button" @click="toggle" class="btn btn-gray btn-menu-tools" aria-haspopup="true"

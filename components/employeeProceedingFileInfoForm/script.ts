@@ -39,7 +39,6 @@ export default defineComponent({
     isReady: false,
     files: [] as Array<any>,
     proceedingFile: null as ProceedingFileInterface | null,
-    activeSwicht: true,
     expirationAt: '' as string,
     displayExpirationAtCalendar: false as boolean,
     proceedingFileTypePropertyCategories: [] as Array<any>,
@@ -72,11 +71,6 @@ export default defineComponent({
       this.proceedingFile.proceedingFileExpirationAt = expirationAt
       this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
     }
-    let isActive: number = 1
-    if (this.proceedingFile.proceedingFileId) {
-      isActive = this.proceedingFile.proceedingFileActive
-    }
-    this.activeSwicht = isActive === 1 ? true : false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
@@ -154,7 +148,6 @@ export default defineComponent({
         const files = this.files.length > 0 ? this.files[0] : null
         const proceedingFileExpirationAtTemp = this.proceedingFile.proceedingFileExpirationAt
         let proceedingFileResponse = null
-        this.proceedingFile.proceedingFileActive = this.activeSwicht ? 1 : 0
         if (!this.proceedingFile.proceedingFileId) {
           proceedingFileResponse = await proceedingFileService.store(this.proceedingFile, files)
         } else {

@@ -7,11 +7,6 @@
     <div v-if="isReady" class="customer-proceeding-file-form">
       <div class="form-container">
         <div class="input-box">
-          <label for="userActive">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
-          <InputSwitch v-model="activeSwicht" />
-        </div>
-        <div class="input-box">
           <label for="proceeding-file">
             Type
           </label>

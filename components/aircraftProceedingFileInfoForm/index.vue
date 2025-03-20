@@ -7,12 +7,6 @@
     <div v-if="isReady" class="aircraft-proceeding-file-form">
       <div class="form-container">
         <div class="input-box">
-          <label for="aircraftActive">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}
-          </label>
-          <InputSwitch v-model="activeSwicht" />
-        </div>
-        <div class="input-box">
           <label for="proceeding-file">
             Proceeding file
           </label>
