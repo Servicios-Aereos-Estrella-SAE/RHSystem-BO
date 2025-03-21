@@ -28,8 +28,6 @@
         </div>
         <div v-else class="empty">
           Empty bank account list.
-          <br>
-          Select other folder or add a file
         </div>
 
         <div class="card flex justify-content-center">

@@ -15,7 +15,7 @@
                <aircraftDocumentCard :clickOnCard="() => { setActive('aircraft')}"></aircraftDocumentCard>
               </div>
             </VueCarSlide>
-            <!-- <VueCarSlide v-if="canReadEmployees" :key="1">
+            <VueCarSlide v-if="canReadEmployees" :key="1">
               <div class="carousel__item">
                 <employeeDocumentCard :clickOnCard="() => { setActive('employees') }"></employeeDocumentCard>
               </div>
@@ -34,10 +34,10 @@
               <div class="carousel__item">
                 <flightAttendantDocumentCard :clickOnCard="() => { setActive('flight-attendant') }"></flightAttendantDocumentCard>
               </div>
-            </VueCarSlide> -->
-            <!-- <template #addons>
+            </VueCarSlide>
+            <template #addons>
               <VueCarPagination />
-            </template> -->
+            </template>
           </VueCarCarousel>
         </div>
 
