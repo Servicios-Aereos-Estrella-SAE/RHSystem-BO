@@ -11,8 +11,6 @@ import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces
 import ProceedingFileTypeService from '~/resources/scripts/services/ProceedingFileTypeService';
 import ProceedingFileService from '~/resources/scripts/services/ProceedingFilleService';
 import { DateTime } from 'luxon';
-import type { ProceedingFileStatusInterface } from '~/resources/scripts/interfaces/ProceedingFileStatusInterface';
-import ProceedingFileStatusService from '~/resources/scripts/services/ProceedingFileStatusService';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import type { ProceedingFileTypePropertyValueInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyValueInterface';
 import type { ProceedingFileTypePropertyInterface } from '~/resources/scripts/interfaces/ProceedingFileTypePropertyInterface';
@@ -35,25 +33,14 @@ export default defineComponent({
   },
   data: () => ({
     proceedingFileTypesList: [] as ProceedingFileTypeInterface[],
-    proceedingFileStatusList: [] as ProceedingFileStatusInterface[],
     submitted: false,
     currentEmployeeProceedingFile: null as EmployeeProceedingFileInterface | null,
     isNewEmployeeProceedingFile: false,
     isReady: false,
     files: [] as Array<any>,
     proceedingFile: null as ProceedingFileInterface | null,
-    activeSwicht: true,
-    processCompleteSwicht: false,
     expirationAt: '' as string,
     displayExpirationAtCalendar: false as boolean,
-    signatureDate: '' as string,
-    displaySignatureDateCalendar: false as boolean,
-    effectiveStartDate: '' as string,
-    displayEffectiveStartDateCalendar: false as boolean,
-    effectiveEndDate: '' as string,
-    displayEffectiveEndDateCalendar: false as boolean,
-    inclusionInTheFilesDate: '' as string,
-    displayInclusionInTheFilesDateCalendar: false as boolean,
     proceedingFileTypePropertyCategories: [] as Array<any>,
     drawerProceedingFileTypePropertyValueDelete: false,
     proceedingFileTypePropertyValue: null as ProceedingFileTypePropertyValueInterface | null,
@@ -65,18 +52,6 @@ export default defineComponent({
     'proceedingFile.proceedingFileExpirationAt'(val: Date) {
       this.expirationAt = this.getDateFormatted(val)
     },
-    'proceedingFile.proceedingFileSignatureDate'(val: Date) {
-      this.signatureDate = this.getDateFormatted(val)
-    },
-    'proceedingFile.proceedingFileEffectiveStartDate'(val: Date) {
-      this.effectiveStartDate = this.getDateFormatted(val)
-    },
-    'proceedingFile.proceedingFileEffectiveEndDate'(val: Date) {
-      this.effectiveEndDate = this.getDateFormatted(val)
-    },
-    'proceedingFile.proceedingFileInclusionInTheFilesDate'(val: Date) {
-      this.inclusionInTheFilesDate = this.getDateFormatted(val)
-    },
   },
   async mounted() {
     this.proceedingFile = {
@@ -85,16 +60,8 @@ export default defineComponent({
       proceedingFilePath: this.employeeProceedingFile.proceedingFile?.proceedingFilePath,
       proceedingFileExpirationAt: this.employeeProceedingFile.proceedingFile?.proceedingFileExpirationAt,
       proceedingFileActive: this.employeeProceedingFile.proceedingFile?.proceedingFileActive,
-      proceedingFileIdentify: this.employeeProceedingFile.proceedingFile?.proceedingFileIdentify,
       proceedingFileTypeId: this.employeeProceedingFile.proceedingFile?.proceedingFileTypeId,
       proceedingFileObservations: this.employeeProceedingFile.proceedingFile?.proceedingFileObservations,
-      proceedingFileAfacRights: this.employeeProceedingFile.proceedingFile?.proceedingFileAfacRights,
-      proceedingFileSignatureDate: this.employeeProceedingFile.proceedingFile?.proceedingFileSignatureDate,
-      proceedingFileEffectiveStartDate: this.employeeProceedingFile.proceedingFile?.proceedingFileEffectiveStartDate,
-      proceedingFileEffectiveEndDate: this.employeeProceedingFile.proceedingFile?.proceedingFileEffectiveEndDate,
-      proceedingFileInclusionInTheFilesDate: this.employeeProceedingFile.proceedingFile?.proceedingFileInclusionInTheFilesDate,
-      proceedingFileOperationCost: this.employeeProceedingFile.proceedingFile?.proceedingFileOperationCost,
-      proceedingFileCompleteProcess: this.employeeProceedingFile.proceedingFile?.proceedingFileCompleteProcess
     } as ProceedingFileInterface
     if (this.proceedingFile.proceedingFileExpirationAt) {
       const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
@@ -104,56 +71,10 @@ export default defineComponent({
       this.proceedingFile.proceedingFileExpirationAt = expirationAt
       this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
     }
-    if (this.proceedingFile.proceedingFileSignatureDate) {
-      const signatureDate = DateTime.fromISO(this.proceedingFile.proceedingFileSignatureDate.toString(), { setZone: true })
-        .setZone('America/Mexico_City')
-        .setLocale('en')
-        .toJSDate()
-      this.proceedingFile.proceedingFileSignatureDate = signatureDate
-      this.signatureDate = this.getDateFormatted(this.proceedingFile.proceedingFileSignatureDate as Date)
-    }
-    if (this.proceedingFile.proceedingFileEffectiveStartDate) {
-      const effectiveStartDate = DateTime.fromISO(this.proceedingFile.proceedingFileEffectiveStartDate.toString(), { setZone: true })
-        .setZone('America/Mexico_City')
-        .setLocale('en')
-        .toJSDate()
-      this.proceedingFile.proceedingFileEffectiveStartDate = effectiveStartDate
-      this.effectiveStartDate = this.getDateFormatted(this.proceedingFile.proceedingFileEffectiveStartDate as Date)
-    }
-    if (this.proceedingFile.proceedingFileEffectiveEndDate) {
-      const effectiveEndDate = DateTime.fromISO(this.proceedingFile.proceedingFileEffectiveEndDate.toString(), { setZone: true })
-        .setZone('America/Mexico_City')
-        .setLocale('en')
-        .toJSDate()
-      this.proceedingFile.proceedingFileEffectiveEndDate = effectiveEndDate
-      this.effectiveEndDate = this.getDateFormatted(this.proceedingFile.proceedingFileEffectiveEndDate as Date)
-    }
-    if (this.proceedingFile.proceedingFileInclusionInTheFilesDate) {
-      const inclusionInTheFilesDate = DateTime.fromISO(this.proceedingFile.proceedingFileInclusionInTheFilesDate.toString(), { setZone: true })
-        .setZone('America/Mexico_City')
-        .setLocale('en')
-        .toJSDate()
-      this.proceedingFile.proceedingFileInclusionInTheFilesDate = inclusionInTheFilesDate
-      this.inclusionInTheFilesDate = this.getDateFormatted(this.proceedingFile.proceedingFileInclusionInTheFilesDate as Date)
-    }
-    if (this.employeeProceedingFile.proceedingFile) {
-      this.proceedingFile.proceedingFileStatusId = this.employeeProceedingFile.proceedingFile.proceedingFileStatus?.proceedingFileStatusId
-    }
-    let isActive: number = 1
-    if (this.proceedingFile.proceedingFileId) {
-      isActive = this.proceedingFile.proceedingFileActive
-    }
-    this.activeSwicht = isActive === 1 ? true : false
-    let isProcessComplete: number = 0
-    if (this.proceedingFile.proceedingFileId) {
-      isProcessComplete = this.proceedingFile.proceedingFileCompleteProcess
-    }
-    this.processCompleteSwicht = isProcessComplete === 1 ? true : false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     await this.getProceedingFileTypes()
-    await this.getProceedingFileStatus()
     this.isNewEmployeeProceedingFile = !this.employeeProceedingFile.employeeProceedingFileId ? true : false
     if (this.employeeProceedingFile.employeeProceedingFileId) {
       const employeeProceedingFileService = new EmployeeProceedingFileService()
@@ -174,15 +95,6 @@ export default defineComponent({
       const proceedingFileTypeService = new ProceedingFileTypeService()
       const proceedingFileTypeResponse = await proceedingFileTypeService.getByArea('employee')
       this.proceedingFileTypesList = proceedingFileTypeResponse._data.data.proceedingFileTypes
-      myGeneralStore.setFullLoader(false)
-    },
-    async getProceedingFileStatus() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.proceedingFileStatusList = []
-      const proceedingFileStatusService = new ProceedingFileStatusService()
-      const proceedingFileStatusResponse = await proceedingFileStatusService.getFilteredList('')
-      this.proceedingFileStatusList = proceedingFileStatusResponse._data.data.proceedingFileStatus.data
       myGeneralStore.setFullLoader(false)
     },
     async onSave() {
@@ -236,8 +148,6 @@ export default defineComponent({
         const files = this.files.length > 0 ? this.files[0] : null
         const proceedingFileExpirationAtTemp = this.proceedingFile.proceedingFileExpirationAt
         let proceedingFileResponse = null
-        this.proceedingFile.proceedingFileActive = this.activeSwicht ? 1 : 0
-        this.proceedingFile.proceedingFileCompleteProcess = this.processCompleteSwicht ? 1 : 0
         if (!this.proceedingFile.proceedingFileId) {
           proceedingFileResponse = await proceedingFileService.store(this.proceedingFile, files)
         } else {
@@ -355,18 +265,6 @@ export default defineComponent({
     },
     handlerDisplayExpirationAt() {
       this.displayExpirationAtCalendar = true
-    },
-    handlerDisplaySignatureDate() {
-      this.displaySignatureDateCalendar = true
-    },
-    handlerDisplayEffectiveStartDate() {
-      this.displayEffectiveStartDateCalendar = true
-    },
-    handlerDisplayEffectiveEndDate() {
-      this.displayEffectiveEndDateCalendar = true
-    },
-    handlerDisplayInclusionInTheFilesDate() {
-      this.displayInclusionInTheFilesDateCalendar = true
     },
     validateFilesProperty(event: any, value: any) {
       let validFiles = event.files;

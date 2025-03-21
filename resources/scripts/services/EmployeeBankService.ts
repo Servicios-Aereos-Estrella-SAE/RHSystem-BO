@@ -23,7 +23,7 @@ export default class EmployeeBankService {
       await $fetch(`${this.API_PATH}/employee-banks`, {
         headers,
         method: 'POST',
-        query: { ...employeeBank },
+        body: { ...employeeBank },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
@@ -39,7 +39,7 @@ export default class EmployeeBankService {
       await $fetch(`${this.API_PATH}/employee-banks/${employeeBank.employeeBankId}`, {
         headers,
         method: 'PUT',
-        query: { ...employeeBank },
+        body: { ...employeeBank },
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

@@ -6,7 +6,7 @@ export default class EmployeeSpouseService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
     const { token } = useAuth()
@@ -16,60 +16,60 @@ export default class EmployeeSpouseService {
   }
 
 
-  async store (employeeSpouse: EmployeeSpouseInterface) {
+  async store(employeeSpouse: EmployeeSpouseInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee-spouses`, {
         headers,
         method: 'POST',
-        query: { ...employeeSpouse },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeSpouse },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update (employeeSpouse: EmployeeSpouseInterface) {
+  async update(employeeSpouse: EmployeeSpouseInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employee-spouses/${employeeSpouse.employeeSpouseId}`, {
         headers,
         method: 'PUT',
-        query: { ...employeeSpouse },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeSpouse },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async delete (employeeSpouse: EmployeeSpouseInterface) {
+  async delete(employeeSpouse: EmployeeSpouseInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-spouses/${employeeSpouse.employeeSpouseId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async show (employeeSpouseId: number) {
+  async show(employeeSpouseId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employee-spouses/${employeeSpouseId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const employeeSpouse = responseRequest.status === 200 ? responseRequest._data.data : null
 

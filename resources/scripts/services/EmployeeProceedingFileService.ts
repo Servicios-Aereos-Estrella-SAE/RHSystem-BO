@@ -5,8 +5,8 @@ import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterf
 export default class EmployeeProceedingFileService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
-  
-  constructor () {
+
+  constructor() {
     const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
@@ -22,68 +22,68 @@ export default class EmployeeProceedingFileService {
     await $fetch(`${this.API_PATH}/employees/${employeeId}/proceeding-files`, {
       headers,
       query: { type: fileTypeId },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     const list = responseRequest.status === 200 ? responseRequest._data.data : []
     return list
   }
 
-  async store (employeeProceedingFile: EmployeeProceedingFileInterface) {
+  async store(employeeProceedingFile: EmployeeProceedingFileInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees-proceeding-files`, {
         headers,
         method: 'POST',
-        query: { ...employeeProceedingFile },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeProceedingFile },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async update (employeeProceedingFile: EmployeeProceedingFileInterface) {
+  async update(employeeProceedingFile: EmployeeProceedingFileInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
       await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFile.employeeProceedingFileId}`, {
         headers,
         method: 'PUT',
-        query: { ...employeeProceedingFile },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        body: { ...employeeProceedingFile },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
     return responseRequest
   }
 
-  async delete (employeeProceedingFile: EmployeeProceedingFileInterface) {
+  async delete(employeeProceedingFile: EmployeeProceedingFileInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFile.employeeProceedingFileId}`, {
       headers,
       method: 'DELETE',
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async show (employeeProceedingFileId: number) {
+  async show(employeeProceedingFileId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/employees-proceeding-files/${employeeProceedingFileId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const employeeProceedingFile = responseRequest.status === 200 ? responseRequest._data.data : null
 
@@ -111,14 +111,14 @@ export default class EmployeeProceedingFileService {
 
   async getExpiresAndExpiring(dateStart: string, dateEnd: string) {
     const headers = { ...this.GENERAL_HEADERS }
-    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    const query = { 'dateStart': dateStart, 'dateEnd': dateEnd }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/employees-proceeding-files/get-expired-and-expiring`, {
       headers,
       query: query,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     return responseRequest
   }
