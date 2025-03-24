@@ -94,4 +94,20 @@ export default class EmployeeShiftChangeService {
 
     return true;
   }
+
+  async getByEmployee(employeeId: number, date: string | null) {
+    const query = { 'date': date }
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/employee-shift-changes-by-employee/${employeeId}`, {
+      headers,
+      query: query,
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    const list = responseRequest.status === 200 ? responseRequest._data.data : []
+    return list
+  }
 }

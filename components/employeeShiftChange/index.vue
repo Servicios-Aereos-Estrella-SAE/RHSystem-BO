@@ -1,12 +1,17 @@
 <template>
   <div v-if="isReady" class="employee-shift-changes">
     <Toast />
+    <employeeModalInfoCard :employee="employee" />
+    <h1>
+      Shift change to
+      {{ selectedChangeDate }}
+    </h1>
+
     <div v-if="isReady" class="employee">
-      <div class="form-container">
-        <div class="files-wrapper">
-          <div>
-            <div class="files-header">
-              <div></div>
+      <div class="">
+        <div v-if="displayAddButton" class="employee-shift-change-wrapper">
+          <div class="head-page">
+            <div class="input-box">
               <Button class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
@@ -19,34 +24,37 @@
             </div>
           </div>
         </div>
-
         <div v-if="employeeShiftChangesList.length > 0" class="employee-shift-change-wrapper">
-          <div v-for="(employeeShiftChange, index) in employeeShiftChangesList" :key="`employee-shift-change-${index}`">
-            <employeeShiftChangeInfoCard :employeeShiftChange="employeeShiftChange"
+          <div v-for="(employeeShiftChange, index) in employeeShiftChangesList" :key="`change-${index}`">
+            <employeeShiftChangeCard :employeeShiftChange="employeeShiftChange" :isDeleted="isDeleted"
               :click-on-edit="() => { onEdit(employeeShiftChange) }"
-              :click-on-delete="() => { onDelete(employeeShiftChange) }" :isDeleted="isDeleted" />
+              :click-on-delete="() => { onDelete(employeeShiftChange) }"
+              :canManageToPreviousDays="canManageToPreviousDays" :canManageChange="canManageChange" />
           </div>
         </div>
-        <div v-else class="empty">
-          Empty file list.
-          <br>
-          Select other folder or add a file
-        </div>
-
-        <div class="card flex justify-content-center">
-          <Sidebar v-model:visible="drawerEmployeeShiftChangeForm" header="Employee shift change" position="right"
-            class="employee-shift-change-form-sidebar" :showCloseIcon="true">
-            <employeeShiftChangeInfoForm :employeeShiftChange="employeeShiftChange" :employee="employee"
-              @onEmployeeShiftChangeSave="onSave" />
-          </Sidebar>
+        <div v-else class="employee-shift-change-wrapper">
+          <div class="empty-data">
+            No shift changes for today
+          </div>
         </div>
       </div>
     </div>
+    <div v-else class="loader">
+      <ProgressSpinner />
+    </div>
+
+    <Sidebar v-model:visible="drawerShiftChangeForm" header="form" position="right"
+      class="employee-shift-change-form-sidebar" :showCloseIcon="true">
+      <employeeShiftChangeInfoForm :employeeShiftChange="employeeShiftChange" :employee="employee" :date="date"
+        :shift="shift" @onShiftChangeSave="onSave" @onEmployeeShiftChangeSaveAll="onSaveAll" />
+    </Sidebar>
 
     <transition name="page">
-      <confirmDelete v-if="drawerEmployeeShiftChangeDelete" @confirmDelete="confirmDelete"
-        @cancelDelete="drawerEmployeeShiftChangeDelete = false" />
+      <confirmDelete v-if="drawerShiftChangeDelete" @confirmDelete="confirmDelete"
+        @cancelDelete="drawerShiftChangeDelete = false" />
     </transition>
+
+
   </div>
 </template>
 
@@ -56,16 +64,13 @@
   export default Script
 </script>
 
-<style lang="scss" scoped>
-  @import './style';
-</style>
-
 <style lang="scss">
+  @import './style';
   @import '/resources/styles/variables.scss';
 
   .employee-shift-change-form-sidebar {
     width: 100% !important;
-    max-width: 45rem !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
