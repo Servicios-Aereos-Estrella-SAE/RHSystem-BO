@@ -1,7 +1,7 @@
 @import '/resources/styles/variables.scss';
 
 
-.shift-exception-info-form {
+.employee-shift-change-info-form {
   position: relative;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
@@ -24,18 +24,31 @@
     margin-top: 0.5rem;
   }
 
-  .loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 50vh;
+
+  .date-box-container {
+    width: 100%;
+    display: block;
   }
-  .checkbox-item {
-    display: flex;
-    align-items: center; /* Alinea el texto y el checkbox verticalmente */
+
+  .date-box {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
   }
-  .checkbox-item label {
-    margin-top: 0.5rem;
-    margin-left: 0.5rem; /* Espacio entre el checkbox y el texto */
+
+  .date-box-controller {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 4rem;
+    gap: 0.5rem;
+  }
+
+  .p-autocomplete {
+    width: 100%;
+
+    input {
+      width: 100%;
+    }
   }
 }

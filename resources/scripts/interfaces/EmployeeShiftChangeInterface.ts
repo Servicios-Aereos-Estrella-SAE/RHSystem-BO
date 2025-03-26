@@ -3,7 +3,7 @@ interface EmployeeShiftChangeInterface {
   employeeShiftChangeId?: number | null
   employeeIdFrom: number | null
   shiftIdFrom: number | null
-  employeeShiftChangeDateFrom: string
+  employeeShiftChangeDateFrom: string | Date
   employeeShiftChangeDateFromIsRestDay: number
   employeeIdTo: number | null
   shiftIdTo: number | null

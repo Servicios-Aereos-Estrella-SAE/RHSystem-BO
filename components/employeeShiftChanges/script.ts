@@ -71,7 +71,7 @@ export default defineComponent({
 
     this.selectedDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
-    await this.getShiftEmployee()
+    await this.getShiftChangeEmployee()
 
     if (this.employee.deletedAt) {
       this.isDeleted = true
@@ -138,14 +138,15 @@ export default defineComponent({
       today.setHours(0, 0, 0, 0)
       return inputDate >= today
     },
-    async getShiftEmployee() {
+    async getShiftChangeEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.employeeShiftChangesList = []
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
       const employeeShiftChangeService = new EmployeeShiftChangeService()
       const employeeShiftChangeResponse = await employeeShiftChangeService.getByEmployee(employeeId, this.selectedDate)
-      this.employeeShiftChangesList = employeeShiftChangeResponse
+      this.employeeShiftChangesList = employeeShiftChangeResponse.employeeShiftChanges
+      console.log(employeeShiftChangeResponse)
       myGeneralStore.setFullLoader(false)
     },
     addNew() {

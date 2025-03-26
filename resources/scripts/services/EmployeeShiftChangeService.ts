@@ -100,7 +100,7 @@ export default class EmployeeShiftChangeService {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/employee-shift-changes-by-employee/${employeeId}`, {
+    await $fetch(`${this.API_PATH}/employee-shift-changes/by-employee/${employeeId}`, {
       headers,
       query: query,
       onResponse({ response }) { responseRequest = response },

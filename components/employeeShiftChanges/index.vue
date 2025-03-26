@@ -29,7 +29,7 @@
             <employeeShiftChangeCard :employeeShiftChange="employeeShiftChange" :isDeleted="isDeleted"
               :click-on-edit="() => { onEdit(employeeShiftChange) }"
               :click-on-delete="() => { onDelete(employeeShiftChange) }"
-              :canManageToPreviousDays="canManageToPreviousDays" :canManageChange="canManageChange" />
+              :canManageToPreviousDays="canManageToPreviousDays" :canManageShiftChange="canManageChange" />
           </div>
         </div>
         <div v-else class="employee-shift-change-wrapper">
@@ -43,14 +43,14 @@
       <ProgressSpinner />
     </div>
 
-    <Sidebar v-model:visible="drawerShiftChangeForm" header="form" position="right"
+    <Sidebar v-model:visible="drawerEmployeeShiftChangeForm" header="form" position="right"
       class="employee-shift-change-form-sidebar" :showCloseIcon="true">
       <employeeShiftChangeInfoForm :employeeShiftChange="employeeShiftChange" :employee="employee" :date="date"
         :shift="shift" @onShiftChangeSave="onSave" @onEmployeeShiftChangeSaveAll="onSaveAll" />
     </Sidebar>
 
     <transition name="page">
-      <confirmDelete v-if="drawerShiftChangeDelete" @confirmDelete="confirmDelete"
+      <confirmDelete v-if="drawerEmployeeShiftChangeDelete" @confirmDelete="confirmDelete"
         @cancelDelete="drawerShiftChangeDelete = false" />
     </transition>
 

@@ -41,6 +41,7 @@ export default defineComponent({
     displayInputCalendar: false as boolean,
     displayCalendar: false,
     drawerShiftExceptions: false,
+    drawerShiftChanges: false,
     drawerShiftException: false,
     selectedExceptionDate: new Date() as Date,
     displaySidebarVacations: false as boolean,
@@ -256,6 +257,12 @@ export default defineComponent({
       this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftExceptions = true
     },
+    onClickShiftChanges(employeeCalendar: AssistDayInterface) {
+      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      this.currentShift = employeeCalendar.assist.dateShift
+      this.drawerShiftChanges = true
+      console.log('aqui')
+    },
     onClickException() {
       this.drawerShiftException = true
 
@@ -303,6 +310,15 @@ export default defineComponent({
         this.drawerExceptionRequestsError = true
         this.drawerShiftException = false
       }
+      myGeneralStore.setFullLoader(false)
+      this.isReady = true
+    },
+    async onSaveShiftChanges() {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.getShifts()
+      await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
       this.isReady = true
     },
