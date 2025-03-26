@@ -10,6 +10,7 @@ import { DateTime } from 'luxon'
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface'
+import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 
 export default defineComponent({
   components: {
@@ -22,6 +23,9 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
     shift: { type: Object as PropType<ShiftInterface>, required: true },
+    employeeCalendar: {
+      type: Object as PropType<AssistDayInterface>, required: true
+    },
     canManageChange: { type: Boolean, required: true },
   },
   data: () => ({
@@ -72,7 +76,6 @@ export default defineComponent({
     this.selectedDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftChangeEmployee()
-
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
@@ -146,16 +149,21 @@ export default defineComponent({
       const employeeShiftChangeService = new EmployeeShiftChangeService()
       const employeeShiftChangeResponse = await employeeShiftChangeService.getByEmployee(employeeId, this.selectedDate)
       this.employeeShiftChangesList = employeeShiftChangeResponse.employeeShiftChanges
-      console.log(employeeShiftChangeResponse)
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
+      let employeeShiftChangeDateFromIsRestDay = 0
+      if (this.employeeCalendar.assist) {
+        if (this.employeeCalendar.assist.isRestDay) {
+          employeeShiftChangeDateFromIsRestDay = 1
+        }
+      }
       const newEmployeeShiftChange: EmployeeShiftChangeInterface = {
         employeeShiftChangeId: null,
         employeeIdFrom: this.employee.employeeId,
         shiftIdFrom: this.shift.shiftId,
         employeeShiftChangeDateFrom: this.selectedDate,
-        employeeShiftChangeDateFromIsRestDay: 0,
+        employeeShiftChangeDateFromIsRestDay: employeeShiftChangeDateFromIsRestDay,
         employeeIdTo: null,
         shiftIdTo: null,
         employeeShiftChangeDateTo: null,

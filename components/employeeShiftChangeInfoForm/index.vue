@@ -3,12 +3,12 @@
     <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ selectedDate }}
-      <br /><br />
       {{ isNewEmployeeShiftChange ? 'Add shift change' : 'Update shift change' }}
-
     </h1>
-
+    <span>
+      {{ selectedDate }}<br />
+      {{ dateRestDayFrom }}
+    </span>
     <div v-if="isReady" class="employee-shift-change-form">
       <div class="form-container">
         <div v-if="isNewEmployeeShiftChange" class="input-box">
@@ -77,6 +77,12 @@
           </AutoComplete>
           <InputText v-else v-model="employeeToSelectedName" readonly />
           <small class="p-error" v-if="submitted && !employeeShiftChange.employeeIdTo">Employee to is required.</small>
+        </div>
+        <div class="input-box">
+          <label for="shift">
+            Day to
+          </label>
+          <InputText :value="dateRestDayTo" readonly class="capitalize" />
         </div>
         <div class="input-box">
           <label for="shift">

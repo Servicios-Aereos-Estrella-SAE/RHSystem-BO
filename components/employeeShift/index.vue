@@ -127,7 +127,8 @@
     <Sidebar v-model:visible="drawerShiftChanges" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
       header="Employee exceptions" position="right" class="shift-changes-sidebar">
       <employeeShiftChanges :employee="employee" :date="selectedExceptionDate" :shift="currentShift"
-        :canManageChange="canManageShiftOrException" @saveShiftChanges="onSaveShiftChanges" />
+        :employeeCalendar="currentEmployeeCalendar" :canManageChange="canManageShiftOrException"
+        @saveShiftChanges="onSaveShiftChanges" />
     </Sidebar>
 
 

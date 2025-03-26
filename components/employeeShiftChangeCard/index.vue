@@ -10,6 +10,16 @@
         </div>
       </div>
       <div class="description">
+
+        <div v-if="employeeShiftChange.employeeShiftChangeDateFrom">
+          Date from: {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateFrom) }}
+        </div>
+        <div v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1">
+          Day from: Rest day
+        </div>
+        <div v-else>
+          Day from: Work day
+        </div><br>
         <div v-if="employeeShiftChange.employeeTo" class="employee">
           Employee To: {{ employeeShiftChange.employeeTo.employeeFirstName }} {{
           employeeShiftChange.employeeTo.employeeLastName
@@ -18,13 +28,15 @@
         <div v-if="employeeShiftChange.shiftTo">
           Shift To: {{ employeeShiftChange.shiftTo.shiftName }}
         </div>
-        <div v-if="employeeShiftChange.employeeShiftChangeDateFrom">
-          Date from: {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateFrom) }}
-        </div>
         <div v-if="employeeShiftChange.employeeShiftChangeDateTo">
           Date to: {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateTo) }}
         </div>
-
+        <div v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1">
+          Day to: Rest day
+        </div>
+        <div v-else>
+          Day to: Work day
+        </div>
       </div>
 
       <div class="box-tools-footer">

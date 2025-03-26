@@ -21,7 +21,6 @@ export default defineComponent({
 
   },
   mounted() {
-    console.log(this.employeeShiftChange)
   },
   methods: {
     getFormattedDate(date: string) {

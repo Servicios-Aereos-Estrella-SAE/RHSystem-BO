@@ -53,6 +53,7 @@ export default defineComponent({
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
     exceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
     currentShift: null as ShiftInterface | null,
+    currentEmployeeCalendar: null as AssistDayInterface | null,
     canManageShiftOrException: true,
     startDateLimit: DateTime.local(2023, 12, 29).toJSDate()
   }),
@@ -261,7 +262,7 @@ export default defineComponent({
       this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
       this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftChanges = true
-      console.log('aqui')
+      this.currentEmployeeCalendar = employeeCalendar
     },
     onClickException() {
       this.drawerShiftException = true

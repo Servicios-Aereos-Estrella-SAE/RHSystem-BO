@@ -45,8 +45,10 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     shiftList: [] as EmployeeShiftInterface[],
-    employeeToSelectedName: '',
-    dateTo: ''
+    dateRestDayFrom: 'Work day' as string,
+    employeeToSelectedName: '' as string,
+    dateTo: '' as string,
+    dateRestDayTo: '' as string
   }),
   computed: {
     selectedDate() {
@@ -55,12 +57,20 @@ export default defineComponent({
     }
   },
   watch: {
+    'employeeShiftChange.employeeShiftChangeDateTo'(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.setShiftTo();
+      }
+    },
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
     this.isNewEmployeeShiftChange = !this.employeeShiftChange.employeeShiftChangeId ? true : false
+    if (this.employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1) {
+      this.dateRestDayFrom = 'Rest day'
+    }
     if (this.employeeShiftChange.employeeShiftChangeId) {
       const employeeShiftChangeService = new EmployeeShiftChangeService()
       const employeeShiftChangeResponse = await employeeShiftChangeService.show(this.employeeShiftChange.employeeShiftChangeId)
@@ -68,15 +78,14 @@ export default defineComponent({
       if (employeeShiftChangeResponse.status === 200) {
         this.currentEmployeeShiftChange = employeeShiftChangeResponse._data.data.employeeShiftChange.employeeShiftChange
       }
-      console.log(this.currentEmployeeShiftChange)
       if (this.currentEmployeeShiftChange && this.currentEmployeeShiftChange.employeeShiftChangeDateTo) {
-        const currentDate = `${this.currentEmployeeShiftChange.employeeShiftChangeDateTo}`
-        console.log(currentDate)
         const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
-        console.log(newDate)
         this.dateTo = newDate
       }
       this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.employeeFirstName} ${this.employeeShiftChange.employeeTo.employeeLastName}`
+      if (this.employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1) {
+        this.dateRestDayTo = 'Rest day'
+      }
     } else {
       this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-MM-dd')
       this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
@@ -127,7 +136,6 @@ export default defineComponent({
         employeeShiftChangeResponse = await employeeShiftChangeService.show(employeeShiftChangeResponse._data.data.employeeShiftChange.employeeShiftChangeId)
         if (employeeShiftChangeResponse.status === 200) {
           const employeeShiftChange = employeeShiftChangeResponse._data.data.employeeShiftChange.employeeShiftChange
-
           this.$emit('onShiftChangeSave', employeeShiftChange as EmployeeShiftChangeInterface)
         }
       } else {
@@ -159,6 +167,8 @@ export default defineComponent({
           this.setShiftTo()
         } else {
           this.isPersonal = false
+          this.employeeShiftChange.employeeIdTo = null
+          this.setShiftTo()
         }
       }
     },
@@ -173,11 +183,9 @@ export default defineComponent({
     },
     handlerDisplayDateTo() {
       this.displayDateToCalendar = true
-      this.setShiftTo()
     },
     handlerDisplayCloseDateTo() {
       this.displayDateToCalendar = false
-      this.setShiftTo()
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
@@ -188,32 +196,56 @@ export default defineComponent({
     },
     async setShiftTo() {
       this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 0
-      this.employeeShiftChange.shiftIdTo = 0
+      this.employeeShiftChange.shiftIdTo = null
+      this.dateRestDayTo = 'Work day'
       if (this.employeeShiftChange.employeeIdTo && this.employeeShiftChange.employeeShiftChangeDateTo) {
         const fullDate = new Date(this.employeeShiftChange.employeeShiftChangeDateTo);
 
-        // Obtener el año, mes y día
-        const year = fullDate.getFullYear();
-        const month = String(fullDate.getMonth() + 1).padStart(2, '0'); // Los meses son de 0 a 11, por eso se suma 1
-        const day = String(fullDate.getDate()).padStart(2, '0');
+        const year = fullDate.getFullYear()
+        const month = String(fullDate.getMonth() + 1).padStart(2, '0')
+        const day = String(fullDate.getDate()).padStart(2, '0')
 
-        // Formatear la fecha como 'YYYY-MM-DD'
-        const formattedDate = `${year}-${month}-${day}`;
-        console.log(formattedDate)
+        const formattedDate = `${year}-${month}-${day}`
         const assistReq = await new AssistService().index(formattedDate, formattedDate, this.employeeShiftChange.employeeIdTo)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         if (employeeCalendar.length > 0) {
-          console.log(employeeCalendar[0].assist)
           if (employeeCalendar[0].assist) {
+            if (employeeCalendar[0].assist.isVacationDate) {
+              this.dateRestDayTo = 'Vacation day'
+              this.$toast.add({
+                severity: 'warn',
+                summary: 'Vacation day',
+                detail: 'The date to is vacation day',
+                life: 5000,
+              })
+              return
+            }
+            if (employeeCalendar[0].assist.hasExceptions) {
+              this.dateRestDayTo = 'Exception day'
+              this.$toast.add({
+                severity: 'warn',
+                summary: 'Shift exception day',
+                detail: 'The date to has shift exception',
+                life: 5000,
+              })
+              return
+            }
             if (employeeCalendar[0].assist.isRestDay) {
-              console.log('es dia de descanso')
               this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 1
+              this.dateRestDayTo = 'Rest day'
             }
           }
           if (employeeCalendar[0].assist.dateShift?.shiftId) {
             this.employeeShiftChange.shiftIdTo = employeeCalendar[0].assist.dateShift.shiftId
-            console.log(this.employeeShiftChange.shiftIdTo)
           }
+        } else {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Shift not found',
+            detail: 'The shift was not found with the date',
+            life: 5000,
+          })
+          return
         }
       }
     },
