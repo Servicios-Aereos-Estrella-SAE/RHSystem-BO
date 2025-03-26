@@ -296,14 +296,14 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange();
     this.setDefaultVisualizationMode()
 
-    // if (this.$config.public.ENVIRONMENT === 'production') {
+    if (this.$config.public.ENVIRONMENT === 'production') {
       await Promise.all([
         this.setAssistSyncStatus(),
         this.setDepartmetList(),
       ])
 
       await this.setDepartmentPositionEmployeeList()
-    // }
+    }
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)

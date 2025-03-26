@@ -20,6 +20,7 @@ interface PositionInterface {
   employees?: EmployeeInterface
   parentPosition?: PositionInterface
   subPositions?: PositionInterface[]
+  positions?: PositionInterface[]
 }
 
 export type { PositionInterface }

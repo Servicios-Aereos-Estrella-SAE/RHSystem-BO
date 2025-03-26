@@ -76,8 +76,8 @@ export default defineComponent({
     //   })
     // }
     async validateSession() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       if (!session) {
         await this.handlerLogout()
       } else {
@@ -85,8 +85,8 @@ export default defineComponent({
       }
     },
     async setAuthUser() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       this.authUser = authUser
     },

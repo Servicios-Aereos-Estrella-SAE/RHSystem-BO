@@ -13,7 +13,7 @@ export default defineComponent({
     socketIO: null as any,
     authUser: null as UserInterface | null,
     drawerNotifications: false,
-    notifications: [] as Array<NotificationInterface>, 
+    notifications: [] as Array<NotificationInterface>,
     totalNotifications: 0,
     search: '',
     selectedDepartmentId: null,
@@ -54,10 +54,9 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
 
-    const { getSession } = useAuth()
-    const session: unknown = await getSession()
+    const { data } = useAuth()
 
-    this.authUser = session as UserInterface
+    this.authUser = data.value as unknown as UserInterface
     this.socketIO = io(this.$config.public.SOCKET)
 
     if (this.authUser?.role?.roleSlug === 'rh-manager') {
@@ -84,9 +83,8 @@ export default defineComponent({
   },
   methods: {
     async setAuthUser () {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
+      const { data } = useAuth()
+      const authUser = data.value as unknown as UserInterface
       this.authUser = authUser
     },
     async toggleAside () {
@@ -108,7 +106,7 @@ export default defineComponent({
           departmentId: null,
           positionId: null,
           status: 'pending',
-          page: this.currentPage || 1, 
+          page: this.currentPage || 1,
           limit: this.rowsPerPage || 30,
         });
         this.notifications = response.data
@@ -126,18 +124,18 @@ export default defineComponent({
           readGerencial: item.exceptionRequestGerencialRead || 0,
           personWhoCreatesIt: `${item.user.person.personFirstname || ''} ${item.user.person.personLastname || ''} ${item.user.person.personSecondLastname || ''}`.trim(),
         }));
-  
+
         this.notifications = rawNotifications.filter((item: { readGerencial: number; }) => {
           const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1;
           const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0;
           if (excludeByManager || excludeByRH) {
             return false; // Excluir el elemento
           }
-  
+
           return true; // Incluir el elemento
         });
-  
-        
+
+
       } catch (error) {
         console.error('Error fetching notifications:', error);
         this.notifications = [];

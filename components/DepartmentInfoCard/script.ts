@@ -1,7 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
-import { useRouter } from 'vue-router'
 import DepartmentService from '~/resources/scripts/services/DepartmentService';
 import { DateTime } from 'luxon';
 
@@ -16,29 +15,25 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
     clickOnDelete: { type: Function, default: null, required: false },
-    periodSelected: { type: Date, default: null, required: true },
-    canReadRotation: { type: Boolean, default: false, required: true },
+    periodSelected: { type: Date, default: null, required: false },
+    canReadRotation: { type: Boolean, default: false, required: false },
   },
   data: () => ({
     rotationIndexGeneral: '0.00',
     rotationIndexCurrentYear: '0.00',
     rotationIndexMonth: '0.00'
   }),
-  setup() {
-    const router = useRouter()
-    return { router }
-  },
   watch: {
     'periodSelected' (val: Date) {
-     this.getRotationIndexMonthFilter()
+      this.getRotationIndexMonthFilter()
     },
   },
   mounted() {
-    this.getRotationIndex()
+    // await this.getRotationIndex()
   },
   methods: {
     handlerClickOnDetail(ids: any) {
-      this.router.push({ path: '/departments/' + ids, })
+      this.$router.push({ path: '/departments/' + ids, })
     },
     handlerClickOnEdit() {
       if (this.clickOnEdit && this.department.departmentId !== 999) {
@@ -64,7 +59,7 @@ export default defineComponent({
         }
         this.getRotationIndexMonthFilter()
       }
-    
+
     },
     async getRotationIndexMonthFilter() {
       if (this.department.departmentId) {

@@ -12,7 +12,7 @@
       <div class="department-wrapper">
         <div class="box head-page">
           <h1>
-            {{ department.departmentName }}
+            {{ department?.departmentName || '' }}
           </h1>
         </div>
 
@@ -159,7 +159,7 @@
               @cancelDelete="drawerDepartmentDelete = false"
             />
           </transition>
-    
+
           <Dialog v-model:visible="drawerDepartmentForceDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="confirmation-content">
               <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />

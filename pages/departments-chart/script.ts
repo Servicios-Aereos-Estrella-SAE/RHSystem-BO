@@ -1,119 +1,347 @@
-// import { ref, onMounted } from 'vue';
-// import Toast from 'primevue/toast';
-// import OrganizationChart from 'primevue/organizationchart';
-// import ToastService from 'primevue/toastservice';
-// import DepartmentService from "~/resources/scripts/services/DepartmentService";
+import { defineComponent, ref, onMounted } from 'vue'
+import DepartmentService from '~/resources/scripts/services/DepartmentService'
+import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
+import html2canvas from 'html2canvas'
 
-// // Variables reactivas
-// interface DepartmentNode {
-//   key: string;
-//   type: string;
-//   styleClass: string;
-//   data: {
-//     name: string;
-//     title: string;
-//   };
-//   children: DepartmentNode[];
-// }
-// const data = ref(); 
-// const search = ref('');
-// const currentPage = ref(1);
-// const rowsPerPage = ref(1000);
+export default defineComponent({
+  name: 'PageOrganizationChart',
+  setup() {
+    const data = ref(null as IChartNode | null)
+    const search = ref('' as string)
+    const currentPage = ref(1 as number)
+    const rowsPerPage = ref(9999 as number)
+    const expandedKeys = ref({})
+    const nodes = ref(null)
 
-// // Función para obtener datos
-// const fetchData = async () => {
-//   try {
-//     const response = await new DepartmentService().getSearchDepartmentList(search.value, currentPage.value, rowsPerPage.value);
-//     const departments = response._data.data.data;
-//     const mappedData = mapDepartments(departments);
-    
-//     // Asignar el nodo raíz si existe, o null si no hay datos
-//     data.value = mappedData.length > 0 ? mappedData[0] : null;
+    const enum ENodeType {
+      department,
+      position
+    }
+    interface IChartNode {
+      key: number
+      type: string
+      styleClass: string
+      label: string
+      data: DepartmentInterface | PositionInterface
+      meta: { node_type: keyof typeof ENodeType }
+      children: IChartNode[]
+    }
 
-//   } catch (error) {
-//     console.error("Error fetching department data", error);
-//   }
-// };
+    onMounted(async () => {
+      await fetchData()
+      nodes.value = [data.value]
+      initialExpand()
+    })
 
-// // Mapeo de departamentos a la estructura del organigrama
-// const mapDepartments = (departments: any[]) => {
-//   const departmentMap: any = {};
-//   let keyCounter = 0;
+    async function fetchData () {
+      try {
+        const response = await new DepartmentService().getSearchOrganization(search.value, currentPage.value, rowsPerPage.value)
+        const department = response._data.data.departments[0]
 
-//   // Crear el mapa de departamentos
-//   departments.forEach(dept => {
-//     departmentMap[dept.departmentId] = {
-//       key: keyCounter.toString(),
-//       type: 'person',
-//       styleClass: getDepartmentStyle(dept.departmentName),
-//       data: {
-//         name: dept.departmentAlias || dept.departmentName
-//       },
-//       children: []
-//     };
-//     keyCounter++;
-//   });
+        newMapDepartments(department)
+      } catch (error) {
+        console.error('Error fetching department data', error)
+      }
+    }
 
-//   // Relacionar los departamentos padres e hijos
-//   departments.forEach(dept => {
-//     if (dept.parentDepartmentId) {
-//       const parentKey = departmentMap[dept.parentDepartmentId].key;
-//       const childCount = departmentMap[dept.parentDepartmentId].children.length;
-//       const childKey = `${parentKey}_${childCount}`; 
+    function getNodeStyle (dpNode: IChartNode) {
+      const department: DepartmentInterface = dpNode.data as DepartmentInterface
+      const position: PositionInterface = dpNode.data as PositionInterface
 
-//       departmentMap[dept.departmentId].key = childKey;
-//       departmentMap[dept.parentDepartmentId].children.push(departmentMap[dept.departmentId]);
-//     }
-//   });
+      if (dpNode.meta.node_type === 'department') {
+        const sufix = department.departmentName.split('(')
+        const sufixLetter = sufix.length > 1 ? sufix[1].slice(0, 2) : ''
+        return `level${sufixLetter}`
+      }
 
-//   // Filtrar solo los departamentos raíz (que no tienen padre)
-//   return Object.values(departmentMap).filter((dept: any) => !dept.parentDepartmentId);
-// };
+      if (dpNode.meta.node_type === 'position') {
+        const sufix = position.positionName.split('(')
+        const sufixLetter = sufix.length > 1 ? sufix[1].slice(0, 2) : ''
+        return `level${sufixLetter}`
+      }
 
-// // Obtener el estilo de clase según el nombre del departamento
-// const getDepartmentStyle = (name: string) => {
-//   const styles: Record<string, string> = {
-//     "AA": "!bg-indigo-100 text-white rounded-xl",
-//     "Administración": "bg-purple-100 text-white rounded-xl",
-//     "CTO": "bg-teal-100 text-white rounded-xl",
-//     "HR": "bg-pink-100 text-white rounded-xl",
-//   };
-//   return styles[name] || "bg-gray-100 text-white rounded-xl"; // Estilo por defecto
-// };
+      return ''
+    }
 
-// // Obtener la clase del nodo según el rol
-// const getNodeClass = (node: any) => {
-//   const role = node.data.name;
-  
-//   if (role === 'AA' || role === 'CFO') {
-//     return 'bg-purple-100';
-//   } else if (role === 'CTO') {
-//     return 'bg-teal-100';
-//   } else if (role === 'HR') {
-//     return 'bg-pink-100';
-//   }
-  
-//   return 'bg-teal-100'; // Clase por defecto
-// };
+    const onNodeDblClick = (node: any) => {
+      console.log('🚀 ----------------------------🚀')
+      console.log('🚀 ~ onNodeSelect ~ node:', node)
+      console.log('🚀 ----------------------------🚀')
+    }
 
-// // Montar el componente y cargar los datos
-// onMounted(fetchData);
+    function newMapDepartments (department: DepartmentInterface) {
+      const departmentItem = JSON.parse(JSON.stringify(department)) as DepartmentInterface
+      let chartNodeList: IChartNode | null = null
 
-// // Exportar para uso en el componente principal
-// export default {
-//   components: {
-//     Toast,
-//     OrganizationChart,
-//     ToastService
-//   },
-//   setup() {
-//     return {
-//       data,
-//       search,
-//       currentPage,
-//       rowsPerPage,
-//       getNodeClass,
-//     };
-//   },
-// };
+      const chartNode: IChartNode = {
+        key: Math.round(Math.random() * new Date().getTime()),
+        type: 'organization',
+        styleClass: '',
+        label: '',
+        data: { ...departmentItem },
+        meta: { node_type: 'department' },
+        children: setInitialChildrenNodes(departmentItem)
+      }
 
+      chartNode.label = setNodeName(chartNode)
+      chartNode.styleClass = getNodeStyle(chartNode)
+
+      chartNodeList = chartNode
+      data.value = chartNodeList
+    }
+
+    function setInitialChildrenNodes (departmentNode: DepartmentInterface) {
+      const childrenNodes: IChartNode[] = []
+
+      departmentNode.departments?.forEach((depto: DepartmentInterface) => {
+        const chartNode: IChartNode = {
+          key: Math.round(Math.random() * new Date().getTime()),
+          type: 'organization',
+          styleClass: '',
+          label: '',
+          data: { ...depto },
+          meta: { node_type: 'department' },
+          children: []
+        }
+
+        chartNode.label = setNodeName(chartNode)
+        chartNode.styleClass = getNodeStyle(chartNode)
+        childrenNodes.push(chartNode)
+      })
+
+      childrenNodes.forEach(chNode => {
+        chNode.styleClass = getNodeStyle(chNode)
+        chNode.children = setChildrenNodes(chNode)
+
+        const department: DepartmentInterface = chNode.data as DepartmentInterface
+
+        if (department.departmentPositions && department.departmentPositions.length > 0) {
+          department.departmentPositions.forEach(pos => {
+            const positionObj = pos.position as PositionInterface
+
+            if (!(positionObj.parentPositionId)) {
+              const chartPosNode: IChartNode = {
+                key: Math.round(Math.random() * new Date().getTime()),
+                type: 'organization',
+                styleClass: '',
+                label: '',
+                data: { ...positionObj },
+                meta: { node_type: 'position' },
+                children: []
+              }
+
+              chartPosNode.label = setNodeName(chartPosNode)
+              chartPosNode.styleClass = getNodeStyle(chartPosNode)
+
+              if (positionObj.positions && positionObj.positions.length > 0) {
+                positionObj.positions.forEach(item => {
+                  chartPosNode.styleClass = getNodeStyle(chartPosNode)
+                  chartPosNode.children = setChildrenNodes(chartPosNode)
+                })
+              }
+
+              chNode.children.push(chartPosNode)
+            }
+          })
+        }
+      })
+
+      return childrenNodes
+    }
+
+    function setChildrenNodes (dpNode: IChartNode) {
+      const department: DepartmentInterface = dpNode.data as DepartmentInterface
+      const position: PositionInterface = dpNode.data as PositionInterface
+      const nodes: IChartNode[] = []
+
+      if (dpNode.meta.node_type === 'department'){
+        department.departments?.forEach((depto: DepartmentInterface) => {
+          const chartNode: IChartNode = {
+            key: Math.round(Math.random() * new Date().getTime()),
+            type: 'organization',
+            styleClass: '',
+            label: '',
+            data: { ...depto },
+            meta: { node_type: 'department' },
+            children: []
+          }
+
+          chartNode.label = setNodeName(chartNode)
+          chartNode.styleClass = getNodeStyle(chartNode)
+
+          if (depto.departments && depto.departments.length > 0) {
+            depto.departments.forEach(item => {
+              chartNode.styleClass = getNodeStyle(chartNode)
+              chartNode.children = setChildrenNodes(chartNode)
+            })
+          }
+
+          if (depto.departmentPositions && depto.departmentPositions.length > 0) {
+            depto.departmentPositions.forEach(pos => {
+              const positionObj = pos.position as PositionInterface
+
+              if (!(positionObj.parentPositionId)) {
+                const chartPosNode: IChartNode = {
+                  key: Math.round(Math.random() * new Date().getTime()),
+                  type: 'organization',
+                  styleClass: '',
+                  label: '',
+                  data: { ...positionObj },
+                  meta: { node_type: 'position' },
+                  children: []
+                }
+
+                chartPosNode.label = setNodeName(chartPosNode)
+                chartPosNode.styleClass = getNodeStyle(chartPosNode)
+
+                if (positionObj.positions && positionObj.positions.length > 0) {
+                  positionObj.positions.forEach(item => {
+                    chartPosNode.styleClass = getNodeStyle(chartPosNode)
+                    chartPosNode.children = setChildrenNodes(chartPosNode)
+                  })
+                }
+
+                chartNode.children.push(chartPosNode)
+              }
+            })
+          }
+
+          nodes.push(chartNode)
+        })
+      }
+
+      if (dpNode.meta.node_type === 'position'){
+        position.positions?.forEach((pos: PositionInterface) => {
+          const chartNode: IChartNode = {
+            key: Math.round(Math.random() * new Date().getTime()),
+            type: 'organization',
+            styleClass: '',
+            label: '',
+            data: { ...pos },
+            meta: { node_type: 'position' },
+            children: []
+          }
+
+          chartNode.label = setNodeName(chartNode)
+          chartNode.styleClass = getNodeStyle(chartNode)
+
+          if (pos.positions && pos.positions.length > 0) {
+            pos.positions.forEach(item => {
+              chartNode.styleClass = getNodeStyle(chartNode)
+              chartNode.children = setChildrenNodes(chartNode)
+            })
+          }
+
+          nodes.push(chartNode)
+        })
+      }
+
+      return nodes
+    }
+
+    const setNodeName = (node: IChartNode) => {
+      if (node.meta.node_type === 'department') {
+        const department = node.data as DepartmentInterface
+        const splitted = department.departmentName.split(' ')
+
+        if (splitted.length === 1) {
+          return splitted[0]
+        }
+
+        const name = splitted.map((text, i) => i > 0 ? text : '').join(' ')
+        return name
+      }
+
+      if (node.meta.node_type === 'position') {
+        const position = node.data as PositionInterface
+        const splitted = position.positionName.split(' ')
+
+        if (splitted.length === 1) {
+          return splitted[0]
+        }
+
+        const name = splitted.map((text: string, i: number) => i > 0 ? text : '').join(' ')
+        return name
+      }
+
+      return ''
+    }
+
+    const exportChart = async () => {
+      const contenido = document.getElementById('contenido')
+
+      if (!contenido) {
+        return
+      }
+
+      try {
+        const canvas = await html2canvas(contenido, {
+          scale: 2,
+          useCORS: true,
+          scrollX: 0,
+          scrollY: 0,
+          width: contenido.scrollWidth,
+          height: contenido.scrollHeight
+        })
+
+        const dataUrl = canvas.toDataURL('image/png')
+        const link = document.createElement('a')
+
+        link.href = dataUrl
+        link.download = 'contenido-completo.png'
+        link.click()
+      } catch (error) {
+        console.error('Error al exportar:', error)
+      }
+    }
+
+    const expandAll = () => {
+      for (let node of nodes.value) {
+        expandNode(node);
+      }
+
+      expandedKeys.value = { ...expandedKeys.value };
+    };
+
+    const collapseAll = () => {
+      expandedKeys.value = {};
+    };
+
+    const initialExpand = (node) => {
+      nodes.value.forEach((node, index) => {
+        if (index === 0) {
+          expandedKeys.value[node.key] = true;
+
+          node.children.forEach((dirNode, dirIndex) => {
+            expandedKeys.value[dirNode.key] = true;
+          })
+        }
+      })
+    }
+
+    const expandNode = (node) => {
+      if (node.children && node.children.length) {
+        expandedKeys.value[node.key] = true;
+
+        for (let child of node.children) {
+            expandNode(child);
+        }
+      }
+    };
+
+    return {
+      data,
+      search,
+      currentPage,
+      rowsPerPage,
+      nodes,
+      expandedKeys,
+      setNodeName,
+      onNodeDblClick,
+      exportChart,
+      expandAll,
+      collapseAll
+    }
+  }
+})

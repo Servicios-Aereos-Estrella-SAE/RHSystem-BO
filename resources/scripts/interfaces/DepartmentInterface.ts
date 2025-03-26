@@ -1,3 +1,6 @@
+import type { DepartmentPositionInterface } from "./DepartmentPositionInterface"
+import type { PositionInterface } from "./PositionInterface"
+
 interface DepartmentInterface {
   departmentId: number | null,
   departmentSyncId: string | null,
@@ -15,6 +18,9 @@ interface DepartmentInterface {
   departmentUpdatedAt: Date | string | null,
   departmentDeletedAt: Date | string | null,
   subDepartments?: DepartmentInterface[]
+
+  departments?: DepartmentInterface[]
+  departmentPositions?: DepartmentPositionInterface[]
 }
 
 export type { DepartmentInterface }

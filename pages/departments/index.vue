@@ -24,7 +24,8 @@
           </div>
 
           <div></div>
-          <div class="input-box">
+          <div></div>
+          <!-- <div class="input-box">
             <br /> <br />
             <label for="departments">
               Period
@@ -38,7 +39,7 @@
             hideOnRangeSelection
             showWeek
             />
-          </div>
+          </div> -->
           <div class="input-box">
             <br />
             <Button v-if="canCreate" class="btn btn-block" @click="addNew">
@@ -48,7 +49,7 @@
           </div>
           <div class="input-box">
             <br />
-            <NuxtLink to="/departments-chart" class="btn btn-block">
+            <NuxtLink to="/departments-chart" target="_blank" class="btn btn-block">
               <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="icon">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.998 5.75A3.752 3.752 0 1 1 12.5 9.427V11.5h3.25A2.25 2.25 0 0 1 18 13.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a.75.75 0 0 0-.75-.75h-8a.75.75 0 0 0-.75.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a2.25 2.25 0 0 1 2.25-2.25H11V9.427A3.754 3.754 0 0 1 7.998 5.75Z" fill="#88a4bf" class="fill-212121"></path></svg>
               </svg>
@@ -64,7 +65,7 @@
           <div v-if="filteredDepartments.length > 0" class="department-card-wrapper">
             <div v-for="(department, index) in filteredDepartments"
               :key="`department-${department.departmentId}-${index}`">
-              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" :period-selected="periodSelected" 
+              <DepartmentInfoCard :department="department" :can-update="canUpdate" :can-delete="canDelete" :click-on-edit="() => { onEdit(department) }"  :click-on-delete="() => { onDelete(department) }" :period-selected="periodSelected"
                 :can-read-rotation="canReadRotation"/>
             </div>
           </div>
