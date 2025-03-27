@@ -52,7 +52,8 @@
           </div>
           <div class="input-box">
             <label for="useremail">
-              Email</label>
+              Business Email
+            </label>
             <InputText id="useremail" v-model="employee.employeeBusinessEmail" type="email"
               :invalid="submitted && isEmailInvalid" :disabled="isDeleted" />
             <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
