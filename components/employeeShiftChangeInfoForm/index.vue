@@ -39,7 +39,7 @@
             <div v-if="displayDateToCalendar && isNewEmployeeShiftChange" class="date-box-controller">
               <Calendar v-if="displayDateToCalendar" dateFormat="yy-mm-dd"
                 v-model.lazy="employeeShiftChange.employeeShiftChangeDateTo" placeholder="Select start date"
-                :invalid="submitted && !employeeShiftChange.employeeShiftChangeDateTo" />
+                :invalid="submitted && !employeeShiftChange.employeeShiftChangeDateTo" :minDate="startDateLimit" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayCloseDateTo">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -48,7 +48,8 @@ export default defineComponent({
     dateRestDayFrom: 'Work day' as string,
     employeeToSelectedName: '' as string,
     dateTo: '' as string,
-    dateRestDayTo: '' as string
+    dateRestDayTo: '' as string,
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
   }),
   computed: {
     selectedDate() {
@@ -67,6 +68,9 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
+    if (!myGeneralStore.isRoot) {
+      this.getStartPeriodDay()
+    }
     this.isNewEmployeeShiftChange = !this.employeeShiftChange.employeeShiftChangeId ? true : false
     if (this.employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1) {
       this.dateRestDayFrom = 'Rest day'
@@ -85,6 +89,8 @@ export default defineComponent({
       this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.employeeFirstName} ${this.employeeShiftChange.employeeTo.employeeLastName}`
       if (this.employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1) {
         this.dateRestDayTo = 'Rest day'
+      } else {
+        this.dateRestDayTo = 'Work day'
       }
     } else {
       this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-MM-dd')
@@ -99,6 +105,31 @@ export default defineComponent({
     }
   },
   methods: {
+    getNextPayThursday() {
+      const today = DateTime.now(); // Fecha actual
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      return nextPayDate.toJSDate()
+    },
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isAdmin || myGeneralStore.isRh) {
+        const datePay = this.getNextPayThursday()
+        const payDate = DateTime.fromJSDate(datePay).startOf('day')
+        const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+        const thursday = startOfWeek.plus({ days: 3 })
+        const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
+        this.startDateLimit = startLimit.toJSDate()
+      } else {
+        this.startDateLimit = DateTime.now().toJSDate()
+      }
+
+    },
     async getShifts() {
       const response = await new ShiftService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.data : []
