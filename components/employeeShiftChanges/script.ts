@@ -189,7 +189,7 @@ export default defineComponent({
         this.employeeShiftChangesList.push(employeeShiftChange)
         this.$forceUpdate()
       }
-      this.$emit('save', [])
+      this.$emit('saveShiftChanges', [])
       this.drawerEmployeeShiftChangeForm = false
       this.isReady = true
       myGeneralStore.setFullLoader(false)
@@ -245,7 +245,7 @@ export default defineComponent({
             this.employeeShiftChangesList.splice(index, 1)
             this.$forceUpdate()
           }
-          this.$emit('save', [])
+          this.$emit('saveShiftChanges', [])
         } else {
           this.$toast.add({
             severity: 'error',
