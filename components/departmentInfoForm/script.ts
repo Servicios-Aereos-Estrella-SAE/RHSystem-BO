@@ -1,12 +1,10 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
-import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
-import PositionService from '~/resources/scripts/services/PositionService'
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   components: {
@@ -26,30 +24,46 @@ export default defineComponent({
         { label: 'Female', value: 'Mujer' },
         { label: 'Other', value: 'Otro' }
     ],
-    isNewUser: false,
+    isNewDepartment: false,
     isReady: false,
-    isSubDeparment: false
+    isSubDeparment: false,
+    prefix: 'G1',
+    positionNumber: 1,
+    departmentPrefixList: [
+      { prefix: 'D1', label: 'Dirección' },
+      { prefix: 'G1', label: 'Gerencia' },
+      { prefix: 'J1', label: 'Jefatura' }
+    ]
   }),
   computed: {
     departmentsWithNone() {
       return [
-        { departmentId: null, departmentName: 'None' }, 
+        { departmentId: null, departmentName: 'None' },
         ...this.departments
       ];
     }
   },
   async mounted() {
     this.isReady = false
-    this.isNewUser = !this.department.departmentId ? true : false
+    this.isNewDepartment = !this.department.departmentId ? true : false
     this.isReady = true
     this.getDepartments()
-    const route = useRoute()
-    const departmentId = route.params.departmentId
-    if (departmentId && parseInt(departmentId.toString()) > 0) {
-      this.isSubDeparment = true
+
+    if (!this.isNewDepartment) {
+      this.setPrefix()
     }
   },
   methods: {
+    setPrefix () {
+      const prefix = this.department.departmentName.split(' ')[0]
+      const type = prefix.slice(0, 3).replace('(', '')
+      const order = parseInt(prefix.slice(3).replace(')', ''))
+
+      this.prefix = type
+      this.positionNumber = order
+
+      this.department.departmentName = this.department.departmentName.replace(prefix, '').trim()
+    },
     async getDepartments() {
       let response = null
       const departmentService = new DepartmentService()
@@ -71,6 +85,7 @@ export default defineComponent({
       this.submitted = true
       this.getDepartmentCode()
       const departmentService = new DepartmentService()
+
       if (!departmentService.validate(this.department)) {
         this.$toast.add({
           severity: 'warn',
@@ -80,27 +95,31 @@ export default defineComponent({
         })
         return
       }
-      
+
       let departmentResponse = null
+
+      this.department.departmentName = `(${this.prefix}${`${this.positionNumber}`.padStart(2, '0')}) ${this.department.departmentName}`
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
       if (!this.department.departmentId) {
         departmentResponse = await departmentService.store(this.department)
       } else {
         departmentResponse = await departmentService.update(this.department)
       }
-      if (departmentResponse.status === 201) {
+
+      if (departmentResponse.status === 201 || departmentResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
           summary: `Department ${this.department.departmentId ? 'updated' : 'created'}`,
           detail: departmentResponse._data.message,
-            life: 5000,
+          life: 5000,
         })
-        await this.getDepartments()
-        departmentResponse = await departmentService.showOnSave(departmentResponse._data.data.department.departmentId)
-        if (departmentResponse?.status === 200) {
-          const department = departmentResponse._data.data.department
-          this.$emit('save', department as DepartmentInterface)
-        }
+
+        this.$emit('save', departmentResponse._data.data.department as DepartmentInterface)
       } else {
+        myGeneralStore.setFullLoader(false)
         const msgError = departmentResponse._data.error ? departmentResponse._data.error : departmentResponse._data.message
         this.$toast.add({
           severity: 'error',

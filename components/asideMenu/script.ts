@@ -91,6 +91,9 @@ export default defineComponent({
       const systemModuleService = new SystemModuleService()
       const systemModuleGroupsResponse = await systemModuleService.getGroups()
 
+      this.menuGroups = []
+      this.menu = []
+
       if (systemModuleGroupsResponse && systemModuleGroupsResponse.status === 200) {
         this.menuGroups = systemModuleGroupsResponse._data.data.systemModulesGroups
       }
@@ -125,6 +128,7 @@ export default defineComponent({
 
       if (systemModuleResponse.status === 200) {
         const systemModules = systemModuleResponse._data.data.systemModules.data
+
         for await (const group of this.menuGroups) {
           await this.assignItemsMenu(systemModules, group.systemModuleGroup)
         }
@@ -151,8 +155,9 @@ export default defineComponent({
           ) {
             if (!item.systemModulePath.toString().includes('#')) {
               const hasPermission = this.roleSystemPermissions.find((a) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read' && a.systemPermissions.systemModule && a.systemPermissions.systemModule.systemModuleSlug === item.systemModuleSlug)
+              const itemExists = existGroupMenu.items.find(itemCompare => itemCompare.path === item.systemModulePath)
 
-              if (hasPermission || myGeneralStore.isRoot) {
+              if ((hasPermission || myGeneralStore.isRoot) && !itemExists) {
                 existGroupMenu.items.push({
                   label: item.systemModuleName,
                   name: item.systemModuleName,

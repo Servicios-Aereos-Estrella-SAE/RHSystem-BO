@@ -47,7 +47,7 @@
                       {{ employee.option.employeeLastName }}
                     </div>
                     <div class="position-department">
-                      {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
+                      {{ employee?.option?.department?.departmentName || '' }}
                       /
                       {{ employee.option.position.positionAlias || employee.option.position.positionName }}
                     </div>

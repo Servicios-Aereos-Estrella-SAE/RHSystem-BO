@@ -38,10 +38,10 @@ export default defineComponent({
       this.invalidCredentials = false
     },
     async validateSession() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { status } = useAuth()
+      const session: string = status.value as string
 
-      if (session) {
+      if (session === 'authenticated') {
         return this.$router.push({ path: '/employees-attendance-monitor' })
       }
 

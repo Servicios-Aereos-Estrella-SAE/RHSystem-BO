@@ -16,6 +16,14 @@ export default defineComponent({
     companyOptions: [],
     parentPositions: [],
     positions: [] as PositionInterface[],
+    prefix: 'P1',
+    positionNumber: 1,
+    prefixList: [
+      { prefix: 'P1', label: 'Puesto Administrativo' },
+      { prefix: 'P2', label: 'Encargado' },
+      { prefix: 'P3', label: 'Asistente / Auxiliar / General' },
+      { prefix: 'P4', label: 'Operador / Becario' },
+    ]
   }),
   computed: {
     isPositionActive: {
@@ -27,59 +35,41 @@ export default defineComponent({
       },
     },
   },
-  async mounted() {
-    await this.loadParentPositions()
+  mounted() {
+    this.loadParentPositions()
+    if (this.position.positionId) {
+      this.setPrefix()
+    }
   },
   methods: {
-    async loadParentPositions() {
-      try {
-        const positionService = new PositionService()
-        const departmentId = this.department.departmentId || 0
-        const response = await positionService.getPositionsDepartment(departmentId)
-
-        if (response) {
-          this.positions = response.map((position: PositionInterface) => ({
-            positionId: position.positionId,
-            positionSyncId: position.positionSyncId,
-            positionCode: position.positionCode,
-            positionName: position.positionName,
-            positionAlias: position.positionAlias,
-            positionIsDefault: position.positionIsDefault,
-            positionActive: position.positionActive,
-            parentPositionId: position.parentPositionId,
-            parentPositionSyncId: position.parentPositionSyncId,
-            companyId: position.companyId,
-            departmentId: position.departmentId,
-            businessUnitId: position.businessUnitId,
-            positionLastSynchronizationAt:
-            position.positionLastSynchronizationAt,
-            positionCreatedAt: position.positionCreatedAt,
-            positionUpdatedAt: position.positionUpdatedAt,
-            positionDeletedAt: position.positionDeletedAt,
-          }))
-        }
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error loading parent positions options.',
-          life: 5000,
-        })
+    loadParentPositions() {
+      if (this.position.parentPosition) {
+        this.positions = [this.position.parentPosition]
       }
+    },
+    setPrefix () {
+      const prefix = this.position.positionName.split(' ')[0]
+      const type = prefix.slice(0, 3).replace('(', '')
+      const order = parseInt(prefix.slice(3).replace(')', ''))
+
+      this.prefix = type
+      this.positionNumber = order
+
+      this.position.positionName = this.position.positionName.replace(prefix, '').trim()
     },
     async onSave() {
       this.submitted = true
 
       if (this.position && this.position.positionName) {
         try {
+          this.position.positionName = `(${this.prefix}${`${this.positionNumber}`.padStart(2, '0')}) ${this.position.positionName}`
           const response = this.position.positionId ? await this.updatePosition() : await this.createPosition()
 
           if (response.status === 200 || response.status === 201) {
             const position = response._data.data.position.positionId
-            const departmentId = this.position.departmentId
+            const departmentId = parseInt(`${this.position.departmentId}`)
             const departmentService = new DepartmentService()
             await departmentService.assignDepartment(position, departmentId)
-
             this.$emit('saved', response._data.data.position as PositionInterface)
           } else {
             this.$toast.add({

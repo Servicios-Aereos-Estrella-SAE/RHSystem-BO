@@ -9,7 +9,7 @@
       <span v-else> Dependence: None</span>
     </div>
 
-    <div v-if="canReadRotation" class="line"></div>
+    <!-- <div v-if="canReadRotation" class="line"></div>
     <div v-if="canReadRotation" class="department-rotation-index">
       <span>Rotation "General": </span>
       <span class="property-value">{{ rotationIndexGeneral }}%</span>
@@ -21,7 +21,7 @@
     <div v-if="canReadRotation" class="department-rotation-index">
       <span>Rotation index "On month": </span>
       <span class="property-value">{{ rotationIndexMonth }}%</span>
-    </div>
+    </div> -->
 
     <div class="box-tools-footer">
       <Button v-if="canUpdate" class="btn btn-block" @click="handlerClickOnDetail(department.departmentId)">
