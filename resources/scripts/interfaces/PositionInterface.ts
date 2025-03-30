@@ -1,10 +1,10 @@
 import type { EmployeeInterface } from "./EmployeeInterface"
 
 interface PositionInterface {
-  positionId: number
+  positionId: number | null
   positionSyncId: string
   positionCode: string
-  positionName: any
+  positionName: string
   positionAlias: string
   positionIsDefault: number
   positionActive: number
@@ -12,13 +12,13 @@ interface PositionInterface {
   parentPositionSyncId: string
   companyId: number | null
   businessUnitId: number | null
-  departmentId: any
+  departmentId: number | null
   positionLastSynchronizationAt: Date | string | null
   positionCreatedAt: Date | string | null
   positionUpdatedAt: Date | string | null
   positionDeletedAt: Date | string | null
-  employees?: EmployeeInterface
-  parentPosition?: PositionInterface
+  employees?: EmployeeInterface[]
+  parentPosition: PositionInterface | null
   subPositions?: PositionInterface[]
   positions?: PositionInterface[]
 }

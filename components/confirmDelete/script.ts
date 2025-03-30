@@ -2,7 +2,9 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'confirmDelete',
-  props: {},
+  props: {
+    description: { type: String, required: false }
+  },
   data: () => ({
     securityWord: 'confirm',
     verifyWord: '',

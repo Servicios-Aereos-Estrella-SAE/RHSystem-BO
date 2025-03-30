@@ -55,6 +55,7 @@ export default class AssistModel {
       assistAssistSyncId: this.assistAssistSyncId,
       assistCreatedAt: this.assistCreatedAt,
       assistUpdatedAt: this.assistUpdatedAt,
+      employeeId: null,
     }
   }
 }

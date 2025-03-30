@@ -3,6 +3,9 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
 import html2canvas from 'html2canvas'
+import Department from '~/resources/scripts/models/Department'
+import { useMyGeneralStore } from '~/store/general'
+import Position from '~/resources/scripts/models/Position'
 
 export default defineComponent({
   name: 'PageOrganizationChart',
@@ -11,8 +14,18 @@ export default defineComponent({
     const search = ref('' as string)
     const currentPage = ref(1 as number)
     const rowsPerPage = ref(9999 as number)
-    const expandedKeys = ref({})
-    const nodes = ref(null)
+    const expandedKeys = ref({} as any)
+    const nodes = ref([] as IChartNode[])
+    const visibleDialogTypeForm = ref(false as boolean)
+    const department = ref(new Department() as DepartmentInterface)
+    const displayDepartmentSidebarForm = ref(false as boolean)
+    const nodeSelected = ref(null as IChartNode | null)
+    const dialogConfirmDeleteNode = ref(false as boolean)
+    const drawerNodeForceDelete = ref(false as boolean)
+
+    const displayPositionSidebarForm = ref(false as boolean)
+    const position = ref(new Position() as PositionInterface)
+    const drawerSoftPositionDelete = ref(false as boolean)
 
     const enum ENodeType {
       department,
@@ -24,28 +37,55 @@ export default defineComponent({
       styleClass: string
       label: string
       data: DepartmentInterface | PositionInterface
-      meta: { node_type: keyof typeof ENodeType }
+      meta: { node_type: keyof typeof ENodeType, parent_node: any }
       children: IChartNode[]
     }
 
     onMounted(async () => {
-      await fetchData()
-      nodes.value = [data.value]
-      initialExpand()
+      await init()
     })
 
-    async function fetchData () {
+    const init = async () => {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
+      await fetchData()
+      expandAll()
+
+      department.value = new Department()
+      position.value = new Position()
+      nodeSelected.value = null
+      myGeneralStore.setFullLoader(false)
+    }
+
+    const expandAll = () => {
+      for (let node of nodes.value) {
+        expandNode(node)
+      }
+
+      expandedKeys.value = { ...expandedKeys.value }
+    }
+
+    const collapseAll = () => {
+      expandedKeys.value = {}
+    }
+
+    const fetchData  = async () => {
       try {
         const response = await new DepartmentService().getSearchOrganization(search.value, currentPage.value, rowsPerPage.value)
         const department = response._data.data.departments[0]
 
         newMapDepartments(department)
+
+        if (data.value) {
+          nodes.value = [data.value]
+        }
       } catch (error) {
         console.error('Error fetching department data', error)
       }
     }
 
-    function getNodeStyle (dpNode: IChartNode) {
+    const getNodeStyle = (dpNode: IChartNode) => {
       const department: DepartmentInterface = dpNode.data as DepartmentInterface
       const position: PositionInterface = dpNode.data as PositionInterface
 
@@ -70,7 +110,7 @@ export default defineComponent({
       console.log('🚀 ----------------------------🚀')
     }
 
-    function newMapDepartments (department: DepartmentInterface) {
+    const newMapDepartments = (department: DepartmentInterface) => {
       const departmentItem = JSON.parse(JSON.stringify(department)) as DepartmentInterface
       let chartNodeList: IChartNode | null = null
 
@@ -79,19 +119,19 @@ export default defineComponent({
         type: 'organization',
         styleClass: '',
         label: '',
-        data: { ...departmentItem },
-        meta: { node_type: 'department' },
+        data: departmentItem,
+        meta: { node_type: 'department', parent_node: null },
         children: setInitialChildrenNodes(departmentItem)
       }
 
-      chartNode.label = setNodeName(chartNode)
+      chartNode.label = setNodeName(chartNode).name
       chartNode.styleClass = getNodeStyle(chartNode)
 
       chartNodeList = chartNode
       data.value = chartNodeList
     }
 
-    function setInitialChildrenNodes (departmentNode: DepartmentInterface) {
+    const setInitialChildrenNodes = (departmentNode: DepartmentInterface) => {
       const childrenNodes: IChartNode[] = []
 
       departmentNode.departments?.forEach((depto: DepartmentInterface) => {
@@ -100,12 +140,12 @@ export default defineComponent({
           type: 'organization',
           styleClass: '',
           label: '',
-          data: { ...depto },
-          meta: { node_type: 'department' },
+          data: depto,
+          meta: { node_type: 'department', parent_node: departmentNode },
           children: []
         }
 
-        chartNode.label = setNodeName(chartNode)
+        chartNode.label = setNodeName(chartNode).name
         chartNode.styleClass = getNodeStyle(chartNode)
         childrenNodes.push(chartNode)
       })
@@ -126,12 +166,12 @@ export default defineComponent({
                 type: 'organization',
                 styleClass: '',
                 label: '',
-                data: { ...positionObj },
-                meta: { node_type: 'position' },
+                data: positionObj,
+                meta: { node_type: 'position', parent_node: pos },
                 children: []
               }
 
-              chartPosNode.label = setNodeName(chartPosNode)
+              chartPosNode.label = setNodeName(chartPosNode).name
               chartPosNode.styleClass = getNodeStyle(chartPosNode)
 
               if (positionObj.positions && positionObj.positions.length > 0) {
@@ -150,7 +190,7 @@ export default defineComponent({
       return childrenNodes
     }
 
-    function setChildrenNodes (dpNode: IChartNode) {
+    const setChildrenNodes = (dpNode: IChartNode) => {
       const department: DepartmentInterface = dpNode.data as DepartmentInterface
       const position: PositionInterface = dpNode.data as PositionInterface
       const nodes: IChartNode[] = []
@@ -162,12 +202,12 @@ export default defineComponent({
             type: 'organization',
             styleClass: '',
             label: '',
-            data: { ...depto },
-            meta: { node_type: 'department' },
+            data: depto,
+            meta: { node_type: 'department', parent_node: dpNode.data },
             children: []
           }
 
-          chartNode.label = setNodeName(chartNode)
+          chartNode.label = setNodeName(chartNode).name
           chartNode.styleClass = getNodeStyle(chartNode)
 
           if (depto.departments && depto.departments.length > 0) {
@@ -187,12 +227,12 @@ export default defineComponent({
                   type: 'organization',
                   styleClass: '',
                   label: '',
-                  data: { ...positionObj },
-                  meta: { node_type: 'position' },
+                  data: positionObj,
+                  meta: { node_type: 'position', parent_node: pos },
                   children: []
                 }
 
-                chartPosNode.label = setNodeName(chartPosNode)
+                chartPosNode.label = setNodeName(chartPosNode).name
                 chartPosNode.styleClass = getNodeStyle(chartPosNode)
 
                 if (positionObj.positions && positionObj.positions.length > 0) {
@@ -218,12 +258,12 @@ export default defineComponent({
             type: 'organization',
             styleClass: '',
             label: '',
-            data: { ...pos },
-            meta: { node_type: 'position' },
+            data: pos,
+            meta: { node_type: 'position', parent_node: position },
             children: []
           }
 
-          chartNode.label = setNodeName(chartNode)
+          chartNode.label = setNodeName(chartNode).name
           chartNode.styleClass = getNodeStyle(chartNode)
 
           if (pos.positions && pos.positions.length > 0) {
@@ -246,11 +286,11 @@ export default defineComponent({
         const splitted = department.departmentName.split(' ')
 
         if (splitted.length === 1) {
-          return splitted[0]
+          return { clear_name: splitted[0], name: splitted[0] }
         }
 
         const name = splitted.map((text, i) => i > 0 ? text : '').join(' ')
-        return name
+        return { clear_name: name, name: department.departmentName }
       }
 
       if (node.meta.node_type === 'position') {
@@ -258,14 +298,14 @@ export default defineComponent({
         const splitted = position.positionName.split(' ')
 
         if (splitted.length === 1) {
-          return splitted[0]
+          return { clear_name: splitted[0], name: splitted[0] }
         }
 
         const name = splitted.map((text: string, i: number) => i > 0 ? text : '').join(' ')
-        return name
+        return { clear_name: name, name: position.positionName }
       }
 
-      return ''
+      return { clear_name: '', name: '' }
     }
 
     const exportChart = async () => {
@@ -274,6 +314,9 @@ export default defineComponent({
       if (!contenido) {
         return
       }
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
 
       try {
         const canvas = await html2canvas(contenido, {
@@ -294,33 +337,11 @@ export default defineComponent({
       } catch (error) {
         console.error('Error al exportar:', error)
       }
+
+      myGeneralStore.setFullLoader(false)
     }
 
-    const expandAll = () => {
-      for (let node of nodes.value) {
-        expandNode(node);
-      }
-
-      expandedKeys.value = { ...expandedKeys.value };
-    };
-
-    const collapseAll = () => {
-      expandedKeys.value = {};
-    };
-
-    const initialExpand = (node) => {
-      nodes.value.forEach((node, index) => {
-        if (index === 0) {
-          expandedKeys.value[node.key] = true;
-
-          node.children.forEach((dirNode, dirIndex) => {
-            expandedKeys.value[dirNode.key] = true;
-          })
-        }
-      })
-    }
-
-    const expandNode = (node) => {
+    const expandNode = (node: IChartNode) => {
       if (node.children && node.children.length) {
         expandedKeys.value[node.key] = true;
 
@@ -328,7 +349,145 @@ export default defineComponent({
             expandNode(child);
         }
       }
-    };
+    }
+
+    const handlerDisplayForm = (node: IChartNode) => {
+      nodeSelected.value = node
+
+      if (nodeSelected.value.meta.node_type === 'position') {
+        handlerNewNode('new-position')
+        return
+      }
+
+      visibleDialogTypeForm.value = true
+    }
+
+    const handlerEditNode = (node: IChartNode) => {
+      nodeSelected.value = node
+      if (nodeSelected.value) {
+        if (nodeSelected.value.meta.node_type === 'department') {
+          const departmentSelected = nodeSelected.value.data as DepartmentInterface
+          department.value = departmentSelected
+          displayDepartmentSidebarForm.value = true
+        }
+
+        if (nodeSelected.value.meta.node_type === 'position') {
+          const positionSelected = nodeSelected.value.data as PositionInterface
+          position.value = positionSelected
+
+          if (positionSelected.parentPositionId) {
+            position.value.parentPosition = nodeSelected.value.meta.parent_node
+          }
+
+          console.log('🚀 -----------------------------------------🚀')
+            console.log('🚀 ~ handlerEditNode ~ position:', position)
+            console.log('🚀 -----------------------------------------🚀')
+
+          displayPositionSidebarForm.value = true
+        }
+      }
+    }
+
+    const handlerNewNode = (action: String) => {
+      if (nodeSelected.value) {
+        if (nodeSelected.value.meta.node_type === 'department') {
+          const departmentSelected = nodeSelected.value.data as DepartmentInterface
+          department.value = new Department()
+          department.value.parentDepartmentId = departmentSelected.departmentId
+
+          if (action === 'new-department') {
+            displayDepartmentSidebarForm.value = true
+          }
+
+          if (action === 'new-position') {
+            position.value = new Position()
+            position.value.departmentId = departmentSelected.departmentId
+            displayPositionSidebarForm.value = true
+          }
+        }
+
+        if (nodeSelected.value.meta.node_type === 'position') {
+          const positionSelected = nodeSelected.value.data as PositionInterface
+          position.value = new Position()
+          position.value.departmentId = positionSelected.departmentId
+          position.value.parentPositionId = positionSelected.positionId
+          position.value.parentPosition = positionSelected
+
+          if (action === 'new-position') {
+            displayPositionSidebarForm.value = true
+          }
+        }
+
+        visibleDialogTypeForm.value = false
+      }
+    }
+
+    const onDepartmentSave = async () => {
+      displayDepartmentSidebarForm.value = false
+      await init()
+    }
+
+    const handlerDeleteNode = (node: IChartNode) => {
+      if (node.meta.node_type === 'department') {
+        const departmentSelected = node.data as DepartmentInterface
+        department.value = departmentSelected
+        dialogConfirmDeleteNode.value = true
+      }
+
+      if (node.meta.node_type === 'position') {
+        const positionSelected = node.data as PositionInterface
+        position.value = positionSelected
+        drawerSoftPositionDelete.value = true
+      }
+    }
+
+    const confirmDeleteNode = async () => {
+      if (department.value) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+
+        dialogConfirmDeleteNode.value = false
+        const departmentResponse = await new DepartmentService().delete(department.value)
+
+        if (departmentResponse.status === 201 || departmentResponse.status === 200) {
+          await init()
+        } else if (departmentResponse.status === 206) {
+          // Mostrar la alerta de confirmación cuando existan empleados relacionados al departamento a eliminar
+          drawerNodeForceDelete.value = true
+        }
+      }
+    }
+
+    const confirmDepartmentForceDelete = async () => {
+      if (department.value) {
+        const forceDeleteResponse = await new DepartmentService().forceDelete(department.value)
+
+        if (forceDeleteResponse.status === 201 || forceDeleteResponse.status === 200) {
+          await init()
+        }
+
+        drawerNodeForceDelete.value = false
+      }
+    }
+
+    const onPositionSaved = async (position: PositionInterface) => {
+      displayPositionSidebarForm.value = false
+      await init()
+    }
+
+    const confirmSoftDeletePosition = async () => {
+      if (position.value) {
+        drawerSoftPositionDelete.value = false
+
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const departmentService = new DepartmentService()
+        const departmentPositionResponse = await departmentService.softDeleteDepartmentPosition(position.value.positionId || 0)
+        await init()
+
+        return departmentPositionResponse
+      }
+    }
 
     return {
       data,
@@ -337,10 +496,28 @@ export default defineComponent({
       rowsPerPage,
       nodes,
       expandedKeys,
+      visibleDialogTypeForm,
+      displayDepartmentSidebarForm,
+      dialogConfirmDeleteNode,
+      department,
+      drawerNodeForceDelete,
+      displayPositionSidebarForm,
+      position,
+      drawerSoftPositionDelete,
       setNodeName,
       onNodeDblClick,
       exportChart,
+      handlerDisplayForm,
+      handlerNewNode,
+      onDepartmentSave,
+      confirmDeleteNode,
+      handlerDeleteNode,
+      confirmDepartmentForceDelete,
+      handlerEditNode,
+      onPositionSaved,
+      confirmSoftDeletePosition,
       expandAll,
+
       collapseAll
     }
   }
