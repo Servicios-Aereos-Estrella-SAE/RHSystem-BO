@@ -12,11 +12,11 @@
     min-height: 100dvh;
     box-sizing: border-box;
 
-    .head-page {
+    .head-employees-page {
       display: grid;
       grid-template-columns: 25rem repeat(6, auto);
       gap: 0.5rem;
-      
+
       @media screen and (max-width: $desktop) {
         grid-template-columns: repeat(5, 1fr);
       }
@@ -41,6 +41,7 @@
       background-color: white;
       padding: 1rem;
       border-radius: $radius;
+      margin-top: 0.5rem;
     }
 
     .shift-card-wrapper {
@@ -63,7 +64,7 @@
       align-items: center;
 
       .icon {
-        
+
         svg {
           width: 4rem;
         }
@@ -106,7 +107,7 @@
       color: white;
 
       svg {
-  
+
         path {
           fill: #fff !important;
         }
