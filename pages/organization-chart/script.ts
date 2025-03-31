@@ -160,7 +160,7 @@ export default defineComponent({
           department.departmentPositions.forEach(pos => {
             const positionObj = pos.position as PositionInterface
 
-            if (!(positionObj.parentPositionId)) {
+            if (positionObj && !(positionObj.parentPositionId)) {
               const chartPosNode: IChartNode = {
                 key: Math.round(Math.random() * new Date().getTime()),
                 type: 'organization',
@@ -221,7 +221,7 @@ export default defineComponent({
             depto.departmentPositions.forEach(pos => {
               const positionObj = pos.position as PositionInterface
 
-              if (!(positionObj.parentPositionId)) {
+              if (positionObj && !(positionObj.parentPositionId)) {
                 const chartPosNode: IChartNode = {
                   key: Math.round(Math.random() * new Date().getTime()),
                   type: 'organization',
@@ -482,10 +482,8 @@ export default defineComponent({
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
         const departmentService = new DepartmentService()
-        const departmentPositionResponse = await departmentService.softDeleteDepartmentPosition(position.value.positionId || 0)
+        await departmentService.softDeleteDepartmentPosition(position.value.positionId || 0)
         await init()
-
-        return departmentPositionResponse
       }
     }
 

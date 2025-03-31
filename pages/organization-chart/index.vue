@@ -17,7 +17,7 @@
               Collapse All
             </button>
           </div>
-          <Tree v-model:expandedKeys="expandedKeys" :value="nodes" :filter="true" filterMode="strict">
+          <Tree v-model:expandedKeys="expandedKeys" :value="nodes" :filter="true" filterMode="lenient">
             <template #default="slotProps">
               <div class="tree-node">
                 <div class="tree-node-name" :class="slotProps.node.styleClass">
