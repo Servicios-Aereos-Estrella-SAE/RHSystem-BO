@@ -37,10 +37,12 @@
       }
 
       .tree-node-name {
-        display: flex;
-        justify-content: flex-start;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
         align-items: center;
         width: 100%;
+        min-height: 2rem;
         font-size: 0.8rem;
         padding-left: 1rem;
         box-sizing: border-box;
@@ -54,41 +56,105 @@
         &.level {
           background-color: #9ac7bf;
           color: #314340;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #314340, $amount: 0.5) !important;
+          }
         }
 
         &.levelD1 {
           background-color: #ffd966;
           color: #5c4b16;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #5c4b16, $amount: 0.5) !important;
+          }
         }
 
         &.levelG1 {
           background-color: #ddebff;
           color: #364b6a;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #364b6a, $amount: 0.5) !important;
+          }
         }
 
         &.levelJ1 {
           background-color: #ccff99;
           color: #465f2e;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #465f2e, $amount: 0.5) !important;
+          }
+        }
+
+        &.levelP0 {
+          background-color: #ffba79;
+          color: #7f4d1d;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #7f4d1d, $amount: 0.5) !important;
+          }
         }
 
         &.levelP1 {
           background-color: #ffce9f;
           color: #7f4d1d;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #7f4d1d, $amount: 0.5) !important;
+          }
         }
 
         &.levelP2 {
           background-color: #cc99ff;
           color: #482966;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #482966, $amount: 0.5) !important;
+          }
         }
 
         &.levelP3 {
           background-color: #ffff99;
           color: #4d4d13;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #4d4d13, $amount: 0.5) !important;
+          }
         }
 
         &.levelP4 {
           background-color: #e6e6e6;
           color: #666666;
+
+          :deep(.node-sublabel) {
+            border-color: transparentize($color: #666666, $amount: 0.5) !important;
+          }
+        }
+
+        :deep(.node-label-name) {
+          min-height: 2.5rem;
+          display: flex;
+          align-items: center;
+          font-weight: 500;
+        }
+
+        :deep(.node-sublabel) {
+          font-size: 0.7rem;
+          display: block;
+          padding: 0;
+          margin-right: 1rem;
+          margin-bottom: 0.75rem;
+          padding: 1rem;
+          border-radius: calc($radius / 2);
+          border: $border-dashed;
+          line-height: 1rem;
+
+          @media screen and (max-width: $phone) {
+            font-size: 0.6rem;
+          }
         }
       }
 
@@ -133,22 +199,55 @@
 
     .node-card {
       box-sizing: border-box;
-      cursor: pointer;
 
       .node-card-item {
         display: flex;
         flex-flow: column;
+        align-items: center;
+        justify-content: center;
         gap: 0.5rem;
-        width: 15rem;
+        width: 18rem;
         box-sizing: border-box;
 
-        .node-card-item-name {
-          height: 2.5rem;
+        :deep(.avatar-photo) {
+          width: 4rem;
+          height: 4rem;
+          background-color: #f1f5f9;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+          margin-bottom: 0.5rem;
           display: flex;
+          justify-content: center;
+          align-items: center;
+          object-fit: cover;
+          border-radius: calc($radius / 2);
+
+          svg {
+            width: 2rem;
+          }
+        }
+
+        .node-card-item-name {
+          min-height: 2.5rem;
+          display: grid;
+          grid-template-columns: 1fr;
           align-items: center;
           justify-content: center;
           border-radius: calc($radius / 2);
           box-sizing: border-box;
+
+          :deep(.node-sublabel) {
+            font-weight: normal;
+            font-size: 0.7rem;
+            display: block;
+            padding: 0;
+            padding: 1rem;
+            border-radius: calc($radius / 2);
+            border: $border-dashed;
+            line-height: 1rem;
+            margin-top: 0.75rem;
+          }
         }
       }
     }
@@ -163,41 +262,132 @@
       &.level {
         background-color: #9ac7bf;
         color: #314340;
+
+        .node-sublabel {
+          border-color: transparentize($color: #314340, $amount: 0.5) !important;
+        }
       }
 
       &.levelD1 {
         background-color: #ffd966;
         color: #5c4b16;
+
+        .node-sublabel {
+          border-color: transparentize($color: #5c4b16, $amount: 0.5) !important;
+        }
       }
 
       &.levelG1 {
         background-color: #ddebff;
         color: #364b6a;
+
+        .node-sublabel {
+          border-color: transparentize($color: #364b6a, $amount: 0.5) !important;
+        }
       }
 
       &.levelJ1 {
         background-color: #ccff99;
         color: #465f2e;
+
+        .node-sublabel {
+          border-color: transparentize($color: #465f2e, $amount: 0.5) !important;
+        }
+      }
+
+      &.levelP0 {
+        background-color: #ffba79;
+        color: #7f4d1d;
+
+        .node-sublabel {
+          border-color: transparentize($color: #7f4d1d, $amount: 0.5) !important;
+        }
+
+        .avatar-photo {
+          background-color: #ffca98 !important;
+
+          svg {
+            path {
+              fill: #7f4d1d;
+            }
+          }
+        }
       }
 
       &.levelP1 {
         background-color: #ffce9f;
         color: #7f4d1d;
+
+        .node-sublabel {
+          border-color: transparentize($color: #7f4d1d, $amount: 0.5) !important;
+        }
+
+        .avatar-photo {
+          background-color: #ffd9b6 !important;
+
+          svg {
+            path {
+              fill: #7f4d1d;
+            }
+          }
+        }
       }
 
       &.levelP2 {
         background-color: #cc99ff;
         color: #482966;
+
+        .node-sublabel {
+          border-color: transparentize($color: #482966, $amount: 0.5) !important;
+        }
+
+        .avatar-photo {
+          background-color: #d6aeff !important;
+
+          svg {
+            path {
+              fill: #482966;
+            }
+          }
+        }
       }
 
       &.levelP3 {
         background-color: #ffff99;
         color: #4d4d13;
+
+        .node-sublabel {
+          border-color: transparentize($color: #4d4d13, $amount: 0.5) !important;
+        }
+
+        .avatar-photo {
+          background-color: #ffffcb !important;
+
+          svg {
+            path {
+              fill: #4d4d13;
+            }
+          }
+        }
       }
 
       &.levelP4 {
         background-color: #e6e6e6;
         color: #666666;
+
+        .node-sublabel {
+          border-color: transparentize($color: #666666, $amount: 0.5) !important;
+        }
+
+        .avatar-photo {
+          background-color: #f6f6f6 !important;
+
+          svg {
+            path {
+              fill: #666666;
+            }
+          }
+        }
       }
     }
   }

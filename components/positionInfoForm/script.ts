@@ -19,6 +19,7 @@ export default defineComponent({
     prefix: 'P1',
     positionNumber: 1,
     prefixList: [
+      { prefix: 'P0', label: 'Dirección / Gerencia / Jefatura' },
       { prefix: 'P1', label: 'Puesto Administrativo' },
       { prefix: 'P2', label: 'Encargado' },
       { prefix: 'P3', label: 'Asistente / Auxiliar / General' },
