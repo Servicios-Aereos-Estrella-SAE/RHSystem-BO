@@ -76,7 +76,7 @@
           </svg>
         </Button>
         <Button
-          v-if="displayButtonManageShiftChanges && !employeeCalendar.assist.hasExceptions && !employeeCalendar.assist.isVacationDate && !employeeCalendar.assist.isWorkDisabilityDate"
+          v-if="displayButtonManageShiftChanges"
           id="btn-open-exceptions" class="btn btn-block" @click="handlerClickShiftChanges"
           :disabled="!employeeCalendarAssist.assist.dateShift">
           <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

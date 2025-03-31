@@ -52,13 +52,17 @@ export default defineComponent({
       return display
     },
     displayButtonManageShiftChanges() {
-      let display = false
-
-      if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
-        display = true
+      if (this.sessionUser?.role?.roleSlug !== 'root') {
+        return false
       }
 
-      return display
+      if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
+        if (!this.employeeCalendar?.assist.hasExceptions && !this.employeeCalendar?.assist.isVacationDate && !this.employeeCalendar?.assist.isWorkDisabilityDate) {
+          return true
+        }
+      }
+
+      return false
     },
     displayAcceptEditShiftButton() {
       let display = false
@@ -83,26 +87,25 @@ export default defineComponent({
     this.employeeCalendar = JSON.parse(JSON.stringify(this.employeeCalendarAssist)) as AssistDayInterface
   },
   async mounted() {
-    await this.setSessionUser()
-    await this.validateAccess()
+    this.setSessionUser()
+    this.validateAccess()
     this.isReady = true
   },
   methods: {
-    async setSessionUser() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
+    setSessionUser() {
+      const { data } = useAuth()
+      const authUser = data.value as unknown as UserInterface
       this.sessionUser = authUser
     },
-    async validateAccess() {
+    validateAccess() {
       const myGeneralStore = useMyGeneralStore()
       if (myGeneralStore.isRoot) {
         this.canManagementShift = true
       } else {
-        await this.validateCanUpdateShift()
+        this.validateCanUpdateShift()
       }
     },
-    async validateCanUpdateShift() {
+    validateCanUpdateShift() {
       if (!this.sessionUser) {
         return
       }
