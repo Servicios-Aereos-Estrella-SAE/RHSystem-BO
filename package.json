@@ -6,7 +6,7 @@
     "node": "20.13.1"
   },
   "scripts": {
-    "build": "nuxt build --log-level silent",
+    "build": "nuxt build",
     "dev": "nuxt dev",
     "start": "node .output/server/index.mjs",
     "generate": "nuxt generate",
