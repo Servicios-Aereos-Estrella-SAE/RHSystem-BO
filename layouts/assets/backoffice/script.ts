@@ -66,6 +66,8 @@ export default defineComponent({
     // window.addEventListener('focus', async () => {
     //   await this.validateSession()
     // })
+    window.addEventListener('resize', this.updateScreenWidth);
+    this.updateScreenWidth()
   },
   methods: {
     // setcolor () {
@@ -74,8 +76,8 @@ export default defineComponent({
     //   })
     // }
     async validateSession() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       if (!session) {
         await this.handlerLogout()
       } else {
@@ -83,8 +85,8 @@ export default defineComponent({
       }
     },
     async setAuthUser() {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       this.authUser = authUser
     },
@@ -96,5 +98,9 @@ export default defineComponent({
         this.$router.push({ path: "/" })
       }
     },
+    updateScreenWidth () {
+      const width = window.innerWidth
+      document.documentElement.style.setProperty('--screen-width', `${width <= 500 ? width + 12 : width}px`)
+    }
   }
 })

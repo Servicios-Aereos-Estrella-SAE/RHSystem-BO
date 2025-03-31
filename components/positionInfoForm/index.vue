@@ -6,6 +6,18 @@
       <div class="form-container">
         <div>
           <div class="input-box">
+            <label for="parentDepartmentId">
+              Type Position
+            </label>
+            <Dropdown v-model="prefix" :options="prefixList" optionLabel="label" optionValue="prefix" />
+          </div>
+
+          <div class="input-box">
+            <label>Position Order Position</label>
+            <InputNumber v-model="positionNumber" placeholder="Enter Department Position"  :min="1" :max="99" />
+          </div>
+
+          <div class="input-box">
             <label for="positionName">Position Name</label>
             <InputText id="positionName" v-model="position.positionName" :invalid="submitted && !position.positionName" />
             <small class="p-error" v-if="submitted && !position.positionName">
@@ -13,7 +25,7 @@
             </small>
           </div>
 
-          <div class="input-box">
+          <div v-if="position.parentPositionId" class="input-box">
             <label for="parentPositionId">
               Dependency Position
             </label>

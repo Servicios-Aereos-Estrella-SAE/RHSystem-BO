@@ -31,7 +31,7 @@ export default defineComponent({
     isReady: false
   }),
   computed: {
-    displayButtonManageShift () {
+    displayButtonManageShift() {
       let display = false
 
       if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
@@ -42,7 +42,7 @@ export default defineComponent({
 
       return display
     },
-    displayButtonManageExceptions () {
+    displayButtonManageExceptions() {
       let display = false
 
       if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
@@ -51,7 +51,20 @@ export default defineComponent({
 
       return display
     },
-    displayAcceptEditShiftButton () {
+    displayButtonManageShiftChanges() {
+      if (this.sessionUser?.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
+        if (!this.employeeCalendar?.assist.hasExceptions && !this.employeeCalendar?.assist.isVacationDate && !this.employeeCalendar?.assist.isWorkDisabilityDate) {
+          return true
+        }
+      }
+
+      return false
+    },
+    displayAcceptEditShiftButton() {
       let display = false
 
       if (this.drawerEmployeeShiftForm && this.shiftEditSelected && (this.shiftEditSelected.day === this.employeeCalendar?.day)) {
@@ -60,7 +73,7 @@ export default defineComponent({
 
       return display
     },
-    displayCancelEditShiftButton () {
+    displayCancelEditShiftButton() {
       let display = false
 
       if (this.drawerEmployeeShiftForm && this.shiftEditSelected && (this.shiftEditSelected.day === this.employeeCalendar?.day)) {
@@ -70,30 +83,29 @@ export default defineComponent({
       return display
     }
   },
-  created () {
+  created() {
     this.employeeCalendar = JSON.parse(JSON.stringify(this.employeeCalendarAssist)) as AssistDayInterface
   },
   async mounted() {
-    await this.setSessionUser()
-    await this.validateAccess()
+    this.setSessionUser()
+    this.validateAccess()
     this.isReady = true
   },
   methods: {
-    async setSessionUser () {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
+    setSessionUser() {
+      const { data } = useAuth()
+      const authUser = data.value as unknown as UserInterface
       this.sessionUser = authUser
     },
-    async validateAccess () {
+    validateAccess() {
       const myGeneralStore = useMyGeneralStore()
       if (myGeneralStore.isRoot) {
         this.canManagementShift = true
       } else {
-        await this.validateCanUpdateShift()
+        this.validateCanUpdateShift()
       }
     },
-    async validateCanUpdateShift() {
+    validateCanUpdateShift() {
       if (!this.sessionUser) {
         return
       }
@@ -148,12 +160,12 @@ export default defineComponent({
           severity: severityType,
           summary: `Employee shift ${this.employeeShift.employeeShiftId ? 'updated' : 'created'}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       }
     },
-    handlerShiftForm (calendarDate: AssistDayInterface) {
+    handlerShiftForm(calendarDate: AssistDayInterface) {
       const newEmployeeShift: EmployeeShiftInterface = {
         employeeShiftId: null,
         employeeId: this.employee.employeeId,
@@ -168,28 +180,31 @@ export default defineComponent({
       this.shiftEditSelected = calendarDate
       this.drawerEmployeeShiftForm = true
     },
-    handlerCancelEditShift () {
+    handlerCancelEditShift() {
       this.drawerEmployeeShiftForm = false
       this.employeeShift = null
       this.shiftEditSelected = null
     },
-    isNow (day: string) {
+    isNow(day: string) {
       const now = DateTime.now().setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
       return (day === now)
     },
-    getCalendarDayNumber (date: string) {
+    getCalendarDayNumber(date: string) {
       const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('dd')
     },
-    getCalendarDayName (date: string) {
+    getCalendarDayName(date: string) {
       const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
       return calendarDate.toFormat('cccc')
     },
-    getShiftName (shiftName: string) {
+    getShiftName(shiftName: string) {
       return shiftName//.split('-')[0]
     },
-    handlerClickExceptions () {
+    handlerClickExceptions() {
       this.$emit('clickExceptions', this.employeeCalendar as AssistDayInterface)
+    },
+    handlerClickShiftChanges() {
+      this.$emit('clickShiftChanges', this.employeeCalendar as AssistDayInterface)
     },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual

@@ -10,8 +10,8 @@
         <div class="title">
           Are you sure you want to delete?
         </div>
-        <p class="description">
-          If you continue with this action, the resource will be permanently deleted.
+        <p class="confirm-delete-description">
+          {{ description || 'If you continue with this action, the resource will be permanently deleted.' }}
           <br>
           <br>
           Type the word

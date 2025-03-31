@@ -1,0 +1,220 @@
+@import '/resources/styles/variables.scss';
+
+.departments-control-wrapper {
+  display: grid;
+  grid-template-columns: 45rem auto;
+  gap: 0.5rem;
+
+  @media screen and (max-width: $ipad) {
+    grid-template-columns: 1fr;
+  }
+
+  :deep(.p-treenode-label) {
+    width: 100%;
+  }
+
+  .buttons-expand {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .tree-nodes {
+    box-sizing: border-box;
+
+    .tree-node {
+      display: grid;
+      grid-template-columns: 1fr;
+      width: 100%;
+      gap: 0.5rem;
+      box-sizing: border-box;
+      border: $border-dashed;
+      border-radius: $radius;
+      padding: 1rem;
+
+      @media screen and (max-width: $ipad) {
+        grid-template-columns: 1fr;
+      }
+
+      .tree-node-name {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        font-size: 0.8rem;
+        padding-left: 1rem;
+        box-sizing: border-box;
+        min-height: 3rem;
+        border-radius: $radius;
+
+        @media screen and (max-width: $phone) {
+          font-size: 0.7rem;
+        }
+
+        &.level {
+          background-color: #9ac7bf;
+          color: #314340;
+        }
+
+        &.levelD1 {
+          background-color: #ffd966;
+          color: #5c4b16;
+        }
+
+        &.levelG1 {
+          background-color: #ddebff;
+          color: #364b6a;
+        }
+
+        &.levelJ1 {
+          background-color: #ccff99;
+          color: #465f2e;
+        }
+
+        &.levelP1 {
+          background-color: #ffce9f;
+          color: #7f4d1d;
+        }
+
+        &.levelP2 {
+          background-color: #cc99ff;
+          color: #482966;
+        }
+
+        &.levelP3 {
+          background-color: #ffff99;
+          color: #4d4d13;
+        }
+
+        &.levelP4 {
+          background-color: #e6e6e6;
+          color: #666666;
+        }
+      }
+
+      .tree-node-tools {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.25rem;
+      }
+    }
+  }
+
+  .departments-chart-page {
+
+    .head-orgchart-page {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+
+      .buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+      }
+    }
+
+    .chart-wrapper {
+      width: calc(var(--screen-width) - 50rem) !important;
+      min-height: 70dvh;
+      overflow: auto;
+      margin-top: 0.5rem;
+
+      @media screen and (max-width: $ipad) {
+        width: calc(var(--screen-width) - 4.3rem) !important;
+        min-height: 0;
+      }
+
+      @media screen and (max-width: $phone) {
+        width: calc(var(--screen-width) - 4rem) !important;
+        min-height: 0;
+      }
+    }
+
+    .node-card {
+      box-sizing: border-box;
+      cursor: pointer;
+
+      .node-card-item {
+        display: flex;
+        flex-flow: column;
+        gap: 0.5rem;
+        width: 15rem;
+        box-sizing: border-box;
+
+        .node-card-item-name {
+          height: 2.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: calc($radius / 2);
+          box-sizing: border-box;
+        }
+      }
+    }
+
+    :deep(.p-organizationchart-node-content) {
+      padding: 1rem;
+      box-sizing: border-box;
+      border-radius: $radius;
+      font-size: 0.75rem;
+      font-weight: 500;
+
+      &.level {
+        background-color: #9ac7bf;
+        color: #314340;
+      }
+
+      &.levelD1 {
+        background-color: #ffd966;
+        color: #5c4b16;
+      }
+
+      &.levelG1 {
+        background-color: #ddebff;
+        color: #364b6a;
+      }
+
+      &.levelJ1 {
+        background-color: #ccff99;
+        color: #465f2e;
+      }
+
+      &.levelP1 {
+        background-color: #ffce9f;
+        color: #7f4d1d;
+      }
+
+      &.levelP2 {
+        background-color: #cc99ff;
+        color: #482966;
+      }
+
+      &.levelP3 {
+        background-color: #ffff99;
+        color: #4d4d13;
+      }
+
+      &.levelP4 {
+        background-color: #e6e6e6;
+        color: #666666;
+      }
+    }
+  }
+}
+
+.form-factory {
+
+  .title {
+    font-weight: 500;
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}

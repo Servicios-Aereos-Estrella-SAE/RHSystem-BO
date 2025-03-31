@@ -101,8 +101,8 @@ export const useMyGeneralStore = defineStore({
     },
 
     async hasAccess(systemModuleSlug: string, systemPermissionSlug: string) {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
 
       if (authUser && authUser.roleId && authUser.role && authUser.role.roleSlug === 'root') {
@@ -148,8 +148,8 @@ export const useMyGeneralStore = defineStore({
     },
 
     async hasAccessDepartment(departmentId: number) {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       let hasAccess = false
       if (authUser && authUser.roleId) {
@@ -167,8 +167,8 @@ export const useMyGeneralStore = defineStore({
     },
 
     async getAccess(systemModuleSlug: string) {
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       let systemPermissions = [] as Array<RoleSystemPermissionInterface>
       if (authUser && authUser.roleId) {
