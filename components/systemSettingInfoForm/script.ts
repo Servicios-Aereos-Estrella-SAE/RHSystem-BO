@@ -8,6 +8,8 @@ import { useMyGeneralStore } from "~/store/general";
 import axios from "axios";
 import SystemModuleService from "~/resources/scripts/services/SystemModuleService";
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
+import ToleranceService from "~/resources/scripts/services/ToleranceService";
+import type { ToleranceInterface } from "~/resources/scripts/interfaces/ToleranceInterface";
 
 export default defineComponent({
   components: {
@@ -96,110 +98,138 @@ export default defineComponent({
       this.systemModules = systemSettingModules
     },
     async fetchTolerances() {
-      const systemSettingService = new SystemSettingService();
-      const response = await systemSettingService.getTolerances();
-      if (response) {
-        const tolerances = response.data;
-        const delayTolerance = tolerances.find(
-          (t: { toleranceName: string }) => t.toleranceName === "Delay"
-        );
-        const faultTolerance = tolerances.find(
-          (t: { toleranceName: string }) => t.toleranceName === "Fault"
-        );
-        const tardinessTolerance = tolerances.find(
-          (t: { toleranceName: string }) => t.toleranceName === "TardinessTolerance"
-        );
-        if (delayTolerance) {
-          this.toleranceDelay = delayTolerance.toleranceMinutes;
-          this.toleranceDelayId = delayTolerance.toleranceId;
-        }
-        if (faultTolerance) {
-          this.toleranceFault = faultTolerance.toleranceMinutes;
-          this.toleranceFaultId = faultTolerance.toleranceId;
-        }
-        if (tardinessTolerance) {
-          this.tardinessTolerance = tardinessTolerance.toleranceMinutes;
-          this.tardinessToleranceId = tardinessTolerance.toleranceId;
+      if (this.systemSetting.systemSettingId) {
+        const systemSettingService = new SystemSettingService();
+        const response = await systemSettingService.getTolerances(this.systemSetting.systemSettingId);
+        if (response) {
+          const tolerances = response.data;
+          const delayTolerance = tolerances.find(
+            (t: { toleranceName: string }) => t.toleranceName === "Delay"
+          );
+          const faultTolerance = tolerances.find(
+            (t: { toleranceName: string }) => t.toleranceName === "Fault"
+          );
+          const tardinessTolerance = tolerances.find(
+            (t: { toleranceName: string }) => t.toleranceName === "TardinessTolerance"
+          );
+          if (delayTolerance) {
+            this.toleranceDelay = delayTolerance.toleranceMinutes;
+            this.toleranceDelayId = delayTolerance.toleranceId;
+          }
+          if (faultTolerance) {
+            this.toleranceFault = faultTolerance.toleranceMinutes;
+            this.toleranceFaultId = faultTolerance.toleranceId;
+          }
+          if (tardinessTolerance) {
+            this.tardinessTolerance = tardinessTolerance.toleranceMinutes;
+            this.tardinessToleranceId = tardinessTolerance.toleranceId;
+          }
         }
       }
     },
     async saveDelay() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
-      if (this.toleranceDelayId !== null) {
-        const systemSettingService = new SystemSettingService();
-        const response = await systemSettingService.updateTolerance(
-          this.toleranceDelayId,
-          this.toleranceDelay
-        );
-        myGeneralStore.setFullLoader(false);
+      const toleranceService = new ToleranceService()
+      const tolerance = {
+        toleranceId: this.toleranceDelayId,
+        toleranceName: 'Delay',
+        toleranceMinutes: this.toleranceDelay,
+        systemSettingId: this.systemSetting.systemSettingId
+      } as ToleranceInterface
 
-        if (response) {
-          this.$toast.add({
-            severity: "success",
-            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
-              }`,
-            detail: "save sucess",
-            life: 5000,
-          });
-        } else {
-          console.error("Error updating Tolerance Delay");
-        }
+      const toleranceResponse = tolerance.toleranceId ? await toleranceService.update(tolerance) : await toleranceService.create(tolerance)
+
+      myGeneralStore.setFullLoader(false);
+
+      if (toleranceResponse) {
+        this.$toast.add({
+          severity: "success",
+          summary: `Delay tolerance ${this.tardinessToleranceId ? "updated" : "created"
+            }`,
+          detail: "Delay tolerance saved successfully",
+          life: 5000,
+        });
+        this.toleranceDelayId = toleranceResponse._data.data.toleranceId
       } else {
-        console.error("Delay tolerance ID is missing");
+        let msgError = toleranceResponse._data.message
+        const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
+        this.$toast.add({
+          severity: severityType,
+          summary: `Delay ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          detail: msgError,
+          life: 5000,
+        })
       }
     },
     async saveFault() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
-      if (this.toleranceFaultId !== null) {
-        const systemSettingService = new SystemSettingService();
-        const response = await systemSettingService.updateTolerance(
-          this.toleranceFaultId,
-          this.toleranceFault
-        );
-        myGeneralStore.setFullLoader(false);
-        if (response) {
-          this.$toast.add({
-            severity: "success",
-            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
-              }`,
-            detail: "save sucess",
-            life: 5000,
-          });
-        } else {
-          console.error("Error updating Tolerance Fault");
-        }
+      const toleranceService = new ToleranceService()
+      const tolerance = {
+        toleranceId: this.toleranceFaultId,
+        toleranceName: 'Fault',
+        toleranceMinutes: this.toleranceFault,
+        systemSettingId: this.systemSetting.systemSettingId
+      } as ToleranceInterface
+
+      const toleranceResponse = tolerance.toleranceId ? await toleranceService.update(tolerance) : await toleranceService.create(tolerance)
+
+      myGeneralStore.setFullLoader(false);
+
+      if (toleranceResponse) {
+        this.$toast.add({
+          severity: "success",
+          summary: `Fault tolerance ${this.tardinessToleranceId ? "updated" : "created"
+            }`,
+          detail: "Fault tolerance saved successfully",
+          life: 5000,
+        });
+        this.toleranceFaultId = toleranceResponse._data.data.toleranceId
       } else {
-        console.error("Fault tolerance ID is missing");
+        let msgError = toleranceResponse._data.message
+        const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
+        this.$toast.add({
+          severity: severityType,
+          summary: `Fault ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          detail: msgError,
+          life: 5000,
+        })
       }
     },
     async saveTardiness() {
       const myGeneralStore = useMyGeneralStore();
       myGeneralStore.setFullLoader(true);
+      const toleranceService = new ToleranceService()
 
-      if (this.tardinessToleranceId !== null) {
-        const systemSettingService = new SystemSettingService();
-        const response = await systemSettingService.updateTolerance(
-          this.tardinessToleranceId,
-          this.tardinessTolerance
-        );
+      const tolerance = {
+        toleranceId: this.tardinessToleranceId,
+        toleranceName: 'TardinessTolerance',
+        toleranceMinutes: this.tardinessTolerance,
+        systemSettingId: this.systemSetting.systemSettingId
+      } as ToleranceInterface
 
-        myGeneralStore.setFullLoader(false);
+      const toleranceResponse = tolerance.toleranceId ? await toleranceService.update(tolerance) : await toleranceService.create(tolerance)
+      this.tardinessToleranceId = toleranceResponse._data.data.toleranceId
 
-        if (response) {
-          this.$toast.add({
-            severity: "success",
-            summary: `Tardiness tolerance ${this.tardinessToleranceId ? "updated" : "created"
-              }`,
-            detail: "Tardiness tolerance saved successfully",
-            life: 5000,
-          });
-        } else {
-          console.error("Error updating Tardiness Tolerance");
-        }
+      myGeneralStore.setFullLoader(false);
+      if (toleranceResponse) {
+        this.$toast.add({
+          severity: "success",
+          summary: `Tardiness tolerance ${this.tardinessToleranceId ? "updated" : "created"
+            }`,
+          detail: "Tardiness tolerance saved successfully",
+          life: 5000,
+        });
       } else {
-        console.error("Tardiness tolerance ID is missing");
+        let msgError = toleranceResponse._data.message
+        const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
+        this.$toast.add({
+          severity: severityType,
+          summary: `Tardiness ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          detail: msgError,
+          life: 5000,
+        })
       }
     },
 
@@ -232,6 +262,7 @@ export default defineComponent({
     deleteDelay() {
       if (this.toleranceDelayId !== null) {
         this.deleteTolerance(this.toleranceDelayId)
+        this.toleranceDelay = 0
       } else {
         console.error('Delay tolerance ID is missing')
       }
@@ -239,6 +270,7 @@ export default defineComponent({
     deleteFault() {
       if (this.toleranceFaultId !== null) {
         this.deleteTolerance(this.toleranceFaultId)
+        this.toleranceFault = 0
       } else {
         console.error('Fault tolerance ID is missing')
       }
