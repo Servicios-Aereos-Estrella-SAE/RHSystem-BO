@@ -65,7 +65,7 @@
       }
     }
 
-    .general-graphs {
+    .general-graphs-department {
       display: grid;
       grid-template-columns: 30rem auto;
       gap: 0.5rem;
@@ -97,6 +97,32 @@
       .chart-bar {
         overflow-x: auto;
         white-space: nowrap;
+      }
+
+      .rotation-info {
+        border-radius: $radius;
+        border: $border-dashed;
+        padding: 1rem;
+        box-sizing: border-box;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+
+        .value {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: 500;
+          font-size: 1rem;
+          flex-direction: column;
+          line-height: 1.5rem;
+
+          label {
+            font-size: 0.8rem;
+            font-weight: normal;
+          }
+        }
       }
     }
 
