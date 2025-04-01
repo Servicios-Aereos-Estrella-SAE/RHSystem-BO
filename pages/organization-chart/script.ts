@@ -37,7 +37,7 @@ export default defineComponent({
       styleClass: string
       label: string
       data: DepartmentInterface | PositionInterface
-      meta: { node_type: keyof typeof ENodeType, parent_node: any }
+      meta: { node_type: keyof typeof ENodeType, parent_node: any, prefix: string }
       children: IChartNode[]
     }
 
@@ -104,12 +104,6 @@ export default defineComponent({
       return ''
     }
 
-    const onNodeDblClick = (node: any) => {
-      console.log('🚀 ----------------------------🚀')
-      console.log('🚀 ~ onNodeSelect ~ node:', node)
-      console.log('🚀 ----------------------------🚀')
-    }
-
     const newMapDepartments = (department: DepartmentInterface) => {
       const departmentItem = JSON.parse(JSON.stringify(department)) as DepartmentInterface
       let chartNodeList: IChartNode | null = null
@@ -120,7 +114,7 @@ export default defineComponent({
         styleClass: '',
         label: '',
         data: departmentItem,
-        meta: { node_type: 'department', parent_node: null },
+        meta: { node_type: 'department', parent_node: null, prefix: getNodeNamePrefix(departmentItem, 'department') },
         children: setInitialChildrenNodes(departmentItem)
       }
 
@@ -141,7 +135,7 @@ export default defineComponent({
           styleClass: '',
           label: '',
           data: depto,
-          meta: { node_type: 'department', parent_node: departmentNode },
+          meta: { node_type: 'department', parent_node: departmentNode, prefix: getNodeNamePrefix(depto, 'department') },
           children: []
         }
 
@@ -167,7 +161,7 @@ export default defineComponent({
                 styleClass: '',
                 label: '',
                 data: positionObj,
-                meta: { node_type: 'position', parent_node: pos },
+                meta: { node_type: 'position', parent_node: pos, prefix: getNodeNamePrefix(positionObj, 'position') },
                 children: []
               }
 
@@ -203,7 +197,7 @@ export default defineComponent({
             styleClass: '',
             label: '',
             data: depto,
-            meta: { node_type: 'department', parent_node: dpNode.data },
+            meta: { node_type: 'department', parent_node: dpNode.data, prefix: getNodeNamePrefix(depto, 'department') },
             children: []
           }
 
@@ -228,7 +222,7 @@ export default defineComponent({
                   styleClass: '',
                   label: '',
                   data: positionObj,
-                  meta: { node_type: 'position', parent_node: pos },
+                  meta: { node_type: 'position', parent_node: pos, prefix: getNodeNamePrefix(positionObj, 'position') },
                   children: []
                 }
 
@@ -259,7 +253,7 @@ export default defineComponent({
             styleClass: '',
             label: '',
             data: pos,
-            meta: { node_type: 'position', parent_node: position },
+            meta: { node_type: 'position', parent_node: position, prefix: getNodeNamePrefix(pos, 'position') },
             children: []
           }
 
@@ -280,6 +274,25 @@ export default defineComponent({
       return nodes
     }
 
+    const getNodeNamePrefix = (dpNode: PositionInterface | DepartmentInterface, objType: string) => {
+      let name = ''
+
+      if (objType === 'department'){
+        const department = dpNode as DepartmentInterface
+        name = department.departmentName
+      }
+
+      if (objType === 'position'){
+        const position = dpNode as PositionInterface
+        name = position.positionName
+      }
+
+      const prefix = name.split(' ')[0]
+      const type = prefix.slice(0, 3).replace('(', '')
+
+      return type
+    }
+
     const setNodeName = (node: IChartNode) => {
       if (node.meta.node_type === 'department') {
         const department = node.data as DepartmentInterface
@@ -290,7 +303,8 @@ export default defineComponent({
         }
 
         const name = splitted.map((text, i) => i > 0 ? text : '').join(' ')
-        return { clear_name: name, name: department.departmentName }
+        const fullNodeName = `<div class="node-label-name">${department.departmentName}</div>`
+        return { clear_name: name, name: fullNodeName }
       }
 
       if (node.meta.node_type === 'position') {
@@ -302,7 +316,13 @@ export default defineComponent({
         }
 
         const name = splitted.map((text: string, i: number) => i > 0 ? text : '').join(' ')
-        return { clear_name: name, name: position.positionName }
+        const employeeNames = position.employees?.map(emp => `- ${emp.employeeFirstName} ${emp.employeeLastName}`).join('<br />')
+        const fullNodeName = `<div class="node-label-name">${position.positionName}</div>${employeeNames ? `<div class="node-sublabel">${employeeNames}</div>` : ''}`
+
+        const employeChartNames = position.employees?.map(emp => `${emp.employeeFirstName} ${emp.employeeLastName}`).join('<br />')
+        const clearedFullNodeName = `<div class="node-label-name">${name}</div>${employeChartNames ? `<div class="node-sublabel">${employeChartNames}</div>` : ''}`
+
+        return { clear_name: clearedFullNodeName, name: fullNodeName }
       }
 
       return { clear_name: '', name: '' }
@@ -503,7 +523,6 @@ export default defineComponent({
       position,
       drawerSoftPositionDelete,
       setNodeName,
-      onNodeDblClick,
       exportChart,
       handlerDisplayForm,
       handlerNewNode,
