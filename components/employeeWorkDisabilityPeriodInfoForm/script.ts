@@ -133,7 +133,7 @@ export default defineComponent({
           return
         }
         const newDate = new Date(this.workDisabilityPeriod.workDisabilityPeriodStartDate)
-        const daysToApply = this.daysToApply > 1 ? this.daysToApply - 1  : 0
+        const daysToApply = this.daysToApply > 1 ? this.daysToApply - 1 : 0
         newDate.setDate(newDate.getDate() + daysToApply);
         this.workDisabilityPeriod.workDisabilityPeriodEndDate = newDate.toString()
       }
@@ -159,15 +159,6 @@ export default defineComponent({
       }
 
       if (!this.workDisabilityPeriod.workDisabilityPeriodEndDate) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-          life: 5000,
-        })
-        return
-      }
-      if (!this.workDisabilityPeriod.workDisabilityPeriodId && this.files.length === 0) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',

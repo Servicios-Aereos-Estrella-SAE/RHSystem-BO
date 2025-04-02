@@ -48,8 +48,6 @@
               </div>
             </template>
           </FileUpload>
-          <small class="p-error" v-if="submitted && isNewWorkDisabilityPeriod && files.length === 0">File is
-            required.</small>
         </div>
         <div class="input-box">
           <button v-if="workDisabilityPeriod.workDisabilityPeriodFile" type="button" class="btn btn-block"
@@ -68,10 +66,14 @@
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
-          <small class="p-error" v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket folio
+          <small class="p-error"
+            v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket
+            folio
             is required.
           </small>
-          <small class="p-error" v-if="submitted && workDisabilityPeriod.workDisabilityPeriodTicketFolio && !isValidTicketFolio">Required folio with the format of 2 uppercase letters and 6 numbers.
+          <small class="p-error"
+            v-if="submitted && workDisabilityPeriod.workDisabilityPeriodTicketFolio && !isValidTicketFolio">Required
+            folio with the format of 2 uppercase letters and 6 numbers.
           </small>
         </div>
         <div class="input-box">
@@ -88,8 +90,8 @@
           <label for="requested-date">
             Date start
           </label>
-          <Calendar v-if="isNewWorkDisabilityPeriod" v-model="workDisabilityPeriod.workDisabilityPeriodStartDate" dateFormat="yy-mm-dd"
-            placeholder="Select date range" class="w-full md:w-14rem"
+          <Calendar v-if="isNewWorkDisabilityPeriod" v-model="workDisabilityPeriod.workDisabilityPeriodStartDate"
+            dateFormat="yy-mm-dd" placeholder="Select date range" class="w-full md:w-14rem"
             :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" />
           <div v-else class="period-applied">
             <div class="period-applied-date">
@@ -120,13 +122,13 @@
         </div>
         <div v-if="isNewWorkDisabilityPeriod" class="input-box">
           <label for="description">
-              Days to apply
+            Days to apply
           </label>
           <InputNumber v-model="daysToApply" inputId="daysToApply" />
           <small class="p-error" v-if="submitted && !daysToApply">
-              Days to apply is required.
+            Days to apply is required.
           </small>
-      </div>
+        </div>
         <div class="box-tools-footer">
           <Button v-if="!isNewWorkDisabilityPeriod && canManageWorkDisabilities" class="btn btn-block"
             @click="addNewExpense">
