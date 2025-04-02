@@ -22,37 +22,17 @@ export default defineComponent({
     canReadPilots: false,
     canReadCustomers: false,
     canReadFlightAttendant: false,
-    // carousel settings
     settings: {
       itemsToShow: 3,
       snapAlign: 'start',
     },
-    tabActive: 'aircraft',
-    // breakpoints are mobile first
-    // any settings not specified will fallback to the carousel settings
+    tabActive: 'employees',
     breakpoints: {
-      // 700px and up
-      300: {
-        itemsToShow: 1,
-        snapAlign: 'start',
-      },
-      500: {
-        itemsToShow: 2,
-        snapAlign: 'start',
-      },
-      700: {
-        itemsToShow: 2.4,
-        snapAlign: 'start',
-      },
-      // 1024 and up
-      1024: {
-        itemsToShow: 3,
-        snapAlign: 'start',
-      },
-      2084: {
-        itemsToShow: 6,
-        snapAlign: 'start',
-      },
+      300: { itemsToShow: 1, snapAlign: 'start' },
+      500: { itemsToShow: 2, snapAlign: 'start' },
+      700: { itemsToShow: 2.4, snapAlign: 'start' },
+      1024: { itemsToShow: 3, snapAlign: 'start' },
+      2084: { itemsToShow: 6, snapAlign: 'start' },
     },
   }),
   computed: {
@@ -77,11 +57,11 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.getAircraftProceedingFiles()
+    // await this.getAircraftProceedingFiles()
     await this.getEmployeeProceedingFiles()
-    await this.getPilotProceedingFiles()
-    await this.getCustomerProceedingFiles()
-    await this.getFlightAttendantProceedingFiles()
+    // await this.getPilotProceedingFiles()
+    // await this.getCustomerProceedingFiles()
+    // await this.getFlightAttendantProceedingFiles()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
