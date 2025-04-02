@@ -20,16 +20,28 @@
 
       <div class="details">
         <span>
-          <span class="expired">
-            {{ `${proceedingFilesExpiredCount}`.padStart(2, '0') }}
+          <span>
+            {{ `${allFilesCount}`.padStart(2, '0') }}
           </span>
-          Expired files
+          All files
+        </span>
+        <span>
+          <span class="active">
+            {{ `${availableCount}`.padStart(2, '0') }}
+          </span>
+          On Date files
         </span>
         <span>
           <span class="next-expire">
             {{ `${proceedingFilesExpiringCount}`.padStart(2, '0') }}
           </span>
           Next to expire
+        </span>
+        <span>
+          <span class="expired">
+            {{ `${proceedingFilesExpiredCount}`.padStart(2, '0') }}
+          </span>
+          Expired files
         </span>
       </div>
     </div>

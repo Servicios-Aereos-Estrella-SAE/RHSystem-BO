@@ -80,6 +80,13 @@ $color-active: #4ac19d;
     font-size: 0.8rem;
     font-weight: 500;
     padding-top: 0.25rem;
+
+    text-wrap: pretty;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
   }
 
   .details {
@@ -89,146 +96,24 @@ $color-active: #4ac19d;
     font-size: .7rem;
     align-items: flex-start;
     margin-top: 0.5rem;
-  }
-}
 
-// .card-content {
-//   flex: 1;
-// }
-
-// .percentage {
-//   font-size: 1.8rem;
-//   font-weight: 400;
-//   text-align: left;
-//   color: $color-active;
-// }
-
-// .description {
-//   height: 2rem;
-//   font-size: 1rem;
-//   text-align: left;
-//   color: $accent;
-//   margin: 8px 0;
-//   font-weight: 400;
-//   @media screen and (max-width: $phone) {
-//     height: 5rem!important;
-//   }
-// }
-
-
-
-// .details span {
-//   margin-bottom: 4px; /* Espacio entre filas */
-//   color: $accent;
-// }
-
-.expired {
-  color: $color-expired;
-  font-weight: 600;
-}
-
-.next-expire {
-  color: $color-next-expire;
-  font-weight: 600;
-}
-
-.menu-container {
-  position: relative; // Para que el menú desplegable se posicione respecto a este contenedor
-  margin-left: 1rem;
-}
-
-.dots-menu {
-  width: 1.5rem;
-  height: 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  color: $black;
-  font-weight: bold;
-  background-color: #f0f4fa; /* Fondo gris claro */
-  //padding: .8rem;
-  padding-top: .1rem;
-  padding-left: .5rem;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 0;
-  right: calc(100% + 10px); /* Colocar el menú a la derecha del botón */
-  background-color: $white;
-  border: $border;
-  border-radius: $radius;
-  box-shadow: $shadow;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-  z-index: 1000; /* Asegurarse de que esté sobre otros elementos */
-  white-space: nowrap; /* Evitar que el texto se divida en varias líneas */
-}
-
-.dropdown-menu::before {
-  content: "";
-  position: absolute;
-  top: 15px;
-  right: -6px;
-  border-width: $radius;
-  border-style: solid;
-  border-color: transparent transparent transparent #ffffff;
-  z-index: 1001;
-}
-
-.dropdown-menu a {
-  text-decoration: none;
-  color: #4b5a6a;
-  padding: 8px 16px;
-  display: flex;
-  align-items: center;
-  svg {
-    margin-right: 8px; /* Espacio entre el icono y el texto */
-  }
-}
-
-.dropdown-menu a:hover {
-  background-color: #f0f0f0;
-}
-
-.dropdown-menu a i {
-  margin-right: 8px; /* Espacio entre el icono y el texto */
-}
-
-@media screen and (max-width: $phone) {
-  .card-container {
-    display: flex;
-    cursor: pointer;
-    align-items: start;
-    background-color: $white;
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: rgba(101, 100, 100, 0.212) 0px 5px 9px;
-    width: 100%; // Ajusta según sea necesario
-    &.active {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    span {
+      text-wrap: pretty;
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      line-clamp: 1;
+      -webkit-line-clamp: 1;
     }
   }
 
-  .description {
-    height: 40px;
-    font-size: 1.3rem;
-    text-align: left;
-    color: $accent;
-    margin: 8px 0;
-    font-weight: 400;
+  .expired {
+    color: $color-expired;
+    font-weight: 600;
   }
 
-  .details {
-    display: flex;
-    flex-direction: column;
-    margin-top: -4px;
-    font-size: 1rem;
-    font-weight: 300;
-    align-items: flex-start;
-    color: $black;
+  .next-expire {
+    color: $color-next-expire;
+    font-weight: 600;
   }
-
-
-
 }

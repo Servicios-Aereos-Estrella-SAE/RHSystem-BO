@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 export default defineComponent({
   name: 'employeeDocumentExpireCard',
   props: {
@@ -27,6 +29,10 @@ export default defineComponent({
     },
     openFile() {
       window.open(this.document.proceedingFilePath)
+    },
+    expireDateFormat (date: string) {
+      const toDate = DateTime.fromISO(date, { setZone: true}).setZone('America/Mexico_City').setLocale('en')
+      return toDate.toFormat('LLLL dd, yyyy')
     }
   },
 })

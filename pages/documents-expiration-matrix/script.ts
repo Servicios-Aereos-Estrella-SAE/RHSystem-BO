@@ -109,14 +109,17 @@ export default defineComponent({
       }
       const employeeProceedingFileService = new EmployeeProceedingFileService()
       const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
-      const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2000-01-01', dateNow)
       if (employeeProceedingFileResponse.status === 200) {
         if (employeeProceedingFileResponse._data.data.employeeProceedingFiles) {
           const proceedingFilesExpired = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired
+
           for await (const file of proceedingFilesExpired) {
             this.employeeProceedingFiles.push(file)
           }
+
           const proceedingFilesExpiring = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring
+
           for await (const file of proceedingFilesExpiring) {
             this.employeeProceedingFiles.push(file)
           }
