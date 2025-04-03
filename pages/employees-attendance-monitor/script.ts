@@ -288,19 +288,19 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
 
     await this.setDefaultVisualizationMode()
-    if (this.$config.public.ENVIRONMENT === 'production') {
-      await Promise.all([
-        this.setAssistSyncStatus(),
-        this.setDepartmetList(),
-        this.setDepartmentPositionEmployeeList()
-      ])
-    }
+
+    await Promise.all([
+      this.setDepartmetList(),
+      this.setDepartmentPositionEmployeeList()
+    ])
 
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
 
     myGeneralStore.setFullLoader(false)
+
+    await this.setAssistSyncStatus()
   },
   methods: {
     isThursday(dateObject: any, addOneMonth = true) {
@@ -506,7 +506,8 @@ export default defineComponent({
     async setDepartmentPositionEmployeeList() {
       const departmentId = null
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null)
+      const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 1
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 

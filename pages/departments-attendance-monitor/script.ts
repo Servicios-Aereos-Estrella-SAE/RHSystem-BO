@@ -298,7 +298,6 @@ export default defineComponent({
 
     if (this.$config.public.ENVIRONMENT === 'production') {
       await Promise.all([
-        this.setAssistSyncStatus(),
         this.setDepartmetList(),
       ])
 
@@ -307,6 +306,7 @@ export default defineComponent({
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
+    await this.setAssistSyncStatus()
   },
   methods: {
     setDefaultVisualizationMode() {
