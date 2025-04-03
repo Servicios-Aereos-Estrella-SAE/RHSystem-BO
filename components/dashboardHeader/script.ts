@@ -1,9 +1,9 @@
 import { defineComponent } from 'vue'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import { useMyGeneralStore } from '~/store/general'
-import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService";
+import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService"
 import { io } from 'socket.io-client'
-import type { NotificationInterface } from '~/resources/scripts/interfaces/NotificationInterface';
+import type { NotificationInterface } from '~/resources/scripts/interfaces/NotificationInterface'
 
 export default defineComponent({
   name: 'dashboardHeader',
@@ -49,37 +49,37 @@ export default defineComponent({
   },
   created () {
   },
-  async mounted() {
-    this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
+  mounted() {
+    // this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
 
     const { data } = useAuth()
 
     this.authUser = data.value as unknown as UserInterface
-    this.socketIO = io(this.$config.public.SOCKET)
+    // this.socketIO = io(this.$config.public.SOCKET)
 
-    if (this.authUser?.role?.roleSlug === 'rh-manager') {
-      this.socketIO.on('new-exception-request', async () => {
-        await this.handlerFetchNotifications()
-        this.playNotificationSound()
-        let message = 'There is a new exception request'
-        if (this.notifications.length > 0) {
-          const lastNotification = this.notifications[this.notifications.length - 1]
-          message = `${lastNotification.personWhoCreatesIt} request a new shift exception to ${lastNotification.employeeName}`
-        }
-        this.notificationDesktop('SAE, New exception request', message)
-        this.$toast.add({
-          severity: 'info',
-          summary: 'Exception request',
-          detail: 'There is a new exception request',
-          life: 5000,
-        });
-      })
-    }
+    // if (this.authUser?.role?.roleSlug === 'rh-manager') {
+    //   this.socketIO.on('new-exception-request', async () => {
+    //     await this.handlerFetchNotifications()
+    //     this.playNotificationSound()
+    //     let message = 'There is a new exception request'
 
-    this.handlerFetchNotifications();
+    //     if (this.notifications.length > 0) {
+    //       const lastNotification = this.notifications[this.notifications.length - 1]
+    //       message = `${lastNotification.personWhoCreatesIt} request a new shift exception to ${lastNotification.employeeName}`
+    //     }
+    //     this.notificationDesktop('SAE, New exception request', message)
+    //     this.$toast.add({
+    //       severity: 'info',
+    //       summary: 'Exception request',
+    //       detail: 'There is a new exception request',
+    //       life: 5000,
+    //     })
+    //   })
+    // }
 
+    // await this.handlerFetchNotifications()
   },
   methods: {
     async setAuthUser () {
@@ -98,8 +98,9 @@ export default defineComponent({
       this.drawerNotifications = true
     },
     async handlerFetchNotifications() {
-      const myGeneralStore = useMyGeneralStore();
-      myGeneralStore.setFullLoader(true);
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
       try {
         const response = await new ShiftExceptionRequestService().getFilteredList({
           search: '',
@@ -108,8 +109,10 @@ export default defineComponent({
           status: 'pending',
           page: this.currentPage || 1,
           limit: this.rowsPerPage || 30,
-        });
+        })
+
         this.notifications = response.data
+
         const rawNotifications = response.data.map((item: any) => ({
           exceptionRequestId: item.exceptionRequestId,
           type: item.exceptionType?.exceptionTypeTypeName || 'Unknown',
@@ -123,24 +126,22 @@ export default defineComponent({
           readRh: item.exceptionRequestRhRead || 0,
           readGerencial: item.exceptionRequestGerencialRead || 0,
           personWhoCreatesIt: `${item.user.person.personFirstname || ''} ${item.user.person.personLastname || ''} ${item.user.person.personSecondLastname || ''}`.trim(),
-        }));
+        }))
 
-        this.notifications = rawNotifications.filter((item: { readGerencial: number; }) => {
-          const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1;
-          const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0;
+        this.notifications = rawNotifications.filter((item: { readGerencial: number }) => {
+          const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1
+          const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0
           if (excludeByManager || excludeByRH) {
-            return false; // Excluir el elemento
+            return false // Excluir el elemento
           }
 
-          return true; // Incluir el elemento
-        });
-
-
+          return true // Incluir el elemento
+        })
       } catch (error) {
-        console.error('Error fetching notifications:', error);
-        this.notifications = [];
+        console.error('Error fetching notifications:', error)
+        this.notifications = []
       } finally {
-        myGeneralStore.setFullLoader(false);
+        myGeneralStore.setFullLoader(false)
       }
     },
     async handlerLogout() {
@@ -184,7 +185,7 @@ export default defineComponent({
         this.notificationAudio.currentTime = 0
         this.notificationAudio.play()
           .then()
-          .catch(error => console.error('Error play sound sonido:', error));
+          .catch(error => console.error('Error play sound sonido:', error))
       }
     },
   }
