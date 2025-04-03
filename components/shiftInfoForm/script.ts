@@ -37,11 +37,11 @@ export default defineComponent({
     shiftActiveHours: 0 as number
   }),
   computed: {
-    formTitle () {
+    formTitle() {
       const title = this.shift && this.shift.shiftId ? 'Update Shift' : 'Create Shift'
       return title
     },
-    shiftName () {
+    shiftName() {
       const name = this.shift && this.shift.shiftId ? this.shift.shiftName : ''
       return name
     }
@@ -51,16 +51,16 @@ export default defineComponent({
       const restDaysString = newValue.map((day: { value: any }) => day.value).join(',')
       this.shift.shiftRestDays = restDaysString
     },
-    timeToStart (val) {
+    timeToStart(val) {
       const time = DateTime.fromJSDate(val).toFormat('HH:mm')
       this.shift.shiftTimeStart = time
       this.setEndTime()
     },
-    shiftActiveHours () {
+    shiftActiveHours() {
       this.shift.shiftActiveHours = this.shiftActiveHours + ((this.temporalActiveMinutes || 0) / 60)
       this.setEndTime()
     },
-    temporalActiveMinutes () {
+    temporalActiveMinutes() {
       this.shift.shiftActiveHours = this.shiftActiveHours + ((this.temporalActiveMinutes || 0) / 60)
       this.setEndTime()
     }
@@ -76,7 +76,7 @@ export default defineComponent({
       const day = DateTime.now().day
       const hour = this.shift.shiftTimeStart.split(':')[0]
       const minutes = this.shift.shiftTimeStart.split(':')[1]
-      const dateTimeStart = DateTime.fromObject({ year, month, day, hour: parseInt(hour), minute: parseInt(minutes)  })
+      const dateTimeStart = DateTime.fromObject({ year, month, day, hour: parseInt(hour), minute: parseInt(minutes) })
       this.timeToStart = dateTimeStart.toJSDate()
     }
 
@@ -92,6 +92,11 @@ export default defineComponent({
   methods: {
     async onSave() {
       this.submitted = true
+
+      if (!(this.shift.shiftAccumulatedFault > 0)) {
+        return
+      }
+
       this.shift.shiftActiveHours = this.shiftActiveHours + ((this.temporalActiveMinutes || 0) / 60)
 
       if (this.shift && this.shift.shiftTimeStart && this.shift.shiftActiveHours && this.timeToEnd) {
@@ -157,7 +162,7 @@ export default defineComponent({
     updateRestDays() {
       this.shift.shiftRestDays = this.selectedRestDays.join(',')
     },
-    setInitialFlag () {
+    setInitialFlag() {
       if (!this.shift.shiftId) {
         this.shift.shiftCalculateFlag = 'estandar'
         return
@@ -173,12 +178,12 @@ export default defineComponent({
         return
       }
     },
-    onFlagSelect (value: string) {
+    onFlagSelect(value: string) {
       console.log('🚀 --------------------------------🚀')
       console.log('🚀 ~ onFlagSelect ~ value:', value)
       console.log('🚀 --------------------------------🚀')
     },
-    setEndTime () {
+    setEndTime() {
       try {
         if (!this.shift || !this.shift.shiftTimeStart || !this.shift.shiftActiveHours) {
           this.timeToEnd = null
@@ -189,7 +194,7 @@ export default defineComponent({
         const day = DateTime.now().day
         const hour = this.shift.shiftTimeStart.split(':')[0]
         const minutes = this.shift.shiftTimeStart.split(':')[1]
-        const dateTimeStart = DateTime.fromObject({ year, month, day, hour: parseInt(hour), minute: parseInt(minutes)  })
+        const dateTimeStart = DateTime.fromObject({ year, month, day, hour: parseInt(hour), minute: parseInt(minutes) })
         const endTime = dateTimeStart.plus({ hours: this.shift.shiftActiveHours }).toJSDate()
         this.timeToEnd = endTime
       } catch (error) {
