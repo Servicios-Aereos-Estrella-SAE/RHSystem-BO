@@ -7,8 +7,10 @@ interface EmployeeShiftChangeInterface {
   employeeShiftChangeDateFromIsRestDay: number
   employeeIdTo: number | null
   shiftIdTo: number | null
-  employeeShiftChangeDateTo: string | null
+  employeeShiftChangeDateTo: string | null | Date
   employeeShiftChangeDateToIsRestDay: number
+  employeeShiftChangeChangeThisShift: boolean
+  employeeShiftChangeNote: string | null
   eemployeeShiftChangeCreatedAt?: Date | string | null
   employeeShiftChangeUpdatedAt?: Date | string | null
   employeeShiftChangeDeletedAt?: Date | string | null

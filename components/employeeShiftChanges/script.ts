@@ -149,6 +149,9 @@ export default defineComponent({
       const employeeShiftChangeService = new EmployeeShiftChangeService()
       const employeeShiftChangeResponse = await employeeShiftChangeService.getByEmployee(employeeId, this.selectedDate)
       this.employeeShiftChangesList = employeeShiftChangeResponse.employeeShiftChanges
+      if (this.employeeShiftChangesList.length > 1) {
+        this.employeeShiftChangesList = [this.employeeShiftChangesList[0]];
+      }
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -168,6 +171,8 @@ export default defineComponent({
         shiftIdTo: null,
         employeeShiftChangeDateTo: null,
         employeeShiftChangeDateToIsRestDay: 0,
+        employeeShiftChangeChangeThisShift: false,
+        employeeShiftChangeNote: ''
       }
       this.employeeShiftChange = newEmployeeShiftChange
       this.drawerEmployeeShiftChangeForm = true
