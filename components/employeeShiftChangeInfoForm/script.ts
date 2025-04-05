@@ -49,7 +49,8 @@ export default defineComponent({
     employeeToSelectedName: '' as string,
     dateTo: '' as string,
     dateRestDayTo: '' as string,
-    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    employeeShiftChangeChangeThisShift: false,
   }),
   computed: {
     selectedDate() {
@@ -61,6 +62,18 @@ export default defineComponent({
     'employeeShiftChange.employeeShiftChangeDateTo'(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.setShiftTo();
+      }
+    },
+    'employeeShiftChange.employeeShiftChangeChangeThisShift'(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
+          this.displayDateToCalendar = false
+          this.changeType = 'shift change personal'
+          this.employeeShiftChange.employeeShiftChangeDateTo = this.date
+          this.employeeShiftChange.employeeIdTo = this.employee.employeeId
+          this.employeeShiftChange.shiftIdTo = null
+        }
+
       }
     },
   },
@@ -91,6 +104,9 @@ export default defineComponent({
         this.dateRestDayTo = 'Rest day'
       } else {
         this.dateRestDayTo = 'Work day'
+      }
+      if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
+        this.employeeShiftChange.employeeShiftChangeChangeThisShift = true
       }
     } else {
       this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-MM-dd')
@@ -147,6 +163,18 @@ export default defineComponent({
           life: 5000,
         })
         return
+      }
+
+      if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
+        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'When the change is for the same day, it cannot be the same shift.',
+            life: 5000,
+          })
+          return
+        }
       }
 
       const employeeShiftChangeCheckInTimeTemp = this.employeeShiftChange.employeeShiftChangeCheckInTime
