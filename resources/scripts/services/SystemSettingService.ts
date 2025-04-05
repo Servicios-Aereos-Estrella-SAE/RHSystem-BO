@@ -168,11 +168,11 @@ export default class SystemSettingService {
 
     return true;
   }
-  async getTolerances() {
+  async getTolerances(systemSettingId: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
-      responseRequest = await $fetch(`${this.API_PATH}/tolerances`, {
+      responseRequest = await $fetch(`${this.API_PATH}/tolerances/${systemSettingId}`, {
         headers,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }

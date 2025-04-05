@@ -55,7 +55,8 @@ export default defineComponent({
     currentShift: null as ShiftInterface | null,
     currentEmployeeCalendar: null as AssistDayInterface | null,
     canManageShiftOrException: true,
-    startDateLimit: DateTime.local(2023, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(2023, 12, 29).toJSDate(),
+    canManageShiftChanges: false
   }),
   setup() {
     const router = useRouter()
@@ -121,9 +122,15 @@ export default defineComponent({
         }
       }
     }
+    if (myGeneralStore.isRoot) {
+      this.canManageShiftChanges = true
+    } else {
+      const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      this.canManageShiftChanges = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift-change')
+    }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
-
   },
   methods: {
     async getShifts() {

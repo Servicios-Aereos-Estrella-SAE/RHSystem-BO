@@ -106,7 +106,7 @@
             required.</small>
         </div>
 
-        <div class="input-box">
+        <div v-if="!isNewSystemSetting" class="input-box">
           <label for="toleranceDelay">Tolerance Delay (Minutes)</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="toleranceDelay" v-model="toleranceDelay" :invalid="submitted" />
@@ -118,7 +118,7 @@
 
         </div>
 
-        <div class="input-box">
+        <div v-if="!isNewSystemSetting" class="input-box">
           <label for="toleranceFault">Tolerance Fault (Minutes)</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="toleranceFault" v-model="toleranceFault" :invalid="submitted" />
@@ -134,12 +134,8 @@
             <Column v-for="(dept, index) in groupedSystemModules[0]" :key="index" header="System Module">
               <template #body="slotProps">
                 <div v-if="slotProps.data[index]" class="item-system-modules">
-                  <Checkbox 
-                    v-model="systemModules[0]" 
-                    name="permission" 
-                    :disabled="!canUpdate" 
-                    :value="slotProps.data[index].systemModuleId" 
-                  />
+                  <Checkbox v-model="systemModules[0]" name="permission" :disabled="!canUpdate"
+                    :value="slotProps.data[index].systemModuleId" />
                   <label>&nbsp; {{ slotProps.data[index].systemModuleName }}</label>
                 </div>
               </template>
@@ -147,7 +143,7 @@
           </DataTable>
         </div>
 
-        <div class="input-box">
+        <div v-if="!isNewSystemSetting" class="input-box">
           <label for="tardinessTolerance">Tardiness Tolerance (Occurrences)</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="tardinessTolerance" v-model="tardinessTolerance" :invalid="submitted" />
@@ -169,50 +165,50 @@
 
 
 <script>
-import Script from './script.ts'
-export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss">
-@import './style';
+  @import './style';
 
-.shift-exception-sidebar {
-  width: 100% !important;
-  max-width: 70rem !important;
-
-  @media screen and (max-width: $sm) {
+  .shift-exception-sidebar {
     width: 100% !important;
+    max-width: 70rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.shift-sidebar {
-  width: 100% !important;
-  max-width: 70rem !important;
-
-  @media screen and (max-width: $sm) {
+  .shift-sidebar {
     width: 100% !important;
+    max-width: 70rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.proceeding-file-sidebar {
-  width: 100% !important;
-  max-width: 90rem !important;
-
-  @media screen and (max-width: $sm) {
+  .proceeding-file-sidebar {
     width: 100% !important;
+    max-width: 90rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 </style>
 <style scoped>
-:deep(.p-button)[aria-label="Upload"] {
-  display: none;
-}
+  :deep(.p-button)[aria-label="Upload"] {
+    display: none;
+  }
 
-:deep(.p-button)[aria-label="Cancel"] {
-  display: none;
-}
+  :deep(.p-button)[aria-label="Cancel"] {
+    display: none;
+  }
 
-:deep(.p-button)[aria-label="Choose"] {
-  display: block;
-}
+  :deep(.p-button)[aria-label="Choose"] {
+    display: block;
+  }
 </style>

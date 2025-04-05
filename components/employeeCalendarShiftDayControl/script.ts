@@ -19,6 +19,7 @@ export default defineComponent({
     shiftsList: { type: Array as PropType<ShiftInterface[]>, required: true },
     isDeleted: { type: Boolean, required: true },
     canUpdateShift: { type: Boolean, required: true },
+    canManageShiftChanges: { type: Boolean, required: true },
     startDateLimit: { type: Date, required: true }
   },
   data: () => ({
@@ -53,6 +54,10 @@ export default defineComponent({
     },
     displayButtonManageShiftChanges() {
       if (this.sessionUser?.role?.roleSlug !== 'root') {
+        return false
+      }
+
+      if (!this.canManageShiftChanges) {
         return false
       }
 

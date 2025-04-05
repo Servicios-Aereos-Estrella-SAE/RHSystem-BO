@@ -131,6 +131,7 @@ export default defineComponent({
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
+    datePay: '' as string
   }),
   computed: {
     isRoot() {
@@ -205,6 +206,7 @@ export default defineComponent({
         }
         case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
+
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
 
           // Encontrar el jueves de la semana seleccionada
@@ -715,6 +717,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+      this.datePay = ''
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
@@ -731,13 +734,14 @@ export default defineComponent({
         const endDayMinusOne = endDate.minus({ days: 1 })
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        this.datePay = this.getNextPayThursdayFromPeriodSelected(new Date(this.periodSelected))
       } else {
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, employeeID, reportType)
+      const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, this.datePay, employeeID, reportType)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
@@ -790,6 +794,23 @@ export default defineComponent({
         nextPayDate = nextPayDate.plus({ weeks: 1 });
       }
       return nextPayDate.toJSDate()
+    },
+    getNextPayThursdayFromPeriodSelected(date: Date) {
+      const today = DateTime.fromJSDate(date); // Fecha seleccionada por el usuario
+      let nextPayDate = today.set({ weekday: 4 })
+      if (nextPayDate < today) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      while (nextPayDate.weekNumber % 2 !== 0) {
+        nextPayDate = nextPayDate.plus({ weeks: 1 });
+      }
+      const dayOfMonth = nextPayDate.day; // Día de la fecha calculada
+      let isFirstCatorcena = false;
+      if (dayOfMonth >= 1 && dayOfMonth <= 15) {
+        isFirstCatorcena = true;
+      }
+      const datePay = DateTime.fromJSDate(nextPayDate.toJSDate()).toFormat('yyyy-MM-dd')
+      return datePay
     }
   }
 })

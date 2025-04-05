@@ -105,7 +105,7 @@
         :employee="employee" :employeeCalendarAssist="item" :shiftsList="shiftsList" :isDeleted="isDeleted"
         :canUpdateShift="canManageShiftOrException" :startDateLimit="startDateLimit"
         @successShiftAssigned="onSuccessShiftAssigned" @clickExceptions="onClickExceptions"
-        @clickShiftChanges="onClickShiftChanges" />
+        @clickShiftChanges="onClickShiftChanges" :canManageShiftChanges="canManageShiftChanges" />
     </div>
     <div v-else class="no-shifts">
       This employee has no shifts assigned to this month

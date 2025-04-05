@@ -69,12 +69,13 @@ export default class AssistService {
   async getExcelByEmployee(
     date: string | Date,
     dateEnd: string | Date,
+    datePay: string | Date,
     employeeId: number,
     reportType: string
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, employeeId, reportType }
+      const query = { date, 'date-end': dateEnd, 'datePay': datePay, employeeId, reportType }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-employee`, {
         method: 'GET',
         headers: {
@@ -117,12 +118,13 @@ export default class AssistService {
   async getExcelByDepartment(
     date: string | Date,
     dateEnd: string | Date,
+    datePay: string | Date,
     departmentId: number,
     reportType: string
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, departmentId, reportType }
+      const query = { date, 'date-end': dateEnd, 'datePay': datePay, departmentId, reportType }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-department`, {
         method: 'GET',
         headers: {
@@ -142,11 +144,12 @@ export default class AssistService {
   async getExcelAll(
     date: string | Date,
     dateEnd: string | Date,
+    datePay: string | Date,
     reportType: string
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, reportType }
+      const query = { date, 'date-end': dateEnd, 'datePay': datePay, reportType }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-all`, {
         method: 'GET',
         headers: {
