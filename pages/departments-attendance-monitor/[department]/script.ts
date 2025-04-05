@@ -120,7 +120,8 @@ export default defineComponent({
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
     employeeDepartmentList: [] as EmployeeAssistStatisticInterface[],
-    statusInfo: null as AssistSyncStatus | null
+    statusInfo: null as AssistSyncStatus | null,
+    rotationIndex: null as number | null
   }),
   computed: {
     weeklyStartDay() {
@@ -279,6 +280,11 @@ export default defineComponent({
       }
 
       return ''
+    },
+    isRootUser() {
+      const myGeneralStore = useMyGeneralStore()
+      const flag = myGeneralStore.isRoot
+      return flag
     }
   },
   created() {
@@ -766,6 +772,18 @@ export default defineComponent({
         nextPayDate = nextPayDate.plus({ weeks: 1 });
       }
       return nextPayDate.toJSDate()
+    },
+    async getRotation () {
+      if (this.departmenSelected) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+        const depId = this.departmenSelected.departmentId as number
+        const start = '2000-01-01'
+        const end = DateTime.now().toFormat('yyyy-MM-dd')
+        const res = await new DepartmentService().getRotationIndex(depId, start, end)
+        this.rotationIndex = res.status === 200 ? res._data.data.rotationIndex : 0
+        myGeneralStore.setFullLoader(false)
+      }
     }
   }
 })

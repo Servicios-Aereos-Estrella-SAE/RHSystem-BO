@@ -1,4 +1,3 @@
-import { ShiftExceptionsErrorScript } from '#build/components';
 import { defineComponent } from 'vue'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 
@@ -18,7 +17,7 @@ export default defineComponent({
   },
   methods: {
     handlerConfirm () {
-      
+
       this.$emit('confirm')
     },
     handlerCancel () {
