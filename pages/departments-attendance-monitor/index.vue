@@ -119,11 +119,17 @@
           </button>
         </div>
 
-        <Message class="sync" :closable="false">
+        <Message v-if="assistSyncStatusDate" class="sync" :closable="false">
           Last attendance recorded at
           {{ assistSyncStatusDate }}
           <br>
           ( Checking every 5 minutes )
+        </Message>
+
+        <Message v-if="!assistSyncStatusDate" class="sync" :closable="false" severity="warn">
+          <div>
+            No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
+          </div>
         </Message>
 
         <div class="general-graphs">

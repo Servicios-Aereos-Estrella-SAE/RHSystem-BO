@@ -10,16 +10,34 @@ export default defineComponent({
   data: () => ({
     proceedingFilesExpiredCount: 0,
     proceedingFilesExpiringCount: 0,
+    allFilesCount: 0
   }),
   computed: {
     getPercentage () {
-      let total = this.proceedingFilesExpiredCount + this.proceedingFilesExpiringCount
-      const percentage = (this.proceedingFilesExpiringCount / total) * 100
-      return total > 0 ?  Math.ceil(percentage) : 0
+      const total = this.allFilesCount
+      const expired = this.proceedingFilesExpiredCount
+      const available = total - expired
+
+      const percentage = (available / total) * 100
+      return total > 0 ?  Math.floor(percentage) : 0
+    },
+    availableCount () {
+      const total = this.allFilesCount
+      const expired = this.proceedingFilesExpiredCount
+      const toExpire = this.proceedingFilesExpiringCount
+      const available = total - expired - toExpire
+      return available
     },
     classCard() {
-      return (this.proceedingFilesExpiringCount === 0 && this.proceedingFilesExpiredCount === 0) ? '' :
-          this.proceedingFilesExpiredCount >= this.proceedingFilesExpiringCount ? 'expired' : 'next-expire'
+      if (this.getPercentage >= 100) {
+        return ''
+      }
+
+      if (this.getPercentage > 50) {
+        return 'next-expire'
+      }
+
+      return 'expired'
     }
   },
   async mounted() {
@@ -27,11 +45,11 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     const employeeProceedingFileService = new EmployeeProceedingFileService()
     const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
-    const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+    const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2000-01-01', dateNow)
     if (employeeProceedingFileResponse.status === 200) {
        this.proceedingFilesExpiredCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired.length
        this.proceedingFilesExpiringCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring.length
-      
+       this.allFilesCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.quantityFiles
     } else {
       this.$toast.add({
         severity: 'error',

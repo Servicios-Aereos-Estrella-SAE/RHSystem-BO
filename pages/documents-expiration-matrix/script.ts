@@ -22,37 +22,17 @@ export default defineComponent({
     canReadPilots: false,
     canReadCustomers: false,
     canReadFlightAttendant: false,
-    // carousel settings
     settings: {
       itemsToShow: 3,
       snapAlign: 'start',
     },
-    tabActive: 'aircraft',
-    // breakpoints are mobile first
-    // any settings not specified will fallback to the carousel settings
+    tabActive: 'employees',
     breakpoints: {
-      // 700px and up
-      300: {
-        itemsToShow: 1,
-        snapAlign: 'start',
-      },
-      500: {
-        itemsToShow: 2,
-        snapAlign: 'start',
-      },
-      700: {
-        itemsToShow: 2.4,
-        snapAlign: 'start',
-      },
-      // 1024 and up
-      1024: {
-        itemsToShow: 3,
-        snapAlign: 'start',
-      },
-      2084: {
-        itemsToShow: 6,
-        snapAlign: 'start',
-      },
+      300: { itemsToShow: 1, snapAlign: 'start' },
+      500: { itemsToShow: 2, snapAlign: 'start' },
+      700: { itemsToShow: 2.4, snapAlign: 'start' },
+      1024: { itemsToShow: 3, snapAlign: 'start' },
+      2084: { itemsToShow: 6, snapAlign: 'start' },
     },
   }),
   computed: {
@@ -77,11 +57,11 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.getAircraftProceedingFiles()
+    // await this.getAircraftProceedingFiles()
     await this.getEmployeeProceedingFiles()
-    await this.getPilotProceedingFiles()
-    await this.getCustomerProceedingFiles()
-    await this.getFlightAttendantProceedingFiles()
+    // await this.getPilotProceedingFiles()
+    // await this.getCustomerProceedingFiles()
+    // await this.getFlightAttendantProceedingFiles()
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -129,14 +109,17 @@ export default defineComponent({
       }
       const employeeProceedingFileService = new EmployeeProceedingFileService()
       const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
-      const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2024-01-01', dateNow)
+      const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2000-01-01', dateNow)
       if (employeeProceedingFileResponse.status === 200) {
         if (employeeProceedingFileResponse._data.data.employeeProceedingFiles) {
           const proceedingFilesExpired = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired
+
           for await (const file of proceedingFilesExpired) {
             this.employeeProceedingFiles.push(file)
           }
+
           const proceedingFilesExpiring = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring
+
           for await (const file of proceedingFilesExpiring) {
             this.employeeProceedingFiles.push(file)
           }

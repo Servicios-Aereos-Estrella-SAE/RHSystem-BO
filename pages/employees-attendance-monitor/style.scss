@@ -59,10 +59,8 @@
       display: flex;
       gap: 0.5rem;
       margin-bottom: 0.5rem;
+      margin-top: 0.5rem;
       justify-content: flex-end;
-
-      @media screen and (max-width: $phone) {
-      }
     }
 
     .general-graphs {
@@ -121,7 +119,7 @@
       box-sizing: border-box;
       display: grid;
       grid-auto-flow: dense;
-      grid-template-columns: repeat(auto-fill, minmax(23rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(23.5rem, 1fr));
       gap: .5rem;
       margin-top: 0.5rem;
     }

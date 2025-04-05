@@ -300,7 +300,6 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange();
 
     await Promise.all([
-      this.setAssistSyncStatus(),
       this.setDepartmetList(),
       this.setDefaultVisualizationMode()
     ])
@@ -312,6 +311,8 @@ export default defineComponent({
 
     await this.setGraphsData()
     myGeneralStore.setFullLoader(false)
+
+    await this.setAssistSyncStatus()
   },
   methods: {
     setDefaultVisualizationMode() {

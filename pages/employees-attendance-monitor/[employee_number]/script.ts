@@ -304,11 +304,11 @@ export default defineComponent({
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
     }
     this.periodSelected = new Date()
-    await this.setAssistSyncStatus()
     this.datesSelected = this.getDefaultDatesRange()
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
     myGeneralStore.setFullLoader(false)
+    await this.setAssistSyncStatus()
   },
   methods: {
     async getEmployee() {
@@ -532,26 +532,26 @@ export default defineComponent({
       checkOut?: { assistPunchTime?: string | null }
     }>): string {
       let totalMinutes = 0
-    
+
       dataList.forEach(data => {
         const checkIn = data.checkIn?.assistPunchTime || null
         const checkOut = data.checkOut?.assistPunchTime || null
-    
+
         if (checkIn && checkOut) {
           const checkInDateTime = DateTime.fromISO(checkIn)
           const checkOutDateTime = DateTime.fromISO(checkOut)
-    
+
           if (checkOutDateTime >= checkInDateTime) {
             const duration = checkOutDateTime.diff(checkInDateTime, ['minutes'])
             totalMinutes += Math.floor(duration.minutes)
           }
         }
       })
-    
+
       // Convertir minutos acumulados a horas y minutos
       const totalHours = Math.floor(totalMinutes / 60)
       const remainingMinutes = totalMinutes % 60
-    
+
       return `${totalHours.toString().padStart(2, '0')} hours ${remainingMinutes.toString().padStart(2, '0')} minutes`
     }, */
     async calculateTotalElapsedTimeWithCrossing(dataList: Array<{
