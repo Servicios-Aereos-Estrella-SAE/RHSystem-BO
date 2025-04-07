@@ -13,23 +13,37 @@
     font-size: 0.9rem;
   }
 
+  .tag-type {
+    margin-top: 0.5rem;
+  }
+
   .description {
     text-align: left;
-    font-weight: 300;
     margin-top: 0.5rem;
     font-size: 0.85rem;
     padding-bottom: 1rem;
 
     .employee {
-      font-weight: 600;
+      font-weight: normal;
       margin-top: 1rem;
-      margin-bottom: 1rem;
     }
+
+    .employee-shift {
+      font-weight: normal;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+  }
+
+  .new-shift-tag {
+    margin-top: 1rem;
+    border-top: $border-dashed;
+    padding-top: 1rem;
   }
 
   .time {
     text-align: left;
-    font-weight: 300;
+    font-weight: normal;
     margin-top: 0.5rem;
     font-size: 0.80rem;
   }

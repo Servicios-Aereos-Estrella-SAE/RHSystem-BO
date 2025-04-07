@@ -3,39 +3,37 @@
     <div>
       <div class="employee-shift-change-name">
         <div v-if="employeeShiftChange.employeeIdFrom === employeeShiftChange.employeeIdTo">
-          Shift change personal
+          <div v-if="employeeShiftChange.employeeShiftChangeChangeThisShift === 1">
+            Cover shift
+          </div>
+          <div v-else>
+            Shift change personal
+          </div>
         </div>
         <div v-else>
           Shift change with employee
         </div>
       </div>
+
       <div class="description">
 
         <div v-if="employeeShiftChange.employeeShiftChangeDateFrom">
-          Date from: {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateFrom) }}
+          {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateFrom) }}
         </div>
-        <div v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1">
-          Day from: Rest day
+
+        <div v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0" class="employee">
+          Change with
+          {{ employeeShiftChange.employeeTo.employeeFirstName }}
+          {{ employeeShiftChange.employeeTo.employeeLastName }}
         </div>
-        <div v-else>
-          Day from: Work day
-        </div><br>
-        <div v-if="employeeShiftChange.employeeTo" class="employee">
-          Employee To: {{ employeeShiftChange.employeeTo.employeeFirstName }} {{
-          employeeShiftChange.employeeTo.employeeLastName
-          }}
+
+        <div v-if="employeeShiftChange.shiftTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0" class="employee-shift">
+          {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateTo) }}
         </div>
-        <div v-if="employeeShiftChange.shiftTo">
-          Shift To: {{ employeeShiftChange.shiftTo.shiftName }}
-        </div>
-        <div v-if="employeeShiftChange.employeeShiftChangeDateTo">
-          Date to: {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateTo) }}
-        </div>
-        <div v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1">
-          Day to: Rest day
-        </div>
-        <div v-else>
-          Day to: Work day
+
+        <div class="new-shift-tag" v-if="employeeShiftChange.employeeTo">
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 0" :value="employeeShiftChange.shiftTo.shiftName" severity="success" />
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="'Rest Day'" severity="info" />
         </div>
       </div>
 
