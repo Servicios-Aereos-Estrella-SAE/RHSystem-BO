@@ -17,11 +17,7 @@
 
       <div class="description">
 
-        <div v-if="employeeShiftChange.employeeShiftChangeDateFrom">
-          {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateFrom) }}
-        </div>
-
-        <div v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0" class="employee">
+        <div v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)" class="employee">
           Change with
           {{ employeeShiftChange.employeeTo.employeeFirstName }}
           {{ employeeShiftChange.employeeTo.employeeLastName }}
@@ -34,6 +30,20 @@
         <div class="new-shift-tag" v-if="employeeShiftChange.employeeTo">
           <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 0" :value="employeeShiftChange.shiftTo.shiftName" severity="success" />
           <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="'Rest Day'" severity="info" />
+          <br v-if="!employeeShiftChange.shiftTo.shiftName">
+          <br v-if="!employeeShiftChange.shiftTo.shiftName">
+          <small v-if="!employeeShiftChange.shiftTo.shiftName">
+            {{ employeeShiftChange.shiftTo.shiftName }}
+          </small>
+        </div>
+
+        <div v-if="employeeShiftChange.employeeShiftChangeNote" class="notes">
+          <p>
+            <b>
+              Notes:
+            </b>
+            {{ employeeShiftChange.employeeShiftChangeNote }}
+          </p>
         </div>
       </div>
 

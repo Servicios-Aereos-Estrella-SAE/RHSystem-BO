@@ -289,7 +289,7 @@ export default defineComponent({
               })
               return
             }
-            if (employeeCalendar[0].assist.isRestDay) {
+            if (employeeCalendar[0].assist.isRestDay  && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
               this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 1
               this.dateRestDayTo = 'Rest day'
             }
