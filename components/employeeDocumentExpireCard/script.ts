@@ -31,7 +31,7 @@ export default defineComponent({
       window.open(this.document.proceedingFilePath)
     },
     expireDateFormat (date: string) {
-      const toDate = DateTime.fromISO(date, { setZone: true}).setZone('America/Mexico_City').setLocale('en')
+      const toDate = DateTime.fromISO(date, { setZone: true}).setZone('UTC-6').setLocale('en')
       return toDate.toFormat('LLLL dd, yyyy')
     }
   },

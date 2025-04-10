@@ -55,7 +55,7 @@ export default defineComponent({
   }),
   computed: {
     selectedExceptionDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     }
   },
@@ -98,7 +98,7 @@ export default defineComponent({
 
       if (this.currentShiftException && this.currentShiftException.shiftExceptionsDate) {
         this.currentDate = `${this.currentShiftException.shiftExceptionsDate}`
-        const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd HH:mm:ss')
+        const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('UTC-6').toFormat('yyyy-MM-dd HH:mm:ss')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
       let isActive: number = 1
@@ -106,7 +106,7 @@ export default defineComponent({
       this.activeSwichtTimeByTime = isActive === 1 ? true : false
     } else {
       this.shiftException.shiftExceptionsDate = this.date
-      this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      this.currentDate = DateTime.fromJSDate(this.date).setZone('UTC-6').toISO()
       this.shiftException.shiftExceptionEnjoymentOfSalary = null
     }
 

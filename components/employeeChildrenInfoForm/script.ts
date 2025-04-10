@@ -53,7 +53,7 @@ export default defineComponent({
         const day = `${this.employeeChildren?.employeeChildrenBirthday}`.split('T')[0].split('-')[2]
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toJSDate()
 
@@ -121,7 +121,7 @@ export default defineComponent({
     },
     getBirthdayFormatted(date: Date) {
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDDD')
     },

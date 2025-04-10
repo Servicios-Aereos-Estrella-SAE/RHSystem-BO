@@ -104,7 +104,7 @@ export default defineComponent({
       }
     } else {
       this.exceptionRequest.requestedDate = this.date
-      this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      this.currentDate = DateTime.fromJSDate(this.date).setZone('UTC-6').toISO()
 
     }
 
@@ -231,7 +231,7 @@ export default defineComponent({
             this.ExceptionRequestsError = responseTemp.exceptionRequestsError
           }
           this.$emit('onExceptionRequestSaveAll', responseTemp.exceptionRequestsSaved as Array<ExceptionRequestInterface>, this.ExceptionRequestsError as Array<ExceptionRequestErrorInterface>)
-  
+
         } else {
           const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
           const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
@@ -246,7 +246,7 @@ export default defineComponent({
         if (exceptionRequestResponse.status === 201 || exceptionRequestResponse.status === 200) {
           const exceptionRequest = exceptionRequestResponse._data.data.data
           this.$emit('onExceptionRequestSave', exceptionRequest as ExceptionRequestInterface)
-  
+
         } else {
           const msgError = exceptionRequestResponse._data.error ? exceptionRequestResponse._data.error : exceptionRequestResponse._data.message
           const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'

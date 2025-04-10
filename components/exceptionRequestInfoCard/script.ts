@@ -46,7 +46,7 @@ export default defineComponent({
     if (this.exceptionRequest) {
       if (this.exceptionRequest.employee) {
         this.employee = this.exceptionRequest.employee
-        this.selectedExceptionDate = DateTime.fromISO(`${this.exceptionRequest.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+        this.selectedExceptionDate = DateTime.fromISO(`${this.exceptionRequest.requestedDate}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').toJSDate()
       }
     }
   },
