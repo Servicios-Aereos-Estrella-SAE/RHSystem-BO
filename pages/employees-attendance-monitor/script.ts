@@ -106,9 +106,9 @@ export default defineComponent({
     statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1 },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -127,7 +127,8 @@ export default defineComponent({
     evaluatedEmployees: 0 as number,
     evaluatedAssistEmployees: 0 as number,
     estimatedArrivals: 0 as number,
-    datePay: '' as string
+    datePay: '' as string,
+    onSyncStatus: true
   }),
   computed: {
     weeklyStartDay() {
@@ -285,6 +286,8 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange()
   },
   async mounted() {
+    this.setAssistSyncStatus()
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
@@ -300,8 +303,6 @@ export default defineComponent({
     this.getDepartmentPositionAssistStatistics()
 
     myGeneralStore.setFullLoader(false)
-
-    await this.setAssistSyncStatus()
   },
   methods: {
     isThursday(dateObject: any, addOneMonth = true) {
@@ -754,6 +755,7 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+      this.onSyncStatus = false
     },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual

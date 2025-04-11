@@ -120,7 +120,7 @@
             </svg>
           </button>
         </div>
-        <Message v-if="assistSyncStatusDate" class="sync" :closable="false">
+        <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
           <div>
             Last attendance recorded at
             {{ assistSyncStatusDate }}
@@ -128,7 +128,7 @@
             ( Checking every 5 minutes )
           </div>
         </Message>
-        <Message v-if="!assistSyncStatusDate" class="sync" :closable="false" severity="warn">
+        <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
             No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
           </div>
@@ -187,13 +187,4 @@
 
 <style lang="scss" scoped>
   @import './style';
-</style>
-
-<style lang="scss">
-  .sync {
-
-    .p-message-text {
-      font-size: 0.7rem !important;
-    }
-  }
 </style>
