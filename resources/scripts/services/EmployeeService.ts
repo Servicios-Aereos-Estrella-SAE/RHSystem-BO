@@ -36,6 +36,23 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getBirthday(searchText: string, departmentId: number | null, positionId: number | null) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    await $fetch(`${this.API_PATH}/employees/get-birthday`, {
+      headers,
+      query: {
+        search: searchText,
+        departmentId,
+        positionId,
+      },
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
   async store(employee: EmployeeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
