@@ -114,7 +114,7 @@ export default defineComponent({
           endUTC = DateTime.fromISO('9999-12-31T23:59:59Z', { zone: 'utc' })
         }
 
-        // Verificamos traslape: 
+        // Verificamos traslape:
         // (startUTC <= dayEndUTC) && (endUTC >= dayStartUTC)
         return (startUTC <= dayEndUTC) && (endUTC >= dayStartUTC)
       })
@@ -416,20 +416,20 @@ export default defineComponent({
         // 1) Parseamos su fecha de inicio UTC y convertimos a la zona local
         const dtStart = DateTime
           .fromISO(maintenance.aircraftMaintenanceStartDate as string, { zone: 'utc' })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
 
         // 2) Parseamos su fecha de fin UTC y convertimos a la zona local
         //    (si no tiene `aircraftMaintenanceFinishDate`, usamos `aircraftMaintenanceEndDate`)
         let dtEnd = DateTime
           .fromISO(maintenance.aircraftMaintenanceEndDate as string, { zone: 'utc' })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
 
         if (maintenance.aircraftMaintenanceFinishDate) {
           dtEnd = DateTime
             .fromISO(maintenance.aircraftMaintenanceFinishDate as string, { zone: 'utc' })
-            .setZone('America/Mexico_City')
+            .setZone('UTC-6')
         } else {
-          dtEnd = DateTime.fromISO('9999-12-31T23:59:59Z', { zone: 'utc' }).setZone('America/Mexico_City')
+          dtEnd = DateTime.fromISO('9999-12-31T23:59:59Z', { zone: 'utc' }).setZone('UTC-6')
 
         }
 

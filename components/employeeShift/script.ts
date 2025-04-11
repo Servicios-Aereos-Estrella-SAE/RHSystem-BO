@@ -68,7 +68,7 @@ export default defineComponent({
       return myGeneralStore.isRoot
     },
     monthName() {
-      const calendarDate = this.selectedDate.setZone('America/Mexico_City').setLocale('en')
+      const calendarDate = this.selectedDate.setZone('UTC-6').setLocale('en')
       return calendarDate.toFormat('LLLL, y')
     },
     period() {
@@ -192,7 +192,7 @@ export default defineComponent({
       return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     async handlerCalendarChange() {
-      const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('America/Mexico_City').setLocale('en')
+      const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('UTC-6').setLocale('en')
 
       if (calendarDate.toFormat('LLLL').toLocaleLowerCase() !== this.selectedDate.toFormat('LLLL').toLocaleLowerCase()) {
         this.selectedDate = calendarDate
@@ -206,14 +206,14 @@ export default defineComponent({
     async handlerLastMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('America/Mexico_City').setLocale('en')
+      this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('UTC-6').setLocale('en')
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
     async handlerNextMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('America/Mexico_City').setLocale('en')
+      this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('UTC-6').setLocale('en')
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
@@ -261,12 +261,12 @@ export default defineComponent({
       this.displayInputCalendar = false
     },
     onClickExceptions(employeeCalendar: AssistDayInterface) {
-      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').toJSDate()
       this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftExceptions = true
     },
     onClickShiftChanges(employeeCalendar: AssistDayInterface) {
-      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').toJSDate()
+      this.selectedExceptionDate = DateTime.fromISO(`${employeeCalendar.day}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').toJSDate()
       this.currentShift = employeeCalendar.assist.dateShift
       this.drawerShiftChanges = true
       this.currentEmployeeCalendar = employeeCalendar

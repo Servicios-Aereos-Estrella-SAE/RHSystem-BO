@@ -20,8 +20,8 @@ export default defineComponent({
     canManageException: { type: Boolean, required: true },
   },
   data: () => ({
-    exceptionTypeList: [] as Array<ExceptionTypeInterface>, 
-    isReady: false, 
+    exceptionTypeList: [] as Array<ExceptionTypeInterface>,
+    isReady: false,
   }),
   computed: {
     calendarDay () {
@@ -39,7 +39,7 @@ export default defineComponent({
     await this.getExceptionTypes()
 
     // if (this.shiftException.requestedDate) {
-    //   const newDate = DateTime.fromISO(this.shiftException.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+    //   const newDate = DateTime.fromISO(this.shiftException.requestedDate.toString(), { setZone: true }).setZone('UTC-6')
     //   this.shiftException.requestedDate = newDate ? newDate.toString() : ''
     // }
   },
@@ -86,6 +86,6 @@ export default defineComponent({
       )
       return exceptionType ? exceptionType.exceptionTypeTypeName : 'Unknown Type'
     }
-  
+
   }
 })

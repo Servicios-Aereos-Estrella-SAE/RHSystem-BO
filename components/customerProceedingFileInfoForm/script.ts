@@ -58,7 +58,7 @@ export default defineComponent({
     }
     if (this.proceedingFile.proceedingFileExpirationAt) {
       const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toJSDate()
       this.proceedingFile.proceedingFileExpirationAt = expirationAt
@@ -246,7 +246,7 @@ export default defineComponent({
       }
 
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDD')
     },

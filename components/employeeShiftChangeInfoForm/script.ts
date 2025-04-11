@@ -54,7 +54,7 @@ export default defineComponent({
   }),
   computed: {
     selectedDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     }
   },
@@ -96,7 +96,7 @@ export default defineComponent({
         this.currentEmployeeShiftChange = employeeShiftChangeResponse._data.data.employeeShiftChange.employeeShiftChange
       }
       if (this.currentEmployeeShiftChange && this.currentEmployeeShiftChange.employeeShiftChangeDateTo) {
-        const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+        const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('UTC-6').setLocale('en').toFormat('DDDD')
         this.dateTo = newDate
       }
       this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.employeeFirstName} ${this.employeeShiftChange.employeeTo.employeeLastName}`
@@ -109,8 +109,8 @@ export default defineComponent({
         this.employeeShiftChange.employeeShiftChangeChangeThisShift = true
       }
     } else {
-      this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-MM-dd')
-      this.currentDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').toISO()
+      this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-MM-dd')
+      this.currentDate = DateTime.fromJSDate(this.date).setZone('UTC-6').toISO()
       this.employeeShiftChange.employeeIdTo = this.employee.employeeId
     }
     await this.getShifts()
@@ -236,7 +236,7 @@ export default defineComponent({
         return ''
       }
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDD')
     },

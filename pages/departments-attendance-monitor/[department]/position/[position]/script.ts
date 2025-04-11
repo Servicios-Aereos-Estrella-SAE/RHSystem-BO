@@ -138,13 +138,13 @@ export default defineComponent({
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('month')
           const daysInMonth = (start.daysInMonth || 0)
-          
+
           for (let index = 0; index < daysInMonth; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -156,13 +156,13 @@ export default defineComponent({
         case 'weekly': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const start = date.startOf('week')
-          
+
           for (let index = 0; index < 7; index++) {
             const currentDay = start.plus({ days: index })
             const year = parseInt(currentDay.toFormat('yyyy'))
             const month = parseInt(currentDay.toFormat('LL'))
             const day = parseInt(currentDay.toFormat('dd'))
-  
+
             daysList.push({
               year,
               month,
@@ -196,7 +196,7 @@ export default defineComponent({
         case 'fourteen': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
-          
+
           // Encontrar el jueves de la semana seleccionada
           let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
@@ -259,7 +259,7 @@ export default defineComponent({
     },
     assistSyncStatusDate () {
       if (this.statusInfo) {
-        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('UTC-6')
         const dateTimeFormat = dateTime.toFormat('ff')
         return dateTimeFormat
       }
@@ -300,7 +300,7 @@ export default defineComponent({
     },
     getDefaultDatesRange() {
       const today = new Date();
-      
+
       // Obtener el día anterior al día actual
       const previousDay = new Date(today);
       previousDay.setDate(today.getDate() - 1);
@@ -423,51 +423,51 @@ export default defineComponent({
           const day = parseInt(currentDay.toFormat('dd'))
           const evalDate = `${year}-${`${month}`.padStart(2, '0')}-${`${day}`.padStart(2, '0')}`
           let dayCalendar: any[] = []
-  
+
           this.employeeDepartmentPositionList.forEach(item => {
             const currentCalendar: AssistDayInterface[] = item.calendar.filter(calendar => calendar.day === evalDate)
             if (currentCalendar.length > 0) {
               dayCalendar.push(currentCalendar[0].assist)
             }
           })
-  
+
           dayStatisticsCollection.push({
             day: evalDate,
             assist: dayCalendar
           })
         }
-  
+
         const assistSerie: number[] = []
         const toleranceSerie: number[] = []
         const delaySerie: number[] = []
         const faultSerie: number[] = []
-  
+
         dayStatisticsCollection.forEach((element: any) => {
           const assists = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'ontime').length
           const tolerances = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'tolerance').length
           const delays = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'delay').length
           const faults = element.assist.filter((assistDate: any) => assistDate.checkInStatus === 'fault' && !assistDate.isFutureDay && !assistDate.isRestDay).length
           const totalAvailable = assists + tolerances + delays + faults
-  
+
           const assist = Math.round((assists / totalAvailable) * 100)
           const tolerance = Math.round((tolerances / totalAvailable) * 100)
           const delay = Math.round((delays / totalAvailable) * 100)
           const fault = Math.round((faults / totalAvailable) * 100)
-  
+
           assistSerie.push(Number.isNaN(assist) ? 0 : assist)
           toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
           delaySerie.push(Number.isNaN(delay) ? 0 : delay)
           faultSerie.push(Number.isNaN(fault) ? 0 : fault)
         });
-  
-        
+
+
         const serieData = []
-  
+
         serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
         serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
         serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
         serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
-  
+
         this.periodData.series = serieData
         this.setPeriodCategories()
       }
@@ -603,7 +603,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
-      
+
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByPosition(startDay, endDay, departmentId, positionId)
       if (assistResponse.status === 201) {

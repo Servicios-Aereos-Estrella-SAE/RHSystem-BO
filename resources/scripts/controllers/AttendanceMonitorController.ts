@@ -98,8 +98,8 @@ export default class AttendanceMonitorController {
   }
 
   getCustomPeriodCategories (periodDate: Date[]): string[] {
-    const start = DateTime.fromJSDate(periodDate[0]).setZone('America/Mexico_City')
-    const date = DateTime.fromJSDate(periodDate[1]).setZone('America/Mexico_City')
+    const start = DateTime.fromJSDate(periodDate[0]).setZone('UTC-6')
+    const date = DateTime.fromJSDate(periodDate[1]).setZone('UTC-6')
     const periodLenght = Math.floor(date.diff(start, 'days').days) + 1
     const daysList =[]
 

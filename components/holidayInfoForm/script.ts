@@ -2,12 +2,12 @@ import HolidayService from "~/resources/scripts/services/HolidayService"
 import type { IConInterface } from '~/resources/scripts/interfaces/IconInterface'
 
 export default defineComponent({
-  
+
   name: 'HolidayInfoForm',
   props: {
     holiday: { type: Object as PropType<HolidayInterface>, required: true },
     clickOnSave: { type: Function, default: null },
-    
+
   },
   data: () => ({
     submitted: false,
@@ -23,7 +23,7 @@ export default defineComponent({
     this.isUpdate = this.holiday.holidayId ? true : false
     const _date = new Date(this.holiday.holidayDate)
     const dtDateOnly = new Date(_date.valueOf() + _date.getTimezoneOffset() * 60 * 1000);
-    this.holiday.holidayDate = dtDateOnly//new Date(this.holiday.holidayDate).toLocaleString('en-US', { timeZone: 'America/Mexico_city' })
+    this.holiday.holidayDate = dtDateOnly//new Date(this.holiday.holidayDate).toLocaleString('en-US', { timeZone: 'UTC-6' })
     await this.getListIcons()
     this.iconSelected = (this.isUpdate ? this.icons.find((icon: IConInterface) => icon.iconId === this.holiday.holidayIconId) : null) as IConInterface | null
     this.isVisibleIcons = this.isUpdate ? false : true
