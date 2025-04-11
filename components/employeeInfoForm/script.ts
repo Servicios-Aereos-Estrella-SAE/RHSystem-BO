@@ -127,7 +127,7 @@ export default defineComponent({
 
       if (this.employee.employeeHireDate) {
         const hireDate = DateTime.fromISO(`${this.employee.employeeHireDate}T00:00:00.000-06:00`, { setZone: true })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toJSDate()
 
@@ -137,7 +137,7 @@ export default defineComponent({
 
       if (this.employee.employeeTerminatedDate) {
         const terminatedDate = DateTime.fromISO(`${this.employee.employeeTerminatedDate.toString().split('T')[0] + 'T00:00:00.000-06:00'}`, { setZone: true })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toJSDate()
         this.employee.employeeTerminatedDate = terminatedDate
@@ -150,7 +150,7 @@ export default defineComponent({
         const day = `${this.employee.person.personBirthday}`.split('T')[0].split('-')[2]
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toJSDate()
 
@@ -559,7 +559,7 @@ export default defineComponent({
       }
 
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDDD')
     },
@@ -569,7 +569,7 @@ export default defineComponent({
       }
 
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDDD')
     },
@@ -579,7 +579,7 @@ export default defineComponent({
       }
 
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDD')
     },

@@ -191,15 +191,15 @@ export default defineComponent({
       this.shiftEditSelected = null
     },
     isNow(day: string) {
-      const now = DateTime.now().setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+      const now = DateTime.now().setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
       return (day === now)
     },
     getCalendarDayNumber(date: string) {
-      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
+      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale('en')
       return calendarDate.toFormat('dd')
     },
     getCalendarDayName(date: string) {
-      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('America/Mexico_City').setLocale('en')
+      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale('en')
       return calendarDate.toFormat('cccc')
     },
     getShiftName(shiftName: string) {

@@ -46,7 +46,7 @@ export default defineComponent({
   }),
   computed: {
     selectedExceptionDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     },
     displayAddButton () {
@@ -71,8 +71,8 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
-    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftEmployee()
 
@@ -188,7 +188,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.shiftException = { ...shiftException }
       if (this.shiftException.shiftExceptionsDate) {
-        const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+        const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('UTC-6')
         this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
       }
       const index = this.shiftExceptionsList.findIndex((shiftException: ShiftExceptionInterface) => shiftException.shiftExceptionId === this.shiftException?.shiftExceptionId)
@@ -211,7 +211,7 @@ export default defineComponent({
       for await (const shiftException of shiftExceptions) {
         this.shiftException = { ...shiftException }
         if (this.shiftException.shiftExceptionsDate) {
-          const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+          const newDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('UTC-6')
           this.shiftException.shiftExceptionsDate = newDate ? newDate.toString() : ''
         }
         const index = this.shiftExceptionsList.findIndex((shiftException: ShiftExceptionInterface) => shiftException.shiftExceptionId === this.shiftException?.shiftExceptionId)

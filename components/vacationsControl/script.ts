@@ -78,7 +78,7 @@ export default defineComponent({
       const dateTemp = this.shiftException.shiftExceptionsDate.toString()
       const shiftExceptionsDate = DateTime.fromISO(this.shiftException.shiftExceptionsDate.toString(), { zone: 'utc' })
       const currentDate = DateTime.fromISO(dateTemp, { zone: 'utc' })
-        .setZone('America/Mexico_City', { keepLocalTime: true })
+        .setZone('UTC-6', { keepLocalTime: true })
         .toJSDate()
       this.shiftException.shiftExceptionsDate = currentDate
       this.shiftExceptionsDate = shiftExceptionsDate.setLocale('en').toFormat('DDD')
@@ -162,7 +162,7 @@ export default defineComponent({
         return ''
       }
       return DateTime.fromJSDate(date, { zone: 'utc' })
-        //.setZone('America/Mexico_City')
+        //.setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDD')
     },

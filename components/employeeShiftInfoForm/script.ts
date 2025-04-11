@@ -42,7 +42,7 @@ export default defineComponent({
       }
       if (this.currentEmployeeShift && this.currentEmployeeShift.employeShiftsApplySince) {
         this.currentDate = `${this.currentEmployeeShift.employeShiftsApplySince}`
-        const newDate = DateTime.fromISO(this.currentEmployeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('America/Mexico_City').toFormat('yyyy-MM-dd')
+        const newDate = DateTime.fromISO(this.currentEmployeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('UTC-6').toFormat('yyyy-MM-dd')
         this.employeeShift.employeShiftsApplySince = newDate ? newDate.toString() : ''
       }
     }

@@ -48,7 +48,7 @@ export default defineComponent({
   }),
   computed: {
     selectedChangeDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     },
     displayAddButton() {
@@ -73,7 +73,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDate = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDate = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getShiftChangeEmployee()
     if (this.employee.deletedAt) {
@@ -183,7 +183,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.employeeShiftChange = { ...employeeShiftChange }
       if (this.employeeShiftChange.shiftChangesDate) {
-        const newDate = DateTime.fromISO(this.employeeShiftChange.shiftChangesDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+        const newDate = DateTime.fromISO(this.employeeShiftChange.shiftChangesDate.toString(), { setZone: true }).setZone('UTC-6')
         this.employeeShiftChange.shiftChangesDate = newDate ? newDate.toString() : ''
       }
       const index = this.employeeShiftChangesList.findIndex((employeeShiftChange: EmployeeShiftChangeInterface) => employeeShiftChange.employeeShiftChangeId === this.employeeShiftChange?.shiftChangeId)
@@ -206,7 +206,7 @@ export default defineComponent({
       for await (const employeeShiftChange of shiftChanges) {
         this.employeeShiftChange = { ...employeeShiftChange }
         if (this.employeeShiftChange.shiftChangesDate) {
-          const newDate = DateTime.fromISO(this.employeeShiftChange.shiftChangesDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+          const newDate = DateTime.fromISO(this.employeeShiftChange.shiftChangesDate.toString(), { setZone: true }).setZone('UTC-6')
           this.employeeShiftChange.shiftChangesDate = newDate ? newDate.toString() : ''
         }
         const index = this.employeeShiftChangesList.findIndex((employeeShiftChange: EmployeeShiftChangeInterface) => employeeShiftChange.employeeShiftChangeId === this.employeeShiftChange?.employeeShiftChangeId)
