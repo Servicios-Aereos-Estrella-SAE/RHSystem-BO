@@ -1,8 +1,6 @@
 <template>
   <div>
-
     <div class="employees-page">
-
       <Head>
         <Title>
           Employees

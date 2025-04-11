@@ -262,7 +262,7 @@
 
   .employee-assist-sidebar {
     width: 100% !important;
-    max-width: 35rem !important;
+    max-width: 32rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
