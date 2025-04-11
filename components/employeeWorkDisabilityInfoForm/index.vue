@@ -1,6 +1,5 @@
 <template>
   <div class="work-disability-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       {{ isNewWorkDisability ? 'Add work disability' : 'Update work disability' }}

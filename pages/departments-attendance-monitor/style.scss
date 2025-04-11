@@ -65,7 +65,7 @@
       }
     }
 
-    .general-graphs {
+    .general-departments-graphs {
       display: grid;
       grid-template-columns: 30rem auto;
       gap: 0.5rem;
@@ -107,6 +107,12 @@
       grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
       gap: .5rem;
       margin-top: 0.5rem;
+    }
+  }
+
+  :deep(.sync) {
+    .p-message-text {
+      font-size: 0.7rem !important;
     }
   }
 }

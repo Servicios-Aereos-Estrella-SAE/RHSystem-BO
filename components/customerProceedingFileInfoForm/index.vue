@@ -1,6 +1,5 @@
 <template>
   <div class="box customer-proceeding-file-info-form">
-    <Toast />
     <h4>
       {{ isNewCustomerProceedingFile ? 'New customer proceeding file' : 'Update customer proceeding file' }}
     </h4>

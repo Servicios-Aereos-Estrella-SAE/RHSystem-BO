@@ -1,18 +1,17 @@
 <template>
   <div class="work-disability-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <h1>
       {{ isNewWorkDisabilityNote ? 'Add work disability note' : 'Update work disability note' }}
     </h1>
-    
+
     <div v-if="isReady" class="work-disability-note-form">
       <div class="form-container">
         <div  class="input-box">
           <label for="folio">
             Description note / comments
           </label>
-          <Textarea 
+          <Textarea
             id="proceedingFileObservations"
             v-model="workDisabilityNote.workDisabilityNoteDescription"
             autoResize

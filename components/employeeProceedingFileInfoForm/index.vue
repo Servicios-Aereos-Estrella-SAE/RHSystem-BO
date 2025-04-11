@@ -1,6 +1,5 @@
 <template>
   <div class="box employee-proceeding-file-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h4>
       {{ isNewEmployeeProceedingFile ? 'New employee proceeding file' : 'Update employee proceeding file' }}

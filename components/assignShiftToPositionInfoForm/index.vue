@@ -1,6 +1,5 @@
 <template>
     <div class="box shift-info-form">
-        <Toast />
         <div class="shift-form">
             <div class="form-container">
                 <div class="input-box">

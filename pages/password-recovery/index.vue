@@ -3,7 +3,7 @@
     <transition name="page">
       <loader v-if="statusFullLoader" />
     </transition>
-    <Toast />
+
     <NuxtLayout name="guest">
       <div class="guest-page">
         <div>

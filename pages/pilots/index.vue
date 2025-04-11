@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="pilots-page">
 
       <Head>
@@ -71,7 +71,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
- 
+
   .pilot-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;

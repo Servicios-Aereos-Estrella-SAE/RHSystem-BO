@@ -1,6 +1,5 @@
 <template>
     <div class="box shift-info-form">
-        <Toast />
         <div class="shift-form">
             <div class="form-container">
                 <div class="input-box">
@@ -19,7 +18,7 @@
                 <div class="box-tools-footer">
                     <Button label="Save" severity="primary" @click="onSave()" />
                 </div>
-               
+
             </div>
         </div>
     </div>

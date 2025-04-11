@@ -1,7 +1,5 @@
 <template>
   <div v-if="isReady" class="employee-records">
-    <Toast />
-
     <div v-if="isReady" class="employee">
       <div>
         <div class="employee-record-wrapper">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <Head>
       <Title>
         Roles and permissions

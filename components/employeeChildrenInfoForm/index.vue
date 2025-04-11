@@ -1,6 +1,5 @@
 <template>
   <div class="box employee-children-info-form">
-    <Toast />
     <h4>
       {{ isNewChildren ? 'New children' : 'Update children' }}
     </h4>

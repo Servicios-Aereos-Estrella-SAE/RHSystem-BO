@@ -1,12 +1,11 @@
 <template>
     <div v-if="isReady" class="employee-exception-request">
-      <Toast />
       <employeeModalInfoCard :employee="employee"/>
       <h1>
         Exception requests to
         {{ selectedExceptionDate }}
       </h1>
-  
+
       <div v-if="isReady" class="employee">
         <div class="">
           <div v-if="!isDeleted && canManageException" class="employee-exception-request-wrapper">
@@ -26,7 +25,7 @@
                 :isDeleted="isDeleted"
                 :canManageException="canManageException"
                 :click-on-edit-exception="() => { onEdit(exceptionRequest) }"
-                :click-on-delete-exception="() => { onDelete(exceptionRequest) }" 
+                :click-on-delete-exception="() => { onDelete(exceptionRequest) }"
               />
             </div>
           </div>
@@ -37,7 +36,7 @@
           </div>
         </div>
       </div>
-  
+
       <Sidebar v-model:visible="drawerExceptionRequestForm" header="form" position="right" class="exception-request-form-sidebar" :showCloseIcon="true">
         <employeeExceptionRequestInfoForm
           :exception-request="exceptionRequest"
@@ -47,7 +46,7 @@
           @onExceptionRequestSaveAll="onSaveAll"
         />
       </Sidebar>
-  
+
       <transition name="page">
         <confirmDelete
           v-if="drawerExceptionRequestDelete"
@@ -57,21 +56,21 @@
       </transition>
     </div>
   </template>
-  
-  
+
+
   <script>
     import Script from './script.ts'
     export default Script
   </script>
-  
+
   <style lang="scss">
     @import './style';
     @import '/resources/styles/variables.scss';
-  
+
     .exception-request-form-sidebar {
       width: 100% !important;
       max-width: 30rem !important;
-  
+
       @media screen and (max-width: $sm) {
         width: 100% !important;
       }

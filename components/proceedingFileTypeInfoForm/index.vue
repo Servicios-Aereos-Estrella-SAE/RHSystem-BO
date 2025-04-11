@@ -1,6 +1,6 @@
 <template>
   <div class="box proceeding-file-type-info-form">
-    <Toast />
+
     <h4>
       {{ isNewProceedingFileType ? 'New proceeding file type' : 'Update proceeding file type' }}
     </h4>

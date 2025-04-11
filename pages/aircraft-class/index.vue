@@ -1,6 +1,6 @@
 <template>
     <div class="aircraft-class-page">
-        <Toast />
+
 
         <Head>
             <Title>Aircraft Classes</Title>
@@ -24,7 +24,7 @@
                         <div v-for="(aircraftClass, index) in filteredAircraftClasses"
                             :key="`aircraftClass-${aircraftClass.id}-${index}`">
                             <aircraftClassInfoCard :aircraftClass="aircraftClass"
-                            :can-update="canUpdate" :can-delete="canDelete" 
+                            :can-update="canUpdate" :can-delete="canDelete"
                                 :click-on-edit="() => { onEdit(aircraftClass) }"
                                 :click-on-delete="() => { onDelete(aircraftClass) }" />
                         </div>
@@ -52,7 +52,7 @@
                     <Button label="No" icon="pi pi-times" text @click="drawerAircraftClassDelete = false" />
                     <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
                 </template>
-            </Dialog> 
+            </Dialog>
         </NuxtLayout>
     </div>
 </template>

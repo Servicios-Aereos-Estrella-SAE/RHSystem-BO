@@ -1,6 +1,6 @@
 <template>
     <div class="airports-page">
-        <Toast />
+
 
             <Head>
                 <Title>
@@ -30,8 +30,8 @@
                         <div class="airport-card-wrapper">
                             <div v-for="(airport, index) in filterAirports"
                                 :key="`airport-${airport.airportId}-${index}`">
-                                <airportInfoCard :airport="airport" 
-                                :can-update="canUpdate" :can-delete="canDelete" 
+                                <airportInfoCard :airport="airport"
+                                :can-update="canUpdate" :can-delete="canDelete"
                                 :click-on-edit="() => { onEdit(airport) }"
                                     :click-on-delete="() => { onDelete(airport) }" />
                             </div>

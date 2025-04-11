@@ -1,6 +1,6 @@
 <template>
   <div class="user-page">
-    <Toast />
+
 
     <Head>
       <Title>

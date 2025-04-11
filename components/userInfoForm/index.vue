@@ -1,6 +1,6 @@
 <template>
   <div class="user-info-form">
-    <Toast />
+
     <h1>
       {{ isNewUser ? 'New user' : 'Update user' }}
     </h1>

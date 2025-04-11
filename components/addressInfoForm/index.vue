@@ -1,7 +1,5 @@
 <template>
   <div class="address-info-form">
-    <Toast />
-
     <div v-if="address" class="address-form">
       <div class="form-container">
         <div class="inputs-group">

@@ -1,7 +1,5 @@
 <template>
   <div class="box aircraft-proceeding-files">
-    <Toast />
-
     <div v-if="isReady">
       <div class="head-title">
         <Button class="btn" @click="handlerUnselectFolder" :disabled="!(folderSelected)">
