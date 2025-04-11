@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="box employee-shifts">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <div class="month-year-mobile">
       <span v-show="!displayInputCalendar" class="text">

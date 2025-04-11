@@ -1,6 +1,6 @@
 <template>
   <div class="box employee-proceeding-files">
-    <Toast />
+
 
     <div v-if="isReady">
       <div class="head-title">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="customers-page">
 
       <Head>
@@ -72,7 +72,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
- 
+
   .customer-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;

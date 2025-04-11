@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="employee-contracts">
-    <Toast />
     <div v-if="isReady" class="employee">
       <div class="form-container">
         <div class="files-wrapper">

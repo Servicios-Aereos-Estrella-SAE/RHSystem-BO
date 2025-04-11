@@ -1,14 +1,13 @@
 <template>
   <div class="shift-exception-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <h1>
       {{ selectedExceptionDate }}
       <br/><br/>
       {{ isNewShiftException ? 'Add shift exception' : 'Update shift exception' }}
-     
+
     </h1>
-    
+
     <div v-if="isReady" class="shift-exception-form">
       <div class="form-container">
         <div v-if="!shiftException.shiftExceptionId && needPeriodDays" class="input-box">

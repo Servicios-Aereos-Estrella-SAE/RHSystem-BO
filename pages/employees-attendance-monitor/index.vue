@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-page-employee-attendance">
-    <Toast />
+
 
     <Head>
       <Title>

@@ -1,6 +1,6 @@
 <template>
     <div class="vacation-page">
-        <Toast />
+
 
         <Head>
             <Title>

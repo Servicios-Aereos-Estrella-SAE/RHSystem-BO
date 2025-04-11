@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReady" class="box flight-attendant-proceeding-files">
-    <Toast />
+
     <h4>
       {{ `${flightAttendant.person.personFirstname || ''}` }} {{ `${flightAttendant.person.personLastname ||
         ''}`  }} {{ `${flightAttendant.person.personSecondLastname ||

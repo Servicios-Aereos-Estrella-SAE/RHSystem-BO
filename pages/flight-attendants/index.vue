@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="flight-attendants-page">
 
       <Head>
@@ -35,10 +35,10 @@
               </div>
             </div>
             <div></div>
-            <Paginator 
+            <Paginator
               :alwaysShow="false"
               class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
-              @page="onPageChange" 
+              @page="onPageChange"
             />
             <!-- Form -->
             <div class="card flex justify-content-center">
@@ -75,7 +75,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
- 
+
   .flight-attendant-form-sidebar {
     width: 100% !important;
     max-width: 50rem !important;

@@ -1,6 +1,5 @@
 <template>
   <div class="box employee-shift-info-form">
-    <Toast />
     <h4>
       {{ isNewEmployeeShift ? 'New employee shift' : 'Update employee shift' }}
     </h4>

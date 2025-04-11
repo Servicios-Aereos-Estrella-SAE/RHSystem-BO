@@ -1,6 +1,6 @@
 <template>
   <div class="box system-setting-info-form">
-    <Toast />
+
     <h4>
       {{ isNewSystemSetting ? 'New system setting' : 'Update system setting' }}
     </h4>

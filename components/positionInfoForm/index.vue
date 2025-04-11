@@ -1,6 +1,6 @@
 <template>
   <div class="position-info-form">
-    <Toast />
+
 
     <div class="position-form">
       <div class="form-container">

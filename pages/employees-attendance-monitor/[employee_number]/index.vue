@@ -1,7 +1,5 @@
 <template>
   <div class="dashboard-page">
-    <Toast />
-
     <Head>
       <Title>
         Employee Attendance Monitor

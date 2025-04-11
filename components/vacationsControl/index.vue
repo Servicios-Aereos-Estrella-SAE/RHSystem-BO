@@ -1,6 +1,6 @@
 <template>
   <div class="vacation-control">
-    <Toast />
+
     <div v-if="!displayForm" class="read-date">
       <InputText type="text" v-model="shiftExceptionsDate" readonly />
       <Button class="btn" @click="onEdit" v-if="displayEditVacationDayButton">

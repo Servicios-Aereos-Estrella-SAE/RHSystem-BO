@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="employee-shift-changes">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       Shift change to

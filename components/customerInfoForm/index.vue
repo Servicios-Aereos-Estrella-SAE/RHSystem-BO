@@ -1,6 +1,5 @@
 <template>
   <div class="box customer-info-form">
-    <Toast />
     <h4>
       {{ isNewCustomer ? 'New customer' : 'Update customer' }}
     </h4>

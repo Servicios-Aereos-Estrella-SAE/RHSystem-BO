@@ -1,6 +1,5 @@
 <template>
   <div class="user-info-form">
-    <Toast />
     <h4>
       {{ isNewDepartment ? 'New department' : 'Update department' }}
     </h4>

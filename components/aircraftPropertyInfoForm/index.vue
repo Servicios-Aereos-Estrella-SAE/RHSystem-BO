@@ -1,6 +1,5 @@
 <template>
     <div class="box aircraft-property-info-card">
-        <Toast />
         <div class="aircraft-property-form">
             <div class="form-container">
                 <!-- Property Name -->
@@ -11,7 +10,7 @@
                     <small class="p-error" v-if="submitted && !aircraftProperty.aircraftPropertiesName">Property name is
                         required.</small>
                 </div>
-                
+
                 <!-- Aircraft Class -->
                 <div class="input-box">
                 <label for="aircraftClassId">Aircraft Class</label>
@@ -36,7 +35,7 @@
 
                 <!-- Max Passengers -->
                 <div class="input-row">
-                
+
                 <div class="input-box">
                     <label for="aircraftPropertiesPax">Max Passengers</label>
                     <InputNumber id="aircraftPropertiesPax" v-model="aircraftProperty.aircraftPropertiesPax"
@@ -71,8 +70,8 @@
             </div>
 
                 <!-- Autonomy Hours -->
-              
-              
+
+
                 <div class="input-box">
                     <label for="aircraftPropertiesAutonomyHours">Autonomy Hours</label>
                     <InputNumber id="aircraftPropertiesAutonomyHours" v-model="aircraftProperty.aircraftPropertiesAutonomyHours"
@@ -86,7 +85,7 @@
                          />
                     <small class="p-error" v-if="submitted && aircraftProperty.aircraftPropertiesHourlyRate < 0">hourly must be a positive number.</small>
                 </div>
-            
+
                 <div class="input-box">
                     <label for="aircraftPropertiesLandingCostBase">Landing Cost Base</label>
                     <InputNumber id="aircraftPropertiesLandingCostBase" v-model="aircraftProperty.aircraftPropertiesLandingCostBase"
@@ -109,7 +108,7 @@
                          />
                     <small class="p-error" v-if="submitted && aircraftProperty.aircraftPropertiesLandingCostInternational < 0">Overnight stay must be a positive number.</small>
                 </div>
-                
+
                 <!-- Overnight Stay International -->
                 <div class="input-box">
                     <label for="aircraftPropertiesOvernightStayLocal">Overnight Stay Local</label>
@@ -127,7 +126,7 @@
                     <small class="p-error" v-if="submitted && aircraftProperty.aircraftPropertiesOvernightStayInternational < 0">Overnight stay must be a positive number.</small>
                 </div>
 
-              
+
                 <div class="input-box">
                     <label for="aircraftPropertiesFuelSurcharge">Fuel Surcharge</label>
                     <InputNumber id="aircraftPropertiesFuelSurcharge" v-model="aircraftProperty.aircraftPropertiesFuelSurcharge"
@@ -164,7 +163,7 @@ export default Script
 }
 .input-row {
     display: flex;
-    gap: 10px; 
+    gap: 10px;
 }
 .input-box {
     flex: 1;
@@ -186,12 +185,12 @@ export default Script
     margin-top: 1rem;
 }
 .banner-preview {
-  max-width: 100%; 
-  max-height: 200px; 
-  height: auto; 
-  width: auto; 
+  max-width: 100%;
+  max-height: 200px;
+  height: auto;
+  width: auto;
   display: block;
-  margin: 0 auto; 
+  margin: 0 auto;
 }
 
 

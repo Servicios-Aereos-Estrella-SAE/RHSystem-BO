@@ -1,6 +1,5 @@
 <template>
   <div class="box employee-assist-info-form">
-    <Toast />
     <h3 v-if="employee">{{ `${employee.employeeFirstName} ${employee.employeeLastName}` }}</h3>
     <h4>
       New employee assist
@@ -31,7 +30,7 @@
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
             </Button>
-            
+
           </div>
               <small class="p-error" v-if="dateInvalid">Date is invalid.</small>
         </div>

@@ -1,6 +1,6 @@
 <template>
     <div class="aircraft-property-page">
-        <Toast />
+
 
         <Head>
             <Title>Aircraft Properties</Title>
@@ -24,7 +24,7 @@
                         <div v-for="(aircraftProperty, index) in filteredAircraftProperties"
                             :key="`aircraftProperty-${aircraftProperty.id}-${index}`">
                             <aircraftPropertyInfoCard :aircraftProperty="aircraftProperty"
-                                :can-update="canUpdate" :can-delete="canDelete" 
+                                :can-update="canUpdate" :can-delete="canDelete"
                                 :click-on-edit="() => { onEdit(aircraftProperty) }"
                                 :click-on-delete="() => { onDelete(aircraftProperty) }" />
                         </div>

@@ -1,6 +1,5 @@
 <template>
     <div class="box airport-info-form">
-        <Toast />
         <div v-if="airport" class="airport-form">
             <div class="form-container">
                 <div >

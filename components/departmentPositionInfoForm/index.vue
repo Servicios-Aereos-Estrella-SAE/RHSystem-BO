@@ -1,6 +1,5 @@
 <template>
   <div class="box user-info-form">
-    <Toast />
     <h4>
       {{ 'Assign Position' }}
     </h4>

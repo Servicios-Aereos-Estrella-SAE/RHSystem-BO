@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="box maintenance-shifts">
-    <Toast />
     <!-- <Calendar view="month" dateFormat="MM" /> -->
     <div class="head-maintenance">
       <div></div>
@@ -20,8 +19,8 @@
           :options="maintenanceTypes"
           optionLabel="maintenanceTypeName"
           optionValue="maintenanceTypeId"
-          placeholder="Select a Maintenance Type" filter 
-          class="w-full md:w-14rem" v-model="aircraftMaintenance.maintenanceTypeId" 
+          placeholder="Select a Maintenance Type" filter
+          class="w-full md:w-14rem" v-model="aircraftMaintenance.maintenanceTypeId"
           :invalid="submitted && !aircraftMaintenance.maintenanceTypeId" />
         <small class="p-error" v-if="submitted && !aircraftMaintenance.maintenanceTypeId">
           Maintenance Type is required.
@@ -35,8 +34,8 @@
           :options="maintenanceUrgencyLevels"
           optionLabel="maintenanceUrgencyLevelName"
           optionValue="maintenanceUrgencyLevelId"
-          placeholder="Select a Priority Level" filter 
-          class="w-full md:w-14rem" 
+          placeholder="Select a Priority Level" filter
+          class="w-full md:w-14rem"
           v-model="aircraftMaintenance.maintenanceUrgencyLevelId"
           :invalid="submitted && !aircraftMaintenance.maintenanceUrgencyLevelId" />
         <small class="p-error" v-if="submitted && !aircraftMaintenance.maintenanceUrgencyLevelId">
@@ -53,9 +52,9 @@
           :disabled="!isEdit"
           optionLabel="aircraftMaintenanceStatusName"
           optionValue="aircraftMaintenanceStatusId"
-          placeholder="Select a maintenance status" filter 
-          class="w-full md:w-14rem" 
-          v-model="aircraftMaintenance.aircraftMaintenanceStatusId" 
+          placeholder="Select a maintenance status" filter
+          class="w-full md:w-14rem"
+          v-model="aircraftMaintenance.aircraftMaintenanceStatusId"
           :invalid="submitted && !aircraftMaintenance.aircraftMaintenanceStatusId" />
         <small class="p-error" v-if="submitted && !aircraftMaintenance.aircraftMaintenanceStatusId">
           Maintenance Status is required.

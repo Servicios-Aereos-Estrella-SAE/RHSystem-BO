@@ -2,9 +2,15 @@ import { defineComponent } from 'vue'
 import { io } from 'socket.io-client'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import { useMyGeneralStore } from '~/store/general'
+import Toast from 'primevue/toast'
+import ToastService from 'primevue/toastservice'
 
 export default defineComponent({
   name: 'backoffice',
+  components: {
+    Toast,
+    ToastService,
+  },
   props: {
   },
   data: () => ({

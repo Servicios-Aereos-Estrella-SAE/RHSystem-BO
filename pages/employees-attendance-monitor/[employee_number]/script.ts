@@ -8,18 +8,12 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
-import Toast from 'primevue/toast'
-import ToastService from 'primevue/toastservice'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface'
 import ToleranceService from '~/resources/scripts/services/ToleranceService'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 
 export default defineComponent({
-  components: {
-    Toast,
-    ToastService,
-  },
   name: 'AttendanceMonitorByEmployee',
   props: {
   },

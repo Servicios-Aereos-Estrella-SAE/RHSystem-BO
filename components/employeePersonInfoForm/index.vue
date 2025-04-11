@@ -1,6 +1,5 @@
 <template>
   <div class="employee-person-info-form">
-    <Toast />
     <div v-if="isReady" class="employee-person-form">
       <div class="form-container">
         <div class="inputs-group">

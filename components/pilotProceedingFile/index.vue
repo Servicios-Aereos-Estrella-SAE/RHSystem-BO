@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReady" class="box pilot-proceeding-files">
-    <Toast />
+
     <h4>
       {{ `${pilot.person.personFirstname || ''}` }} {{ `${pilot.person.personLastname ||
         ''}`  }} {{ `${pilot.person.personSecondLastname ||

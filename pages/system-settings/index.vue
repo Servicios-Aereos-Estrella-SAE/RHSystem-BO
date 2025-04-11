@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="system-settings-page">
 
       <Head>
@@ -30,7 +30,7 @@
             <div class="system-setting-card-wrapper">
               <div v-for="(systemSetting, index) in filteredSystemSettings" :key="`system-setting-${systemSetting.systemSettingId}-${index}`">
                 <SystemSettingInfoCard :click-on-photo="() => { onPhoto(systemSetting) }" :systemSetting="systemSetting"
-                  :can-update="canUpdate" :can-delete="canDelete" 
+                  :can-update="canUpdate" :can-delete="canDelete"
                   :click-on-edit="() => { onEdit(systemSetting) }" :click-on-delete="() => { onDelete(systemSetting) }" />
               </div>
             </div>
@@ -72,7 +72,7 @@
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
- 
+
   .system-setting-form-sidebar {
     width: 100% !important;
     max-width: 70rem !important;

@@ -1,6 +1,6 @@
 <template>
   <div class="shift-page">
-    <Toast />
+
     <Head>
       <Title>
         Shifts

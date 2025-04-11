@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="holidays-page">
       <Head>
         <Title>
@@ -63,7 +63,7 @@
                     </span>
                   </div>
                 </div>
-                
+
                 <div class="month-weeks">
                   <div
                     v-for="(weekDayNumber, iweekDayNumber) in lastWeeksRestDays(monthNumber)"
@@ -112,7 +112,7 @@ export default Script
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
-  
+
   .holyday-cell-icon {
 
     svg {
