@@ -191,8 +191,6 @@
           <employeeBanks v-if="drawerBanks" :employee="employee" />
         </Sidebar>
 
-
-
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
           :dismissable="false" header="Employee photo" position="right" class="employee-sidebar-photo-form"
           :showCloseIcon="true">
