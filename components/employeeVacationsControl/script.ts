@@ -155,7 +155,7 @@ export default defineComponent({
       this.shiftExceptionsDate = ''
       if (this.shiftException && this.shiftException.shiftExceptionsDate) {
         this.shiftExceptionsDate = DateTime.fromJSDate(new Date(this.shiftException.shiftExceptionsDate.toString()))
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toFormat('DDD')
       }
@@ -210,7 +210,7 @@ export default defineComponent({
     onSave(shiftException: ShiftExceptionInterface, index: number) {
       if (shiftException.shiftExceptionsDate) {
         const shiftExceptionsDate = DateTime.fromISO(shiftException.shiftExceptionsDate.toString(), { setZone: true })
-          .setZone('America/Mexico_City')
+          .setZone('UTC-6')
           .setLocale('en')
           .toJSDate()
         shiftException.shiftExceptionsDate = shiftExceptionsDate
@@ -278,7 +278,7 @@ export default defineComponent({
         return ''
       }
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('DDD')
     },

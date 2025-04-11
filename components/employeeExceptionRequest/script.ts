@@ -37,7 +37,7 @@ export default defineComponent({
   }),
   computed: {
     selectedExceptionDate () {
-      const day = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     }
   },
@@ -46,8 +46,8 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
-    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('America/Mexico_City').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
 
     await this.getExceptionRequestEmployee()
     if (this.employee.deletedAt) {
@@ -55,7 +55,7 @@ export default defineComponent({
     }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
-   
+
   },
   methods: {
     async getExceptionRequestEmployee() {
@@ -90,7 +90,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.exceptionRequest = {...exceptionRequest}
       if (this.exceptionRequest.requestedDate) {
-        const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+        const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('UTC-6')
         this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
       }
       const index = this.exceptionRequestsList.findIndex((exceptionRequest: ExceptionRequestInterface) => exceptionRequest.exceptionRequestId === this.exceptionRequest?.exceptionRequestId)
@@ -110,7 +110,7 @@ export default defineComponent({
       for await (const exceptionRequest of exceptionRequests) {
         this.exceptionRequest = {...exceptionRequest}
         if (this.exceptionRequest.requestedDate) {
-          const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('America/Mexico_City')
+          const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('UTC-6')
           this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
         }
         const index = this.exceptionRequestsList.findIndex((exceptionRequest: ExceptionRequestInterface) => exceptionRequest.exceptionRequestId === this.exceptionRequest?.exceptionRequestId)
@@ -138,7 +138,7 @@ export default defineComponent({
       }
       this.drawerExceptionRequestDelete = true
     },
-    
+
     async confirmDelete() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

@@ -42,7 +42,7 @@ export default defineComponent({
     if (!myGeneralStore.isRoot) {
       this.getStartPeriodDay()
     }
-    
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -119,7 +119,7 @@ export default defineComponent({
       }
 
       return DateTime.fromJSDate(date)
-        .setZone('America/Mexico_City')
+        .setZone('UTC-6')
         .setLocale('en')
         .toFormat('MMMM dd, yyyy HH:mm')
     },

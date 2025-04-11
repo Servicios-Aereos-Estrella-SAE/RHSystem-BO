@@ -277,7 +277,7 @@ export default defineComponent({
     },
     assistSyncStatusDate() {
       if (this.statusInfo) {
-        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('America/Mexico_City')
+        const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('UTC-6')
         const dateTimeFormat = dateTime.toFormat('ff')
         return dateTimeFormat
       }
@@ -326,8 +326,8 @@ export default defineComponent({
       return weekDayName === 'Thursday';
     },
     getDefaultDatesRange() {
-      const currentDay = DateTime.now().setZone('America/Mexico_City').endOf('day').toJSDate()
-      const previousDay = DateTime.now().setZone('America/Mexico_City').startOf('day').toJSDate()
+      const currentDay = DateTime.now().setZone('UTC-6').endOf('day').toJSDate()
+      const previousDay = DateTime.now().setZone('UTC-6').startOf('day').toJSDate()
 
       return [previousDay, currentDay];
     },

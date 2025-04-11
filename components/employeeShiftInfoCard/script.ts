@@ -53,7 +53,7 @@ export default defineComponent({
   },
   mounted() {
     if (this.employeeShift.employeShiftsApplySince) {
-      const newDate = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('America/Mexico_City')
+      const newDate = DateTime.fromISO(this.employeeShift.employeShiftsApplySince.toString(), { setZone: true }).setZone('UTC-6')
       this.employeeShift.employeShiftsApplySince = newDate ? newDate.toString() : ''
     }
   },
@@ -71,7 +71,7 @@ export default defineComponent({
     getRestDaysNames(restDays: string): string {
       const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       let daysArray: number[];
-      
+
       if (typeof restDays === 'string') {
         daysArray = restDays.split(',').map(Number);
       } else if (typeof restDays === 'number') {
