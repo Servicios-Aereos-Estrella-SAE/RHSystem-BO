@@ -634,12 +634,16 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       if (this.visualizationMode?.value === 'fourteen') {
         this.periodSelected = this.getNextPayThursday()
       }
+
+      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       this.setGeneralData()
       this.setPeriodData()
+
       myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange() {
