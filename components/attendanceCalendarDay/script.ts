@@ -103,6 +103,10 @@ export default defineComponent({
       const valid = this.checkAssist.assist.hasExceptions && !this.checkAssist.assist.isVacationDate && !this.checkAssist.assist.isRestDay
       return valid
     },
+    headIconIsBirthday() {
+      const valid = this.checkAssist.assist.isBirthday
+      return valid
+    },
     headIconShiftIsChange() {
       const valid = this.checkAssist.assist.dateShift?.shiftIsChange
       return valid

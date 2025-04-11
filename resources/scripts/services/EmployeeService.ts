@@ -36,7 +36,7 @@ export default class EmployeeService {
     return responseRequest
   }
 
-  async getBirthday(searchText: string, departmentId: number | null, positionId: number | null) {
+  async getBirthday(searchText: string, departmentId: number | null, positionId: number | null, year: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees/get-birthday`, {
@@ -45,6 +45,7 @@ export default class EmployeeService {
         search: searchText,
         departmentId,
         positionId,
+        year,
       },
       onResponse({ response }) { responseRequest = response },
       onRequestError({ response }) { responseRequest = response }

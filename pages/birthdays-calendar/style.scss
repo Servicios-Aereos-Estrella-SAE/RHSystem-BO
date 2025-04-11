@@ -64,7 +64,7 @@
           opacity: 0.3;
         }
 
-        .holiday {
+        .birthday {
           opacity: 0.6;
         }
       }
@@ -85,7 +85,7 @@
           font-weight: 500;
         }
 
-        .holiday {
+        .birthday {
           opacity: 0.6;
         }
       }
@@ -154,7 +154,7 @@
             opacity: 0;
           }
 
-          &.holiday {
+          &.birthday {
             background-color: transparentize($color: $info, $amount: 0.9);
             border: none;
 
@@ -169,6 +169,22 @@
             border-color: $success;
             color: $success;
             font-weight: 500;
+          }
+
+          position: relative;
+          /* necesario para que el span.absolute funcione */
+
+
+          .quantity {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            font-size: 0.90rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            /* opcional: para mejor visibilidad */
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: $primary;
           }
         }
       }
@@ -253,24 +269,6 @@
     margin-top: 0.5rem;
   }
 
-  // .holiday-wrapper {
-  //   min-height: 100dvh;
-  //   box-sizing: border-box;
 
-  //   .holiday-card-wrapper {
-  //     box-sizing: border-box;
-  //     display: grid;
-  //     grid-auto-flow: dense;
-  //     grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  //     gap: .5rem;
-  //     margin-top: 0.5rem;
-  //     margin-bottom: 5rem;
-  //   }
-
-  //   .paginator {
-  //     margin-top: 0.5rem;
-  //     width: 100%;
-  //   }
-  // }
 
 }

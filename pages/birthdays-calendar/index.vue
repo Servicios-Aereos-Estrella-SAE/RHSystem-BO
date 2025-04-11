@@ -5,7 +5,7 @@
 
       <Head>
         <Title>
-          Birthday days
+          Birthday's on the year
         </Title>
       </Head>
 
@@ -57,9 +57,6 @@
           <h2>
             Birthday days on year
           </h2>
-          <!--  <Message :closable="false">
-            Please note that the holidays recorded will be considered rest days for employees.
-          </Message> -->
 
           <div class="calendars-wrapper">
             <div v-for="monthNumber in 12" :key="`month-year-${monthNumber}`" class="calendar-month"
@@ -78,12 +75,15 @@
                 <div v-for="week in 1" :key="`month-week-${week}`" class="month-week">
                   <div v-for="(weekDayNumber, iweekDayNumber) in weekDays" :key="`month-day-${weekDayNumber}`"
                     class="week-day-cell" :class="{
-                      holiday: !!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holiday,
+                      birthday: !!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday,
                       today: isToday(monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentBirthday(yearSelected, monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day)">
-                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holiday"
-                      v-html="firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holidayIcon"
+                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday" class="quantity">
+                      {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).quantity }}
+                    </span>
+                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday"
+                      v-html="firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).icon"
                       class="holyday-cell-icon"></span>
                     <span v-else>
                       {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day }}
@@ -94,12 +94,15 @@
                 <div class="month-weeks">
                   <div v-for="(weekDayNumber, iweekDayNumber) in lastWeeksRestDays(monthNumber)"
                     :key="`month-day-${weekDayNumber}`" class="week-day-cell" :class="{
-                      holiday: !!weekDay(monthNumber, iweekDayNumber).holiday,
+                      birthday: !!weekDay(monthNumber, iweekDayNumber).birthday,
                       today: isToday(monthNumber, weekDay(monthNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentBirthday(yearSelected, monthNumber, weekDay(monthNumber, iweekDayNumber).day)">
-                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).holiday"
-                      v-html="weekDay(monthNumber, iweekDayNumber).holidayIcon" class="holyday-cell-icon"></span>
+                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).birthday" class="quantity">
+                      {{ weekDay(monthNumber, iweekDayNumber).quantity }}
+                    </span>
+                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).birthday"
+                      v-html="weekDay(monthNumber, iweekDayNumber).icon" class="holyday-cell-icon"></span>
                     <span v-else>
                       {{ weekDay(monthNumber, iweekDayNumber).day }}
                     </span>
@@ -118,7 +121,7 @@
     </div>
 
     <Sidebar v-model:visible="drawerEmployeesBirthday" header="Birthday form" position="right"
-      class="holiday-form-sidebar" :showCloseIcon="true">
+      class="birthday-form-sidebar" :showCloseIcon="true">
       <h4>Birthday {{ currentBirthday }}</h4>
       <div v-if="filteredEmployeesBirthday.length > 0" class="employee-card-wrapper">
         <div v-for="(employee, index) in filteredEmployeesBirthday" :key="`employee-${employee.employeeId}-${index}`">
@@ -126,6 +129,11 @@
             :can-manage-shifts="false" :can-update="false" :can-delete="false" :canReadOnlyFiles="false"
             :canManageFiles="false" :click-on-edit="() => { onEdit(employee) }"
             :click-on-delete="() => { onDelete(employee) }" />
+        </div>
+      </div>
+      <div v-else class="employee-card-wrapper">
+        <div class="empty-data">
+          There are no employees
         </div>
       </div>
     </Sidebar>
@@ -151,17 +159,31 @@
     }
   }
 
-  .holiday-card-wrapper {
+  .birthday-card-wrapper {
     display: flex;
     flex-wrap: wrap;
   }
 
-  .holiday-form-sidebar {
+  .birthday-form-sidebar {
     width: 30rem !important;
     max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
     }
+  }
+
+  .empty-data {
+    text-align: center;
+    background-color: $gray;
+    padding: 2rem;
+    color: $icon;
+    border-radius: $radius;
+    font-size: 0.8rem;
+    height: 10rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
