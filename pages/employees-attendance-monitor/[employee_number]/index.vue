@@ -25,7 +25,7 @@
                 {{ `${employee.employeeFirstName || ''}`.toLocaleLowerCase() }}
                 {{ `${employee.employeeLastName || ''}`.toLocaleLowerCase() }}
                 <span class="name-emp-code">
-                  ( Emp. Code: {{ employee.employeeCode }} )
+                  ( Emp. ID: {{ employee.employeeCode }} )
                 </span>
               </div>
               <small>
@@ -34,7 +34,7 @@
                 {{ employee.position.positionAlias || employee.position.positionName }}
               </small>
               <small class="emp-code">
-                Emp. Code: {{ employee.employeeCode }}
+                Emp. ID: {{ employee.employeeCode }}
               </small>
             </h1>
           </div>
@@ -44,9 +44,12 @@
               <label for="search">
                 Search employee
               </label>
-              <AutoComplete v-model="selectedEmployee"
+              <AutoComplete
+                v-model="selectedEmployee"
                 :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-                :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
+                :suggestions="filteredEmployees"
+                @complete="handlerSearchEmployee"
+                @item-select="onEmployeeSelect">
                 <template #option="employee">
                   <div class="item-employee-filter-attendance-monitor">
                     <div class="name">
@@ -76,7 +79,7 @@
             </label>
             <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
               optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
-              @change="handlerVisualizationModeChange" />
+              @change="onHandlerVisualizationModeChange" />
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">
@@ -159,14 +162,14 @@
           </div>
         </div>
 
-        <Message v-if="assistSyncStatusDate" class="sync" :closable="false">
+        <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
           Last attendance recorded at
           {{ assistSyncStatusDate }}
           <br>
           ( Checking every 5 minutes )
         </Message>
 
-        <Message v-if="!assistSyncStatusDate" class="sync" :closable="false" severity="warn">
+        <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
             No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
           </div>
@@ -183,7 +186,10 @@
                 <highchart :options="generalData" style="width: 100%;" />
               </div>
               <div class="indicators">
-                <attendanceInfoCard :hideLink="true" :hidePositionTitle="true" :onTimePercentage="onTimePercentage"
+                <attendanceInfoCard
+                  :hideLink="true"
+                  :hidePositionTitle="true"
+                  :onTimePercentage="onTimePercentage"
                   :onToleracePercentage="onTolerancePercentage" :onDelayPercentage="onDelayPercentage"
                   :onEarlyOutPercentage="onEarlyOutPercentage" :onFaultPercentage="onFaultPercentage" />
                 <div class="indicators-extra-info">
@@ -222,10 +228,8 @@
                 </h2>
               </div>
               <div class="days-wrapper">
-                <div v-for="(calendarDay, index) in employeeCalendar"
-                  :key="`key-calendar-day-${Math.random()}-${index}`">
-                  <attendanceCalendarDay :checkAssist="calendarDay"
-                    :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
+                <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
+                  <attendanceCalendarDay :checkAssist="calendarDay" :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
                 </div>
               </div>
             </div>
@@ -238,8 +242,7 @@
             </div>
           </div>
         </div>
-        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right"
-          class="employee-assist-sidebar">
+        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
           <EmployeeAssistInfoForm :assist="assist" :employee="employee" @onAssistSave="onSaveAssist" />
         </Sidebar>
       </div>
@@ -265,21 +268,6 @@
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
-    }
-  }
-
-  :deep(.graph-label) {
-    color: red;
-  }
-
-  .graph-label {
-    color: red;
-  }
-
-  .sync {
-
-    .p-message-text {
-      font-size: 0.7rem !important;
     }
   }
 </style>

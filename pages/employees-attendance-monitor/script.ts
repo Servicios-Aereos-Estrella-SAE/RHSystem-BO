@@ -507,7 +507,7 @@ export default defineComponent({
     async setDepartmentPositionEmployeeList() {
       const departmentId = null
       const positionId = null
-      const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 1
+      const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))

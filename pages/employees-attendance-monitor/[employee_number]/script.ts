@@ -98,9 +98,9 @@ export default defineComponent({
       series: [] as Array<Object>
     },
     visualizationModeOptions: [
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -131,7 +131,8 @@ export default defineComponent({
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
-    datePay: '' as string
+    datePay: '' as string,
+    onSyncStatus: true
   }),
   computed: {
     isRoot() {
@@ -291,11 +292,15 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    this.setAssistSyncStatus()
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
     const permissions = await myGeneralStore.getAccess(firstSegment)
+
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
@@ -303,12 +308,14 @@ export default defineComponent({
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
     }
+
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange()
+
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
+
     myGeneralStore.setFullLoader(false)
-    await this.setAssistSyncStatus()
   },
   methods: {
     async getEmployee() {
@@ -334,21 +341,21 @@ export default defineComponent({
         }
       }
     },
-    isThursday(dateObject: any, addOneMonth = true) {
-      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
-      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00"
-      const weekDayName = moment(mydate).format('dddd')
-      return weekDayName === 'Thursday'
-
-    },
     async setDefaultVisualizationMode() {
-      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'monthly')
+      const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
         this.visualizationMode = this.visualizationModeOptions[index]
       }
 
       await this.handlerVisualizationModeChange()
+    },
+    isThursday(dateObject: any, addOneMonth = true) {
+      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00"
+      const weekDayName = moment(mydate).format('dddd')
+      return weekDayName === 'Thursday'
+
     },
     getDefaultDatesRange() {
       const currentDay = DateTime.now().setZone('UTC-6').endOf('month').toJSDate()
@@ -397,6 +404,12 @@ export default defineComponent({
     setPeriodCategories() {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
+    async onHandlerVisualizationModeChange () {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      await this.handlerVisualizationModeChange()
+      myGeneralStore.setFullLoader(false)
+    },
     async handlerVisualizationModeChange() {
       if (this.employee) {
         const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
@@ -405,21 +418,22 @@ export default defineComponent({
         if (idx >= 0) {
           this.visualizationModeOptions[idx].selected = true
         }
+
         if (this.visualizationMode?.value === 'fourteen') {
           this.periodSelected = this.getNextPayThursday()
         } else {
           this.periodSelected = new Date()
         }
 
-        const myGeneralStore = useMyGeneralStore()
-        myGeneralStore.setFullLoader(true)
         await this.getEmployeeAssist()
-        myGeneralStore.setFullLoader(false)
       }
     },
     async handlerPeriodChange() {
       if (this.isValidPeriodSelected()) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
         await this.getEmployeeAssist()
+        myGeneralStore.setFullLoader(false)
       }
     },
     async handlerSearchEmployee(event: any) {
@@ -440,8 +454,6 @@ export default defineComponent({
       }
     },
     async getEmployeeCalendar() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
       const toleranceService = new ToleranceService()
       const toleranceResponse = await toleranceService.getTardinessTolerance()
       if (toleranceResponse.status === 200) {
@@ -525,35 +537,7 @@ export default defineComponent({
       this.workedActiveTime = await this.sumShiftActiveHours(this.employeeCalendar)
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
-      myGeneralStore.setFullLoader(false)
     },
-    /* calculateTotalElapsedTime(dataList: Array<{
-      checkIn?: { assistPunchTime?: string | null }
-      checkOut?: { assistPunchTime?: string | null }
-    }>): string {
-      let totalMinutes = 0
-
-      dataList.forEach(data => {
-        const checkIn = data.checkIn?.assistPunchTime || null
-        const checkOut = data.checkOut?.assistPunchTime || null
-
-        if (checkIn && checkOut) {
-          const checkInDateTime = DateTime.fromISO(checkIn)
-          const checkOutDateTime = DateTime.fromISO(checkOut)
-
-          if (checkOutDateTime >= checkInDateTime) {
-            const duration = checkOutDateTime.diff(checkInDateTime, ['minutes'])
-            totalMinutes += Math.floor(duration.minutes)
-          }
-        }
-      })
-
-      // Convertir minutos acumulados a horas y minutos
-      const totalHours = Math.floor(totalMinutes / 60)
-      const remainingMinutes = totalMinutes % 60
-
-      return `${totalHours.toString().padStart(2, '0')} hours ${remainingMinutes.toString().padStart(2, '0')} minutes`
-    }, */
     async calculateTotalElapsedTimeWithCrossing(dataList: Array<{
       checkIn?: { assistPunchTime?: string | null }
       checkOut?: { assistPunchTime?: string | null }
@@ -699,25 +683,38 @@ export default defineComponent({
       return faults
     },
     async syncEmployee() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeCode = this.employee?.employeeCode || "0"
-      await new AssistService().syncEmployee(startDay, endDay, employeeCode)
-      await this.getEmployeeCalendar()
-      myGeneralStore.setFullLoader(false)
-    },
-    async getExcel(reportType: string) {
+
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+
+      await new AssistService().syncEmployee(startDay, endDay, employeeCode).catch((e) => {
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Sync assist problems',
+          detail: 'The service is down for the moment or there are communication problems with the server.',
+          life: 5000,
+        })
+      }).then(async (res) => {
+        if (res && res.status === 200) {
+          await this.getEmployeeCalendar()
+        }
+      }).finally(() => {
+        myGeneralStore.setFullLoader(false)
+      })
+    },
+    async getExcel(reportType: string) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+
       let startDay = ''
       let endDay = ''
       this.datePay = ''
+
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
@@ -732,26 +729,35 @@ export default defineComponent({
 
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate.minus({ days: 1 })
+
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+
         this.datePay = this.getNextPayThursdayFromPeriodSelected(new Date(this.periodSelected))
       } else {
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
       const employeeID = this.employee?.employeeId || 0
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByEmployee(startDay, endDay, this.datePay, employeeID, reportType)
+
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
+
         link.href = url
         link.setAttribute('download', `Employee ${reportType}.xlsx`)
+
         document.body.appendChild(link)
+
         link.click()
         document.body.removeChild(link)
-        myGeneralStore.setFullLoader(false)
       } else {
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
@@ -760,8 +766,9 @@ export default defineComponent({
           detail: msgError,
           life: 5000,
         })
-        myGeneralStore.setFullLoader(false)
       }
+
+      myGeneralStore.setFullLoader(false)
     },
     async setAssistSyncStatus() {
       try {
@@ -769,6 +776,7 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+      this.onSyncStatus = false
     },
     addNewAssist() {
       if (this.employee && this.employee.employeeId) {
@@ -780,9 +788,16 @@ export default defineComponent({
         this.drawerAssistForm = true
       }
     },
-    onSaveAssist() {
+    async onSaveAssist() {
+      if (this.isValidPeriodSelected()) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
+
+        await this.getEmployeeAssist()
+        myGeneralStore.setFullLoader(false)
+      }
+
       this.drawerAssistForm = false
-      this.handlerPeriodChange()
     },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual
