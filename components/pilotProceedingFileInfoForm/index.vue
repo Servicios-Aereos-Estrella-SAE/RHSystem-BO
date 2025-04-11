@@ -1,6 +1,6 @@
 <template>
   <div class="box pilot-proceeding-file-info-form">
-    <Toast />
+
     <h4>
       {{ isNewPilotProceedingFile ? 'New pilot proceeding file' : 'Update pilot proceeding file' }}
     </h4>

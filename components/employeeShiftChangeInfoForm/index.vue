@@ -1,6 +1,5 @@
 <template>
   <div class="employee-shift-change-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       {{ isNewEmployeeShiftChange ? 'Add shift change' : 'Update shift change' }}

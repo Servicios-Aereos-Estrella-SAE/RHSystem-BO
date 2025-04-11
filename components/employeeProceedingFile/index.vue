@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="employee-proceeding-files">
-    <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <div v-if="isReady" class="employee">
       <div class="form-container">

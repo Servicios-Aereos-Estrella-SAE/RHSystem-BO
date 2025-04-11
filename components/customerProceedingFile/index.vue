@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="box customer-proceeding-files">
-    <Toast />
     <h4>
       {{ `${customer.person.personFirstname || ''}` }} {{ `${customer.person.personLastname ||
         ''}`  }} {{ `${customer.person.personSecondLastname ||

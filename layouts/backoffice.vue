@@ -1,5 +1,6 @@
 <template>
   <div :style="`--primary: ${getPrimaryColor};`">
+    <Toast />
     <transition name="page">
       <loader v-if="statusFullLoader" />
     </transition>

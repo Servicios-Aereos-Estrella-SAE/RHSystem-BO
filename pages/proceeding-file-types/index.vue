@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <div class="proceeding-file-types-page">
 
       <Head>

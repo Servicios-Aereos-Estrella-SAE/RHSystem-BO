@@ -166,5 +166,8 @@ export default defineComponent({
       }
       this.dateInvalid = false
     },
+    setSelectedDate () {
+      this.displayDateCalendar = false
+    }
   }
 })

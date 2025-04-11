@@ -1,6 +1,6 @@
 <template>
   <div class="box flight-attendant-info-form">
-    <Toast />
+
     <h4>
       {{ isNewFlightAttendant ? 'New flight attendant' : 'Update flight attendant' }}
     </h4>

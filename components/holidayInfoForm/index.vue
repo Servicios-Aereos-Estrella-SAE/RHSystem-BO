@@ -1,6 +1,6 @@
 <template>
   <div class="holiday-info-form">
-    <Toast />
+
     <div v-if="holiday" class="holiday-form">
       <div v-show="isVisibleIcons">
         <h2>

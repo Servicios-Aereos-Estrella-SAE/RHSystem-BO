@@ -15,14 +15,9 @@ import AssistService from '~/resources/scripts/services/AssistService'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import { useMyGeneralStore } from '~/store/general'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
-import Toast from 'primevue/toast';
-import ToastService from 'primevue/toastservice';
+import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
 
 export default defineComponent({
-  components: {
-    Toast,
-    ToastService,
-  },
   name: 'AttendanceMonitorByDepartment',
   props: {
   },
@@ -103,9 +98,9 @@ export default defineComponent({
     departmentList: [] as DepartmentInterface[],
     departmenSelected: null as DepartmentInterface | null,
     visualizationModeOptions: [
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
@@ -122,7 +117,9 @@ export default defineComponent({
     employeeDepartmentList: [] as EmployeeAssistStatisticInterface[],
     statusInfo: null as AssistSyncStatus | null,
     rotationIndex: null as number | null,
-    datePay: '' as string
+    datePay: '' as string,
+    onSyncStatus: true,
+    departmentID: '' as string
   }),
   computed: {
     weeklyStartDay() {
@@ -294,27 +291,29 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    this.setAssistSyncStatus()
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+
     this.periodSelected = new Date()
-    this.datesSelected = this.getDefaultDatesRange();
+    this.datesSelected = this.getDefaultDatesRange()
 
     await Promise.all([
       this.setDepartmetList(),
       this.setDefaultVisualizationMode()
     ])
 
-    await this.handlerSetInitialDepartmentList()
+    await this.init()
 
-    await this.setDepartmentPositions()
-    await this.setDepartmentPositionEmployeeList()
-
-    await this.setGraphsData()
     myGeneralStore.setFullLoader(false)
-
-    await this.setAssistSyncStatus()
   },
   methods: {
+    async init () {
+      await this.handlerSetInitialDepartmentList()
+      await this.setDepartmentPositions()
+      await this.setDepartmentPositionEmployeeList()
+      await this.setGraphsData()
+    },
     setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
@@ -337,8 +336,8 @@ export default defineComponent({
       return employees.filter(employee => this.isShowEmployeeByStatusSelected(employee))
     },
     handlerSetInitialDepartmentList() {
-      const departmentID = this.$route.params.department
-      const department = this.departmentCollection.find((department: DepartmentInterface) => department.departmentId === parseInt(departmentID.toString()))
+      this.departmentID = !this.departmentID ? `${this.$route.params.department}` : this.departmentID
+      const department = this.departmentCollection.find((department: DepartmentInterface) => department.departmentId === parseInt(this.departmentID.toString()))
       this.departmenSelected = department ? department : null
     },
     isValidPeriodSelected() {
@@ -526,7 +525,18 @@ export default defineComponent({
       this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
     async handlerDeparmentSelect() {
-      this.$router.push(`/departments-attendance-monitor/${this.departmenSelected?.departmentId}`)
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.departmentID = `${this.departmenSelected?.departmentId}`
+
+      const path = this.$route.fullPath
+      const pathId = path.split('/')[path.split('/').length - 1]
+      const newPath = `${path}`.replace(`/${pathId}`, `/${this.departmentID}`)
+      window.history.replaceState(null, '', newPath)
+
+      await this.init()
+
+      myGeneralStore.setFullLoader(false)
     },
     async handlerVisualizationModeChange() {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
@@ -619,7 +629,7 @@ export default defineComponent({
       const positionListStatistics: any[] = []
 
       this.departmentPositionCollection.forEach((position: any) => {
-        const positionId = position.position.positionId
+        const positionId = position?.position?.positionId
         const list = this.employeeDepartmentList.filter(item => item.employee.positionId === positionId)
         const statistics = {
           onTimePercentage: Math.round(list.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0) / list.length),
@@ -684,12 +694,18 @@ export default defineComponent({
       const delay = Math.round((delays / totalAvailable) * 100)
       const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
-      const assistStatistics = {
+      const assistStatistics: AssistStatisticInterface = {
         onTimePercentage: Number.isNaN(assist) ? 0 : assist,
         onTolerancePercentage: Number.isNaN(tolerance) ? 0 : tolerance,
         onDelayPercentage: Number.isNaN(delay) ? 0 : delay,
         onEarlyOutPercentage: Number.isNaN(earlyOut) ? 0 : earlyOut,
         onFaultPercentage: Number.isNaN(fault) ? 0 : fault,
+        assists: 0,
+        tolerances: 0,
+        delays: 0,
+        earlyOuts: 0,
+        faults: 0,
+        totalAvailable: 0
       }
 
       employee.assistStatistics = assistStatistics
@@ -705,6 +721,7 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+      this.onSyncStatus = false
     },
     async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()

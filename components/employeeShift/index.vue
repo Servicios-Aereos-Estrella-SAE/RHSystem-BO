@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="box employee-shifts">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <div class="month-year-mobile">
       <span v-show="!displayInputCalendar" class="text">
@@ -112,14 +111,14 @@
     </div>
 
     <Sidebar v-model:visible="drawerShiftExceptions" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
-      header="Employee shift exceptions" position="right" class="shift-exception-sidebar">
+      header="Employee shift exceptions" position="right" class="shift-exceptions-sidebar">
       <employeeShiftException :employee="employee" :date="selectedExceptionDate" :shift="currentShift"
         :canManageException="canManageShiftOrException" @save="onSave" />
     </Sidebar>
 
 
     <Sidebar v-model:visible="drawerShiftException" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
-      header="Employee exceptions" position="right" class="shift-exception-sidebar">
+      header="Employee exceptions" position="right" class="shift-exceptions-req-sidebar">
       <employeeExceptionRequest :employee="employee" :date="selectedExceptionDate"
         :canManageException="canManageShiftOrException" @saveExceptionRequest="onSaveExceptionRequest" />
     </Sidebar>
@@ -187,7 +186,16 @@
     }
   }
 
-  .shift-exception-sidebar {
+  .shift-exceptions-sidebar {
+    width: 100% !important;
+    max-width: 33rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .shift-exceptions-req-sidebar {
     width: 100% !important;
     max-width: 33rem !important;
 

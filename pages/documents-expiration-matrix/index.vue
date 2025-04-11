@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <NuxtLayout name="backoffice" class="documents-page">
       <div class="document-wrapper">
         <div class="box">

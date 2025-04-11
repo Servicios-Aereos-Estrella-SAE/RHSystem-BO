@@ -1,6 +1,6 @@
 <template>
   <div class="itinerary-info-form">
-    <Toast />
+
     <h2>
       Leg Information
     </h2>

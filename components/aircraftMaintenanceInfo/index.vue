@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="box employee-shifts">
-    <Toast />
     <!-- <Calendar view="month" dateFormat="MM" /> -->
     <div class="month-year-mobile">
       <span class="text">
@@ -29,7 +28,7 @@
       </Button>
     </div>
     <div v-if="aircraftMaintenances.length > 0" class="calendar-wrapper">
-      <AircraftMaintenanceInfoCard 
+      <AircraftMaintenanceInfoCard
         v-for="(aircraftMaintenance, index) in aircraftMaintenances"
         :key="`aircraft-maintenance-${aircraftMaintenance.aircraftMaintenanceId}-${index}`"
         :aircraft-maintenance="aircraftMaintenance"
