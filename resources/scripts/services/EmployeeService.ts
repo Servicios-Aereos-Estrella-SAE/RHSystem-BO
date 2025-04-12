@@ -54,6 +54,24 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getVacations(searchText: string, departmentId: number | null, positionId: number | null, year: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    await $fetch(`${this.API_PATH}/employees/get-vacations`, {
+      headers,
+      query: {
+        search: searchText,
+        departmentId,
+        positionId,
+        year,
+      },
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
   async store(employee: EmployeeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
