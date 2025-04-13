@@ -20,6 +20,7 @@ interface AssistDayInterface {
     isVacationDate: boolean
     isWorkDisabilityDate: boolean
     isHoliday: boolean
+    isBirthday: boolean
     checkInDateTime: Date | string
     checkOutDateTime: Date | string
     holiday: HolidayInterface | null
