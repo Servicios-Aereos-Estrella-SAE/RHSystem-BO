@@ -27,7 +27,7 @@ export default defineComponent({
       return name
     },
     employeeInitial () {
-      const name = this.employeeName
+      const name = this.employeeName.trim()
       const first = name.charAt(0)
       return first.toUpperCase()
     }

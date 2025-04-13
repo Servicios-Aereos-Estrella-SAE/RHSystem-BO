@@ -119,7 +119,8 @@ export default defineComponent({
     rotationIndex: null as number | null,
     datePay: '' as string,
     onSyncStatus: true,
-    departmentID: '' as string
+    departmentID: '' as string,
+    disabledNoPaymentDates: [] as Date[]
   }),
   computed: {
     weeklyStartDay() {
@@ -292,6 +293,8 @@ export default defineComponent({
   },
   async mounted() {
     this.setAssistSyncStatus()
+    this.getNoPaymentDates()
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
@@ -313,6 +316,28 @@ export default defineComponent({
       await this.setDepartmentPositions()
       await this.setDepartmentPositionEmployeeList()
       await this.setGraphsData()
+    },
+    getNoPaymentDates() {
+      const initialYear = DateTime.now().year - 10
+      const filteredDays: Date[] = [];
+
+      for (let index = 0; index < 20; index++) {
+        const currentEvaluatedYear = initialYear + index
+        let date = DateTime.local(currentEvaluatedYear, 1, 1);
+
+        while (date.year === currentEvaluatedYear) {
+          const isThursday = date.weekday === 4
+          const isEvenWeek = date.weekNumber % 2 === 0
+
+          if (!isThursday || (isThursday && !isEvenWeek)) {
+            filteredDays.push(date.toJSDate())
+          }
+
+          date = date.plus({ days: 1 })
+        }
+      }
+
+      this.disabledNoPaymentDates = filteredDays
     },
     setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')

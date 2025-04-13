@@ -20,7 +20,6 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 
-
 export default defineComponent({
   components: {
     Toast,
@@ -128,7 +127,8 @@ export default defineComponent({
     evaluatedAssistEmployees: 0 as number,
     estimatedArrivals: 0 as number,
     datePay: '' as string,
-    onSyncStatus: true
+    onSyncStatus: true,
+    disabledNoPaymentDates: [] as Date[]
   }),
   computed: {
     weeklyStartDay() {
@@ -287,6 +287,7 @@ export default defineComponent({
   },
   async mounted() {
     this.setAssistSyncStatus()
+    this.getNoPaymentDates()
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -310,6 +311,28 @@ export default defineComponent({
       const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
+    },
+    getNoPaymentDates() {
+      const initialYear = DateTime.now().year - 10
+      const filteredDays: Date[] = [];
+
+      for (let index = 0; index < 20; index++) {
+        const currentEvaluatedYear = initialYear + index
+        let date = DateTime.local(currentEvaluatedYear, 1, 1);
+
+        while (date.year === currentEvaluatedYear) {
+          const isThursday = date.weekday === 4
+          const isEvenWeek = date.weekNumber % 2 === 0
+
+          if (!isThursday || (isThursday && !isEvenWeek)) {
+            filteredDays.push(date.toJSDate())
+          }
+
+          date = date.plus({ days: 1 })
+        }
+      }
+
+      this.disabledNoPaymentDates = filteredDays
     },
     async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')

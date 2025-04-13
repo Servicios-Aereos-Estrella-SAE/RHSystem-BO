@@ -56,6 +56,10 @@ export default defineComponent({
         return false
       }
 
+      if (this.employeeShiftChangesList.length > 0) {
+        return false
+      }
+
       if ((this.employee.employeeId === this.sessionUser.person?.employee?.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
         return false
       }
