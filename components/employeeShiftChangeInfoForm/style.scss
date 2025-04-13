@@ -12,6 +12,17 @@
     margin-bottom: 1.5rem;
     border-bottom: $border-dashed;
     padding-bottom: 1.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .selected-day {
+    font-size: 0.9rem;
+    border-radius: $radius;
+    border: $border;
+    padding: 1rem;
+    display: flex;
+    flex-flow: column;
+    gap: 0.5rem;
   }
 
   .box-tools-footer {

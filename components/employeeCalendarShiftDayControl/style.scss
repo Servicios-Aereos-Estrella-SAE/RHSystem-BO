@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     .number {
       border-radius: 100%;
       background: white;
@@ -87,16 +87,14 @@
 
     button {
 
-      .dot {
-        width: 0.65rem;
-        height: 0.65rem;
-        box-sizing: border-box;
-        border: solid 2px white;
-        border-radius: 100%;
-        background-color: $info;
-        position: absolute;
-        margin-right: -1rem;
-        margin-top: -1rem;
+      &.active {
+
+        svg {
+
+          path {
+            fill: $info;
+          }
+        }
       }
     }
   }
