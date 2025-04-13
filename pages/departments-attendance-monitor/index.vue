@@ -82,11 +82,8 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
+              :disabledDates="disabledNoPaymentDates"
               :showWeek="false">
-              <template #date="slotProps">
-                <strong v-if="isThursday(slotProps.date)">{{ slotProps.date.day }}</strong>
-                <template v-else><span style="text-decoration: line-through">{{ slotProps.date.day }} </span></template>
-              </template>
             </Calendar>
           </div>
         </div>
