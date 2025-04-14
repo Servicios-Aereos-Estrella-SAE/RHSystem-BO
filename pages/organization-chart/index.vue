@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Toast />
+
     <Head>
       <Title>Organization Chart</Title>
     </Head>

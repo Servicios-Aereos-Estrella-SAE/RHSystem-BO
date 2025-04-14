@@ -1,6 +1,5 @@
 <template>
     <div class="box aircraft-class-info-form">
-        <Toast />
         <div class="aircraft-class-form">
             <div class="form-container">
                 <div class="input-box">
@@ -30,7 +29,7 @@
                     <input type="file" id="aircraftClassBanner" @change="onFileChange" />
                     <small class="p-error" v-if="submitted && !aircraftClass.aircraftClassBanner">Banner is required.</small>
                 </div>
-                
+
                 <div v-if="photoForm" class="input-box">
                     <img :src="photoForm" alt="Banner Preview" class="banner-preview" />
                 </div>
@@ -63,12 +62,12 @@ select {
 }
 
 .banner-preview {
-  max-width: 100%; 
-  max-height: 200px; 
-  height: auto; 
-  width: auto; 
+  max-width: 100%;
+  max-height: 200px;
+  height: auto;
+  width: auto;
   display: block;
-  margin: 0 auto; 
+  margin: 0 auto;
 }
 
 </style>

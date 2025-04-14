@@ -17,6 +17,7 @@ import { useMyGeneralStore } from '~/store/general'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
 
 export default defineComponent({
   components: {
@@ -105,9 +106,9 @@ export default defineComponent({
     statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -121,7 +122,9 @@ export default defineComponent({
     filteredEmployees: [] as EmployeeInterface[],
     employeeDepartmentList: [] as EmployeeAssistStatisticInterface[],
     statusInfo: null as AssistSyncStatus | null,
-    datePay: '' as string
+    datePay: '' as string,
+    onSyncStatus: true,
+    disabledNoPaymentDates: [] as Date[]
   }),
   computed: {
     weeklyStartDay() {
@@ -291,6 +294,9 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    this.setAssistSyncStatus()
+    this.getNoPaymentDates()
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.periodSelected = new Date()
@@ -307,9 +313,30 @@ export default defineComponent({
 
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
-    await this.setAssistSyncStatus()
   },
   methods: {
+    getNoPaymentDates() {
+      const initialYear = DateTime.now().year - 10
+      const filteredDays: Date[] = [];
+
+      for (let index = 0; index < 20; index++) {
+        const currentEvaluatedYear = initialYear + index
+        let date = DateTime.local(currentEvaluatedYear, 1, 1);
+
+        while (date.year === currentEvaluatedYear) {
+          const isThursday = date.weekday === 4
+          const isEvenWeek = date.weekNumber % 2 === 0
+
+          if (!isThursday || (isThursday && !isEvenWeek)) {
+            filteredDays.push(date.toJSDate())
+          }
+
+          date = date.plus({ days: 1 })
+        }
+      }
+
+      this.disabledNoPaymentDates = filteredDays
+    },
     setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
@@ -531,10 +558,13 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
-      await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       if (this.visualizationMode?.value === 'fourteen') {
         this.periodSelected = this.getNextPayThursday()
       }
+
+      await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       this.setGraphsData()
       myGeneralStore.setFullLoader(false)
     },
@@ -673,12 +703,18 @@ export default defineComponent({
       const earlyOut = Math.round((earlyOuts / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
-      const assistStatistics = {
+      const assistStatistics: AssistStatisticInterface = {
         onTimePercentage: assist,
         onTolerancePercentage: tolerance,
         onDelayPercentage: delay,
         onEarlyOutPercentage: earlyOut,
         onFaultPercentage: fault,
+        assists: 0,
+        tolerances: 0,
+        delays: 0,
+        earlyOuts: 0,
+        faults: 0,
+        totalAvailable: 0
       }
 
       employee.assistStatistics = assistStatistics
@@ -694,6 +730,7 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+      this.onSyncStatus = false
     },
     async getExcel(reportType: string) {
       const myGeneralStore = useMyGeneralStore()

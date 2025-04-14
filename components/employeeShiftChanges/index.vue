@@ -1,6 +1,5 @@
 <template>
   <div v-if="isReady" class="employee-shift-changes">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       Shift change to
@@ -29,6 +28,7 @@
             <employeeShiftChangeCard :employeeShiftChange="employeeShiftChange" :isDeleted="isDeleted"
               :click-on-edit="() => { onEdit(employeeShiftChange) }"
               :click-on-delete="() => { onDelete(employeeShiftChange) }"
+              :shift="shift"
               :canManageToPreviousDays="canManageToPreviousDays" :canManageShiftChange="canManageChange" />
           </div>
         </div>

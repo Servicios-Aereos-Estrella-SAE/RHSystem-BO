@@ -1,6 +1,5 @@
 <template>
   <div class="user-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee"/>
     <div v-if="isReady" class="user-form">
       <div class="form-container">

@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-page-employee-attendance">
-    <Toast />
+
 
     <Head>
       <Title>
@@ -83,11 +83,8 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
+              :disabledDates="disabledNoPaymentDates"
               :showWeek="false">
-              <template #date="slotProps">
-                <strong v-if="isThursday(slotProps.date)">{{ slotProps.date.day }}</strong>
-                <template v-else><span style="text-decoration: line-through">{{ slotProps.date.day }} </span></template>
-              </template>
             </Calendar>
 
           </div>
@@ -120,7 +117,7 @@
             </svg>
           </button>
         </div>
-        <Message v-if="assistSyncStatusDate" class="sync" :closable="false">
+        <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
           <div>
             Last attendance recorded at
             {{ assistSyncStatusDate }}
@@ -128,7 +125,7 @@
             ( Checking every 5 minutes )
           </div>
         </Message>
-        <Message v-if="!assistSyncStatusDate" class="sync" :closable="false" severity="warn">
+        <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
             No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
           </div>
@@ -187,13 +184,4 @@
 
 <style lang="scss" scoped>
   @import './style';
-</style>
-
-<style lang="scss">
-  .sync {
-
-    .p-message-text {
-      font-size: 0.7rem !important;
-    }
-  }
 </style>

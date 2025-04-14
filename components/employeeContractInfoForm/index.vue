@@ -1,6 +1,5 @@
 <template>
   <div class="employee-contract-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       {{ isNewEmployeeContract ? 'Add employee contract' : 'Update employee contract' }}

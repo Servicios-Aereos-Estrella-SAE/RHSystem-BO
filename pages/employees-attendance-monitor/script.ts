@@ -20,7 +20,6 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 
-
 export default defineComponent({
   components: {
     Toast,
@@ -106,9 +105,9 @@ export default defineComponent({
     statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1 },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -127,7 +126,9 @@ export default defineComponent({
     evaluatedEmployees: 0 as number,
     evaluatedAssistEmployees: 0 as number,
     estimatedArrivals: 0 as number,
-    datePay: '' as string
+    datePay: '' as string,
+    onSyncStatus: true,
+    disabledNoPaymentDates: [] as Date[]
   }),
   computed: {
     weeklyStartDay() {
@@ -285,6 +286,9 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange()
   },
   async mounted() {
+    this.setAssistSyncStatus()
+    this.getNoPaymentDates()
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
@@ -300,8 +304,6 @@ export default defineComponent({
     this.getDepartmentPositionAssistStatistics()
 
     myGeneralStore.setFullLoader(false)
-
-    await this.setAssistSyncStatus()
   },
   methods: {
     isThursday(dateObject: any, addOneMonth = true) {
@@ -309,6 +311,28 @@ export default defineComponent({
       const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
+    },
+    getNoPaymentDates() {
+      const initialYear = DateTime.now().year - 10
+      const filteredDays: Date[] = [];
+
+      for (let index = 0; index < 20; index++) {
+        const currentEvaluatedYear = initialYear + index
+        let date = DateTime.local(currentEvaluatedYear, 1, 1);
+
+        while (date.year === currentEvaluatedYear) {
+          const isThursday = date.weekday === 4
+          const isEvenWeek = date.weekNumber % 2 === 0
+
+          if (!isThursday || (isThursday && !isEvenWeek)) {
+            filteredDays.push(date.toJSDate())
+          }
+
+          date = date.plus({ days: 1 })
+        }
+      }
+
+      this.disabledNoPaymentDates = filteredDays
     },
     async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
@@ -507,7 +531,7 @@ export default defineComponent({
     async setDepartmentPositionEmployeeList() {
       const departmentId = null
       const positionId = null
-      const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 1
+      const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
@@ -633,12 +657,16 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
-      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       if (this.visualizationMode?.value === 'fourteen') {
         this.periodSelected = this.getNextPayThursday()
       }
+
+      await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
       this.setGeneralData()
       this.setPeriodData()
+
       myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange() {
@@ -754,6 +782,7 @@ export default defineComponent({
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
       } catch (error) { }
+      this.onSyncStatus = false
     },
     getNextPayThursday() {
       const today = DateTime.now(); // Fecha actual

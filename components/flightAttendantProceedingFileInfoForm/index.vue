@@ -1,6 +1,6 @@
 <template>
   <div class="box flight-attendant-proceeding-file-info-form">
-    <Toast />
+
     <h4>
       {{ isNewFlightAttendantProceedingFile ? 'New flight attendant proceeding file' : 'Update flight attendant
       proceeding file' }}

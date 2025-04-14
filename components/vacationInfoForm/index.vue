@@ -1,6 +1,6 @@
 <template>
     <div class="box vacation-info-form">
-        <Toast />
+
         <div v-if="vacation" class="vacation-form">
             <div class="form-container">
                 <div class="input-box">

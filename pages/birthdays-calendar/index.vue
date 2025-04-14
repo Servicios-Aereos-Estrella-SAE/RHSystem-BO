@@ -21,7 +21,6 @@
                   @update:modelValue="handlerPeriodChange" />
               </div>
               <div class="input-search">
-                <!-- -->
                 <div class="input-box">
                   <label for="search">
                     Search employee

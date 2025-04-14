@@ -1,6 +1,6 @@
 <template>
     <div class="exception-request-page">
-        <Toast />
+
 
         <Head>
             <Title>Exception Requests</Title>

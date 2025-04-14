@@ -84,10 +84,6 @@
           background-color: transparentize($color: $success, $amount: 0.9) !important;
           font-weight: 500;
         }
-
-        .birthday {
-          opacity: 0.6;
-        }
       }
 
       .month-title {
@@ -149,6 +145,7 @@
           border: $border-dashed;
           font-size: 0.8rem;
           cursor: pointer;
+          position: relative;
 
           &.ghost {
             opacity: 0;
@@ -171,20 +168,20 @@
             font-weight: 500;
           }
 
-          position: relative;
-          /* necesario para que el span.absolute funcione */
-
-
           .quantity {
             position: absolute;
-            top: 4px;
-            right: 6px;
-            font-size: 0.90rem;
-            background-color: rgba(255, 255, 255, 0.8);
-            /* opcional: para mejor visibilidad */
-            padding: 2px 4px;
-            border-radius: 4px;
-            color: $primary;
+            font-size: 0.6rem;
+            background-color: transparentize($color: $warning, $amount: 0);
+            border-radius: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1rem;
+            height: 1rem;
+            margin-top: 1.25rem;
+            margin-right: -1.5rem;
+            color: white;
+            font-weight: 500;
           }
         }
       }

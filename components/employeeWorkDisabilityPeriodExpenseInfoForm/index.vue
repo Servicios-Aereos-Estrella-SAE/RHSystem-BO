@@ -1,6 +1,5 @@
 <template>
   <div class="work-disability-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <workDisabilityPeriodInfoCard :isDeleted="true" :work-disability-period="workDisabilityPeriod"
       :click-on-edit="() => { }" :click-on-delete="() => { }" :canReadOnlyWorkDisabilities="false"

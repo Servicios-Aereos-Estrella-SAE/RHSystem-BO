@@ -1,7 +1,5 @@
 <template>
   <div class="dashboard-page">
-    <Toast />
-
     <Head>
       <Title>
         Department Attendance Monitor
@@ -89,11 +87,8 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
+              :disabledDates="disabledNoPaymentDates"
               :showWeek="false">
-              <template #date="slotProps">
-                <strong v-if="isThursday(slotProps.date)">{{ slotProps.date.day }}</strong>
-                <template v-else><span style="text-decoration: line-through">{{ slotProps.date.day }} </span></template>
-              </template>
             </Calendar>
 
           </div>
@@ -132,14 +127,14 @@
           </div>
         </div>
 
-        <Message v-if="assistSyncStatusDate" class="sync" :closable="false">
+        <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
           Last attendance recorded at
           {{ assistSyncStatusDate }}
           <br>
           ( Checking every 5 minutes )
         </Message>
 
-        <Message v-if="!assistSyncStatusDate" class="sync" :closable="false" severity="warn">
+        <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
             No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
           </div>
@@ -152,7 +147,7 @@
             </h2>
             <highchart :options="generalData" style="width: 100%;" />
             <div v-if="isRootUser">
-              <Button v-if="rotationIndex === null" class="btn btn-block btn-info" @click="getRotation">
+              <Button v-if="rotationIndex === null" class="btn btn-block" @click="getRotation">
                 Obtener índice de rotación
               </Button>
               <div v-else class="rotation-info">
@@ -198,7 +193,7 @@
         </h2>
         <div class="department-positions-wrapper">
           <div v-for="(item, index) in getDepartmentPositionAssistStatistics()"
-            :key="`position-${item.position.parentPositionId}-${index}`">
+            :key="`position-${item?.position?.parentPositionId || 'abny'}-${index}`">
             <attendanceInfoCard :department="departmenSelected" :position="item?.position"
               :onTimePercentage="item?.statistics?.onTimePercentage || 0"
               :onToleracePercentage="item?.statistics?.onToleracePercentage || 0"
@@ -209,11 +204,23 @@
         <h2>
           All Department Employees
         </h2>
-        <div class="department-positions-wrapper">
+        <div v-if="filtersEmployeesByStatus(employeeDepartmentList).length > 0" class="department-positions-wrapper">
           <div v-for="(employeeAssist, index) in filtersEmployeesByStatus(employeeDepartmentList)"
             :key="`employee-position-${employeeAssist.employee?.employeeCode || Math.random()}-${index}`">
             <attendanceEmployeeInfoCard v-if="!!(employeeAssist) && !!(employeeAssist.employee)"
               :employee="employeeAssist" />
+          </div>
+        </div>
+        <div v-else class="box">
+          <div class="empty">
+            <div>
+              <div class="icon">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 5a1 1 0 1 0 0-2h-2a1 1 0 1 0 0 2h2ZM5 11a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2ZM4 18a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM4 21a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM20 10a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0v-2a1 1 0 0 0-1-1ZM7 4a1 1 0 0 0-1-1 3 3 0 0 0-3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1 1 1 0 0 0 1-1ZM18 3a1 1 0 1 0 0 2 1 1 0 0 1 1 1 1 1 0 1 0 2 0 3 3 0 0 0-3-3Z" fill="#88a4bf" class="fill-212121"></path></svg>
+              </div>
+              No employees to display.
+              <br>
+              Existing employees may be discriminated
+            </div>
           </div>
         </div>
       </div>
@@ -228,21 +235,4 @@
 
 <style lang="scss" scoped>
   @import './style';
-</style>
-
-<style lang="scss">
-  :deep(.graph-label) {
-    color: red;
-  }
-
-  .graph-label {
-    color: red;
-  }
-
-  .sync {
-
-    .p-message-text {
-      font-size: 0.7rem !important;
-    }
-  }
 </style>

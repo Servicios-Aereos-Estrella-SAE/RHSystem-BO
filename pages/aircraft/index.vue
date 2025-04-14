@@ -1,6 +1,6 @@
 <template>
   <div class="aircrafts-page">
-    <Toast />
+
 
     <Head>
       <Title>
@@ -47,9 +47,9 @@
               <aircraftInfoCard
                 :aircraft="aircraft"
                 :can-update="canUpdate"
-                :can-delete="canDelete" 
+                :can-delete="canDelete"
                 :click-on-edit="() => { onEdit(aircraft) }"
-                :click-on-delete="() => { onDelete(aircraft) }" 
+                :click-on-delete="() => { onDelete(aircraft) }"
                 :click-on-gallery="() => {onGallery(aircraft) }"
                 @openProceedingFiles="handlerOpenProceedingFiles"
                 @openMaintenance="handlerOpenMaintenance"
@@ -68,7 +68,7 @@
 
           <!-- Form Aircraft -->
           <div class="card flex justify-content-center">
-            <Sidebar 
+            <Sidebar
               v-model:visible="drawerAircraftForm"
               header="Aircraft form"
               position="right"
@@ -97,7 +97,7 @@
               :dismissable="false"
               :showCloseIcon="true"
             >
-              <genericGallery  :aircraft="aircraft" @onGallerySave="onSaveGallery" /> 
+              <genericGallery  :aircraft="aircraft" @onGallerySave="onSaveGallery" />
             </Sidebar>
           </div>
         </div>
@@ -126,11 +126,11 @@
         :dismissable="false"
         :showCloseIcon="true"
       >
-        <aircraftMaintenanceInfo 
-          :rand="randInfo" 
-          @editMaintenance="editMaintenance" 
-          v-if="aircraft && drawerMaintenance" 
-          :aircraft="aircraft" 
+        <aircraftMaintenanceInfo
+          :rand="randInfo"
+          @editMaintenance="editMaintenance"
+          v-if="aircraft && drawerMaintenance"
+          :aircraft="aircraft"
           @addMaintenance="addNewMaintenance"
         />
       </Sidebar>
@@ -200,5 +200,5 @@
       width: 100% !important;
     }
   }
-  
+
 </style>

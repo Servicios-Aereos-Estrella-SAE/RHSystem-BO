@@ -1,22 +1,22 @@
 <template>
   <div class="employee-shift-change-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       {{ isNewEmployeeShiftChange ? 'Add shift change' : 'Update shift change' }}
     </h1>
-    <span>
-      {{ selectedDate }}<br />
-      {{ dateRestDayFrom }}
-    </span>
+    <div class="selected-day">
+      <span class="selected-day-date">{{ selectedDate }}</span>
+      <span class="selected-day-type">
+        <Tag severity="secondary" :value="dateRestDayFrom" />
+      </span>
+    </div>
     <div v-if="isReady" class="employee-shift-change-form">
       <div class="form-container">
-        <div class="input-box">
-          <label for="employeeShiftChangeChangeThisShift">
-            Change this shift
+        <div class="checkbox-group">
+          <Checkbox v-model="employeeShiftChange.employeeShiftChangeChangeThisShift" binary :disabled="!isNewEmployeeShiftChange" />
+          <label>
+            Cover shift
           </label>
-          <Checkbox v-model="employeeShiftChange.employeeShiftChangeChangeThisShift" binary
-            :disabled="!isNewEmployeeShiftChange" />
         </div>
         <div v-if="isNewEmployeeShiftChange" class="input-box">
           <label for="change-type">

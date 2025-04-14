@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReady" class="box maintenance-shifts">
-    <Toast />
+
     <!-- <Calendar view="month" dateFormat="MM" /> -->
     <div class="head-maintenance">
       <div></div>
@@ -20,8 +20,8 @@
           :options="maintenanceExpenseCategories"
           optionLabel="maintenanceExpenseCategoryName"
           optionValue="maintenanceExpenseCategoryId"
-          placeholder="Select a expense category" filter 
-          class="w-full md:w-14rem" v-model="maintenanceExpense.maintenanceExpenseCategoryId" 
+          placeholder="Select a expense category" filter
+          class="w-full md:w-14rem" v-model="maintenanceExpense.maintenanceExpenseCategoryId"
           :invalid="submitted && !maintenanceExpense.maintenanceExpenseCategoryId" />
         <small class="p-error" v-if="submitted && !maintenanceExpense.maintenanceExpenseCategoryId">
           Maintenance Type is required.
@@ -58,7 +58,7 @@
             </Button>
           </a>
         </div>
-          <FileUpload v-model="files" name="demo[]" 
+          <FileUpload v-model="files" name="demo[]"
           :custom-upload="true" :showUploadButton="false" :maxFileSize="6000000" :fileLimit="1" @select="validateFiles">
           <template #content="{ files, removeFileCallback }">
             <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">

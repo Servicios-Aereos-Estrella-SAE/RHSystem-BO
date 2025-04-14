@@ -1,6 +1,5 @@
 <template>
     <div class="exception-request-info-form">
-        <Toast />
         <employeeModalInfoCard :employee="employee" />
         <h1>
             {{ isNewExceptionRequest ? 'Add exception request' : 'Update exception request' }}

@@ -1,6 +1,6 @@
 <template>
   <div class="proceeding-file-type-email-control">
-    <Toast />
+
     <div v-if="!displayForm" class="read-date">
       <InputText type="text" v-model="getEmail" readonly />
       <Button class="btn btn-block" @click="displayForm = true">
@@ -20,7 +20,7 @@
       </Button>
       <small class="p-error" v-if="submitted && (!currentProceedingFileTypeEmail.proceedingFileTypeEmailEmail || isEmailInvalid)">Email is required.</small>
     </div>
- 
+
   </div>
 </template>
 

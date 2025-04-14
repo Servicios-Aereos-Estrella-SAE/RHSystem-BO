@@ -1,6 +1,5 @@
 <template>
   <div class="employee-bank-info-form">
-    <Toast />
     <employeeModalInfoCard :employee="employee" />
     <h1>
       {{ isNewEmployeeBank ? 'Add employee account bank' : 'Update employee account bank' }}

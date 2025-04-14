@@ -1,6 +1,6 @@
 <template>
   <div class="shift-info-form">
-    <Toast />
+
     <div v-if="shift" class="shift-form">
       <h1>
         {{ formTitle }}

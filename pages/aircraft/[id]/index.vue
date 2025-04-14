@@ -1,6 +1,6 @@
 <template>
   <div class="aircrafts-page">
-    <Toast />
+
 
     <Head>
       <Title>
