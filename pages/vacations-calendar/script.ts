@@ -37,7 +37,7 @@ export default defineComponent({
     positions: [] as PositionInterface[],
     departments: [] as DepartmentInterface[],
     filteredEmployees: [] as EmployeeInterface[],
-    filteredEmployeesVacation: [] as EmployeeInterface[],
+    filteredEmployeesVacation: [] as VacationCalendarInterface[],
     drawerEmployeesVacation: false,
     currentVacation: ''
   }),
@@ -58,9 +58,7 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    await this.handlerSearchEmployee()
     await this.getDepartments()
-    //await this.verifyPermissions()
     await this.handlerPeriodChange()
 
     myGeneralStore.setFullLoader(false)
@@ -84,15 +82,19 @@ export default defineComponent({
       const list = response.status === 200 ? response._data.data.employees : []
       this.filteredEmployees = list
       this.filterVacations = []
-      for await (const employee of this.filteredEmployees) {
-        /*   if (employee.person?.personVacation) {
-            this.filterVacations.push({
-              date: employee.person.personVacation,
-              icon: '<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 7c1.714 0 2-1.34 2-2.444C14 3.45 13.262 1.5 12 1.5s-2 1.951-2 3.056C10 5.66 10.286 7 12 7ZM3.5 10.25A2.25 2.25 0 0 1 5.75 8h12.5a2.25 2.25 0 0 1 2.25 2.25v.875l-3.634 2.726a1.25 1.25 0 0 1-1.384.077l-2.04-1.2a2.75 2.75 0 0 0-2.884.06l-1.761 1.136a1.25 1.25 0 0 1-1.35.003L3.5 11.408V10.25Z" fill="#88a4bf" class="fill-212121"></path><path d="M3.5 13.188V18.5h-.75a.75.75 0 0 0 0 1.5h18.5a.75.75 0 0 0 0-1.5h-.75V13l-2.734 2.05a2.75 2.75 0 0 1-3.044.171l-2.04-1.2a1.25 1.25 0 0 0-1.311.027l-1.76 1.136a2.75 2.75 0 0 1-2.971.008L3.5 13.187Z" fill="#88a4bf" class="fill-212121"></path></svg>',
-              quantity: 0
-            })
-          } */
-      }
+      this.filteredEmployees.forEach(employee => {
+        if (employee.shift_exceptions) {
+          employee.shift_exceptions.forEach(shift_exception => {
+            if (shift_exception?.shiftExceptionsDate) {
+              this.filterVacations.push({
+                date: shift_exception.shiftExceptionsDate.toString(),
+                icon: '<svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15" data-v-6de6f350=""><path d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z" fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:96:17" data-v-6de6f350=""></path><path d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z" fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:99:17" data-v-6de6f350=""></path><path d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z" fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:102:17" data-v-6de6f350=""></path></svg>',
+                quantity: 0
+              })
+            }
+          })
+        }
+      })
       myGeneralStore.setFullLoader(false)
     },
     setShowDate(date: Date) {
@@ -127,7 +129,6 @@ export default defineComponent({
         this.lastDate = lastDayFormatted
         this.yearSelected = this.periodSelected.getFullYear()
       }
-
       this.handlerSearchEmployee()
     },
     onPageChange(event: any) {
@@ -233,12 +234,18 @@ export default defineComponent({
     },
     getEmployeesWithVacation(currentMonth: number, currentDay: number) {
       return this.filteredEmployees.filter(employee => {
-        /*  if (employee.person?.personVacation) {
-           const vacationString = employee.person.personVacation.toString()
-           const [year, month, day] = vacationString.split('T')[0].split('-')
-           return Number(month) === currentMonth && Number(day) === currentDay
-         } */
-      });
+        if (employee.shift_exceptions) {
+          return employee.shift_exceptions.some(shift_exception => {
+            if (shift_exception.shiftExceptionsDate) {
+              const vacationString = shift_exception.shiftExceptionsDate.toString()
+              const [year, month, day] = vacationString.split('T')[0].split('-')
+              return Number(month) === currentMonth && Number(day) === currentDay
+            }
+            return false
+          })
+        }
+        return false
+      })
     }
   },
 })

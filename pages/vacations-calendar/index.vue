@@ -1,7 +1,7 @@
 <template>
   <div>
     <Toast />
-    <div class="birthday-page">
+    <div class="vacation-page">
 
       <Head>
         <Title>
@@ -10,11 +10,11 @@
       </Head>
 
       <NuxtLayout name="backoffice">
-        <div class="birthday-wrapper">
+        <div class="vacation-wrapper">
           <div class="filters">
             <div class="box head-employees-page">
               <div class="input-box">
-                <label for="birthday">
+                <label for="vacation">
                   Period
                 </label>
                 <Calendar v-if="isReady" v-model="periodSelected" view="year" dateFormat="yy"
@@ -75,14 +75,14 @@
                 <div v-for="week in 1" :key="`month-week-${week}`" class="month-week">
                   <div v-for="(weekDayNumber, iweekDayNumber) in weekDays" :key="`month-day-${weekDayNumber}`"
                     class="week-day-cell" :class="{
-                      birthday: !!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday,
+                      vacation: !!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).vacation,
                       today: isToday(monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentVacation(yearSelected, monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day)">
-                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday" class="quantity">
+                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).vacation" class="quantity">
                       {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).quantity }}
                     </span>
-                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).birthday"
+                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).vacation"
                       v-html="firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).icon"
                       class="holyday-cell-icon"></span>
                     <span v-else>
@@ -94,14 +94,14 @@
                 <div class="month-weeks">
                   <div v-for="(weekDayNumber, iweekDayNumber) in lastWeeksRestDays(monthNumber)"
                     :key="`month-day-${weekDayNumber}`" class="week-day-cell" :class="{
-                      birthday: !!weekDay(monthNumber, iweekDayNumber).birthday,
+                      vacation: !!weekDay(monthNumber, iweekDayNumber).vacation,
                       today: isToday(monthNumber, weekDay(monthNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentVacation(yearSelected, monthNumber, weekDay(monthNumber, iweekDayNumber).day)">
-                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).birthday" class="quantity">
+                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).vacation" class="quantity">
                       {{ weekDay(monthNumber, iweekDayNumber).quantity }}
                     </span>
-                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).birthday"
+                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).vacation"
                       v-html="weekDay(monthNumber, iweekDayNumber).icon" class="holyday-cell-icon"></span>
                     <span v-else>
                       {{ weekDay(monthNumber, iweekDayNumber).day }}
@@ -121,7 +121,7 @@
     </div>
 
     <Sidebar v-model:visible="drawerEmployeesVacation" header="Vacation form" position="right"
-      class="birthday-form-sidebar" :showCloseIcon="true">
+      class="vacation-form-sidebar" :showCloseIcon="true">
       <h4>Vacation {{ currentVacation }}</h4>
       <div v-if="filteredEmployeesVacation.length > 0" class="employee-card-wrapper">
         <div v-for="(employee, index) in filteredEmployeesVacation" :key="`employee-${employee.employeeId}-${index}`">
@@ -159,12 +159,12 @@
     }
   }
 
-  .birthday-card-wrapper {
+  .vacation-card-wrapper {
     display: flex;
     flex-wrap: wrap;
   }
 
-  .birthday-form-sidebar {
+  .vacation-form-sidebar {
     width: 30rem !important;
     max-width: 50rem !important;
 

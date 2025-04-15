@@ -72,6 +72,25 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getAllVacationsByPeriod(searchText: string, departmentId: number | null, positionId: number | null, dateStart: string, dateEnd: string) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    await $fetch(`${this.API_PATH}/employees/get-all-vacations-by-period`, {
+      headers,
+      query: {
+        search: searchText,
+        departmentId,
+        positionId,
+        dateStart,
+        dateEnd,
+      },
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
+
   async store(employee: EmployeeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
