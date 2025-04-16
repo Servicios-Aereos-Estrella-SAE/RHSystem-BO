@@ -68,7 +68,7 @@ export default defineComponent({
       const flag = myGeneralStore.isRoot
       return flag
     },
-    displayEmployeeTypeFilter () {
+    displayEmployeeTypeFilter() {
       let display = false
 
       if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
@@ -219,6 +219,7 @@ export default defineComponent({
         employeeUpdatedAt: new Date(),
         person: person,
         businessUnitId: 1,
+        payrollBusinessUnitId: 1,
         employeeAssistDiscriminator: 0,
         employeeTypeOfContract: "Internal",
         employeeTerminatedDate: new Date(),

@@ -166,6 +166,10 @@ export default class EmployeeService {
       console.error('Wrong employee type id');
       return false;
     }
+    if (!employee.payrollBusinessUnitId) {
+      console.error('Wrong payroll business unit id');
+      return false;
+    }
 
     return true;
   }
