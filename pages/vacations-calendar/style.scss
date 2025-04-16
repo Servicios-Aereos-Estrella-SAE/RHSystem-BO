@@ -85,9 +85,9 @@
           font-weight: 500;
         }
 
-        .vacation {
+        /*  .vacation {
           opacity: 0.6;
-        }
+        } */
       }
 
       .month-title {
@@ -177,14 +177,26 @@
 
           .quantity {
             position: absolute;
-            top: 4px;
-            right: 6px;
-            font-size: 0.90rem;
-            background-color: rgba(255, 255, 255, 0.8);
-            /* opcional: para mejor visibilidad */
-            padding: 2px 4px;
-            border-radius: 4px;
-            color: $primary;
+            font-size: 0.6rem;
+            background-color: transparentize($color: $warning, $amount: 0);
+            border-radius: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 1rem;
+            height: 1rem;
+            margin-top: 1.25rem;
+            margin-right: -1.5rem;
+            color: white;
+            font-weight: 500;
+          }
+
+          .day {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 0.9em;
+            font-weight: bold;
           }
         }
       }
@@ -214,6 +226,10 @@
 
       .emp-status-control {
         margin-top: 1.6rem;
+      }
+
+      .btn-vacations {
+        margin-top: 1.45rem;
       }
     }
 
@@ -271,4 +287,11 @@
 
 
 
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
 }

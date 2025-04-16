@@ -10,7 +10,7 @@
       </Head>
 
       <NuxtLayout name="backoffice">
-        <div class="vacation-wrapper">
+        <div v-if="isReady" class="vacation-wrapper">
           <div class="filters">
             <div class="box head-employees-page">
               <div class="input-box">
@@ -50,7 +50,18 @@
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                   placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
               </div>
-              <div></div>
+              <div>
+                <Button class="btn btn-vacations" @click="getVacationExcel">
+                  <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                      fill="#88a4bf" class="fill-000000"></path>
+                  </svg>
+                  <span>
+                    Vacations
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -79,6 +90,9 @@
                       today: isToday(monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentVacation(yearSelected, monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day)">
+                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).vacation" class="day">
+                      {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day }}
+                    </span>
                     <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).vacation" class="quantity">
                       {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).quantity }}
                     </span>
@@ -98,6 +112,9 @@
                       today: isToday(monthNumber, weekDay(monthNumber, iweekDayNumber).day),
                     }"
                     @click="onShowCurrentVacation(yearSelected, monthNumber, weekDay(monthNumber, iweekDayNumber).day)">
+                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).vacation" class="day">
+                      {{ weekDay(monthNumber, iweekDayNumber).day }}
+                    </span>
                     <span v-if="!!weekDay(monthNumber, iweekDayNumber).vacation" class="quantity">
                       {{ weekDay(monthNumber, iweekDayNumber).quantity }}
                     </span>
@@ -117,18 +134,18 @@
             </div>
           </div>
         </div>
+        <div v-else class="loader">
+          <ProgressSpinner />
+        </div>
       </NuxtLayout>
     </div>
 
     <Sidebar v-model:visible="drawerEmployeesVacation" header="Vacation form" position="right"
       class="vacation-form-sidebar" :showCloseIcon="true">
       <h4>Vacation {{ currentVacation }}</h4>
-      <div v-if="filteredEmployeesVacation.length > 0" class="employee-card-wrapper">
+      <div v-if="filteredEmployeesVacation.length > 0" class="vacations-wrapper">
         <div v-for="(employee, index) in filteredEmployeesVacation" :key="`employee-${employee.employeeId}-${index}`">
-          <EmployeeInfoCard :click-on-photo="() => { onPhoto(employee) }" :employee="employee"
-            :can-manage-shifts="false" :can-update="false" :can-delete="false" :canReadOnlyFiles="false"
-            :canManageFiles="false" :click-on-edit="() => { onEdit(employee) }"
-            :click-on-delete="() => { onDelete(employee) }" />
+          <EmployeeVacationInfoCard :employee="employee" :showDays="false" />
         </div>
       </div>
       <div v-else class="employee-card-wrapper">
@@ -157,6 +174,12 @@
     svg {
       width: 2rem;
     }
+  }
+
+  .vacations-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
   }
 
   .vacation-card-wrapper {

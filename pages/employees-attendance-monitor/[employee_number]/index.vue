@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-page">
+
     <Head>
       <Title>
         Employee Attendance Monitor
@@ -42,12 +43,9 @@
               <label for="search">
                 Search employee
               </label>
-              <AutoComplete
-                v-model="selectedEmployee"
+              <AutoComplete v-model="selectedEmployee"
                 :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-                :suggestions="filteredEmployees"
-                @complete="handlerSearchEmployee"
-                @item-select="onEmployeeSelect">
+                :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
                 <template #option="employee">
                   <div class="item-employee-filter-attendance-monitor">
                     <div class="name">
@@ -100,13 +98,33 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates"
-              :showWeek="false">
+              :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
           </div>
         </div>
 
         <div class="employee-attendance-head-tools">
+          <div v-if="visualizationMode">
+            <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
+              Vacations
+              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+                enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15"
+                data-v-6de6f350="">
+                <path
+                  d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:96:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:99:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z"
+                  fill="#87a4bf" class="fill-333333"
+                  data-v-inspector="components/attendanceCalendarDay/index.vue:102:17" data-v-6de6f350=""></path>
+              </svg>
+            </button>
+          </div>
           <div v-if="visualizationMode && canAddAssistManual">
             <Button class="btn" severity="success" @click="addNewAssist">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -181,10 +199,7 @@
                 <highchart :options="generalData" style="width: 100%;" />
               </div>
               <div class="indicators">
-                <attendanceInfoCard
-                  :hideLink="true"
-                  :hidePositionTitle="true"
-                  :onTimePercentage="onTimePercentage"
+                <attendanceInfoCard :hideLink="true" :hidePositionTitle="true" :onTimePercentage="onTimePercentage"
                   :onToleracePercentage="onTolerancePercentage" :onDelayPercentage="onDelayPercentage"
                   :onEarlyOutPercentage="onEarlyOutPercentage" :onFaultPercentage="onFaultPercentage" />
                 <div class="indicators-extra-info">
@@ -223,8 +238,10 @@
                 </h2>
               </div>
               <div class="days-wrapper">
-                <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
-                  <attendanceCalendarDay :checkAssist="calendarDay" :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
+                <div v-for="(calendarDay, index) in employeeCalendar"
+                  :key="`key-calendar-day-${Math.random()}-${index}`">
+                  <attendanceCalendarDay :checkAssist="calendarDay"
+                    :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
                 </div>
               </div>
             </div>
@@ -237,8 +254,14 @@
             </div>
           </div>
         </div>
-        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
+        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right"
+          class="employee-assist-sidebar">
           <EmployeeAssistInfoForm :assist="assist" :employee="employee" @onAssistSave="onSaveAssist" />
+        </Sidebar>
+        <Sidebar v-model:visible="drawerVacations" header="Vacation form" position="right" class="vacation-form-sidebar"
+          :showCloseIcon="true">
+          <employeeVacationsList :dateStart="vacationDateStart" :dateEnd="vacationDateEnd"
+            :employeeCode="employeeCode" />
         </Sidebar>
       </div>
     </NuxtLayout>
@@ -260,6 +283,15 @@
   .employee-assist-sidebar {
     width: 100% !important;
     max-width: 32rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .vacation-form-sidebar {
+    width: 35rem !important;
+    max-width: 80rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

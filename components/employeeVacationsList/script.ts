@@ -8,6 +8,8 @@ export default defineComponent({
   },
   name: 'employeeVacationsList',
   props: {
+    employeeCode: { type: String, required: false },
+    departmentId: { type: Number, required: false },
     dateStart: { type: String, required: true },
     dateEnd: { type: String, required: true },
   },
@@ -26,11 +28,13 @@ export default defineComponent({
   },
   methods: {
     async getVacations() {
-      const dateStart = DateTime.fromISO(this.dateStart, { zone: 'UTC-6' }).startOf('day')
-      const dateEnd = DateTime.fromISO(this.dateEnd, { zone: 'UTC-6' }).endOf('day')
+      const dateStart = DateTime.fromISO(this.dateStart, { zone: 'UTC-6' }).startOf('day').setLocale('en')
+      const dateEnd = DateTime.fromISO(this.dateEnd, { zone: 'UTC-6' }).endOf('day').setLocale('en')
       this.currentVacation = `Period from ${dateStart.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
       const employeeService = new EmployeeService()
-      const employeeResponse = await employeeService.getAllVacationsByPeriod('', null, null, this.dateStart, this.dateEnd)
+      const employeCode = this.employeeCode ? this.employeeCode.trim() : ''
+      const departmentId = this.departmentId ? this.departmentId : null
+      const employeeResponse = await employeeService.getAllVacationsByPeriod(employeCode, departmentId, null, this.dateStart, this.dateEnd)
       const list = employeeResponse.status === 200 ? employeeResponse._data.data.employees : []
       this.filteredEmployees = list
     },
