@@ -71,7 +71,9 @@ export default defineComponent({
           this.changeType = 'shift change personal'
           this.employeeShiftChange.employeeShiftChangeDateTo = this.date
           this.employeeShiftChange.employeeIdTo = this.employee.employeeId
+          this.selectedEmployee = this.employee
           this.employeeShiftChange.shiftIdTo = null
+          this.setShiftTo();
         }
 
       }
@@ -227,6 +229,7 @@ export default defineComponent({
         } else {
           this.isPersonal = false
           this.employeeShiftChange.employeeIdTo = null
+          this.selectedEmployee = null
           this.setShiftTo()
         }
       }
@@ -289,7 +292,7 @@ export default defineComponent({
               })
               return
             }
-            if (employeeCalendar[0].assist.isRestDay  && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
+            if (employeeCalendar[0].assist.isRestDay && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
               this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 1
               this.dateRestDayTo = 'Rest day'
             }

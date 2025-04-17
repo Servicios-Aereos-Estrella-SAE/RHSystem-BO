@@ -13,7 +13,8 @@
     <div v-if="isReady" class="employee-shift-change-form">
       <div class="form-container">
         <div class="checkbox-group">
-          <Checkbox v-model="employeeShiftChange.employeeShiftChangeChangeThisShift" binary :disabled="!isNewEmployeeShiftChange" />
+          <Checkbox v-model="employeeShiftChange.employeeShiftChangeChangeThisShift" binary
+            :disabled="!isNewEmployeeShiftChange" />
           <label>
             Cover shift
           </label>
@@ -23,8 +24,7 @@
             Type
           </label>
           <Dropdown v-model="changeType" :options="changeTypesList" optionLabel="label" optionValue="value"
-            placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange"
-            :disabled="employeeShiftChange.employeeShiftChangeChangeThisShift" />
+            placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange" />
           <small class="p-error" v-if="submitted && !changeType">Change type is required.</small>
         </div>
         <div class="input-box">
@@ -69,8 +69,7 @@
           </label>
           <AutoComplete v-if="isNewEmployeeShiftChange" v-model="selectedEmployee"
             :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-            :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect"
-            :disabled="employeeShiftChange.employeeShiftChangeChangeThisShift">
+            :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect">
             <template #option="employee">
               <div class="item-employee-filter-attendance-monitor">
                 <div class="name">

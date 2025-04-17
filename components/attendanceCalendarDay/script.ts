@@ -120,6 +120,7 @@ export default defineComponent({
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'working') ||
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'rest-working-out') ||
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.isHoliday)
+      console.log(this.checkAssist.assist)
       return valid
     },
     headIconIsVacationDay() {
