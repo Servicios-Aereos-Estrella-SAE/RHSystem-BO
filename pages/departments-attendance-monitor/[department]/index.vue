@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-page">
+
     <Head>
       <Title>
         Department Attendance Monitor
@@ -87,14 +88,34 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates"
-              :showWeek="false">
+              :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
 
           </div>
         </div>
 
         <div class="btns-group">
+          <div v-if="visualizationMode" class="input-box">
+            <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
+              Vacations
+              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+                enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15"
+                data-v-6de6f350="">
+                <path
+                  d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:96:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:99:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z"
+                  fill="#87a4bf" class="fill-333333"
+                  data-v-inspector="components/attendanceCalendarDay/index.vue:102:17" data-v-6de6f350=""></path>
+              </svg>
+            </button>
+          </div>
           <div v-if="visualizationMode" class="input-box">
             <Button class="btn btn-block" severity="success" @click="getExcel('Assistance Report')">
               Detailed
@@ -215,7 +236,11 @@
           <div class="empty">
             <div>
               <div class="icon">
-                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 5a1 1 0 1 0 0-2h-2a1 1 0 1 0 0 2h2ZM5 11a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2ZM4 18a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM4 21a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM20 10a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0v-2a1 1 0 0 0-1-1ZM7 4a1 1 0 0 0-1-1 3 3 0 0 0-3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1 1 1 0 0 0 1-1ZM18 3a1 1 0 1 0 0 2 1 1 0 0 1 1 1 1 1 0 1 0 2 0 3 3 0 0 0-3-3Z" fill="#88a4bf" class="fill-212121"></path></svg>
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M13 5a1 1 0 1 0 0-2h-2a1 1 0 1 0 0 2h2ZM5 11a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2ZM4 18a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM4 21a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM20 10a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0v-2a1 1 0 0 0-1-1ZM7 4a1 1 0 0 0-1-1 3 3 0 0 0-3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1 1 1 0 0 0 1-1ZM18 3a1 1 0 1 0 0 2 1 1 0 0 1 1 1 1 1 0 1 0 2 0 3 3 0 0 0-3-3Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </div>
               No employees to display.
               <br>
@@ -223,6 +248,12 @@
             </div>
           </div>
         </div>
+
+        <Sidebar v-model:visible="drawerVacations" header="Vacation form" position="right" class="vacation-form-sidebar"
+          :showCloseIcon="true">
+          <employeeVacationsList :dateStart="vacationDateStart" :dateEnd="vacationDateEnd"
+            :departmentId="currentDepartmentId" />
+        </Sidebar>
       </div>
     </NuxtLayout>
   </div>
@@ -235,4 +266,16 @@
 
 <style lang="scss" scoped>
   @import './style';
+</style>
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .vacation-form-sidebar {
+    width: 35rem !important;
+    max-width: 80rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

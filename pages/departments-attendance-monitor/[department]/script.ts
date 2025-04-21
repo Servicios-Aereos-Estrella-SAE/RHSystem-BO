@@ -120,7 +120,11 @@ export default defineComponent({
     datePay: '' as string,
     onSyncStatus: true,
     departmentID: '' as string,
-    disabledNoPaymentDates: [] as Date[]
+    disabledNoPaymentDates: [] as Date[],
+    drawerVacations: false,
+    vacationDateStart: '',
+    vacationDateEnd: '',
+    currentDepartmentId: null as Number | null
   }),
   computed: {
     weeklyStartDay() {
@@ -311,7 +315,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async init () {
+    async init() {
       await this.handlerSetInitialDepartmentList()
       await this.setDepartmentPositions()
       await this.setDepartmentPositionEmployeeList()
@@ -819,7 +823,7 @@ export default defineComponent({
       }
       return nextPayDate.toJSDate()
     },
-    async getRotation () {
+    async getRotation() {
       if (this.departmenSelected) {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)
@@ -847,6 +851,54 @@ export default defineComponent({
       }
       const datePay = DateTime.fromJSDate(nextPayDate.toJSDate()).toFormat('yyyy-MM-dd')
       return datePay
+    },
+    getVacations() {
+      if (!this.periodSelected && !this.datesSelected.length) {
+        return []
+      }
+      this.vacationDateStart = ''
+      this.vacationDateEnd = ''
+      switch (this.visualizationMode?.value) {
+        case 'monthly': {
+          const monthPerdiod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('LL'))
+          const yearPeriod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('yyyy'))
+          let start
+          const date = DateTime.local(yearPeriod, monthPerdiod, 1)
+          let days = date.daysInMonth ? date.daysInMonth : 0
+          days = days - 1
+          start = date.startOf('month')
+
+          this.vacationDateStart = start.toFormat('yyyy-MM-dd')
+          this.vacationDateEnd = start.plus({ days: days }).toFormat('yyyy-MM-dd')
+          break;
+        }
+        case 'weekly': {
+          const date = DateTime.fromJSDate(this.periodSelected)
+          this.vacationDateStart = date.toFormat('yyyy-MM-dd')
+          this.vacationDateEnd = date.plus({ days: 6 }).toFormat('yyyy-MM-dd')
+          break;
+        }
+        case 'custom': {
+          if (this.datesSelected.length === 2) {
+            const startDate = DateTime.fromJSDate(this.datesSelected[0])
+            const endDate = DateTime.fromJSDate(this.datesSelected[1])
+            this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
+            this.vacationDateEnd = endDate.toFormat('yyyy-MM-dd')
+          }
+          break;
+        }
+        case 'fourteen': {
+          const date = DateTime.fromJSDate(this.periodSelected)
+          const startOfWeek = date.startOf('week')
+          let thursday = startOfWeek.plus({ days: 3 })
+          let startDate = thursday.minus({ days: 25 })
+          this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
+          this.vacationDateEnd = startDate.plus({ days: 14 }).toFormat('yyyy-MM-dd')
+          break;
+        }
+      }
+      this.currentDepartmentId = parseInt(!this.departmentID ? this.$route.params.department.toString() : this.departmentID)
+      this.drawerVacations = true
     }
   }
 })

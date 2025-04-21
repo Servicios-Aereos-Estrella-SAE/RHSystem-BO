@@ -68,7 +68,7 @@ export default defineComponent({
       const flag = myGeneralStore.isRoot
       return flag
     },
-    displayEmployeeTypeFilter () {
+    displayEmployeeTypeFilter() {
       let display = false
 
       if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
@@ -373,42 +373,6 @@ export default defineComponent({
           life: 5000,
         })
       } finally {
-        myGeneralStore.setFullLoader(false)
-      }
-    },
-    async getVacationExcel() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const dateNow = new Date()
-      const dateNowFormat = DateTime.fromJSDate(dateNow).plus({ years: 1 }).toFormat('yyyy-MM-dd')
-      const assistService = new EmployeeService()
-      const onlyInactive = this.status === 'Terminated' ? true : false
-      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, '2022-01-01', dateNowFormat, onlyInactive)
-      if (assistResponse.status === 201) {
-        const reportDesc = onlyInactive ? '_terminated' : ''
-        const blob = await assistResponse._data
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', `All Employees Vacation Report${reportDesc}.xlsx`)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Excel vacation',
-          detail: 'Excel was created successfully',
-          life: 5000,
-        })
-        myGeneralStore.setFullLoader(false)
-      } else {
-        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Excel vacation',
-          detail: msgError,
-          life: 5000,
-        })
         myGeneralStore.setFullLoader(false)
       }
     },

@@ -4,6 +4,7 @@ import type { DepartmentInterface } from "./DepartmentInterface"
 import type { PeopleInterface } from "./PeopleInterface"
 import type { PositionInterface } from "./PositionInterface"
 import type { EmployeeAddressInterface } from "./EmployeeAddressInterface"
+import type { ShiftExceptionInterface } from "./ShiftExceptionInterface"
 
 interface EmployeeInterface {
   employeeId: number | null,
@@ -36,8 +37,9 @@ interface EmployeeInterface {
   person?: PeopleInterface,
   department?: DepartmentInterface,
   position?: PositionInterface,
-  businessUnit?: BusinessUnitInterface
-  address?: EmployeeAddressInterface[]
+  businessUnit?: BusinessUnitInterface,
+  address?: EmployeeAddressInterface[],
+  shift_exceptions?: ShiftExceptionInterface[],
 }
 
 export type { EmployeeInterface }
