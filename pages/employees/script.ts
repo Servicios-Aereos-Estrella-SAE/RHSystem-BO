@@ -219,6 +219,7 @@ export default defineComponent({
         employeeUpdatedAt: new Date(),
         person: person,
         businessUnitId: 1,
+        payrollBusinessUnitId: 1,
         employeeAssistDiscriminator: 0,
         employeeTypeOfContract: "Internal",
         employeeTerminatedDate: new Date(),

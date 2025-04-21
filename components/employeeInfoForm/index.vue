@@ -9,6 +9,14 @@
               optionValue="businessUnitId" placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted" />
           </div>
           <div class="input-box">
+            <label for="personGender">Payroll Business Unit</label>
+            <Dropdown v-model="employee.payrollBusinessUnitId" :options="businessUnits" optionLabel="businessUnitName"
+              optionValue="businessUnitId" placeholder="Select a Payroll Business Unit" class="w-full md:w-14rem"
+              :disabled="isDeleted" :invalid="submitted && !employee.payrollBusinessUnitId" />
+            <small class="p-error" v-if="submitted && !employee.payrollBusinessUnitId">Payroll business unit is
+              required.</small>
+          </div>
+          <div class="input-box">
             <label for="employeeCode">Employee Code</label>
             <InputText v-model="employee.employeeCode" placeholder="Enter Employee Code" :disabled="isDeleted" />
             <small class="p-error" v-if="submitted && !employee.employeeCode">Employee Code is required.</small>
@@ -17,15 +25,9 @@
             <label for="employee-type">
               Employee type
             </label>
-            <Dropdown
-              v-model="employee.employeeTypeId"
-              optionLabel="employeeTypeName"
-              optionValue="employeeTypeId"
-              placeholder="Select a Employee Type"
-              filter
-              class="w-full md:w-14rem"
-              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted"
-              :options="employeeTypes" />
+            <Dropdown v-model="employee.employeeTypeId" optionLabel="employeeTypeName" optionValue="employeeTypeId"
+              placeholder="Select a Employee Type" filter class="w-full md:w-14rem"
+              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted" :options="employeeTypes" />
             <small class="p-error" v-if="submitted && !employee.employeeTypeId">Employee type is required.</small>
           </div>
           <div class="input-box">
