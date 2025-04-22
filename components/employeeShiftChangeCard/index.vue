@@ -17,19 +17,36 @@
 
       <div class="description">
 
-        <div v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)" class="employee">
+        <div
+          v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)"
+          class="employee">
           Change with
           {{ employeeShiftChange.employeeTo.employeeFirstName }}
           {{ employeeShiftChange.employeeTo.employeeLastName }}
         </div>
 
-        <div v-if="employeeShiftChange.shiftTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0" class="employee-shift">
+        <div v-if="employeeShiftChange.shiftTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0"
+          class="employee-shift">
           {{ getFormattedDate(employeeShiftChange.employeeShiftChangeDateTo) }}
         </div>
 
+        <div class="new-shift-tag">
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 0"
+            :value="employeeShiftChange.shiftFrom.shiftName" severity="secondary" />
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1" :value="'Rest Day'"
+            severity="secondary" />
+          <br v-if="!employeeShiftChange.shiftFrom.shiftName">
+          <br v-if="!employeeShiftChange.shiftFrom.shiftName">
+          <small v-if="!employeeShiftChange.shiftFrom.shiftName">
+            {{ employeeShiftChange.shiftFrom.shiftName }}
+          </small>
+        </div>
+
         <div class="new-shift-tag" v-if="employeeShiftChange.employeeTo">
-          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 0" :value="employeeShiftChange.shiftTo.shiftName" severity="success" />
-          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="'Rest Day'" severity="info" />
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 0"
+            :value="employeeShiftChange.shiftTo.shiftName" severity="success" />
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="'Rest Day'"
+            severity="info" />
           <br v-if="!employeeShiftChange.shiftTo.shiftName">
           <br v-if="!employeeShiftChange.shiftTo.shiftName">
           <small v-if="!employeeShiftChange.shiftTo.shiftName">

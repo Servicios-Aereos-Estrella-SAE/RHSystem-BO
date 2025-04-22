@@ -5,6 +5,9 @@ import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDa
 import Tooltip from 'primevue/tooltip';
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
 import { isValid } from 'date-fns';
+import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
+import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
@@ -13,11 +16,14 @@ export default defineComponent({
   },
   props: {
     checkAssist: { type: Object as PropType<AssistDayInterface>, required: true },
-    discriminated: { type: Boolean, required: false }
+    discriminated: { type: Boolean, required: false },
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
   },
   data: () => ({
     commentsSidebar: false as boolean,
-    dayExceptions: [] as ShiftExceptionInterface[]
+    dayExceptions: [] as ShiftExceptionInterface[],
+    employeeShiftChangesList: [] as EmployeeShiftChangeInterface[],
+    hasNotes: false
   }),
   computed: {
     dateYear() {
@@ -120,7 +126,6 @@ export default defineComponent({
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'working') ||
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.checkInStatus === 'rest-working-out') ||
         (this.checkAssist.assist.isRestDay && this.checkAssist.assist.isHoliday)
-      console.log(this.checkAssist.assist)
       return valid
     },
     headIconIsVacationDay() {
@@ -163,11 +168,23 @@ export default defineComponent({
       return valid
     }
   },
-  mounted() {
+  async mounted() {
+    if (this.checkAssist.assist.dateShift?.shiftIsChange) {
+      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+      const employeeShiftChangeService = new EmployeeShiftChangeService()
+      const employeeShiftChangeResponse = await employeeShiftChangeService.getByEmployee(employeeId, this.checkAssist.day)
+      this.employeeShiftChangesList = employeeShiftChangeResponse.employeeShiftChanges as Array<EmployeeShiftChangeInterface>
+      if (this.employeeShiftChangesList.length > 1) {
+        this.employeeShiftChangesList = [this.employeeShiftChangesList[0]]
+      }
+      if (this.employeeShiftChangesList.length > 0) {
+        this.hasNotes = this.employeeShiftChangesList[0].employeeShiftChangeNote ? true : false;
+      }
+    }
   },
   methods: {
     displayExceptionComments(checkAssist: AssistDayInterface) {
-      if (checkAssist.assist.hasExceptions) {
+      if (checkAssist.assist.hasExceptions || this.hasNotes) {
         this.commentsSidebar = true
         this.dayExceptions = checkAssist.assist.exceptions.length > 0 ? checkAssist.assist.exceptions : []
       }
