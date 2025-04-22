@@ -7,6 +7,18 @@
           {{ employeeContract.employeeContractType.employeeContractTypeName }}
         </div>
       </div>
+      <div v-if="employeeContract.payrollBusinessUnit" class="business-unit">
+        <div class="capitalize ellipsis">
+          Payroll Business Unit:
+          {{ employeeContract.payrollBusinessUnit.businessUnitName }}
+        </div>
+      </div>
+      <div class="employee-contract-folio">
+        <div>
+          Document folio:
+          {{ employeeContract.employeeContractFolio }}
+        </div>
+      </div>
       <div v-if="employeeContract.department" class="department">
         <div class="capitalize ellipsis">
           Department:
@@ -19,36 +31,20 @@
           {{ employeeContract.position.positionName }}
         </div>
       </div>
-      <div v-if="employeeContract.payrollBusinessUnit" class="business-unit">
-        <div class="capitalize ellipsis">
-          Payroll Business Unit:
-          {{ employeeContract.payrollBusinessUnit.businessUnitName }}
+      <div class="employee-contract-salary">
+        <div class="capitalize">
+          Monthly salary:
+          $ {{ currencyFormat(employeeContract.employeeContractMonthlyNetSalary) }}
         </div>
       </div>
-      <div class="employee-contract-uuid">
-        <div>
-          UUID:
-          {{ employeeContract.employeeContractUuid }}
-        </div>
-      </div>
-      <div class="employee-contract-folio">
-        <div>
-          Document folio:
-          {{ employeeContract.employeeContractFolio }}
-        </div>
-      </div>
+      <br>
       <div class="employee-contract-status">
         <div class="capitalize">
           Status:
           {{ employeeContract.employeeContractStatus }}
         </div>
       </div>
-      <div class="employee-contract-salary">
-        <div class="capitalize">
-          Monthly net salary:
-          $ {{ currencyFormat(employeeContract.employeeContractMonthlyNetSalary) }}
-        </div>
-      </div>
+      <br>
       <div class="attached-file" :class="{ active: !!(employeeContract.employeeContractFile) }" @click="openFile">
         <div class="icon">
           <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
