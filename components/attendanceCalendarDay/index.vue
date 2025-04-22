@@ -256,7 +256,7 @@
               </svg>
             </div>
             <div class="note">
-              {{ (checkAssist.assist.hasExceptions || hasNotes) ? 'Exception Notes' : 'Without notes' }}
+              {{ (checkAssist.assist.hasExceptions || hasNotes) ? 'Notes' : 'Without notes' }}
             </div>
           </div>
           <div :class="{'check info': true, 'inactive': !checkAssist.assist.isSundayBonus}">
