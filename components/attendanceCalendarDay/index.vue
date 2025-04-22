@@ -246,7 +246,7 @@
               </span>
             </div>
           </div>
-          <div class="check info check-notes" :class="{ inactive: !checkAssist.assist.hasExceptions }"
+          <div class="check info check-notes" :class="{ inactive: !(checkAssist.assist.hasExceptions || hasNotes) }"
             @click="displayExceptionComments(checkAssist)">
             <div class="icon">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -256,7 +256,7 @@
               </svg>
             </div>
             <div class="note">
-              {{ checkAssist.assist.hasExceptions ? 'Exception Notes' : 'Without notes' }}
+              {{ (checkAssist.assist.hasExceptions || hasNotes) ? 'Notes' : 'Without notes' }}
             </div>
           </div>
           <div :class="{'check info': true, 'inactive': !checkAssist.assist.isSundayBonus}">
@@ -295,6 +295,7 @@
     </div>
 
     <Sidebar v-model:visible="commentsSidebar" header="Exception Notes" position="right" class="exception-day-sidebar">
+      <h3 v-if="dayExceptions.length > 0">Exception notes</h3>
       <div v-for="(item, index) in dayExceptions" :key="`dayExceptions-${index}-${item.shiftExceptionId}`"
         class="exception-date">
         <div class="day">
@@ -320,6 +321,29 @@
         </div>
         <div v-if="item.shiftExceptionCheckOutTime" class="exception-time">
           Check Out Time: {{ item.shiftExceptionCheckOutTime }}
+        </div>
+      </div>
+      <br>
+      <h3 v-if="employeeShiftChangesList.length > 0">Shift change notes</h3>
+      <div v-for="(item, index) in employeeShiftChangesList" :key="`dayExceptions-${index}-${item.shiftExceptionId}`"
+        class="exception-date">
+        <div class="day">
+          {{ calendarDay }}
+          <small class="week-day">
+            {{ weekDayName }}
+          </small>
+        </div>
+        <div class="exception-type">
+          <div class="dot">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="16" cy="16" r="8" fill="#093057" class="fill-000000"></circle>
+              <path data-name="<Transparent Rectangle>" d="M0 0h32v32H0z" fill="none"></path>
+            </svg>
+          </div>
+          Shift change
+        </div>
+        <div class="exception-description">
+          {{ item.employeeShiftChangeNote }}
         </div>
       </div>
     </Sidebar>

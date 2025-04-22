@@ -71,7 +71,9 @@ export default defineComponent({
           this.changeType = 'shift change personal'
           this.employeeShiftChange.employeeShiftChangeDateTo = this.date
           this.employeeShiftChange.employeeIdTo = this.employee.employeeId
+          this.selectedEmployee = this.employee
           this.employeeShiftChange.shiftIdTo = null
+          this.setShiftTo();
         }
 
       }
@@ -166,11 +168,11 @@ export default defineComponent({
       }
 
       if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
-        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo) {
+        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo && this.dateRestDayFrom !== 'Rest day') {
           this.$toast.add({
             severity: 'warn',
             summary: 'Validation data',
-            detail: 'When the change is for the same day, it cannot be the same shift.',
+            detail: `If the change is for the same day and it's a rest day, the shift must be different.`,
             life: 5000,
           })
           return
@@ -227,6 +229,7 @@ export default defineComponent({
         } else {
           this.isPersonal = false
           this.employeeShiftChange.employeeIdTo = null
+          this.selectedEmployee = null
           this.setShiftTo()
         }
       }
@@ -289,7 +292,7 @@ export default defineComponent({
               })
               return
             }
-            if (employeeCalendar[0].assist.isRestDay  && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
+            if (employeeCalendar[0].assist.isRestDay && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
               this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 1
               this.dateRestDayTo = 'Rest day'
             }

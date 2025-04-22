@@ -241,7 +241,7 @@
                 <div v-for="(calendarDay, index) in employeeCalendar"
                   :key="`key-calendar-day-${Math.random()}-${index}`">
                   <attendanceCalendarDay :checkAssist="calendarDay"
-                    :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
+                    :discriminated="!!(employee.employeeAssistDiscriminator === 1)" :employee="employee" />
                 </div>
               </div>
             </div>

@@ -102,7 +102,6 @@ export default defineComponent({
         }
       }
     }
-
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
