@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard-page">
+
     <Head>
       <Title>
         Employee Attendance Monitor
@@ -42,12 +43,9 @@
               <label for="search">
                 Search employee
               </label>
-              <AutoComplete
-                v-model="selectedEmployee"
+              <AutoComplete v-model="selectedEmployee"
                 :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-                :suggestions="filteredEmployees"
-                @complete="handlerSearchEmployee"
-                @item-select="onEmployeeSelect">
+                :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
                 <template #option="employee">
                   <div class="item-employee-filter-attendance-monitor">
                     <div class="name">
@@ -100,8 +98,7 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates"
-              :showWeek="false">
+              :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
           </div>
         </div>
@@ -116,7 +113,7 @@
               </svg>
             </Button>
           </div>
-          <div v-if="visualizationMode">
+          <div v-if="visualizationMode && isRangeAtLeast7Days && canSync">
             <Button class="btn" severity="success" @click="syncEmployee">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -181,10 +178,7 @@
                 <highchart :options="generalData" style="width: 100%;" />
               </div>
               <div class="indicators">
-                <attendanceInfoCard
-                  :hideLink="true"
-                  :hidePositionTitle="true"
-                  :onTimePercentage="onTimePercentage"
+                <attendanceInfoCard :hideLink="true" :hidePositionTitle="true" :onTimePercentage="onTimePercentage"
                   :onToleracePercentage="onTolerancePercentage" :onDelayPercentage="onDelayPercentage"
                   :onEarlyOutPercentage="onEarlyOutPercentage" :onFaultPercentage="onFaultPercentage" />
                 <div class="indicators-extra-info">
@@ -223,8 +217,10 @@
                 </h2>
               </div>
               <div class="days-wrapper">
-                <div v-for="(calendarDay, index) in employeeCalendar" :key="`key-calendar-day-${Math.random()}-${index}`">
-                  <attendanceCalendarDay :checkAssist="calendarDay" :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
+                <div v-for="(calendarDay, index) in employeeCalendar"
+                  :key="`key-calendar-day-${Math.random()}-${index}`">
+                  <attendanceCalendarDay :checkAssist="calendarDay"
+                    :discriminated="!!(employee.employeeAssistDiscriminator === 1)" />
                 </div>
               </div>
             </div>
@@ -237,7 +233,8 @@
             </div>
           </div>
         </div>
-        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right" class="employee-assist-sidebar">
+        <Sidebar v-model:visible="drawerAssistForm" header="Employee Assist Form" position="right"
+          class="employee-assist-sidebar">
           <EmployeeAssistInfoForm :assist="assist" :employee="employee" @onAssistSave="onSaveAssist" />
         </Sidebar>
       </div>

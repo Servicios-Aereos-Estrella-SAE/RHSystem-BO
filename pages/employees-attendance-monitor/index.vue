@@ -83,14 +83,21 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates"
-              :showWeek="false">
+              :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
 
           </div>
         </div>
 
         <div class="head-ea-bts-group">
+          <button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
+            Show employees without shift
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </button>
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
             Detailed
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -171,6 +178,31 @@
               No employees data list to display
             </div>
           </div>
+          <Sidebar v-model:visible="drawerEmployeeWithOutShift" :closeOnEscape="true" header="Employees without shift"
+            position="right" class="employee-whitout-shift" :showCloseIcon="true">
+            <h3>Employees without shift</h3>
+            <div v-if="employeesWithOutShift.length > 0" class="p-3">
+              <div v-for="(employee, index) in employeesWithOutShift" :key="`employee-${employee.employeeId}-${index}`">
+                <EmployeeInfoCard :click-on-photo="() => {  }" :employee="employee" :can-manage-shifts="false"
+                  :can-update="false" :can-delete="false" :canReadOnlyFiles="false" :canManageFiles="false"
+                  :click-on-edit="() => {  }" :click-on-delete="() => {  }" />
+              </div>
+            </div>
+            <div v-else class="box">
+              <div class="empty">
+                <div>
+                  <div class="icon">
+                    <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M13 5a1 1 0 1 0 0-2h-2a1 1 0 1 0 0 2h2ZM5 11a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2ZM4 18a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM4 21a1 1 0 1 1 0-2h16a1 1 0 1 1 0 2H4ZM20 10a1 1 0 0 0-1 1v2a1 1 0 1 0 2 0v-2a1 1 0 0 0-1-1ZM7 4a1 1 0 0 0-1-1 3 3 0 0 0-3 3 1 1 0 0 0 2 0 1 1 0 0 1 1-1 1 1 0 0 0 1-1ZM18 3a1 1 0 1 0 0 2 1 1 0 0 1 1 1 1 1 0 1 0 2 0 3 3 0 0 0-3-3Z"
+                        fill="#88a4bf" class="fill-212121"></path>
+                    </svg>
+                  </div>
+                  No employees to display.
+                </div>
+              </div>
+            </div>
+          </Sidebar>
         </div>
       </div>
     </NuxtLayout>
@@ -184,4 +216,30 @@
 
 <style lang="scss" scoped>
   @import './style';
+</style>
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .employee-whitout-shift {
+    width: 100% !important;
+    max-width: 45rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .employee-list {
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+  }
+
+  .employee-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
 </style>

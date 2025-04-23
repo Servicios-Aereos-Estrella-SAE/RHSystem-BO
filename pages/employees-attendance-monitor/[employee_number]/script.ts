@@ -127,7 +127,11 @@ export default defineComponent({
     onEarlyOutPercentage: 0,
     datePay: '' as string,
     onSyncStatus: true,
-    disabledNoPaymentDates: [] as Date[]
+    disabledNoPaymentDates: [] as Date[],
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    startDay: '',
+    endDay: '',
+    canSync: false
   }),
   computed: {
     isRoot() {
@@ -279,6 +283,9 @@ export default defineComponent({
       }
 
       return ''
+    },
+    isRangeAtLeast7Days() {
+      return this.isDatesAtLeast7Days()
     }
   },
   created() {
@@ -292,11 +299,15 @@ export default defineComponent({
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-
+    if (!myGeneralStore.isRoot) {
+      this.getStartPeriodDay()
+    }
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
     const permissions = await myGeneralStore.getAccess(firstSegment)
-
+    this.canSync = false
+    const systemModuleSlug = firstSegment
+    this.canSync = await myGeneralStore.hasAccess(systemModuleSlug, 'sync-assist')
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
@@ -314,6 +325,14 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
+    getStartPeriodDay() {
+      const datePay = this.getNextPayThursday()
+      const payDate = DateTime.fromJSDate(datePay).startOf('day')
+      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
+      const thursday = startOfWeek.plus({ days: 3 })
+      const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
+      this.startDateLimit = startLimit.toJSDate()
+    },
     async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
@@ -421,7 +440,7 @@ export default defineComponent({
     setPeriodCategories() {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    async onHandlerVisualizationModeChange () {
+    async onHandlerVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       await this.handlerVisualizationModeChange()
@@ -700,13 +719,26 @@ export default defineComponent({
       return faults
     },
     async syncEmployee() {
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        if (!this.isStartAfterLimit()) {
+          const limit = DateTime.fromJSDate(new Date(this.startDateLimit)).setLocale('en').toFormat('DDD')
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Sync assist',
+            detail: `Synchronization is only available up to ${limit}`,
+            life: 5000,
+          })
+          return
+        }
+      }
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
       const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       const employeeCode = this.employee?.employeeCode || "0"
 
-      const myGeneralStore = useMyGeneralStore()
+
       myGeneralStore.setFullLoader(true)
 
       await new AssistService().syncEmployee(startDay, endDay, employeeCode).catch((e) => {
@@ -843,6 +875,58 @@ export default defineComponent({
       }
       const datePay = DateTime.fromJSDate(nextPayDate.toJSDate()).toFormat('yyyy-MM-dd')
       return datePay
+    },
+    isDatesAtLeast7Days() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      let startDay = ''
+      let endDay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate//.minus({ days: 1 })
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+      } else if (this.visualizationMode?.value === 'custom') {
+        startDay = DateTime.fromJSDate(this.datesSelected[0]).toFormat('yyyy-MM-dd') // Fecha de inicio
+        endDay = DateTime.fromJSDate(this.datesSelected[1]).toFormat('yyyy-MM-dd')   // Fecha de fin
+
+      } else {
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
+      }
+      this.startDay = startDay
+      this.endDay = endDay
+      const start = new Date(startDay.replace(/-/g, '/'))
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(endDay.replace(/-/g, '/'))
+      const diffInMs = end.getTime() - start.getTime()
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
+      return diffInDays >= 7 ? true : false
+    },
+    isStartAfterLimit() {
+      const start = new Date(this.startDay.replace(/-/g, '/'))
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(this.endDay.replace(/-/g, '/'))
+      const limit = new Date(this.startDateLimit)
+      start.setHours(0, 0, 0, 0)
+      const isStartAfterLimit = start >= limit
+      return isStartAfterLimit
     }
   }
 })
