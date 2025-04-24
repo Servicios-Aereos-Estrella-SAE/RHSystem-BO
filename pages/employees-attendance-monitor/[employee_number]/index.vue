@@ -134,7 +134,7 @@
               </svg>
             </Button>
           </div>
-          <div v-if="visualizationMode">
+          <div v-if="visualizationMode && isRangeAtLeast7Days && canSync">
             <Button class="btn" severity="success" @click="syncEmployee">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path

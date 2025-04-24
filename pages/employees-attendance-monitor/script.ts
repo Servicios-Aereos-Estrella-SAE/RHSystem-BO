@@ -132,6 +132,8 @@ export default defineComponent({
     drawerVacations: false,
     vacationDateStart: '',
     vacationDateEnd: '',
+    employeesWithOutShift: [] as EmployeeInterface[],
+    drawerEmployeeWithOutShift: false
   }),
   computed: {
     weeklyStartDay() {
@@ -548,6 +550,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+      this.employeesWithOutShift = []
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
@@ -582,6 +585,7 @@ export default defineComponent({
             const employeeNoShiftName = `${employeeNoShift.employeeFirstName} ${employeeNoShift.employeeLastName}`
             const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
             console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
+            this.employeesWithOutShift.push(employeeNoShift)
           }
         }
 
