@@ -917,7 +917,7 @@ export default defineComponent({
       const end = new Date(endDay.replace(/-/g, '/'))
       const diffInMs = end.getTime() - start.getTime()
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
-      return diffInDays >= 7 ? true : false
+      return (diffInDays + 1) >= 7 ? true : false
     },
     isStartAfterLimit() {
       const start = new Date(this.startDay.replace(/-/g, '/'))

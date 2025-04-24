@@ -120,7 +120,9 @@ export default defineComponent({
     datePay: '' as string,
     onSyncStatus: true,
     departmentID: '' as string,
-    disabledNoPaymentDates: [] as Date[]
+    disabledNoPaymentDates: [] as Date[],
+    employeesWithOutShift: [] as EmployeeInterface[],
+    drawerEmployeeWithOutShift: false
   }),
   computed: {
     weeklyStartDay() {
@@ -311,7 +313,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async init () {
+    async init() {
       await this.handlerSetInitialDepartmentList()
       await this.setDepartmentPositions()
       await this.setDepartmentPositionEmployeeList()
@@ -621,6 +623,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+      this.employeesWithOutShift = []
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
@@ -647,6 +650,16 @@ export default defineComponent({
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
         this.setGeneralStatisticsData(employee, employee.calendar)
+        if (assistReq.status === 400) {
+          const employeeNoShift = employee?.employee || null
+
+          if (employeeNoShift) {
+            const employeeNoShiftName = `${employeeNoShift.employeeFirstName} ${employeeNoShift.employeeLastName}`
+            const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
+            console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
+            this.employeesWithOutShift.push(employeeNoShift)
+          }
+        }
       } catch (error) {
       }
     },
@@ -819,7 +832,7 @@ export default defineComponent({
       }
       return nextPayDate.toJSDate()
     },
-    async getRotation () {
+    async getRotation() {
       if (this.departmenSelected) {
         const myGeneralStore = useMyGeneralStore()
         myGeneralStore.setFullLoader(true)

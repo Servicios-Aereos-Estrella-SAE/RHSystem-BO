@@ -82,13 +82,20 @@
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates"
-              :showWeek="false">
+              :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
           </div>
         </div>
 
         <div class="btns-group">
+          <button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
+            Employees without shift
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M6.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM13 1c5.523 0 10 4.478 10 10s-4.477 10-10 10c-.335 0-.666-.017-.992-.049a6.5 6.5 0 0 0-8.96-8.96A10.003 10.003 0 0 1 3 11C3 5.478 7.477 1 13 1ZM3.716 14.589l-.07.057-.057.07a.5.5 0 0 0 0 .568l.057.07L5.793 17.5l-2.147 2.146-.057.07a.5.5 0 0 0 0 .568l.057.07.07.057a.5.5 0 0 0 .568 0l.07-.057L6.5 18.207l2.146 2.147.07.057a.5.5 0 0 0 .568 0l.07-.057.057-.07a.5.5 0 0 0 0-.568l-.057-.07L7.207 17.5l2.147-2.146.057-.07a.5.5 0 0 0 0-.568l-.057-.07-.07-.057a.5.5 0 0 0-.568 0l-.07.057L6.5 16.793l-2.146-2.147-.07-.057a.5.5 0 0 0-.492-.044l-.076.044ZM12.25 5a.75.75 0 0 0-.75.75l-.004 5.503c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25L13 5.75a.75.75 0 0 0-.75-.75Z"
+                fill="#88a4bf" class="fill-212121"></path>
+            </svg>
+          </button>
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
             Detailed
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -157,6 +164,10 @@
               :onFaultPercentage="item?.statistics?.onFaultPercentage || 0" />
           </div>
         </div>
+        <Sidebar v-model:visible="drawerEmployeeWithOutShift" :closeOnEscape="true" header="Employees without shift"
+          position="right" class="employee-whitout-shift" :showCloseIcon="true">
+          <employeeWithOutShiftList :employeesWithOutShift="employeesWithOutShift" />
+        </Sidebar>
       </div>
     </NuxtLayout>
   </div>
@@ -169,4 +180,30 @@
 
 <style lang="scss" scoped>
   @import './style';
+</style>
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .employee-whitout-shift {
+    width: 100% !important;
+    max-width: 45rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .employee-list {
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+  }
+
+  .employee-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
 </style>
