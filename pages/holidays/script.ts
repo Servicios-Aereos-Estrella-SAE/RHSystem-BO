@@ -2,6 +2,7 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import HolidayService from '../../resources/scripts/services/HolidayService'
 import { useMyGeneralStore } from '~/store/general'
 import { DateTime, type DateObjectUnits } from 'luxon'
+import type { CalendarDayMarkerInterface } from '~/resources/scripts/interfaces/CalendarDayMarkerInterface'
 
 export default defineComponent({
   name: 'Holidays',
@@ -11,6 +12,7 @@ export default defineComponent({
     firstDate: null as string | null,
     lastDate: null as string | null,
     filterHolidays: [] as HolidayInterface[],
+    calendarHolidays: [] as CalendarDayMarkerInterface[],
     holiday: null as HolidayInterface | null,
     search: '',
     currentPage: 1,
@@ -21,15 +23,12 @@ export default defineComponent({
 
     periodSelected: new Date() as Date | null,
 
-    minDate: new Date() as Date,
-    maxDate: new Date() as Date,
     holidayService: new HolidayService(),
     drawerHolidayForm: false as boolean,
     canCreate: false as boolean,
     canUpdate: false as boolean,
     canDelete: false as boolean,
     isReady: false as boolean,
-    weekDays: [7, 1, 2, 3, 4, 5, 6],
     yearSelected: new Date().getFullYear() as number,
   }),
   async mounted() {
@@ -39,7 +38,7 @@ export default defineComponent({
 
     await this.verifyPermissions()
     await this.handlerPeriodChange()
-    
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -92,9 +91,6 @@ export default defineComponent({
       this.holiday = newHoliday
       this.drawerHolidayForm = true
     },
-    setShowDate(date: Date) {
-      this.date = date
-    },
     async handlerSearchHoliday() {
       if (this.search !== '' && this.search !== null) {
         this.periodSelected = null
@@ -114,6 +110,19 @@ export default defineComponent({
       this.first =
         response.status === 200 ? response._data.holidays.meta.first_page : 0
       this.filterHolidays = list
+
+      // Convert holidays to calendar markers
+      this.convertHolidaysToCalendarMarkers()
+    },
+    convertHolidaysToCalendarMarkers() {
+      this.calendarHolidays = this.filterHolidays.map(holiday => {
+        const holidayDate = DateTime.fromISO(holiday.holidayDate.toString())
+        return {
+          date: holidayDate.toISO() as string,
+          icon: holiday.holidayIcon || '<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z" fill="#fff0b8" class="fil-FCD751"></path><path d="M11.08 14.817c.413.413.826.826 1.227 1.227.424.424.909.788 1.448 1.092.545.306 1.216.41 1.833.269a4.536 4.536 0 0 0 .822-.243c.336-.127.646-.32.935-.544.562-.434 1.04-.984 1.53-1.475a8.624 8.624 0 0 0 1.353-1.538c.1-.153.19-.315.261-.485.065-.158.112-.322.14-.49.032-.183.025-.373.016-.557a5.847 5.847 0 0 0-.109-.812 9.394 9.394 0 0 0-.574-1.831 11.932 11.932 0 0 0-.893-1.702c-.368-.59-.8-1.14-1.294-1.635-.252-.251-.512-.485-.806-.674-.162-.106-.331-.196-.505-.282a5.088 5.088 0 0 0-1.1-.397 4.076 4.076 0 0 0-.992-.066 3.33 3.33 0 0 0-1.045.234c-.34.133-.638.356-.935.567-.33.236-.645.494-.948.769-.309.28-.608.573-.897.878a18.167 18.167 0 0 0-1.599 1.917c-.46.637-.863 1.311-1.173 2.025-.31.709-.526 1.47-.603 2.245-.038.387-.038.777.015 1.161.05.362.146.718.293 1.053.153.35.373.673.645.945.288.288.635.498 1.016.63.406.143.853.185 1.273.109.408-.073.778-.24 1.1-.458.33-.222.624-.499.897-.772l.17-.17Z" fill="#faaf00" class="fil-E42C07"></path><path d="M14.94 9.999a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5Zm-3-1a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5Zm-3-1a.75.75 0 0 1 0 1.5.75.75 0 0 1 0-1.5Z" fill="#88a4bf" class="fill-212121"></path></svg>',
+          quantity: 1
+        }
+      })
     },
     clearPeriod() {
       this.periodSelected = null
@@ -152,19 +161,29 @@ export default defineComponent({
       )
       if (index !== -1) {
         this.filterHolidays[index] = holiday
-        this.$forceUpdate()
       } else {
         this.filterHolidays.push(holiday)
-        this.$forceUpdate()
       }
+      // Update calendar markers after saving
+      this.convertHolidaysToCalendarMarkers()
       this.drawerHolidayForm = false
     },
-    onEdit(holiday: HolidayInterface, month: number, day: number) {
+    onDayClick({ year, month, day }: { year: number, month: number, day: number }) {
+      // Find if there's a holiday on this day
+      const holidayDate = DateTime.fromObject({ year, month, day })
+      const foundHoliday = this.filterHolidays.find(holiday => {
+        const date = DateTime.fromISO(holiday.holidayDate.toString()).setZone('UTC')
+        return date.hasSame(holidayDate, 'day')
+      }) || null
+
+      this.onEdit(foundHoliday, month, day)
+    },
+    onEdit(holiday: HolidayInterface | null, month: number, day: number) {
       if (day) {
-        let holidayObj = holiday
+        let holidayObj: HolidayInterface
 
         if (!holiday) {
-          const newHoliday: HolidayInterface = {
+          holidayObj = {
             holidayId: null,
             holidayName: '',
             holidayIcon: null,
@@ -175,33 +194,38 @@ export default defineComponent({
             holidayUpdatedAt: new Date(),
             holidayDeletedAt: null,
           }
-
-          holidayObj = newHoliday
+        } else {
+          holidayObj = holiday
         }
 
         this.holiday = { ...holidayObj }
         this.drawerHolidayForm = true
       }
     },
-    async confirmDelete() {
+    async confirmDelete(holiday: HolidayInterface) {
       if (this.holiday) {
         const holidayResponse = await this.holidayService.delete(this.holiday)
         if (holidayResponse.status === 201 || holidayResponse.status === 200) {
+          const holidayIdToDelete = this.holiday.holidayId
+
+          this.drawerHolidayForm = false
+          this.holiday = null
+
           const index = this.filterHolidays.findIndex(
-            (holiday: HolidayInterface) =>
-              holiday.holidayId === this.holiday?.holidayId
+            (h: HolidayInterface) => h.holidayId === holidayIdToDelete
           )
+
           if (index !== -1) {
-            this.filterHolidays.splice(index, 1)
-            this.$forceUpdate()
+            this.filterHolidays = [...this.filterHolidays.slice(0, index), ...this.filterHolidays.slice(index + 1)]
+            this.convertHolidaysToCalendarMarkers()
           }
+
           this.$toast.add({
             severity: 'success',
             summary: 'Delete holiday',
             detail: holidayResponse._data.message,
             life: 5000,
           })
-          this.drawerHolidayForm = false
         } else {
           this.$toast.add({
             severity: 'error',
@@ -211,81 +235,6 @@ export default defineComponent({
           })
         }
       }
-    },
-    weekDayName(numberDay: number) {
-      if (numberDay < 1 || numberDay > 7) {
-        return ''
-      }
-
-      const fecha = DateTime.fromObject({ weekday: numberDay as DateObjectUnits['weekday'] });
-      return fecha.setLocale('en').toFormat('EEEE');
-    },
-    getMonthInfo(month: number = 0) {
-      const monthDate = DateTime.fromObject({ year: this.yearSelected, month, day: 1 }).setLocale('en')
-      const monthName = monthDate.monthLong
-      const daysInMonth = monthDate.daysInMonth
-      const firstWeekDay = monthDate.startOf('month').weekday
-      const lastWeekDay = 7 - monthDate.startOf('month').weekday + 1
-      const weeks = Math.ceil((daysInMonth as number + firstWeekDay) / 7)
-
-      return { monthName, daysInMonth, firstWeekDay, weeks, lastWeekDay }
-    },
-    monthStatus(month: number = 0) {
-      const monthDate = DateTime.fromObject({ year: this.yearSelected, month, day: 1 }).setLocale('en')
-      const diff = monthDate.diffNow('months').months
-
-      if (monthDate.toFormat('yyyy-MM') === DateTime.now().setLocale('en').toFormat('yyyy-MM')) {
-        return 'current'
-      }
-
-      return diff < 0 ? 'past' : 'future'
-    },
-    isHoliday(month: number = 0, day: number = 0) {
-      const compareDay = DateTime.fromObject({ year: this.yearSelected, month, day }).setLocale('en')
-      const holiday = this.filterHolidays.find((day: HolidayInterface) => {
-        const holidayDate = DateTime.fromISO(day.holidayDate as string, { zone: 'utc' }).setLocale('en')
-        return holidayDate.toFormat('yyyy-MM-dd') === compareDay.toFormat('yyyy-MM-dd')
-      })
-
-      return holiday
-    },
-    firstWeekDay(monthNumber: number, weekDayNumber: number, iweekDayNumber: number) {
-      let day = 0
-      let holiday = null
-      let holidayIcon = ''
-
-      if (this.getMonthInfo(monthNumber).firstWeekDay === 7) {
-        day = iweekDayNumber + 1
-        holiday = this.isHoliday(monthNumber, (iweekDayNumber + 1))
-        holidayIcon = holiday ? holiday.holidayIcon || '' : ''
-      } else if (weekDayNumber >= this.getMonthInfo(monthNumber).firstWeekDay && weekDayNumber < 7) {
-        day = (weekDayNumber - this.getMonthInfo(monthNumber).firstWeekDay) + 1
-        holiday = this.isHoliday(monthNumber, ((weekDayNumber - this.getMonthInfo(monthNumber).firstWeekDay) + 1))
-        holidayIcon = holiday ? holiday.holidayIcon || '' : ''
-      }
-
-      return { day: day > 0 ? day : '', holiday, holidayIcon }
-    },
-    weekDay(monthNumber: number, iweekDayNumber: number) {
-      let day = (7 - this.getMonthInfo(monthNumber).firstWeekDay) + (iweekDayNumber + 1)
-      let holiday = this.isHoliday(monthNumber, (7 - this.getMonthInfo(monthNumber).firstWeekDay) + (iweekDayNumber + 1))
-      let holidayIcon = holiday ? holiday.holidayIcon || '' : ''
-
-      return { day: day > 0 ? day : '', holiday, holidayIcon }
-    },
-    lastWeeksRestDays(monthNumber: number) {
-      const days = ((this.getMonthInfo(monthNumber).daysInMonth || 0) - (7 - this.getMonthInfo(monthNumber).firstWeekDay))
-      return days
-    },
-    isToday(month: number = 0, day: number = 0) {
-      if (!month || !day) {
-        return false
-      }
-
-      const compareDay = DateTime.fromObject({ year: this.yearSelected, month, day }).setLocale('en')
-      const today = DateTime.now().setLocale('en')
-      const isNow = compareDay.toFormat('yyyy-MM-dd') === today.toFormat('yyyy-MM-dd')
-      return isNow
     }
-  },
+  }
 })

@@ -1,0 +1,168 @@
+@import '/resources/styles/variables.scss';
+
+.calendars-wrapper {
+  display: grid;
+  grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fill, minmax(35rem, 1fr));
+  gap: 0.5rem;
+
+  @media screen and (max-width: $desktop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media screen and (max-width: $ipad) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (max-width: $phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calendar-month {
+  border: 1px solid $border;
+  border-radius: $radius;
+  background-color: white;
+
+  &.past {
+    opacity: 0.7;
+  }
+
+  &.current {
+    box-shadow: $shadow;
+    border-color: $info;
+
+    .month-title {
+
+      h2 {
+        color: $info;
+      }
+    }
+
+    .month-week-head {
+
+      .week-day {
+        color: $info;
+      }
+    }
+  }
+
+  .month-title {
+    background-color: white;
+    color: $text;
+    border-radius: $radius $radius 0 0;
+    padding: 1rem;
+    border-bottom: $border-dashed;
+    padding-top: 1.25rem;
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+  }
+
+  .month-week-head {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem;
+
+    .week-day {
+      padding: 0.5rem 0;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: $icon;
+      background-color: lighten($gray, $amount: 2%);
+      border-radius: calc($radius / 2);
+    }
+  }
+
+  .month-days-wrapper {
+    padding: 0.5rem;
+  }
+
+  .month-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 0.1rem;
+    gap: 0.2rem;
+  }
+
+  .week-day-cell {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: $radius;
+    font-size: 0.7rem;
+    border: $border-dashed;
+    user-select: none;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: lighten($info, 50%);
+    }
+
+    &.ghost {
+      visibility: hidden;
+    }
+
+    &.today {
+      border-color: $info;
+      background-color: lighten($info, 50%);
+      color: $info;
+      font-weight: 500;
+    }
+
+    &.marked-day {
+      background-color: lighten($info, 40%);
+      border: none;
+      color: $info;
+      position: relative;
+
+      .quantity {
+        align-items: center;
+        background-color: #ff993a;
+        border-radius: 100%;
+        color: #fff;
+        display: flex;
+        font-size: .6rem;
+        font-weight: 500;
+        height: 1rem;
+        justify-content: center;
+        margin-right: -1.5rem;
+        margin-top: 1.25rem;
+        position: absolute;
+        width: 1rem;
+      }
+
+      .cell-icon {
+        width: 2rem;
+        height: 2rem;
+
+        :deep(svg) {
+          width: 100%;
+          height: 100%;
+
+          path {
+            fill: $info;
+          }
+        }
+      }
+
+      .cell-icon-day {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        color: $info;
+        font-weight: 500;
+      }
+    }
+  }
+}

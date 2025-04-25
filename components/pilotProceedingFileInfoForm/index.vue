@@ -22,7 +22,7 @@
           <Button v-if="proceedingFile.proceedingFilePath" label="Open file" severity="primary" @click="openFile()" />
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
             :custom-upload="true" :maxFileSize="1000000" :fileLimit="1" @select="validateFiles">
-            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+            <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
                   class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />

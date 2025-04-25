@@ -29,165 +29,6 @@
     }
   }
 
-  .calendars-wrapper {
-    box-sizing: border-box;
-    display: grid;
-    grid-auto-flow: dense;
-    grid-template-columns: repeat(auto-fill, minmax(35rem, 1fr));
-    gap: .5rem;
-
-    @media screen and (max-width: $sm) {
-      grid-template-columns: 1fr;
-
-    }
-
-    .calendar-month {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-      background-color: white;
-      border-radius: $radius;
-      padding: 1rem;
-      box-sizing: border-box;
-
-      &.past {
-
-        .month-title {
-          opacity: 0.3;
-        }
-
-        .month-week-head {
-          opacity: 0.3;
-        }
-
-        .week-day-cell {
-          opacity: 0.3;
-        }
-
-        .birthday {
-          opacity: 0.6;
-        }
-      }
-
-      &.current {
-
-        .month-title {
-          color: $success;
-          font-weight: 500;
-        }
-
-        .month-week-head {
-          color: $success;
-        }
-
-        .week-day {
-          background-color: transparentize($color: $success, $amount: 0.9) !important;
-          font-weight: 500;
-        }
-      }
-
-      .month-title {
-        height: 2rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-bottom: $border-dashed;
-        margin-bottom: 0.5rem;
-        padding-bottom: 0.5rem;
-
-        h2 {
-          margin: 0;
-          padding: 0;
-          font-size: 0.9rem;
-          font-weight: 500;
-        }
-      }
-
-      .month-week-head {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 0.5rem;
-
-        .week-day {
-          background-color: transparentize($color: $gray, $amount: 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 0.65rem;
-          height: 2rem;
-          border-radius: calc($radius / 2);
-        }
-      }
-
-      .month-days-wrapper {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-
-        .month-week {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 0.5rem;
-        }
-
-        .month-weeks {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 0.5rem;
-        }
-
-        .week-day-cell {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 4rem;
-          border-radius: calc($radius / 2);
-          border: $border-dashed;
-          font-size: 0.8rem;
-          cursor: pointer;
-          position: relative;
-
-          &.ghost {
-            opacity: 0;
-          }
-
-          &.birthday {
-            background-color: transparentize($color: $info, $amount: 0.9);
-            border: none;
-
-            :deep(svg) {
-              path {
-                fill: $info;
-              }
-            }
-          }
-
-          &.today {
-            border-color: $success;
-            color: $success;
-            font-weight: 500;
-          }
-
-          .quantity {
-            position: absolute;
-            font-size: 0.6rem;
-            background-color: transparentize($color: $warning, $amount: 0);
-            border-radius: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 1rem;
-            height: 1rem;
-            margin-top: 1.25rem;
-            margin-right: -1.5rem;
-            color: white;
-            font-weight: 500;
-          }
-        }
-      }
-    }
-  }
-
   .birthday-wrapper {
     min-height: 100dvh;
     box-sizing: border-box;
@@ -265,7 +106,18 @@
     gap: .5rem;
     margin-top: 0.5rem;
   }
+}
 
-
-
+.empty-data {
+  text-align: center;
+  background-color: $gray;
+  padding: 2rem;
+  color: $icon;
+  border-radius: $radius;
+  font-size: 0.8rem;
+  height: 10rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

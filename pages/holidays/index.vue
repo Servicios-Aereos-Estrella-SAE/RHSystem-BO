@@ -33,63 +33,13 @@
             Please note that the holidays recorded will be considered rest days for employees.
           </Message>
 
-          <div class="calendars-wrapper">
-            <div v-for="monthNumber in 12" :key="`month-year-${monthNumber}`" class="calendar-month" :class="monthStatus(monthNumber)">
-              <div class="month-title">
-                <h2>
-                  {{ getMonthInfo(monthNumber).monthName }}, {{ yearSelected }}
-                </h2>
-              </div>
-              <div class="month-week-head">
-                <div v-for="numberDay in weekDays" :key="`week-day-${numberDay}`" class="week-day">
-                  {{ weekDayName(numberDay) }}
-                </div>
-              </div>
-              <div class="month-days-wrapper">
-                <div v-for="week in 1" :key="`month-week-${week}`" class="month-week">
-                  <div
-                    v-for="(weekDayNumber, iweekDayNumber) in weekDays"
-                    :key="`month-day-${weekDayNumber}`"
-                    class="week-day-cell"
-                    :class="{
-                      holiday: !!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holiday,
-                      today: isToday(monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day),
-                    }"
-                    @click="onEdit(firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holiday, monthNumber, firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day)"
-                  >
-                    <span v-if="!!firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holiday" v-html="firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).holidayIcon" class="holyday-cell-icon"></span>
-                    <span v-else>
-                      {{ firstWeekDay(monthNumber, weekDayNumber, iweekDayNumber).day }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="month-weeks">
-                  <div
-                    v-for="(weekDayNumber, iweekDayNumber) in lastWeeksRestDays(monthNumber)"
-                    :key="`month-day-${weekDayNumber}`"
-                    class="week-day-cell"
-                    :class="{
-                      holiday: !!weekDay(monthNumber, iweekDayNumber).holiday,
-                      today: isToday(monthNumber, weekDay(monthNumber, iweekDayNumber).day),
-                    }"
-                    @click="onEdit(weekDay(monthNumber, iweekDayNumber).holiday, monthNumber, weekDay(monthNumber, iweekDayNumber).day)"
-                  >
-                    <span v-if="!!weekDay(monthNumber, iweekDayNumber).holiday"
-                      v-html="weekDay(monthNumber, iweekDayNumber).holidayIcon"
-                      class="holyday-cell-icon"></span>
-                    <span v-else>
-                      {{ weekDay(monthNumber, iweekDayNumber).day }}
-                    </span>
-                  </div>
-                </div>
-
-                <div v-if="getMonthInfo(monthNumber).weeks === 5" class="month-weeks">
-                  <div v-for="(weekDayNumber) in 7" :key="`month-day-${weekDayNumber}`" class="week-day-cell ghost"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CalendarView
+            :year="yearSelected"
+            :marked-days="calendarHolidays"
+            marked-day-class="holiday"
+            hideIndicator
+            @day-click="onDayClick"
+          />
         </div>
       </NuxtLayout>
     </div>
@@ -112,18 +62,6 @@ export default Script
 
 <style lang="scss">
   @import '/resources/styles/variables.scss';
-
-  .holyday-cell-icon {
-
-    svg {
-      width: 2rem;
-    }
-  }
-
-  .holiday-card-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-  }
 
   .holiday-form-sidebar {
     width: 30rem !important;
