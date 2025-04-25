@@ -46,14 +46,14 @@
                 </div>
             </div>
             <Dialog v-model:visible="drawerVacationDelete" :style="{ width: '450px' }" header="Confirm" :modal="true">
-                <div class="confirmation-content">
-                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                    <span v-if="vacation"> Are you sure you want to delete this vacation setting?</span>
-                </div>
-                <template #footer>
-                    <Button label="No" icon="pi pi-times" text @click="drawerVacationDelete = false" />
-                    <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
-                </template>
+              <div class="confirmation-content">
+                  <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                  <span v-if="vacation"> Are you sure you want to delete this vacation setting?</span>
+              </div>
+              <template #footer>
+                  <Button label="No" icon="pi pi-times" text @click="drawerVacationDelete = false" />
+                  <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+              </template>
             </Dialog>
         </NuxtLayout>
     </div>
@@ -82,20 +82,13 @@ export default Script
 </style>
 <style lang="scss">
 @import '/resources/styles/variables.scss';
-:deep(.graph-label) {
-  color: red;
-}
-
-.graph-label {
-  color: red;
-}
 
 .vacation-form-sidebar {
     width: 100% !important;
     max-width: 35rem !important;
 
-    // @media screen and (max-width: $sm) {
-    //   width: 100% !important;
-    // }
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
 </style>
