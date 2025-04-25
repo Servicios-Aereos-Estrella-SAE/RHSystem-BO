@@ -896,12 +896,12 @@ export default defineComponent({
         })
 
         const startDayMinusOne = startDate.minus({ days: 1 })
-        const endDayMinusOne = endDate//.minus({ days: 1 })
+        const endDayMinusOne = endDate
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else if (this.visualizationMode?.value === 'custom') {
-        startDay = DateTime.fromJSDate(this.datesSelected[0]).toFormat('yyyy-MM-dd') // Fecha de inicio
-        endDay = DateTime.fromJSDate(this.datesSelected[1]).toFormat('yyyy-MM-dd')   // Fecha de fin
+        startDay = DateTime.fromJSDate(this.datesSelected[0]).toFormat('yyyy-MM-dd')
+        endDay = DateTime.fromJSDate(this.datesSelected[1]).toFormat('yyyy-MM-dd')
 
       } else {
         const endDate = DateTime.fromObject({
@@ -921,15 +921,36 @@ export default defineComponent({
     },
     async showEmployeesWithFaults() {
       this.employeesWithFaults = []
-      for await (const assist of this.employeeDepartmentPositionList) {
 
-        if (assist.assistStatistics.faults >= 3 && assist.employee.employeeAssistDiscriminator === 0) {
+      for await (const assist of this.employeeDepartmentPositionList) {
+        if (assist.employee.employeeAssistDiscriminator !== 0) continue
+
+        let consecutiveFaults = 0
+        let found3Consecutive = false
+
+        for (const calendar of assist.calendar) {
+          if (calendar.assist.checkInStatus === 'fault') {
+            consecutiveFaults++
+            if (consecutiveFaults === 3) {
+              found3Consecutive = true
+              break
+            }
+          } else {
+            consecutiveFaults = 0
+          }
+        }
+
+        if (found3Consecutive) {
           assist.employee.faultDays = []
+
           for (const calendar of assist.calendar) {
-            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isFutureDay && !calendar.assist.isRestDay) {
-              assist.employee.faultDays?.push({ day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD') })
+            if (calendar.assist.checkInStatus === 'fault') {
+              assist.employee.faultDays.push({
+                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+              })
             }
           }
+
           this.employeesWithFaults.push(assist.employee)
         }
       }

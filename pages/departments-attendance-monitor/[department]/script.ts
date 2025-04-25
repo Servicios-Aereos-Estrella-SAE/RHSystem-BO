@@ -126,7 +126,12 @@ export default defineComponent({
     vacationDateEnd: '',
     currentDepartmentId: null as Number | null,
     employeesWithOutShift: [] as EmployeeInterface[],
-    drawerEmployeeWithOutShift: false
+    drawerEmployeeWithOutShift: false,
+    canSeeConsecutiveFaults: false,
+    drawerEmployeeWithFaults: false,
+    employeesWithFaults: [] as EmployeeInterface[],
+    employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
+    employeesDiscrimitorsWithFaults: [] as EmployeeInterface[],
   }),
   computed: {
     weeklyStartDay() {
@@ -290,6 +295,9 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
       return flag
+    },
+    isRangeAtLeast3Days() {
+      return this.isDatesAtLeast3Days()
     }
   },
   created() {
@@ -303,6 +311,12 @@ export default defineComponent({
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+
+    const fullPath = this.$route.path
+    const firstSegment = fullPath.split('/')[1]
+    this.canSeeConsecutiveFaults = false
+    const systemModuleSlug = firstSegment
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
 
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange()
@@ -641,7 +655,7 @@ export default defineComponent({
         })
 
         const startDayMinusOne = startDate.minus({ days: 1 })
-        const endDayMinusOne = endDate//.minus({ days: 1 })
+        const endDayMinusOne = endDate
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
@@ -729,7 +743,6 @@ export default defineComponent({
       const earlyOuts = employeeCalendar.filter((assistDate) => assistDate.assist.checkOutStatus === 'delay').length
       const faults = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'fault' && !assistDate.assist.isFutureDay && !assistDate.assist.isRestDay).length
       const totalAvailable = assists + tolerances + delays + faults
-
 
       const assist = Math.round((assists / totalAvailable) * 100)
       const tolerance = Math.round((tolerances / totalAvailable) * 100)
@@ -912,6 +925,125 @@ export default defineComponent({
       }
       this.currentDepartmentId = parseInt(!this.departmentID ? this.$route.params.department.toString() : this.departmentID)
       this.drawerVacations = true
+    },
+    isDatesAtLeast3Days() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      let startDay = ''
+      let endDay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+      } else if (this.visualizationMode?.value === 'custom') {
+        startDay = DateTime.fromJSDate(this.datesSelected[0]).toFormat('yyyy-MM-dd')
+        endDay = DateTime.fromJSDate(this.datesSelected[1]).toFormat('yyyy-MM-dd')
+
+      } else {
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${endDate.year}-${`${endDate.month}`.padStart(2, '0')}-${`${endDate.day}`.padStart(2, '0')}`
+      }
+      const start = new Date(startDay.replace(/-/g, '/'))
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(endDay.replace(/-/g, '/'))
+      const diffInMs = end.getTime() - start.getTime()
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
+      return (diffInDays + 1) >= 3 ? true : false
+    },
+    async showEmployeesWithFaults() {
+      if (!this.departmenSelected) {
+        return false
+      }
+      this.employeesWithFaults = []
+
+      for await (const assist of this.employeeDepartmentList) {
+        if (assist.employee.employeeAssistDiscriminator !== 0) continue
+
+        let consecutiveFaults = 0
+        let found3Consecutive = false
+
+        for (const calendar of assist.calendar) {
+          if (calendar.assist.checkInStatus === 'fault') {
+            consecutiveFaults++
+            if (consecutiveFaults === 3) {
+              found3Consecutive = true
+              break
+            }
+          } else {
+            consecutiveFaults = 0
+          }
+        }
+
+        if (found3Consecutive) {
+          assist.employee.faultDays = []
+
+          for (const calendar of assist.calendar) {
+            if (calendar.assist.checkInStatus === 'fault') {
+              assist.employee.faultDays.push({
+                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+              })
+            }
+          }
+
+          this.employeesWithFaults.push(assist.employee)
+        }
+      }
+
+
+
+      const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
+      const positionId = null
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null)
+      const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
+      this.employeeDiscrimitorsList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
+
+      this.employeeDiscrimitorsList = this.employeeDiscrimitorsList.filter(emp => emp.employee.employeeAssistDiscriminator === 1)
+
+      await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
+
+      for await (const assist of this.employeeDiscrimitorsList) {
+        assist.employee.faultDays = []
+        if (assist.calendar.length > 0) {
+          let noCheckStreak = 0
+          const sortedCalendar = assist.calendar
+
+          for (const calendar of sortedCalendar) {
+            const noChecks = !calendar.assist.checkIn &&
+              !calendar.assist.checkOut &&
+              !calendar.assist.checkEatIn &&
+              !calendar.assist.checkEatOut
+
+            if (noChecks) {
+              assist.employee.faultDays?.push({ day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD') })
+              noCheckStreak++
+              if (noCheckStreak >= 3) {
+                this.employeesDiscrimitorsWithFaults.push(assist.employee)
+                break
+              }
+            } else {
+              noCheckStreak = 0
+            }
+          }
+        }
+      }
+      this.drawerEmployeeWithFaults = true
     }
   }
 })
