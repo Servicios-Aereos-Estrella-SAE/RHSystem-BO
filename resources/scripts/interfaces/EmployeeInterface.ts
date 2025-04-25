@@ -5,6 +5,7 @@ import type { PeopleInterface } from "./PeopleInterface"
 import type { PositionInterface } from "./PositionInterface"
 import type { EmployeeAddressInterface } from "./EmployeeAddressInterface"
 import type { ShiftExceptionInterface } from "./ShiftExceptionInterface"
+import type { CalendarDayFault } from "./CalendarDayFault"
 
 interface EmployeeInterface {
   employeeId: number | null,
@@ -41,6 +42,7 @@ interface EmployeeInterface {
   businessUnit?: BusinessUnitInterface,
   address?: EmployeeAddressInterface[],
   shift_exceptions?: ShiftExceptionInterface[],
+  faultDays?: CalendarDayFault[]
 }
 
 export type { EmployeeInterface }

@@ -90,6 +90,15 @@
         </div>
 
         <div class="head-ea-bts-group">
+          <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
+            severity="success" @click="showEmployeesWithFaults">
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M16.052 5.029a1 1 0 0 0 .189 1.401 7.002 7.002 0 0 1-3.157 12.487l.709-.71a1 1 0 0 0-1.414-1.414l-2.5 2.5a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 1.414-1.414l-.843-.842A9.001 9.001 0 0 0 17.453 4.84a1 1 0 0 0-1.401.189Zm-1.93-1.736-2.5-2.5a1 1 0 0 0-1.498 1.32l.083.094.843.843a9.001 9.001 0 0 0-4.778 15.892A1 1 0 0 0 7.545 17.4a7.002 7.002 0 0 1 3.37-12.316l-.708.709a1 1 0 0 0 1.32 1.497l.094-.083 2.5-2.5a1 1 0 0 0 .083-1.32l-.083-.094Z"
+                fill="#88a4bf" class="fill-212121"></path>
+            </svg>
+            Consecutive Faults
+          </Button>
           <button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
             Employees without shift
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -207,6 +216,11 @@
         <Sidebar v-model:visible="drawerEmployeeWithOutShift" :closeOnEscape="true" header="Employees without shift"
           position="right" class="employee-whitout-shift" :showCloseIcon="true">
           <employeeWithOutShiftList :employeesWithOutShift="employeesWithOutShift" />
+        </Sidebar>
+        <Sidebar v-model:visible="drawerEmployeeWithFaults" :closeOnEscape="true" header="Employees without shift"
+          position="right" class="employee-whitout-shift" :showCloseIcon="true">
+          <employeeWithFaultsList :employeesWithFaults="employeesWithFaults"
+            :employeesDiscrimitorsWithFaults="employeesDiscrimitorsWithFaults" />
         </Sidebar>
       </div>
     </NuxtLayout>
