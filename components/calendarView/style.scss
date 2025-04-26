@@ -20,7 +20,7 @@
 }
 
 .calendar-month {
-  border: 1px solid $border;
+  border: $border;
   border-radius: $radius;
   background-color: white;
 
@@ -30,9 +30,10 @@
 
   &.current {
     box-shadow: $shadow;
-    border-color: $info;
+    border-color: lighten($info, 25%);
 
     .month-title {
+      border-color: lighten($info, 20%);
 
       h2 {
         color: $info;
@@ -52,6 +53,7 @@
     color: $text;
     border-radius: $radius $radius 0 0;
     padding: 1rem;
+    margin-bottom: 0.5rem;
     border-bottom: $border-dashed;
     padding-top: 1.25rem;
     text-align: center;

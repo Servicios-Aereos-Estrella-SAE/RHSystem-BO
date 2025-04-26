@@ -1,5 +1,5 @@
 import { useMyGeneralStore } from '~/store/general'
-import { DateTime, type DateObjectUnits } from 'luxon'
+import { DateTime } from 'luxon'
 import PositionService from '~/resources/scripts/services/PositionService'
 import type { PositionInterface } from '~/resources/scripts/interfaces/PositionInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
@@ -121,7 +121,7 @@ export default defineComponent({
           if (employee.shift_exceptions) {
             for (const shift_exception of employee.shift_exceptions) {
               if (shift_exception?.shiftExceptionsDate) {
-                const exceptionDate = DateTime.fromISO(shift_exception.shiftExceptionsDate.toString())
+                const exceptionDate = DateTime.fromISO(shift_exception.shiftExceptionsDate.toString()).setZone('UTC')
 
                 // Only add if it falls within this year
                 if (exceptionDate.year === this.yearSelected) {
@@ -192,7 +192,7 @@ export default defineComponent({
     updateVacationsQuantity() {
       // Group vacations by date (YYYY-MM-DD format)
       const groupedByDate = this.filterVacations.reduce((acc, curr) => {
-        const date = DateTime.fromISO(curr.date.toString(), { zone: 'utc' }).toFormat('yyyy-MM-dd')
+        const date = DateTime.fromISO(curr.date.toString(), { zone: 'utc' }).setZone('UTC').toFormat('yyyy-MM-dd')
         if (!acc[date]) {
           acc[date] = []
         }
@@ -210,7 +210,7 @@ export default defineComponent({
       })
     },
     onShowCurrentVacation({ year, month, day }: { year: number, month: number, day: number }) {
-      const date = DateTime.fromObject({ year, month, day })
+      const date = DateTime.fromObject({ year, month, day }).setZone('UTC')
       this.currentVacation = date.toFormat('MMMM dd, yyyy')
       this.filteredEmployeesVacation = this.getEmployeesWithVacation(month, day)
       this.drawerEmployeesVacation = true
@@ -221,7 +221,7 @@ export default defineComponent({
           // Check if employee has a vacation on this date
           return employee.shift_exceptions.some(shift_exception => {
             if (shift_exception.shiftExceptionsDate) {
-              const vacationDate = DateTime.fromISO(shift_exception.shiftExceptionsDate.toString())
+              const vacationDate = DateTime.fromISO(shift_exception.shiftExceptionsDate.toString()).setZone('UTC')
               return vacationDate.month === currentMonth && vacationDate.day === currentDay
             }
             return false
