@@ -339,10 +339,10 @@ export default defineComponent({
 
     await this.setDefaultVisualizationMode()
 
-    // await Promise.all([
-    //   this.setDepartmetList(),
-    //   this.setDepartmentPositionEmployeeList()
-    // ])
+    await Promise.all([
+      this.setDepartmetList(),
+      this.setDepartmentPositionEmployeeList()
+    ])
 
     this.setGeneralData()
     this.setPeriodData()
