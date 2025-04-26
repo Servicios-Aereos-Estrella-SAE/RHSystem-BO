@@ -934,6 +934,8 @@ export default defineComponent({
       return (diffInDays + 1) >= 3 ? true : false
     },
     async showEmployeesWithFaults() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       this.employeesWithFaults = []
 
       for await (const assist of this.employeeDepartmentList) {
@@ -1005,6 +1007,7 @@ export default defineComponent({
         }
       }
       this.drawerEmployeeWithFaults = true
+      myGeneralStore.setFullLoader(false)
     }
   }
 })

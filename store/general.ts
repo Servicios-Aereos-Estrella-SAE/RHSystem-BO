@@ -42,7 +42,7 @@ export const useMyGeneralStore = defineStore({
     async getSystemSettings() {
       this.backgroundColor = '#093057'
       this.backgroundColorDark = '#092c50'
-      this.backgroundImage = 'https://sae.com.mx/wp-content/uploads/2024/03/logo_sae.svg'
+      this.backgroundImage = ''
 
       const systemSettingService = new SystemSettingService()
       const systemSettingResponse = await systemSettingService.getActive()

@@ -971,6 +971,10 @@ export default defineComponent({
       if (!this.departmenSelected) {
         return false
       }
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
       this.employeesWithFaults = []
 
       for await (const assist of this.employeeDepartmentList) {
@@ -1005,8 +1009,6 @@ export default defineComponent({
           this.employeesWithFaults.push(assist.employee)
         }
       }
-
-
 
       const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
@@ -1044,6 +1046,7 @@ export default defineComponent({
         }
       }
       this.drawerEmployeeWithFaults = true
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
