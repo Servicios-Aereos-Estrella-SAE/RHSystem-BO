@@ -289,6 +289,32 @@ export default defineComponent({
     },
     isRangeAtLeast3Days() {
       return this.isDatesAtLeast3Days()
+    },
+    isRoot() {
+      const myGeneralStore = useMyGeneralStore()
+      return myGeneralStore.isRoot
+    },
+    displayConsecutiveFaultsBtn () {
+      if (!this.isRoot) {
+        return false
+      }
+
+      if (this.visualizationMode && this.isRangeAtLeast3Days && this.canSeeConsecutiveFaults) {
+        return true
+      }
+
+      return false
+    },
+    displayNoAssignedShiftBtn () {
+      if (!this.isRoot) {
+        return false
+      }
+
+      if (this.visualizationMode) {
+        return true
+      }
+
+      return false
     }
   },
   created() {
@@ -313,10 +339,10 @@ export default defineComponent({
 
     await this.setDefaultVisualizationMode()
 
-    await Promise.all([
-      this.setDepartmetList(),
-      this.setDepartmentPositionEmployeeList()
-    ])
+    // await Promise.all([
+    //   this.setDepartmetList(),
+    //   this.setDepartmentPositionEmployeeList()
+    // ])
 
     this.setGeneralData()
     this.setPeriodData()
