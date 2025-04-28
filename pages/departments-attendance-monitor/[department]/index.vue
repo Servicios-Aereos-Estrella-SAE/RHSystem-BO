@@ -95,7 +95,7 @@
         </div>
 
         <div class="btns-group">
-          <!-- <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
+          <!--<Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
             severity="success" @click="showEmployeesWithFaults">
             Consecutive Faults
           </Button>
