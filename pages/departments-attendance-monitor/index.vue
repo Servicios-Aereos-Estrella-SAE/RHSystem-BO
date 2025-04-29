@@ -88,11 +88,12 @@
         </div>
 
         <div class="btns-group">
-          <!-- <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
+          <!--  <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
             severity="success" @click="showEmployeesWithFaults">
             Consecutive Faults
           </Button>
-          <button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
+          <button v-if="visualizationMode" class="btn" severity="success"
+            @click="drawerEmployeeWithOutShift = true">
             No assigned shift
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
