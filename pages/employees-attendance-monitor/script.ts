@@ -301,10 +301,6 @@ export default defineComponent({
       return false
     },
     displayNoAssignedShiftBtn() {
-      if (!this.isRoot) {
-        return false
-      }
-
       if (this.visualizationMode) {
         return true
       }
