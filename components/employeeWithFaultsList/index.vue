@@ -1,21 +1,8 @@
 <template>
   <div v-if="isReady" class="employee-with-fault-list">
-    <h4>Employees with faults</h4>
+    <h4>Employees with consecutive faults</h4>
     <div v-if="employeesWithFaults.length > 0" class="with-fault-wrapper">
       <div v-for="(employee, index) in employeesWithFaults" :key="`employee-${employee.employeeId}-${index}`">
-        <employeeWithFaultInfoCard :employee="employee" />
-      </div>
-    </div>
-    <div v-else class="employee-card-wrapper">
-      <div class="empty-data">
-        There are no employees
-      </div>
-    </div>
-
-    <h4>Employees (discriminated assist) without checks</h4>
-    <div v-if="employeesDiscrimitorsWithFaults.length > 0" class="with-fault-wrapper">
-      <div v-for="(employee, index) in employeesDiscrimitorsWithFaults"
-        :key="`employee-${employee.employeeId}-${index}`">
         <employeeWithFaultInfoCard :employee="employee" />
       </div>
     </div>
