@@ -12,18 +12,6 @@
       </div>
     </div>
 
-    <div v-if="employeesDiscrimitorsWithFaults.length > 0" class="with-fault-wrapper">
-      <div v-for="(employee, index) in employeesDiscrimitorsWithFaults"
-        :key="`employee-${employee.employeeId}-${index}`">
-        <employeeWithFaultInfoCard :employee="employee" />
-      </div>
-    </div>
-    <div v-else class="employee-card-wrapper">
-      <div class="empty-data">
-        There are no employees
-      </div>
-    </div>
-
   </div>
   <ProgressSpinner v-else />
 </template>

@@ -131,7 +131,6 @@ export default defineComponent({
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
-    employeesDiscrimitorsWithFaults: [] as EmployeeInterface[],
   }),
   computed: {
     weeklyStartDay() {
@@ -1039,7 +1038,10 @@ export default defineComponent({
               })
               noCheckStreak++
               if (noCheckStreak === 3) {
-                this.employeesDiscrimitorsWithFaults.push(assist.employee)
+                const alreadyAdded = this.employeesWithFaults.some(e => e.employeeId === assist.employee.employeeId)
+                if (!alreadyAdded) {
+                  this.employeesWithFaults.push(assist.employee)
+                }
               }
             } else {
               noCheckStreak = 0
