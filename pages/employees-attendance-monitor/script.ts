@@ -294,10 +294,6 @@ export default defineComponent({
       return myGeneralStore.isRoot
     },
     displayConsecutiveFaultsBtn() {
-      if (!this.isRoot) {
-        return false
-      }
-
       if (this.visualizationMode && this.isRangeAtLeast3Days && this.canSeeConsecutiveFaults) {
         return true
       }
