@@ -90,11 +90,11 @@
         </div>
 
         <div class="head-ea-bts-group">
-          <Button v-if="displayConsecutiveFaultsBtn" class="btn"
-            severity="success" @click="showEmployeesWithFaults">
+          <Button v-if="displayConsecutiveFaultsBtn" class="btn" severity="success" @click="showEmployeesWithFaults">
             Consecutive Faults
           </Button>
-          <button v-if="displayNoAssignedShiftBtn" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
+          <button v-if="displayNoAssignedShiftBtn" class="btn" severity="success"
+            @click="drawerEmployeeWithOutShift = true">
             No assigned shift
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -214,8 +214,7 @@
         </Sidebar>
         <Sidebar v-model:visible="drawerEmployeeWithFaults" :closeOnEscape="true" header="No assigned shift"
           position="right" class="employee-whitout-shift" :showCloseIcon="true">
-          <employeeWithFaultsList :employeesWithFaults="employeesWithFaults"
-            :employeesDiscrimitorsWithFaults="employeesDiscrimitorsWithFaults" />
+          <employeeWithFaultsList :employeesWithFaults="employeesWithFaults" />
         </Sidebar>
       </div>
     </NuxtLayout>

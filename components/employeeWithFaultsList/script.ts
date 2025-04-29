@@ -7,7 +7,6 @@ export default defineComponent({
   name: 'employeeWithFaultList',
   props: {
     employeesWithFaults: { type: Array<EmployeeInterface>, required: true },
-    employeesDiscrimitorsWithFaults: { type: Array<EmployeeInterface>, required: true },
   },
   data: () => ({
     isReady: false

@@ -138,7 +138,6 @@ export default defineComponent({
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
-    employeesDiscrimitorsWithFaults: [] as EmployeeInterface[],
   }),
   computed: {
     weeklyStartDay() {
@@ -950,7 +949,6 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
 
       this.employeesWithFaults = []
-
       for await (const assist of this.employeeDepartmentPositionList) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
@@ -997,7 +995,6 @@ export default defineComponent({
 
       for await (const assist of this.employeeDiscrimitorsList) {
         assist.employee.faultDays = []
-
         if (assist.calendar.length > 0) {
           let noCheckStreak = 0
           const sortedCalendar = assist.calendar
@@ -1014,7 +1011,10 @@ export default defineComponent({
               })
               noCheckStreak++
               if (noCheckStreak === 3) {
-                this.employeesDiscrimitorsWithFaults.push(assist.employee)
+                const alreadyAdded = this.employeesWithFaults.some(e => e.employeeId === assist.employee.employeeId)
+                if (!alreadyAdded) {
+                  this.employeesWithFaults.push(assist.employee)
+                }
               }
             } else {
               noCheckStreak = 0
@@ -1022,7 +1022,6 @@ export default defineComponent({
           }
         }
       }
-
       this.drawerEmployeeWithFaults = true
       myGeneralStore.setFullLoader(false)
     }
