@@ -1,0 +1,25 @@
+@import '/resources/styles/variables.scss';
+
+.employee-user-responsible-info-card {
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  position: relative;
+  box-sizing: border-box;
+
+  .employee-user-responsible {
+    text-align: left;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border-top: $border-dashed;
+    padding-top: 0.75rem !important;
+    margin-top: 0.75rem !important;
+  }
+}
