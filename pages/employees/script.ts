@@ -76,6 +76,13 @@ export default defineComponent({
       }
 
       return display
+    },
+    displayResponsibleSection () {
+      if (this.isRootUser) {
+        return true
+      }
+
+      return false
     }
   },
   created() { },
