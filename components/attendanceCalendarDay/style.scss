@@ -4,7 +4,7 @@
 
   &.no-shift-calendar {
     opacity: 0.25;
-    
+
     .day {
       display: flex;
       justify-content: center;
@@ -66,7 +66,7 @@
       display: grid;
       grid-template-columns: auto 5rem;
       gap: 0.5rem;
-      
+
       .week-day {
         display: block;
         margin-top: 0.5rem;
@@ -150,7 +150,6 @@
       }
 
       .time {
-        // background-color: $gray;
         padding: 0.35rem;
         width: 100%;
         padding-left: 0.5rem;
@@ -231,7 +230,7 @@
     gap: 0.25rem;
     font-weight: 600;
     font-size: 0.8rem;
-    
+
     .dot {
       display: flex;
       justify-content: center;

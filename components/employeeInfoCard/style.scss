@@ -64,6 +64,7 @@
         line-clamp: 1;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 1;
+        text-transform: uppercase;
       }
 
       .employee-number {
@@ -153,6 +154,24 @@
     box-sizing: border-box;
     border: $border-dashed;
     margin-top: 1rem;
+
+    .department {
+      text-wrap: pretty;
+      display: -webkit-box;
+      overflow: hidden;
+      line-clamp: 1;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
+
+    .position {
+      text-wrap: pretty;
+      display: -webkit-box;
+      overflow: hidden;
+      line-clamp: 1;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
   }
 
   .box-tools-footer {

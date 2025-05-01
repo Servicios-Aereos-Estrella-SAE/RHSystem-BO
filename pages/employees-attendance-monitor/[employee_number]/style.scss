@@ -157,6 +157,36 @@
         }
       }
 
+      .no-pie-chart {
+        height: 20rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .circle {
+          width: 15rem;
+          height: 15rem;
+          border-radius: 50%;
+          background-color: $gray;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: 0.7rem;
+          color: $icon;
+          box-sizing: border-box;
+          padding: 1.75rem;
+
+          .icon {
+            margin-bottom: 1rem;
+
+            svg {
+              width: 4rem;
+            }
+          }
+        }
+      }
+
       .indicators {
         border-top: $border-dashed;
         padding-top: 1rem;
@@ -197,17 +227,16 @@
           }
 
           .indicator-prop-val-work {
-            height: 3rem;
             border-radius: $radius;
             box-sizing: border-box;
-            background-color: transparentize($color: $info, $amount: 0.95);
             color: $info;
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             margin-bottom: 1rem;
-            text-align: center;
-            word-break: break-word; /* Permite que las palabras largas se dividan en varias líneas */
+            word-break: break-word;
+            padding: 1rem;
+            background-color: transparentize($color: $info, $amount: 0.95);
           }
 
         }
