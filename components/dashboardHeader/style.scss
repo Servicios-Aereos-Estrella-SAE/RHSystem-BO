@@ -36,7 +36,7 @@
       @media screen and (max-width: $ipad) {
         display: none;
       }
-      
+
       img {
         width: 100%;
         max-width: 7rem;
@@ -93,7 +93,7 @@
       place-items: center;
       flex-direction: row-reverse;
       gap: 0.5rem;
-      
+
       button {
         padding: 0.7rem !important;
         height: 3rem;
@@ -107,12 +107,13 @@
         justify-content: flex-end;
 
         .avatar-name {
-          font-size: 0.9rem;
+          font-size: 0.8rem;
           font-weight: 500;
           width: 12rem;
           text-wrap: pretty;
           display: -webkit-box;
           overflow: hidden;
+          line-clamp: 1;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 1;
 
@@ -124,7 +125,7 @@
             display: none;
           }
         }
-        
+
         .avatar-description {
           font-size: 0.75rem;
           font-weight: 500;
@@ -134,6 +135,7 @@
           text-wrap: pretty;
           display: -webkit-box;
           overflow: hidden;
+          line-clamp: 1;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 1;
 
@@ -150,7 +152,7 @@
           background-color: transparentize($color: $info, $amount: 0.75);
           color: $primary;
           font-size: 1.25rem;
-          
+
           span {
             font-weight: 500;
           }

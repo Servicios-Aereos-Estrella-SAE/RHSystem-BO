@@ -20,7 +20,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     svg {
       width: 3rem;
     }
@@ -55,13 +55,13 @@
     .department-position {
       margin-top: 0.5rem;
     }
-  
+
     .info {
       font-weight: 300;
       font-size: 0.7rem;
       box-sizing: border-box;
     }
-  
+
     .name {
       text-align: left;
       font-weight: 500;
@@ -69,10 +69,12 @@
       text-wrap: pretty;
       display: -webkit-box;
       overflow: hidden;
+      line-clamp: 1;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 1;
       font-size: 0.8rem;
-  
+      text-transform: uppercase;
+
       @media screen and (max-width: $ipad) {
         font-size: 0.7rem;
       }

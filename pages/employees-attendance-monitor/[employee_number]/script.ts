@@ -290,6 +290,14 @@ export default defineComponent({
     },
     isRangeAtLeast7Days() {
       return this.isDatesAtLeast7Days()
+    },
+    hasGeneralData() {
+      const seriesData = this.generalData.series[0].data.filter((coord: any) => coord.y > 0)
+      if (seriesData.length > 0) {
+        return true
+      }
+
+      return false
     }
   },
   created() {

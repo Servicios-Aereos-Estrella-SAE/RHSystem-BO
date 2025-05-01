@@ -1,8 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
-import PersonService from '~/resources/scripts/services/PersonService'
 
 export default defineComponent({
   name: 'userInfoCard',
@@ -54,7 +52,7 @@ export default defineComponent({
       }
 
       const name = `${this.user.person.personFirstname || ''} ${this.user.person.personLastname || ''} ${this.user.person.personSecondLastname || ''}`
-      return name
+      return name.toLocaleLowerCase()
     },
     employeeInitial () {
       const name = this.employeeName

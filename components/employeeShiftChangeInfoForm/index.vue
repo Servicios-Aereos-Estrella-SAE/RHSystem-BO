@@ -69,10 +69,11 @@
           </label>
           <AutoComplete v-if="isNewEmployeeShiftChange" v-model="selectedEmployee"
             :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-            :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect">
+            :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect"
+            class="uppercase">
             <template #option="employee">
               <div class="item-employee-filter-attendance-monitor">
-                <div class="name">
+                <div class="name uppercase">
                   {{ employee.option.employeeFirstName }}
                   {{ employee.option.employeeLastName }}
                 </div>
@@ -84,7 +85,7 @@
               </div>
             </template>
           </AutoComplete>
-          <InputText v-else v-model="employeeToSelectedName" readonly />
+          <InputText v-else v-model="employeeToSelectedName" readonly class="uppercase" />
           <small class="p-error" v-if="submitted && !employeeShiftChange.employeeIdTo">Employee to is required.</small>
         </div>
         <div class="input-box">

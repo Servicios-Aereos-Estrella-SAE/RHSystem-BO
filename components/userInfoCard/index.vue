@@ -11,14 +11,14 @@
         </div>
       </div>
       <div class="user-employee-data">
-        <div class="name capitalize">
+        <div class="name">
           {{ employeeName }}
         </div>
         <div  class="email">
           {{ `${user.userEmail}`.toLocaleLowerCase() }}
         </div>
-        <div class="rol capitalize">
-          {{ `${user.role.roleName || ''}`.toLocaleLowerCase() }}
+        <div class="rol">
+          {{ `${user.role.roleName || ''}` }}
         </div>
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!user.userActive }"></div>

@@ -5,7 +5,7 @@ export default class RoleService {
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
 
-  constructor () {
+  constructor() {
     const CONFIG = useRuntimeConfig()
     const { token } = useAuth()
     this.GENERAL_HEADERS = {
@@ -14,7 +14,7 @@ export default class RoleService {
     this.API_PATH = CONFIG.public.BASE_API_PATH
   }
 
-  async getFilteredList (searchText: string, page: number = 1, limit: number = 999999999) {
+  async getFilteredList(searchText: string, page: number = 1, limit: number = 999999999) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
@@ -25,30 +25,27 @@ export default class RoleService {
         page,
         limit
       },
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async assign(roleId: number, permissions: Array<any>, departments: Array<any>) {
+  async assign(roleId: number, permissions: Array<any>) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const formData = new FormData()
     permissions.forEach((systemPermissionId) => {
       formData.append('permissions[]', systemPermissionId);
     })
-    departments.forEach((departmentId) => {
-      formData.append('departments[]', departmentId);
-    })
     try {
       await $fetch(`${this.API_PATH}/roles/assign/${roleId}`, {
         headers,
         method: 'POST',
         body: formData,
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -62,19 +59,19 @@ export default class RoleService {
     try {
       await $fetch(`${this.API_PATH}/roles/${roleId}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const role = responseRequest.status === 200 ? responseRequest._data.data.role : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              role: role
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            role: role
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -86,20 +83,20 @@ export default class RoleService {
     try {
       await $fetch(`${this.API_PATH}/roles/has-access/${roleId}/${systemModuleSlug}/${systemPermissionSlug}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
 
       const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              roleHasAccess: roleHasAccess
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            roleHasAccess: roleHasAccess
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -110,19 +107,19 @@ export default class RoleService {
     try {
       await $fetch(`${this.API_PATH}/roles/has-access-department/${roleId}/${departmentId}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const roleHasAccess = responseRequest.status === 200 ? responseRequest._data.data.roleHasAccess : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              roleHasAccess: roleHasAccess
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            roleHasAccess: roleHasAccess
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -134,19 +131,19 @@ export default class RoleService {
     try {
       await $fetch(`${this.API_PATH}/roles/get-access-by-module/${roleId}/${systemModuleSlug}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const permissions = responseRequest.status === 200 ? responseRequest._data.data.permissions : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              permissions: permissions
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            permissions: permissions
           }
         }
+      }
     } catch (error) {
     }
   }
@@ -158,19 +155,19 @@ export default class RoleService {
     try {
       await $fetch(`${this.API_PATH}/roles/get-access/${roleId}`, {
         headers,
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })
       const permissions = responseRequest.status === 200 ? responseRequest._data.data.permissions : null
 
       return {
-          status: responseRequest.status,
-          _data: {
-            data: {
-              permissions: permissions
-            }
+        status: responseRequest.status,
+        _data: {
+          data: {
+            permissions: permissions
           }
         }
+      }
     } catch (error) {
     }
   }

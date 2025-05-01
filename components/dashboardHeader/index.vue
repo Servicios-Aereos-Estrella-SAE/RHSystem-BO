@@ -36,7 +36,7 @@
         </div>
         <div class="avatar">
           <div>
-            <div class="avatar-name">
+            <div class="avatar-name uppercase">
               {{ authUser?.person?.personFirstname || '' }}
               {{ authUser?.person?.personLastname || '' }}
               {{ authUser?.person?.personSecondLastname || '' }}

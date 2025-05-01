@@ -27,10 +27,10 @@
       <div class="business-unit">
         {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
       </div>
-      <div class="capitalize">
+      <div class="department">
         {{ `${employee.department.departmentName || ''}`}}
       </div>
-      <div class="">
+      <div class="position">
         {{ `${employee.position.positionName}` }}
       </div>
     </div>

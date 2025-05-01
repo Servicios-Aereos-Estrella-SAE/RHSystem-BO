@@ -63,11 +63,12 @@
         line-clamp: 1;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 1;
+        text-transform: uppercase;
       }
 
       .email {
         font-weight: normal;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-wrap: pretty;
         display: -webkit-box;
         overflow: hidden;
@@ -79,7 +80,7 @@
 
       .rol {
         font-weight: normal;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-wrap: pretty;
         display: -webkit-box;
         overflow: hidden;
@@ -91,7 +92,7 @@
 
       .status {
         font-weight: normal;
-        font-size: 0.75rem;
+        font-size: 0.6rem;
         text-wrap: pretty;
         display: -webkit-box;
         overflow: hidden;
@@ -127,10 +128,30 @@
     border-radius: calc($radius / 2);
     margin-top: 1rem;
     font-size: 0.7rem;
-    line-height: 1.25rem;
+    line-height: 1rem;
 
     .employee-code {
       margin-bottom: 0.5rem;
+    }
+
+    .department {
+      text-wrap: pretty;
+      display: -webkit-box;
+      overflow: hidden;
+      line-clamp: 1;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      margin-top: 0.25rem;
+    }
+
+    .position {
+      text-wrap: pretty;
+      display: -webkit-box;
+      overflow: hidden;
+      line-clamp: 1;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+      margin-top: 0.25rem;
     }
   }
 
@@ -145,52 +166,4 @@
       width: 100%;
     }
   }
-
-  // .info {
-  //   text-align: left;
-  //   font-weight: 500;
-  //   font-size: 0.8rem;
-  //   border-radius: calc($radius / 2);
-  //   box-sizing: border-box;
-  //   padding: 0.3rem;
-  // }
-  // .position,.number {
-  //   text-align: left;
-  //   font-weight: 500;
-  //   font-size: 0.7rem;
-  //   border-radius: calc($radius / 2);
-  //   box-sizing: border-box;
-  //   padding: 0.3rem;
-  // }
-
-  // .line {
-  //   border-top: $border-dashed;
-  //   text-align: center;
-  //   margin-top: 1rem;
-  //   margin-bottom: 1rem;
-  // }
-
-  // .name {
-  //   text-align: left;
-  //   font-weight: 500;
-  //   margin-bottom: 1rem;
-  //   text-wrap: pretty;
-  //   display: -webkit-box;
-  //   overflow: hidden;
-  //   -webkit-box-orient: vertical;
-  //   -webkit-line-clamp: 1;
-  //   padding-top: 2rem;
-
-  //   @media screen and (max-width: $ipad) {
-  //     font-size: 0.7rem;
-  //   }
-  // }
-
-  // .shift-time, .shift-hours, .shift-days {
-  //   text-align: left;
-  //   font-weight: 400;
-  //   border-radius: calc($radius / 2);
-  //   box-sizing: border-box;
-  //   padding: 3px;
-  // }
 }
