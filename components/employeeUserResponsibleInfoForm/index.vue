@@ -11,12 +11,14 @@
           <label for="user">
             User
           </label>
-          <Dropdown v-model="userResponsibleEmployee.userId" :options="usersList" optionLabel="userEmail"
-            optionValue="userId" placeholder="Select user" filter class="w-full md:w-14rem" />
+          <Dropdown v-model="userResponsibleEmployee.userId" :options="usersList"
+            :optionLabel="option => `${option.person.personFirstname} ${option.person.personLastname} ${option.person.personSecondLastname}`"
+            optionValue="userId" placeholder="Select user" filter class="w-full md:w-14rem"
+            :disabled="!isNewUserResponsibleEmployee" />
           <small class="p-error" v-if="submitted && !userResponsibleEmployee.userId">User is
             required.</small>
         </div>
-        <div class="box-tools-footer">
+        <div v-if="isNewUserResponsibleEmployee" class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
             Save user
           </Button>

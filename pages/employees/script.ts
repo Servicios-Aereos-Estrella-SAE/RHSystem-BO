@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { AddressInterface } from '~/resources/scripts/interfaces/AddressInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
@@ -37,6 +36,7 @@ export default defineComponent({
     drawerAddressForm: false as boolean,
     drawerRecords: false as boolean,
     drawerBanks: false as boolean,
+    drawerResponsible: false as boolean,
     drawerEmployeePhotoForm: false as boolean,
     drawerEmployeeDelete: false as boolean,
     drawerEmployeeSync: false as boolean,
@@ -382,6 +382,7 @@ export default defineComponent({
       this.drawerAddressForm = false
       this.drawerRecords = false
       this.drawerBanks = false
+      this.drawerResponsible = false
       this.activeButton = 'employee'
     },
     onEditPerson() {
@@ -389,12 +390,14 @@ export default defineComponent({
       this.drawerAddressForm = false
       this.drawerRecords = false
       this.drawerBanks = false
+      this.drawerResponsible = false
       this.activeButton = 'person'
     },
     onEditRecords() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerBanks = false
+      this.drawerResponsible = false
       this.drawerRecords = true
       this.activeButton = 'records'
     },
@@ -403,7 +406,16 @@ export default defineComponent({
       this.drawerAddressForm = false
       this.drawerRecords = false
       this.drawerBanks = true
+      this.drawerResponsible = false
       this.activeButton = 'banks'
+    },
+    onEditResponsible() {
+      this.drawerEmployeePersonForm = false
+      this.drawerAddressForm = false
+      this.drawerRecords = false
+      this.drawerBanks = false
+      this.drawerResponsible = true
+      this.activeButton = 'responsible'
     },
     onClosePerson() {
       this.drawerEmployeePersonForm = false
@@ -465,6 +477,7 @@ export default defineComponent({
       this.drawerEmployeePersonForm = false
       this.drawerRecords = false
       this.drawerBanks = false
+      this.drawerResponsible = false
     },
     onCloseAddress() {
       this.drawerAddressForm = false

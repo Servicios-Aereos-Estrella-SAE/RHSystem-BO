@@ -35,7 +35,7 @@
           <Sidebar v-model:visible="drawerUserResponsibleEmployeeForm" header="User" position="right"
             class="employee-user-responsible-form-sidebar" :showCloseIcon="true">
             <employeeUserResponsibleInfoForm :userResponsibleEmployee="userResponsibleEmployee" :employee="employee"
-              @onUserResponsibleEmployeeSave="onSave" />
+              @onUserResponsibleEmployeeSave="onSave" :usersAsigned="userResponsibleEmployeesList" />
           </Sidebar>
         </div>
       </div>

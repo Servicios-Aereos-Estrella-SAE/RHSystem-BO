@@ -203,9 +203,6 @@
             </template>
           </FileUpload>
         </div>
-        <div class="input-box" v-if="!isNewUser">
-          <employeeUserResponsibles :employee="employee" />
-        </div>
 
         <div class="box-tools-footer">
           <button v-if="employee.deletedAt" type="button" class="btn btn-block" @click="onReactivate">

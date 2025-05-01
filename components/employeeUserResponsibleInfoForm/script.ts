@@ -4,7 +4,6 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
-import type { BankInterface } from '~/resources/scripts/interfaces/BankInterface';
 import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
 import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 import UserService from '~/resources/scripts/services/UserService';
@@ -18,6 +17,7 @@ export default defineComponent({
   name: 'EmployeeUserResponsibleInfoForm',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    usersAsigned: { type: Array as PropType<UserResponsibleEmployeeInterface[]>, required: true },
     userResponsibleEmployee: { type: Object as PropType<UserResponsibleEmployeeInterface>, required: true },
     clickOnSave: { type: Function, default: null }
   },
@@ -46,9 +46,13 @@ export default defineComponent({
   },
   methods: {
     async getUsers() {
-      const response = await new UserService().getFilteredList('', null, 999999)
-      const list: UserInterface[] = response.status === 200 ? response._data.data.users.data : []
-      return list
+      const response = await new UserService().getFilteredList('', null, 1, 9999999)
+      let list: UserInterface[] = response.status === 200 ? response._data.data.users.data : []
+      list = list.filter(a => a.personId != this.employee.personId && a.role?.roleSlug !== 'root' && a.role?.roleSlug !== 'admin')
+      const filteredList = list.filter(user =>
+        !this.usersAsigned.some(asigned => asigned.userId === user.userId)
+      );
+      return filteredList
     },
     async onSave() {
       this.submitted = true
