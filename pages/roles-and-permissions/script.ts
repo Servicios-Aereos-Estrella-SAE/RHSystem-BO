@@ -13,25 +13,15 @@ export default defineComponent({
   props: {},
   data: () => ({
     search: '' as string,
-    departmentList: [] as DepartmentInterface[],
     roleList: [] as RoleInterface[],
     systemModulesList: [] as SystemModuleInterface[],
-    permissions: []  as number[][],
-    departmentPermissions: []  as number[][],
+    permissions: [] as number[][],
     roleSelected: 0,
     canUpdate: false,
     canRead: false,
     activeEdit: false
   }),
   computed: {
-    groupedDepartments() {
-      const columns = 3
-      const groups = []
-      for (let i = 0; i < this.departmentList.length; i += columns) {
-        groups.push(this.departmentList.slice(i, i + columns))
-      }
-      return groups
-    }
   },
   created() { },
   async mounted() {
@@ -44,7 +34,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async validateAccess () {
+    async validateAccess() {
       const myGeneralStore = useMyGeneralStore()
       const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
       const permissions = await myGeneralStore.getAccess(systemModuleSlug)
@@ -65,41 +55,17 @@ export default defineComponent({
         })
       }
     },
-    async init () {
+    async init() {
       await Promise.all([
         this.getSystemModules(),
-        this.getDepartments(),
       ])
 
       await this.getRoles()
-      await this.setRoleDepartmets()
     },
     async getSystemModules() {
       const response = await new SystemModuleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.systemModules.data : []
       this.systemModulesList = list
-    },
-    async getDepartments() {
-      const response = await new DepartmentService().getAllDepartmentList()
-      const list = response.status === 200 ? response._data.data.departments : []
-      this.departmentList = list
-    },
-    async setRoleDepartmets () {
-      const DEPARTMENT_PERMISSIONS = [] as number[][]
-      let index = 0
-
-      for await (const role of this.roleList) {
-        const departments = [] as Array<number>
-
-        for await (const roleDepartment of role.roleDepartments) {
-         departments.push(roleDepartment.departmentId)
-        }
-
-        DEPARTMENT_PERMISSIONS[index] = departments
-        index++
-      }
-
-      this.departmentPermissions = DEPARTMENT_PERMISSIONS
     },
     async getRoles() {
       const response = await new RoleService().getFilteredList('', 1, 100)
@@ -154,11 +120,7 @@ export default defineComponent({
           for (const permissionId of this.permissions[index]) {
             permissions.push(permissionId)
           }
-          const departments = []
-          for (const departmentId of this.departmentPermissions[index]) {
-            departments.push(departmentId)
-          }
-          const response = await new RoleService().assign(role.roleId, permissions, departments)
+          const response = await new RoleService().assign(role.roleId, permissions)
           if (response.status !== 201) {
             throw new Error(response._data.message || 'Failed to assign role')
           }
