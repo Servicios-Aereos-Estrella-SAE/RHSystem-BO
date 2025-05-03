@@ -57,11 +57,11 @@ export default class PositionService {
     return responseRequest;
   }
 
-  async getPositionsDepartment(departmentId: number): Promise<PositionInterface[]> {
+  async getPositionsDepartment(departmentId: number, userResponsibleId?: number | null): Promise<PositionInterface[]> {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
     try {
-      await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
+      await $fetch(`${this.API_PATH}/departments/${departmentId}/positions/${userResponsibleId}`, {
         headers,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }

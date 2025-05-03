@@ -9,6 +9,7 @@ export default defineComponent({
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
+    canManageResponsibleEdit: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
