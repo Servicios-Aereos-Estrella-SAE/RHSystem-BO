@@ -53,10 +53,6 @@ export default defineComponent({
       return display
     },
     displayButtonManageShiftChanges() {
-      if (this.sessionUser?.role?.roleSlug !== 'root') {
-        return false
-      }
-
       if (!this.canManageShiftChanges) {
         return false
       }
