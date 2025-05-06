@@ -18,6 +18,7 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -329,7 +330,6 @@ export default defineComponent({
 
       await this.setDepartmentPositionEmployeeList()
     }
-
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
   },
@@ -538,7 +538,20 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getAllDepartmentList()
+      let response = null
+      const departmentService = new DepartmentService()
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const filters = {
+        userResponsibleId: userResponsibleId
+      }
+      response = await departmentService.getAllDepartmentList(filters)
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     async handlerVisualizationModeChange() {
@@ -589,7 +602,15 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
+        const myGeneralStore = useMyGeneralStore()
+        let userResponsibleId = null
+        if (!myGeneralStore.isRoot) {
+          const { data } = useAuth()
+          const session: unknown = data.value as unknown as UserInterface
+          const authUser = session as UserInterface
+          userResponsibleId = authUser.userId
+        }
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null, userResponsibleId)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
@@ -597,7 +618,15 @@ export default defineComponent({
     async setDepartmentPositionEmployeeList() {
       const positionId = null
       const departmentId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null)
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
@@ -791,9 +820,15 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType)
+      const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType, userResponsibleId)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
@@ -972,7 +1007,14 @@ export default defineComponent({
 
       const departmentId = null
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null)
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDiscrimitorsList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 

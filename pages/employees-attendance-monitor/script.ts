@@ -19,6 +19,7 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -569,12 +570,19 @@ export default defineComponent({
       const departmentId = null
       const positionId = null
       const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
       this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
-
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
@@ -622,13 +630,27 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getAllDepartmentList()
+      let response = null
+      const departmentService = new DepartmentService()
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const filters = {
+        userResponsibleId: userResponsibleId
+      }
+      response = await departmentService.getAllDepartmentList(filters)
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     getDepartmentPositionAssistStatistics() {
       const departmentListStatistics: any[] = []
 
       this.departmentList.forEach((department: DepartmentInterface) => {
+
         const departmentId = department.departmentId
         const list = this.employeeDepartmentPositionList.filter(item => item.employee.departmentId === departmentId)
         const statistics = {
@@ -743,7 +765,15 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
+        const myGeneralStore = useMyGeneralStore()
+        let userResponsibleId = null
+        if (!myGeneralStore.isRoot) {
+          const { data } = useAuth()
+          const session: unknown = data.value as unknown as UserInterface
+          const authUser = session as UserInterface
+          userResponsibleId = authUser.userId
+        }
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null, userResponsibleId)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
@@ -782,9 +812,15 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType)
+      const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType, userResponsibleId)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
@@ -977,7 +1013,14 @@ export default defineComponent({
       const departmentId = null
       const positionId = null
       const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDiscrimitorsList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 

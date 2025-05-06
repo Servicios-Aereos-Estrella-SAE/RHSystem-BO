@@ -145,11 +145,15 @@ export default class AssistService {
     date: string | Date,
     dateEnd: string | Date,
     datePay: string | Date,
-    reportType: string
+    reportType: string,
+    userResponsibleId: number | null
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, 'datePay': datePay, reportType }
+      const query = {
+        date, 'date-end': dateEnd, 'datePay': datePay, reportType,
+        userResponsibleId,
+      }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-all`, {
         method: 'GET',
         headers: {

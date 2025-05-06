@@ -147,11 +147,11 @@ export default class EmployeeService {
     }
   }
 
-  async getByCode(code: number) {
+  async getByCode(code: number, userResponsibleId: number | null) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/employees/get-by-code/${code}`, {
+      await $fetch(`${this.API_PATH}/employees/get-by-code/${code}/${userResponsibleId}`, {
         headers,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }

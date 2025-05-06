@@ -12,6 +12,7 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface'
 import ToleranceService from '~/resources/scripts/services/ToleranceService'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -348,7 +349,15 @@ export default defineComponent({
     async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
-        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
+        const myGeneralStore = useMyGeneralStore()
+        let userResponsibleId = null
+        if (!myGeneralStore.isRoot) {
+          const { data } = useAuth()
+          const session: unknown = data.value as unknown as UserInterface
+          const authUser = session as UserInterface
+          userResponsibleId = authUser.userId
+        }
+        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()), userResponsibleId)
         if (employeeResponse?.status === 200) {
           const employee = employeeResponse._data.data.employee
           this.employee = employee
@@ -486,7 +495,15 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
+        const myGeneralStore = useMyGeneralStore()
+        let userResponsibleId = null
+        if (!myGeneralStore.isRoot) {
+          const { data } = useAuth()
+          const session: unknown = data.value as unknown as UserInterface
+          const authUser = session as UserInterface
+          userResponsibleId = authUser.userId
+        }
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null, userResponsibleId)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
