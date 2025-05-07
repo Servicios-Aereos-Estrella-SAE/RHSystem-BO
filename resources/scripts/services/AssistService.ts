@@ -120,11 +120,12 @@ export default class AssistService {
     dateEnd: string | Date,
     datePay: string | Date,
     departmentId: number,
-    reportType: string
+    reportType: string,
+    userResponsibleId: number | null
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, 'datePay': datePay, departmentId, reportType }
+      const query = { date, 'date-end': dateEnd, 'datePay': datePay, departmentId, reportType, userResponsibleId }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-department`, {
         method: 'GET',
         headers: {

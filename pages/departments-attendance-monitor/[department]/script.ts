@@ -16,6 +16,7 @@ import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDa
 import { useMyGeneralStore } from '~/store/general'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   name: 'AttendanceMonitorByDepartment',
@@ -561,11 +562,30 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getOnlyWithEmployees()
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const filters = {
+        userResponsibleId: userResponsibleId
+      }
+      const response = await new DepartmentService().getOnlyWithEmployees(filters)
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     async setDepartmentPositions() {
-      const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new DepartmentService().getDepartmentPositions(parseInt(this.departmentID) || 0, userResponsibleId)
       this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
     async handlerDeparmentSelect() {
@@ -615,7 +635,15 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
+        const myGeneralStore = useMyGeneralStore()
+        let userResponsibleId = null
+        if (!myGeneralStore.isRoot) {
+          const { data } = useAuth()
+          const session: unknown = data.value as unknown as UserInterface
+          const authUser = session as UserInterface
+          userResponsibleId = authUser.userId
+        }
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null, userResponsibleId)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }
@@ -627,7 +655,15 @@ export default defineComponent({
 
       const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null)
+      const myGeneralStore = useMyGeneralStore()
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
@@ -807,9 +843,15 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
       const assistService = new AssistService()
-      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, this.datePay, departmentId, reportType)
+      const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, this.datePay, departmentId, reportType, userResponsibleId)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
@@ -1011,7 +1053,14 @@ export default defineComponent({
 
       const departmentId = parseInt(`${this.departmenSelected.departmentId}`)
       const positionId = null
-      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null)
+      let userResponsibleId = null
+      if (!myGeneralStore.isRoot) {
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+        userResponsibleId = authUser.userId
+      }
+      const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 999999999, false, null, userResponsibleId)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDiscrimitorsList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 

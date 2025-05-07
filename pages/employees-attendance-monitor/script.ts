@@ -325,9 +325,6 @@ export default defineComponent({
 
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
-    this.canSeeConsecutiveFaults = false
-    const systemModuleSlug = firstSegment
-    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
 
     await this.setDefaultVisualizationMode()
 
@@ -339,7 +336,9 @@ export default defineComponent({
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
-
+    this.canSeeConsecutiveFaults = false
+    const systemModuleSlug = firstSegment
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
   },
   methods: {

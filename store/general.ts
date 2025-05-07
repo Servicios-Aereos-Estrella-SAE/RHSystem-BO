@@ -4,6 +4,7 @@ import type { SystemModuleInterface } from '~/resources/scripts/interfaces/Syste
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import UserService from '~/resources/scripts/services/UserService'
 
 export const useMyGeneralStore = defineStore({
   id: 'myGeneralStore',
@@ -152,11 +153,11 @@ export const useMyGeneralStore = defineStore({
       const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       let hasAccess = false
-      if (authUser && authUser.roleId) {
-        const roleService = new RoleService()
-        const roleResponse = await roleService.hasAccessDepartment(authUser.roleId, departmentId)
-        if (roleResponse && roleResponse.status === 200) {
-          hasAccess = roleResponse._data.data.roleHasAccess
+      if (authUser && authUser.userId) {
+        const userService = new UserService()
+        const userResponse = await userService.hasAccessDepartment(authUser.userId, departmentId)
+        if (userResponse && userResponse.status === 200) {
+          hasAccess = userResponse._data.data.userHasAccess
         }
       } else {
         this.isRoot = false
@@ -177,7 +178,7 @@ export const useMyGeneralStore = defineStore({
             this.isRoot = true
           } else if (authUser.role.roleSlug === 'rh-manager') {
             this.isRh = true
-          }  else if (authUser.role.roleSlug === 'admin') {
+          } else if (authUser.role.roleSlug === 'admin') {
             this.isAdmin = true
           } else {
             this.isRoot = false

@@ -317,8 +317,6 @@ export default defineComponent({
     const firstSegment = fullPath.split('/')[1]
     this.canSeeConsecutiveFaults = false
     const systemModuleSlug = firstSegment
-    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
-
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange();
     this.setDefaultVisualizationMode()
@@ -331,6 +329,7 @@ export default defineComponent({
       await this.setDepartmentPositionEmployeeList()
     }
     this.setGraphsData()
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
   },
   methods: {
