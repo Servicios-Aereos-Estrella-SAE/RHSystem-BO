@@ -92,11 +92,11 @@ export default class DepartmentService {
     return responseRequest
   }
 
-  async getDepartmentPositions(departmentId: number, userResponsibleId?: number | null) {
+  async getDepartmentPositions(departmentId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/departments/${departmentId}/positions/${userResponsibleId}`, {
+    await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
       headers,
       onResponse({ response }) { responseRequest = response },
       onRequestError({ response }) { responseRequest = response }

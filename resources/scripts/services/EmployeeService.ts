@@ -14,7 +14,7 @@ export default class EmployeeService {
       Authorization: `${token.value}`
     }
   }
-  async getFilteredList(searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null, userResponsibleId: number | null) {
+  async getFilteredList(searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees`, {
@@ -26,7 +26,6 @@ export default class EmployeeService {
         employeeWorkSchedule: employeeWorkSchedule,
         onlyInactive: onlyInactive,
         employeeTypeId,
-        userResponsibleId,
         page,
         limit
       },
@@ -147,11 +146,11 @@ export default class EmployeeService {
     }
   }
 
-  async getByCode(code: number, userResponsibleId: number | null) {
+  async getByCode(code: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
-      await $fetch(`${this.API_PATH}/employees/get-by-code/${code}/${userResponsibleId}`, {
+      await $fetch(`${this.API_PATH}/employees/get-by-code/${code}`, {
         headers,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }

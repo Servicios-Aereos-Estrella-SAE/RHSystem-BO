@@ -120,12 +120,11 @@ export default class AssistService {
     dateEnd: string | Date,
     datePay: string | Date,
     departmentId: number,
-    reportType: string,
-    userResponsibleId: number | null
+    reportType: string
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, 'datePay': datePay, departmentId, reportType, userResponsibleId }
+      const query = { date, 'date-end': dateEnd, 'datePay': datePay, departmentId, reportType }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-by-department`, {
         method: 'GET',
         headers: {
@@ -146,14 +145,12 @@ export default class AssistService {
     date: string | Date,
     dateEnd: string | Date,
     datePay: string | Date,
-    reportType: string,
-    userResponsibleId: number | null
+    reportType: string
   ) {
     let responseRequest: any = null
     try {
       const query = {
         date, 'date-end': dateEnd, 'datePay': datePay, reportType,
-        userResponsibleId,
       }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-all`, {
         method: 'GET',

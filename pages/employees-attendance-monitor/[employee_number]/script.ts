@@ -349,15 +349,7 @@ export default defineComponent({
     async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
-        const myGeneralStore = useMyGeneralStore()
-        let userResponsibleId = null
-        if (!myGeneralStore.isRoot) {
-          const { data } = useAuth()
-          const session: unknown = data.value as unknown as UserInterface
-          const authUser = session as UserInterface
-          userResponsibleId = authUser.userId
-        }
-        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()), userResponsibleId)
+        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
         if (employeeResponse?.status === 200) {
           const employee = employeeResponse._data.data.employee
           this.employee = employee
@@ -495,15 +487,7 @@ export default defineComponent({
     },
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
-        const myGeneralStore = useMyGeneralStore()
-        let userResponsibleId = null
-        if (!myGeneralStore.isRoot) {
-          const { data } = useAuth()
-          const session: unknown = data.value as unknown as UserInterface
-          const authUser = session as UserInterface
-          userResponsibleId = authUser.userId
-        }
-        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null, userResponsibleId)
+        const response = await new EmployeeService().getFilteredList(event.query.trim(), null, null, null, 1, 30, false, null)
         const list = response.status === 200 ? response._data.data.employees.data : []
         this.filteredEmployees = list
       }

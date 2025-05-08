@@ -61,8 +61,7 @@
       margin-bottom: 0.5rem;
       justify-content: flex-end;
 
-      @media screen and (max-width: $phone) {
-      }
+      @media screen and (max-width: $phone) {}
     }
 
     .general-departments-graphs {
@@ -115,4 +114,11 @@
       font-size: 0.7rem !important;
     }
   }
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
 }
