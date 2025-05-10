@@ -18,7 +18,22 @@
           <small class="p-error" v-if="submitted && !userResponsibleEmployee.userId">User is
             required.</small>
         </div>
-        <div v-if="isNewUserResponsibleEmployee" class="box-tools-footer">
+
+        <div class="input-box">
+          <label for="readonlySwicht">
+            Read only
+            ( {{ readonlySwicht ? 'Active' : 'Inactive' }} )
+          </label>
+          <InputSwitch v-model="readonlySwicht" />
+        </div>
+        <div class="input-box">
+          <label for="directBossSwicht">
+            Direct Boss
+            ( {{ directBossSwicht ? 'Active' : 'Inactive' }} )
+          </label>
+          <InputSwitch v-model="directBossSwicht" />
+        </div>
+        <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
             Save user
           </Button>

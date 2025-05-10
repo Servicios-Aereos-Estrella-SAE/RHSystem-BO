@@ -62,6 +62,8 @@ export default defineComponent({
           userResponsibleEmployeeId: null,
           userId: null,
           employeeId: this.employee.employeeId,
+          userResponsibleEmployeeReadonly: 0,
+          userResponsibleEmployeeDirectBoss: 0,
         }
         this.userResponsibleEmployee = newUserResponsibleEmployee
         this.drawerUserResponsibleEmployeeForm = true

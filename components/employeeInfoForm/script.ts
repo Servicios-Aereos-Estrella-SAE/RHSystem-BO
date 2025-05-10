@@ -20,6 +20,10 @@ import FlightAttendantService from '~/resources/scripts/services/FlightAttendant
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
 import UserService from '~/resources/scripts/services/UserService';
 import type { EmployeeTypeInterface } from '~/resources/scripts/interfaces/EmployeeTypeInterface';
+import { useMyGeneralStore } from '~/store/general';
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -72,9 +76,11 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeReactivate: false,
     employeeTypes: [] as EmployeeTypeInterface[],
+    userResponsibleEmployeesList: [] as UserResponsibleEmployeeInterface[],
+    canManageUserResponsible: false
   }),
   computed: {
-    displayEmployeeTypeFilter () {
+    displayEmployeeTypeFilter() {
       let display = false
 
       if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
@@ -189,10 +195,34 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-
+    this.verifyCanManageUserResponsible()
     this.isReady = true
   },
   methods: {
+    async verifyCanManageUserResponsible() {
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        myGeneralStore.setFullLoader(true)
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+
+        this.userResponsibleEmployeesList = []
+        const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
+        this.userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+        if (this.userResponsibleEmployeesList.length > 0) {
+          if (!this.userResponsibleEmployeesList[0].userResponsibleEmployeeReadonly) {
+            this.canManageUserResponsible = true
+          }
+        }
+        myGeneralStore.setFullLoader(false)
+      } else {
+        this.canManageUserResponsible = true
+      }
+
+    },
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
       this.positions = await positionService.getPositionsDepartment(departmentId)

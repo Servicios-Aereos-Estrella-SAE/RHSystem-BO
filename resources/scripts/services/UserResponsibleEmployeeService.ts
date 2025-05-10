@@ -31,6 +31,23 @@ export default class UserResponsibleEmployeeService {
     return responseRequest
   }
 
+  async update(userResponsibleEmployee: UserResponsibleEmployeeInterface) {
+    let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS };
+    try {
+      await $fetch(`${this.API_PATH}/user-responsible-employees/${userResponsibleEmployee.userResponsibleEmployeeId}`, {
+        headers,
+        method: 'PUT',
+        body: userResponsibleEmployee,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+
+    return responseRequest;
+  }
+
   async delete(userResponsibleEmployee: UserResponsibleEmployeeInterface) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
@@ -66,11 +83,11 @@ export default class UserResponsibleEmployeeService {
     }
   }
 
-  async getByEmployee(employeeId: number) {
+  async getByEmployee(employeeId: number, userId?: number | null) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
-    await $fetch(`${this.API_PATH}/employees/${employeeId}/user-responsible`, {
+    await $fetch(`${this.API_PATH}/employees/${employeeId}/user-responsible/${userId}`, {
       headers,
       onResponse({ response }) { responseRequest = response },
       onRequestError({ response }) { responseRequest = response }

@@ -28,6 +28,8 @@ export default defineComponent({
     isReady: false,
     isDeleted: false,
     isValid: true,
+    readonlySwicht: true,
+    directBossSwicht: true,
   }),
   computed: {
   },
@@ -40,6 +42,8 @@ export default defineComponent({
       this.isDeleted = true
     }
     this.usersList = await this.getUsers()
+    this.readonlySwicht = this.userResponsibleEmployee.userResponsibleEmployeeReadonly === 1 ? true : false
+    this.directBossSwicht = this.userResponsibleEmployee.userResponsibleEmployeeDirectBoss === 1 ? true : false
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
@@ -49,9 +53,15 @@ export default defineComponent({
       const response = await new UserService().getFilteredList('', null, 1, 9999999)
       let list: UserInterface[] = response.status === 200 ? response._data.data.users.data : []
       list = list.filter(a => a.personId != this.employee.personId && a.role?.roleSlug !== 'root' && a.role?.roleSlug !== 'admin')
-      const filteredList = list.filter(user =>
-        !this.usersAsigned.some(asigned => asigned.userId === user.userId)
-      );
+      let filteredList = []
+      if (this.isNewUserResponsibleEmployee) {
+        filteredList = list.filter(user =>
+          !this.usersAsigned.some(asigned => asigned.userId === user.userId)
+        );
+      }
+      else {
+        filteredList = list
+      }
       return filteredList
     },
     async onSave() {
@@ -68,15 +78,28 @@ export default defineComponent({
         })
         return
       }
+      if (this.readonlySwicht && this.directBossSwicht) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Validation data',
+          detail: 'Readonly and direct boss cannot be assigned at the same time.',
+          life: 5000,
+        })
+        return
+      }
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       let userResponsibleEmployeeResponse = null
+      this.userResponsibleEmployee.userResponsibleEmployeeReadonly = this.readonlySwicht ? 1 : 0
+      this.userResponsibleEmployee.userResponsibleEmployeeDirectBoss = this.directBossSwicht ? 1 : 0
       if (!this.userResponsibleEmployee.userResponsibleEmployeeId) {
         userResponsibleEmployeeResponse = await userResponsibleEmployeeService.store(this.userResponsibleEmployee)
+      } else {
+        userResponsibleEmployeeResponse = await userResponsibleEmployeeService.update(this.userResponsibleEmployee)
       }
 
-      if (userResponsibleEmployeeResponse.status === 201) {
+      if (userResponsibleEmployeeResponse.status === 201 || userResponsibleEmployeeResponse.status === 200) {
         userResponsibleEmployeeResponse = await userResponsibleEmployeeService.show(userResponsibleEmployeeResponse._data.data.userResponsibleEmployee.userResponsibleEmployeeId)
         if (userResponsibleEmployeeResponse.status === 200) {
           const userResponsibleEmployee = userResponsibleEmployeeResponse._data.data.userResponsibleEmployee.userResponsibleEmployee
