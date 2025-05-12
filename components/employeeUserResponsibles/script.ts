@@ -26,7 +26,8 @@ export default defineComponent({
     drawerUserResponsibleEmployeeForm: false,
     drawerUserResponsibleEmployeeDelete: false,
     isDeleted: false,
-    canManageResponsibleEdit: false
+    canManageResponsibleEdit: false,
+    canManageUserResponsible: false
   }),
   computed: {
   },
@@ -41,6 +42,8 @@ export default defineComponent({
     }
     await this.getUserResponsibleEmployees()
     myGeneralStore.setFullLoader(false)
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
 
   },

@@ -1,9 +1,6 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
-import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface'
-import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -20,7 +17,6 @@ export default defineComponent({
     canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
-    userResponsibleEmployeesList: [] as UserResponsibleEmployeeInterface[],
     canManageUserResponsible: false
   }),
   computed: {
@@ -39,33 +35,11 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.verifyCanManageUserResponsible()
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
   },
   methods: {
-    async verifyCanManageUserResponsible() {
-      const myGeneralStore = useMyGeneralStore()
-      if (!myGeneralStore.isRoot) {
-        myGeneralStore.setFullLoader(true)
-        const { data } = useAuth()
-        const session: unknown = data.value as unknown as UserInterface
-        const authUser = session as UserInterface
-
-        this.userResponsibleEmployeesList = []
-        const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
-        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
-        this.userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
-        if (this.userResponsibleEmployeesList.length > 0) {
-          if (!this.userResponsibleEmployeesList[0].userResponsibleEmployeeReadonly) {
-            this.canManageUserResponsible = true
-          }
-        }
-        myGeneralStore.setFullLoader(false)
-      } else {
-        this.canManageUserResponsible = true
-      }
-
-    },
     handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()

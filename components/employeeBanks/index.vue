@@ -6,7 +6,7 @@
           <div>
             <div class="files-header">
               <div></div>
-              <Button class="btn btn-block" @click="addNew">
+              <Button v-if="canManageUserResponsible" class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -22,7 +22,8 @@
         <div v-if="employeeBanksList.length > 0" class="employee-banks-wrapper">
           <div v-for="(employeeBank, index) in employeeBanksList" :key="`employee-bank-${index}`">
             <employeeBankInfoCard :employeeBank="employeeBank" :click-on-edit="() => { onEdit(employeeBank) }"
-              :click-on-delete="() => { onDelete(employeeBank) }" :isDeleted="isDeleted" />
+              :click-on-delete="() => { onDelete(employeeBank) }" :isDeleted="isDeleted"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="empty">
@@ -32,7 +33,8 @@
         <div class="card flex justify-content-center">
           <Sidebar v-model:visible="drawerEmployeeBankForm" header="Bank" position="right"
             class="employee-bank-form-sidebar" :showCloseIcon="true">
-            <employeeBankInfoForm :employeeBank="employeeBank" :employee="employee" @onEmployeeBankSave="onSave" />
+            <employeeBankInfoForm :employeeBank="employeeBank" :employee="employee" @onEmployeeBankSave="onSave"
+              :canManageUserResponsible="canManageUserResponsible" />
           </Sidebar>
         </div>
       </div>

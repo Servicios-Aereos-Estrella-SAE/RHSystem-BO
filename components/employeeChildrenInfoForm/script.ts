@@ -15,7 +15,8 @@ export default defineComponent({
   props: {
     employeeChildren: { type: Object as PropType<EmployeeChildrenInterface>, required: true },
     clickOnSave: { type: Function, default: null },
-    isDeleted: { type: Boolean, required: true }
+    isDeleted: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     submitted: false,

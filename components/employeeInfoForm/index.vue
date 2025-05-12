@@ -6,19 +6,22 @@
           <div class="input-box">
             <label for="personGender">Work Business Unit</label>
             <Dropdown v-model="employee.businessUnitId" :options="businessUnits" optionLabel="businessUnitName"
-              optionValue="businessUnitId" placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted" />
+              optionValue="businessUnitId" placeholder="Select" class="w-full md:w-14rem"
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
           <div class="input-box">
             <label for="personGender">Payroll Business Unit</label>
             <Dropdown v-model="employee.payrollBusinessUnitId" :options="businessUnits" optionLabel="businessUnitName"
               optionValue="businessUnitId" placeholder="Select a Payroll Business Unit" class="w-full md:w-14rem"
-              :disabled="isDeleted" :invalid="submitted && !employee.payrollBusinessUnitId" />
+              :disabled="isDeleted || !canManageUserResponsible"
+              :invalid="submitted && !employee.payrollBusinessUnitId" />
             <small class="p-error" v-if="submitted && !employee.payrollBusinessUnitId">Payroll business unit is
               required.</small>
           </div>
           <div class="input-box">
             <label for="employeeCode">Employee Code</label>
-            <InputText v-model="employee.employeeCode" placeholder="Enter Employee Code" :disabled="isDeleted" />
+            <InputText v-model="employee.employeeCode" placeholder="Enter Employee Code"
+              :disabled="isDeleted || !canManageUserResponsible" />
             <small class="p-error" v-if="submitted && !employee.employeeCode">Employee Code is required.</small>
           </div>
           <div v-if="displayEmployeeTypeFilter" class="input-box" v-show="!pilot && !flightAttendant">
@@ -27,14 +30,15 @@
             </label>
             <Dropdown v-model="employee.employeeTypeId" optionLabel="employeeTypeName" optionValue="employeeTypeId"
               placeholder="Select a Employee Type" filter class="w-full md:w-14rem"
-              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted" :options="employeeTypes" />
+              :invalid="submitted && !employee.employeeTypeId" :disabled="isDeleted || !canManageUserResponsible"
+              :options="employeeTypes" />
             <small class="p-error" v-if="submitted && !employee.employeeTypeId">Employee type is required.</small>
           </div>
           <div class="input-box">
             <label for="typeOfContract">Contract Type</label>
             <Dropdown v-model="employee.employeeTypeOfContract" :options="typesOfContract" optionLabel="label"
               optionValue="value" placeholder="Select Type of Contract" class="w-full md:w-14rem"
-              :disabled="isDeleted" />
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
         </div>
 
@@ -42,12 +46,14 @@
           <div class="group-2">
             <div class="input-box">
               <label for="employeeFirstName">First Name</label>
-              <InputText v-model="employee.employeeFirstName" placeholder="Enter First Name" :disabled="isDeleted" />
+              <InputText v-model="employee.employeeFirstName" placeholder="Enter First Name"
+                :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && !employee.employeeFirstName">First Name is required.</small>
             </div>
             <div class="input-box">
               <label for="employeeLastName">Last Name</label>
-              <InputText v-model="employee.employeeLastName" placeholder="Enter Last Name" :disabled="isDeleted" />
+              <InputText v-model="employee.employeeLastName" placeholder="Enter Last Name"
+                :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && !employee.employeeLastName">Last Name is required.</small>
             </div>
           </div>
@@ -56,7 +62,7 @@
               Business Email
             </label>
             <InputText id="useremail" v-model="employee.employeeBusinessEmail" type="email"
-              :invalid="submitted && isEmailInvalid" :disabled="isDeleted" />
+              :invalid="submitted && isEmailInvalid" :disabled="isDeleted || !canManageUserResponsible" />
             <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
               valid.</small>
           </div>
@@ -70,14 +76,14 @@
               </label>
               <Dropdown v-model="employee.departmentId" :options="departments" optionLabel="departmentName"
                 optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-                :invalid="submitted && !employee.departmentId" :disabled="isDeleted" />
+                :invalid="submitted && !employee.departmentId" :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && !employee.departmentId">Department is required.</small>
             </div>
             <div class="input-box">
               <label for="positionId">Position</label>
               <Dropdown v-model="employee.positionId" :options="positions" optionLabel="positionName"
                 optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
-                :invalid="submitted && !employee.positionId" :disabled="isDeleted" />
+                :invalid="submitted && !employee.positionId" :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && !employee.positionId">Position is required.</small>
             </div>
           </div>
@@ -85,9 +91,10 @@
             <div class="hire-date-box-container">
               <label for="employeeHireDate">Hire Date</label>
               <div v-if="!displayHireDateCalendar" class="hire-date-box">
-                <InputText v-model="employeeHireDate" readonly class="capitalize" :disabled="isDeleted" />
+                <InputText v-model="employeeHireDate" readonly class="capitalize"
+                  :disabled="isDeleted || !canManageUserResponsible" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate" @click="handlerDisplayHireDate"
-                  :disabled="isDeleted">
+                  :disabled="isDeleted || !canManageUserResponsible">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
@@ -97,7 +104,7 @@
               </div>
               <div v-if="displayHireDateCalendar" class="hire-date-box-controller">
                 <Calendar v-if="displayHireDateCalendar" v-model.lazy="employee.employeeHireDate"
-                  placeholder="Select Hire Date" :disabled="isDeleted" />
+                  placeholder="Select Hire Date" :disabled="isDeleted || !canManageUserResponsible" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate"
                   @click="displayHireDateCalendar = false">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -115,20 +122,22 @@
           <div class="group-3">
             <div class="input-box">
               <label for="employeeLastName">CURP</label>
-              <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP" :disabled="isDeleted" />
+              <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP"
+                :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal
                 identification is not valid.</small>
             </div>
             <div class="input-box">
               <label for="employeeLastName">RFC</label>
-              <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC" :disabled="isDeleted" />
+              <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC"
+                :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && employee.person.personRfc && !isValidRFC">RFC is not
                 valid.</small>
             </div>
             <div class="input-box">
               <label for="employeeLastName">Employee NSS</label>
               <InputText v-model="employee.person.personImssNss" placeholder="Enter employee NSS"
-                :disabled="isDeleted" />
+                :disabled="isDeleted || !canManageUserResponsible" />
             </div>
           </div>
         </div>
@@ -139,7 +148,7 @@
               Work Modality
             </label>
             <Dropdown v-model="activeSwicht" :options="workModalityOptions" optionLabel="label" optionValue="value"
-              placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted" />
+              placeholder="Select" class="w-full md:w-14rem" :disabled="isDeleted || !canManageUserResponsible" />
           </div>
           <div class="input-box">
             <label for="employeeLastName">
@@ -147,7 +156,7 @@
             </label>
             <Dropdown v-model="employee.employeeAssistDiscriminator" :options="assistDiscriminatorOptions"
               optionLabel="label" optionValue="value" placeholder="Select" class="w-full md:w-14rem"
-              :disabled="isDeleted" />
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
         </div>
 
@@ -155,7 +164,8 @@
           <div class="terminated-date-box-container">
             <label for="employeeTerminatedDate">Terminated Date</label>
             <div v-if="!displayTerminatedDateCalendar" class="terminated-date-box">
-              <InputText v-model="employeeTerminatedDate" readonly class="capitalize" :disabled="isDeleted" />
+              <InputText v-model="employeeTerminatedDate" readonly class="capitalize"
+                :disabled="isDeleted || !canManageUserResponsible" />
               <Button type="button" class="btn btn-block" id="display-input-terminateddate"
                 @click="handlerDisplayTerminatedDate">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

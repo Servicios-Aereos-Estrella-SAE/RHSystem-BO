@@ -76,7 +76,6 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeReactivate: false,
     employeeTypes: [] as EmployeeTypeInterface[],
-    userResponsibleEmployeesList: [] as UserResponsibleEmployeeInterface[],
     canManageUserResponsible: false
   }),
   computed: {
@@ -195,34 +194,12 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-    this.verifyCanManageUserResponsible()
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
   },
   methods: {
-    async verifyCanManageUserResponsible() {
-      const myGeneralStore = useMyGeneralStore()
-      if (!myGeneralStore.isRoot) {
-        myGeneralStore.setFullLoader(true)
-        const { data } = useAuth()
-        const session: unknown = data.value as unknown as UserInterface
-        const authUser = session as UserInterface
-
-        this.userResponsibleEmployeesList = []
-        const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
-        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
-        this.userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
-        if (this.userResponsibleEmployeesList.length > 0) {
-          if (!this.userResponsibleEmployeesList[0].userResponsibleEmployeeReadonly) {
-            this.canManageUserResponsible = true
-          }
-        }
-        myGeneralStore.setFullLoader(false)
-      } else {
-        this.canManageUserResponsible = true
-      }
-
-    },
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
       this.positions = await positionService.getPositionsDepartment(departmentId)

@@ -2,8 +2,10 @@ import { defineStore } from 'pinia'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService'
 import UserService from '~/resources/scripts/services/UserService'
 
 export const useMyGeneralStore = defineStore({
@@ -215,6 +217,31 @@ export const useMyGeneralStore = defineStore({
     },
     setUserVacationFormStatus(status: boolean) {
       this.userVacationFormClosed = status
-    }
+    },
+    async canManageUserResponsibleEmployee(employeeId: number,) {
+      let userResponsibleEmployeesList = [] as Array<UserResponsibleEmployeeInterface>
+      let canManageUserResponsible = false
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        myGeneralStore.setFullLoader(true)
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+
+        userResponsibleEmployeesList = []
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
+        userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+        if (userResponsibleEmployeesList.length > 0) {
+          if (!userResponsibleEmployeesList[0].userResponsibleEmployeeReadonly) {
+            canManageUserResponsible = true
+          }
+        }
+        myGeneralStore.setFullLoader(false)
+      } else {
+        canManageUserResponsible = true
+      }
+      return canManageUserResponsible
+    },
   }
 })

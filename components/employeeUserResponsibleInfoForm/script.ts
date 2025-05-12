@@ -30,6 +30,7 @@ export default defineComponent({
     isValid: true,
     readonlySwicht: true,
     directBossSwicht: true,
+    canManageUserResponsible: false
   }),
   computed: {
   },
@@ -45,8 +46,9 @@ export default defineComponent({
     this.readonlySwicht = this.userResponsibleEmployee.userResponsibleEmployeeReadonly === 1 ? true : false
     this.directBossSwicht = this.userResponsibleEmployee.userResponsibleEmployeeDirectBoss === 1 ? true : false
     myGeneralStore.setFullLoader(false)
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
-
   },
   methods: {
     async getUsers() {

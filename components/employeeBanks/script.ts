@@ -24,7 +24,8 @@ export default defineComponent({
     employeeBank: null as EmployeeBankInterface | null,
     drawerEmployeeBankForm: false,
     drawerEmployeeBankDelete: false,
-    isDeleted: false
+    isDeleted: false,
+    canManageUserResponsible: false
   }),
   computed: {
   },
@@ -37,8 +38,9 @@ export default defineComponent({
     }
     await this.getEmployeeBanks()
     myGeneralStore.setFullLoader(false)
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
-
   },
   methods: {
     async getEmployeeBanks() {
