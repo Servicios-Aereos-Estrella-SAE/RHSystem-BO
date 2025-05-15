@@ -288,42 +288,14 @@ export default defineComponent({
       } else {
         shiftExceptionResponse = await shiftExceptionService.update(this.shiftException)
       }
+      let wasSavedCorrectly = false
+      let shiftExceptionsSaved = [] as Array<ShiftExceptionInterface>
       this.shiftExceptionsError = []
       if (isNew) {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+          wasSavedCorrectly = true
+          shiftExceptionsSaved = shiftExceptionResponse._data.data.shiftExceptionsSaved
 
-          const shiftExceptions = shiftExceptionResponse._data.data.shiftExceptionsSaved
-          const allPromises: Promise<any>[] = []
-
-          for (const shiftException of shiftExceptions) {
-            const shiftExceptionEvidenceService = new ShiftExceptionEvidenceService()
-
-            for (const file of this.files) {
-              const shiftExceptionEvidence = {
-                shiftExceptionId: shiftException.shiftExceptionId,
-              } as ShiftExceptionEvidenceInterface
-
-              const promise = shiftExceptionEvidenceService.store(shiftExceptionEvidence, file)
-              allPromises.push(promise)
-            }
-          }
-
-          const results = await Promise.allSettled(allPromises)
-
-          for (const result of results) {
-            if (!(result.status === 'fulfilled' && (result.value.status === 201 || result.value.status === 200))) {
-              const err = result.status === 'rejected' ? result.reason : result.value;
-              const msgError = err._data?.message || 'Upload failed';
-              const severityType = err.status === 500 ? 'error' : 'warn';
-
-              this.$toast.add({
-                severity: severityType,
-                summary: 'Some evidence files failed',
-                detail: msgError,
-                life: 5000,
-              });
-            }
-          }
           if (shiftExceptionResponse._data.data.shiftExceptionsError) {
             this.shiftExceptionsError = shiftExceptionResponse._data.data.shiftExceptionsError
           }
@@ -340,7 +312,9 @@ export default defineComponent({
         }
       } else {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+          wasSavedCorrectly = true
 
+          shiftExceptionsSaved.push(shiftExceptionResponse._data.data.shiftException)
           shiftExceptionResponse = await shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
 
           if (shiftExceptionResponse.status === 200) {
@@ -356,6 +330,38 @@ export default defineComponent({
             detail: msgError,
             life: 5000,
           })
+        }
+      }
+      if (wasSavedCorrectly) {
+        const allPromises: Promise<any>[] = []
+
+        for (const shiftException of shiftExceptionsSaved) {
+          const shiftExceptionEvidenceService = new ShiftExceptionEvidenceService()
+
+          for (const file of this.files) {
+            const shiftExceptionEvidence = {
+              shiftExceptionId: shiftException.shiftExceptionId,
+            } as ShiftExceptionEvidenceInterface
+            const promise = shiftExceptionEvidenceService.store(shiftExceptionEvidence, file)
+            allPromises.push(promise)
+          }
+        }
+
+        const results = await Promise.allSettled(allPromises)
+
+        for (const result of results) {
+          if (!(result.status === 'fulfilled' && (result.value.status === 201 || result.value.status === 200))) {
+            const err = result.status === 'rejected' ? result.reason : result.value;
+            const msgError = err._data?.message || 'Upload failed';
+            const severityType = err.status === 500 ? 'error' : 'warn';
+
+            this.$toast.add({
+              severity: severityType,
+              summary: 'Some evidence files failed',
+              detail: msgError,
+              life: 5000,
+            });
+          }
         }
       }
 
