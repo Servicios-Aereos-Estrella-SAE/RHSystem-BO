@@ -11,6 +11,8 @@ import { useMyGeneralStore } from '~/store/general';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface';
 import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterface';
+import ShiftExceptionEvidenceService from '~/resources/scripts/services/ShiftExceptionEvidenceService';
+import type { ShiftExceptionEvidenceInterface } from '~/resources/scripts/interfaces/ShiftExceptionEvidenceInterface';
 
 export default defineComponent({
   components: {
@@ -52,6 +54,10 @@ export default defineComponent({
       { label: 'No', value: 0 },
     ],
     activeSwichtTimeByTime: false,
+    files: [] as Array<any>,
+    shiftExceptionEvidences: [] as Array<ShiftExceptionEvidenceInterface>,
+    shiftExceptionEvidence: null as ShiftExceptionEvidenceInterface | null,
+    drawerShiftExceptionEvidenceDelete: false,
   }),
   computed: {
     selectedExceptionDate() {
@@ -74,14 +80,14 @@ export default defineComponent({
     "applyToMoreThanOneDay"() {
       this.shiftException.daysToApply = 0
     },
-   /*  "activeSwichtTimeByTime"(val) {
-      if (val) {
-        this.shiftException.shiftExceptionEnjoymentOfSalary = 0
-      } else {
-        this.shiftException.shiftExceptionEnjoymentOfSalary = null
-      }
-
-    } */
+    /*  "activeSwichtTimeByTime"(val) {
+       if (val) {
+         this.shiftException.shiftExceptionEnjoymentOfSalary = 0
+       } else {
+         this.shiftException.shiftExceptionEnjoymentOfSalary = null
+       }
+ 
+     } */
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -95,7 +101,11 @@ export default defineComponent({
       if (shiftExceptionResponse.status === 200) {
         this.currentShiftException = shiftExceptionResponse._data.data.shiftException
       }
+      const shiftExceptionEvidenceResponse = await shiftExceptionService.getEvidences(this.shiftException.shiftExceptionId)
 
+      if (shiftExceptionEvidenceResponse.status === 200) {
+        this.shiftExceptionEvidences = shiftExceptionEvidenceResponse._data.data.data
+      }
       if (this.currentShiftException && this.currentShiftException.shiftExceptionsDate) {
         this.currentDate = `${this.currentShiftException.shiftExceptionsDate}`
         const newDate = DateTime.fromISO(this.currentShiftException.shiftExceptionsDate.toString(), { setZone: true }).setZone('UTC-6').toFormat('yyyy-MM-dd HH:mm:ss')
@@ -281,6 +291,39 @@ export default defineComponent({
       this.shiftExceptionsError = []
       if (isNew) {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+
+          const shiftExceptions = shiftExceptionResponse._data.data.shiftExceptionsSaved
+          const allPromises: Promise<any>[] = []
+
+          for (const shiftException of shiftExceptions) {
+            const shiftExceptionEvidenceService = new ShiftExceptionEvidenceService()
+
+            for (const file of this.files) {
+              const shiftExceptionEvidence = {
+                shiftExceptionId: shiftException.shiftExceptionId,
+              } as ShiftExceptionEvidenceInterface
+
+              const promise = shiftExceptionEvidenceService.store(shiftExceptionEvidence, file)
+              allPromises.push(promise)
+            }
+          }
+
+          const results = await Promise.allSettled(allPromises)
+
+          for (const result of results) {
+            if (!(result.status === 'fulfilled' && (result.value.status === 201 || result.value.status === 200))) {
+              const err = result.status === 'rejected' ? result.reason : result.value;
+              const msgError = err._data?.message || 'Upload failed';
+              const severityType = err.status === 500 ? 'error' : 'warn';
+
+              this.$toast.add({
+                severity: severityType,
+                summary: 'Some evidence files failed',
+                detail: msgError,
+                life: 5000,
+              });
+            }
+          }
           if (shiftExceptionResponse._data.data.shiftExceptionsError) {
             this.shiftExceptionsError = shiftExceptionResponse._data.data.shiftExceptionsError
           }
@@ -297,7 +340,9 @@ export default defineComponent({
         }
       } else {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
+
           shiftExceptionResponse = await shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
+
           if (shiftExceptionResponse.status === 200) {
             const shiftException = shiftExceptionResponse._data.data.shiftException
             this.$emit('onShiftExceptionSave', shiftException as ShiftExceptionInterface)
@@ -312,8 +357,8 @@ export default defineComponent({
             life: 5000,
           })
         }
-
       }
+
       this.shiftException.shiftExceptionCheckInTime = shiftExceptionCheckInTimeTemp
       this.shiftException.shiftExceptionCheckOutTime = shiftExceptionCheckOutTimeTemp
       this.shiftException.shiftExceptionsDate = shiftExceptionDateTemp
@@ -401,6 +446,60 @@ export default defineComponent({
           this.minDate = DateTime.fromISO(dateMin ? dateMin : '').toJSDate()
         }
       }
-    }
+    },
+    validateFiles(event: any) {
+      let validFiles = event.files;
+      this.files = validFiles;
+      this.$forceUpdate()
+    },
+    getObjectURL(file: any) {
+      return URL.createObjectURL(file);
+    },
+    getFileName(url: string) {
+      if (!url) return 'Unknown file'
+      try {
+        let lastPart = url.split('/').pop() || ''
+        lastPart = lastPart.split('?')[0].split('#')[0]
+        const decoded = decodeURIComponent(lastPart)
+
+        return decoded.length > 40
+          ? '...' + decoded.slice(-40)
+          : decoded
+      } catch {
+        return 'Unknown File'
+      }
+    },
+    isImage(url?: string): boolean {
+      if (!url) return false
+      return /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(url)
+    },
+    deleteEvidence(shiftExceptionEvidence: ShiftExceptionEvidenceInterface) {
+      this.shiftExceptionEvidence = { ...shiftExceptionEvidence }
+      this.drawerShiftExceptionEvidenceDelete = true
+    },
+    async confirmDelete() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.shiftExceptionEvidence) {
+        this.drawerShiftExceptionEvidenceDelete = false
+        const shiftExceptionEvidenceService = new ShiftExceptionEvidenceService()
+        const employeeShiftExceptionEvidenceResponse = await shiftExceptionEvidenceService.delete(this.shiftExceptionEvidence)
+        if (employeeShiftExceptionEvidenceResponse.status === 200) {
+          const index = this.shiftExceptionEvidences.findIndex((shiftExceptionEvidence: ShiftExceptionEvidenceInterface) => shiftExceptionEvidence.shiftExceptionEvidenceId === this.shiftExceptionEvidence?.shiftExceptionEvidenceId)
+          if (index !== -1) {
+            this.shiftExceptionEvidences.splice(index, 1)
+            this.$forceUpdate()
+          }
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete evidence employee',
+            detail: employeeShiftExceptionEvidenceResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+    },
   }
 })
