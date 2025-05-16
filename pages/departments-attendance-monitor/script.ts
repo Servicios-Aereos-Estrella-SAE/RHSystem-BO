@@ -556,7 +556,7 @@ export default defineComponent({
         myGeneralStore.setFullLoader(true)
         await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGraphsData()
-        await this.showEmployeesWithFaults()
+        await this.setEmployeesWithFaults()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -583,7 +583,7 @@ export default defineComponent({
       }
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
-      await this.showEmployeesWithFaults()
+      await this.setEmployeesWithFaults()
 
       this.setGraphsData()
       myGeneralStore.setFullLoader(false)
@@ -604,7 +604,7 @@ export default defineComponent({
 
       this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
-      await this.showEmployeesWithFaults()
+      await this.setEmployeesWithFaults()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -933,7 +933,7 @@ export default defineComponent({
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
       return (diffInDays + 1) >= 3 ? true : false
     },
-    async showEmployeesWithFaults() {
+    async setEmployeesWithFaults() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.employeesWithFaults = []
@@ -946,7 +946,7 @@ export default defineComponent({
         let found3Consecutive = false
 
         for (const calendar of assist.calendar) {
-          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
             consecutiveFaults++
             if (consecutiveFaults === 3) {
               found3Consecutive = true
@@ -961,7 +961,7 @@ export default defineComponent({
           assist.employee.faultDays = []
 
           for (const calendar of assist.calendar) {
-            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
                 day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
               })
@@ -994,7 +994,7 @@ export default defineComponent({
             const noChecks = !calendar.assist.checkIn &&
               !calendar.assist.checkOut &&
               !calendar.assist.checkEatIn &&
-              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate
+              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday
 
             if (noChecks) {
               assist.employee.faultDays.push({

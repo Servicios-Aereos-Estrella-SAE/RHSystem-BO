@@ -602,6 +602,7 @@ export default defineComponent({
         myGeneralStore.setFullLoader(true)
         await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGraphsData()
+        await this.setEmployeesWithFaults()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -611,6 +612,7 @@ export default defineComponent({
       this.handlerVisualizationModeChange()
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
       this.setGraphsData()
+      await this.setEmployeesWithFaults()
       myGeneralStore.setFullLoader(false)
     },
     async handlerSearchEmployee(event: any) {
@@ -634,6 +636,7 @@ export default defineComponent({
       this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await this.setEmployeesWithFaults()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -966,7 +969,7 @@ export default defineComponent({
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
       return (diffInDays + 1) >= 3 ? true : false
     },
-    async showEmployeesWithFaults() {
+    async setEmployeesWithFaults() {
       if (!this.departmenSelected) {
         return false
       }
@@ -984,7 +987,7 @@ export default defineComponent({
         let found3Consecutive = false
 
         for (const calendar of assist.calendar) {
-          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
             consecutiveFaults++
             if (consecutiveFaults === 3) {
               found3Consecutive = true
@@ -999,7 +1002,7 @@ export default defineComponent({
           assist.employee.faultDays = []
 
           for (const calendar of assist.calendar) {
-            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
                 day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
               })
@@ -1033,6 +1036,7 @@ export default defineComponent({
               !calendar.assist.checkOut &&
               !calendar.assist.checkEatIn &&
               !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate
+              && !calendar.assist.isHoliday
 
             if (noChecks) {
               assist.employee.faultDays.push({
@@ -1051,7 +1055,6 @@ export default defineComponent({
           }
         }
       }
-      this.drawerEmployeeWithFaults = true
       myGeneralStore.setFullLoader(false)
     }
   }
