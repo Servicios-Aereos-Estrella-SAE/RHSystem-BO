@@ -149,6 +149,14 @@
               optionLabel="label" optionValue="value" placeholder="Select" class="w-full md:w-14rem"
               :disabled="isDeleted" />
           </div>
+          <div class="input-box">
+            <label for="ignoreConsecutiveAbsences">
+              Ignore consecutive absences
+            </label>
+            <Dropdown v-model="employee.employeeIgnoreConsecutiveAbsences" :options="ignoreConsecutiveAbsenceOptions"
+              optionLabel="label" optionValue="value" placeholder="Select" class="w-full md:w-14rem"
+              :disabled="isDeleted" />
+          </div>
         </div>
 
         <div v-if="employee.deletedAt" class="input-box">

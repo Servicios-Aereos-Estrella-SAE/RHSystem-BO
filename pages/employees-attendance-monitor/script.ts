@@ -941,7 +941,8 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
 
       this.employeesWithFaults = []
-      for await (const assist of this.employeeDepartmentPositionList) {
+      const assistEmployees = this.employeeDepartmentPositionList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployees) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
         let consecutiveFaults = 0
@@ -984,8 +985,8 @@ export default defineComponent({
       this.employeeDiscrimitorsList = this.employeeDiscrimitorsList.filter(emp => emp.employee.employeeAssistDiscriminator === 1)
 
       await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
-
-      for await (const assist of this.employeeDiscrimitorsList) {
+      const assistEmployeeDiscrimitors = this.employeeDiscrimitorsList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployeeDiscrimitors) {
         assist.employee.faultDays = []
         if (assist.calendar.length > 0) {
           let noCheckStreak = 0

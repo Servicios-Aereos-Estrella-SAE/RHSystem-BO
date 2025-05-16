@@ -329,7 +329,6 @@ export default defineComponent({
 
       await this.setDepartmentPositionEmployeeList()
     }
-
     this.setGraphsData()
     myGeneralStore.setFullLoader(false)
   },
@@ -557,6 +556,7 @@ export default defineComponent({
         myGeneralStore.setFullLoader(true)
         await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGraphsData()
+        await this.showEmployeesWithFaults()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -583,6 +583,7 @@ export default defineComponent({
       }
 
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await this.showEmployeesWithFaults()
 
       this.setGraphsData()
       myGeneralStore.setFullLoader(false)
@@ -602,8 +603,8 @@ export default defineComponent({
       this.employeeDepartmentList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
       this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
-
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await this.showEmployeesWithFaults()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -937,7 +938,8 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.employeesWithFaults = []
 
-      for await (const assist of this.employeeDepartmentList) {
+      const assistEmployees = this.employeeDepartmentList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployees) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
         let consecutiveFaults = 0
@@ -980,7 +982,8 @@ export default defineComponent({
 
       await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
 
-      for await (const assist of this.employeeDiscrimitorsList) {
+      const assistEmployeeDiscrimitors = this.employeeDiscrimitorsList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployeeDiscrimitors) {
         assist.employee.faultDays = []
 
         if (assist.calendar.length > 0) {
@@ -1010,7 +1013,6 @@ export default defineComponent({
           }
         }
       }
-      this.drawerEmployeeWithFaults = true
       myGeneralStore.setFullLoader(false)
     }
   }

@@ -31,6 +31,7 @@ interface EmployeeInterface {
   employeeTerminatedDate: string | null | DateTime | Date
   employeeTypeId: number,
   employeeBusinessEmail: string | null,
+  employeeIgnoreConsecutiveAbsences: number,
   employeeCreatedAt: Date | string | null,
   employeeUpdatedAt: Date | string | null,
   employeeDeletedAt: Date | string | null,

@@ -976,7 +976,8 @@ export default defineComponent({
 
       this.employeesWithFaults = []
 
-      for await (const assist of this.employeeDepartmentList) {
+      const assistEmployees = this.employeeDepartmentList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployees) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
         let consecutiveFaults = 0
@@ -1019,7 +1020,8 @@ export default defineComponent({
 
       await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
 
-      for await (const assist of this.employeeDiscrimitorsList) {
+      const assistEmployeeDiscrimitors = this.employeeDiscrimitorsList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployeeDiscrimitors) {
         assist.employee.faultDays = []
 
         if (assist.calendar.length > 0) {
