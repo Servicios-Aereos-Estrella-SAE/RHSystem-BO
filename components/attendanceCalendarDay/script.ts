@@ -8,6 +8,7 @@ import { isValid } from 'date-fns';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
@@ -183,11 +184,42 @@ export default defineComponent({
     }
   },
   methods: {
-    displayExceptionComments(checkAssist: AssistDayInterface) {
+    async displayExceptionComments(checkAssist: AssistDayInterface) {
       if (checkAssist.assist.hasExceptions || this.hasNotes) {
+        const shiftExceptionService = new ShiftExceptionService()
         this.commentsSidebar = true
         this.dayExceptions = checkAssist.assist.exceptions.length > 0 ? checkAssist.assist.exceptions : []
+        for await (const shiftException of this.dayExceptions) {
+          if (shiftException.shiftExceptionId) {
+            const shiftExceptionEvidenceResponse = await shiftExceptionService.getEvidences(shiftException.shiftExceptionId)
+            if (shiftExceptionEvidenceResponse.status === 200) {
+              shiftException.shiftExceptionEvidences = shiftExceptionEvidenceResponse._data.data.data
+            }
+          }
+        }
       }
-    }
+    },
+    getFileName(url: string) {
+      if (!url) return 'Unknown file'
+      try {
+        let lastPart = url.split('/').pop() || ''
+        lastPart = lastPart.split('?')[0].split('#')[0]
+        const decoded = decodeURIComponent(lastPart)
+
+        return decoded.length > 40
+          ? '...' + decoded.slice(-40)
+          : decoded
+      } catch {
+        return 'Unknown File'
+      }
+    },
+    isImage(url?: string): boolean {
+      if (!url) return false
+      return /\.(jpe?g|png|gif|bmp|webp|svg)$/i.test(url)
+    },
+    isVideo(url: string) {
+      if (!url) return false
+      return /\.(mp4|webm|ogg)$/i.test(url);
+    },
   }
 })
