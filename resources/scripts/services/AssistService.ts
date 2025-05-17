@@ -149,7 +149,9 @@ export default class AssistService {
   ) {
     let responseRequest: any = null
     try {
-      const query = { date, 'date-end': dateEnd, 'datePay': datePay, reportType }
+      const query = {
+        date, 'date-end': dateEnd, 'datePay': datePay, reportType,
+      }
       await $fetch(`${this.API_PATH}/v1/assists/get-excel-all`, {
         method: 'GET',
         headers: {

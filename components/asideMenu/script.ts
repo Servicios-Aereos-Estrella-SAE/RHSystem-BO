@@ -29,7 +29,7 @@ export default defineComponent({
       const backgroundColorDark = myGeneralStore.backgroundColorDark
       return backgroundColorDark
     },
-    getBackgroundImage(){
+    getBackgroundImage() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage
@@ -65,7 +65,6 @@ export default defineComponent({
       ) {
         const departmentId = fullPath.split('/')[2]
         let hasAccessDepartment = false
-
         hasAccessDepartment = await myGeneralStore.hasAccessDepartment(parseInt(departmentId))
 
         if (!hasAccessDepartment) {
@@ -74,7 +73,7 @@ export default defineComponent({
             statusCode: 403,
             fatal: true,
             message: 'You don´t have access to this department'
-        })
+          })
         }
       }
 
@@ -186,7 +185,7 @@ export default defineComponent({
       // return !!path.includes(link.path)
       return false
     },
-    async closeCallback () {
+    async closeCallback() {
       const myGeneralStore = useMyGeneralStore()
       await myGeneralStore.toggleDisplayAside()
     }

@@ -19,6 +19,7 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -324,9 +325,6 @@ export default defineComponent({
 
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
-    this.canSeeConsecutiveFaults = false
-    const systemModuleSlug = firstSegment
-    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
 
     await this.setDefaultVisualizationMode()
 
@@ -338,7 +336,9 @@ export default defineComponent({
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
-
+    this.canSeeConsecutiveFaults = false
+    const systemModuleSlug = firstSegment
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -569,12 +569,12 @@ export default defineComponent({
       const departmentId = null
       const positionId = null
       const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
+      const myGeneralStore = useMyGeneralStore()
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
       this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
-
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
@@ -622,13 +622,16 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getAllDepartmentList()
+      let response = null
+      const departmentService = new DepartmentService()
+      response = await departmentService.getAllDepartmentList()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     getDepartmentPositionAssistStatistics() {
       const departmentListStatistics: any[] = []
 
       this.departmentList.forEach((department: DepartmentInterface) => {
+
         const departmentId = department.departmentId
         const list = this.employeeDepartmentPositionList.filter(item => item.employee.departmentId === departmentId)
         const statistics = {
@@ -782,7 +785,6 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType)
       if (assistResponse.status === 201) {

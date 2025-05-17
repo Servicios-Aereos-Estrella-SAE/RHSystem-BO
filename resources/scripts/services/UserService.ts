@@ -216,4 +216,27 @@ export default class UserService {
       return false
     }
   }
+
+  async hasAccessDepartment(userId: number, departmentId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/users/has-access-department/${userId}/${departmentId}`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const userHasAccess = responseRequest.status === 200 ? responseRequest._data.data.userHasAccess : null
+
+      return {
+        status: responseRequest.status,
+        _data: {
+          data: {
+            userHasAccess: userHasAccess
+          }
+        }
+      }
+    } catch (error) {
+    }
+  }
 }

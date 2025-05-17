@@ -18,6 +18,7 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -134,6 +135,7 @@ export default defineComponent({
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
+    isReady: false,
   }),
   computed: {
     weeklyStartDay() {
@@ -306,18 +308,16 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
+    this.isReady = false
     this.setAssistSyncStatus()
     this.getNoPaymentDates()
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
     this.canSeeConsecutiveFaults = false
     const systemModuleSlug = firstSegment
-    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
-
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange();
     this.setDefaultVisualizationMode()
@@ -329,9 +329,10 @@ export default defineComponent({
 
       await this.setDepartmentPositionEmployeeList()
     }
-
     this.setGraphsData()
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
+    this.isReady = true
   },
   methods: {
     getNoPaymentDates() {
@@ -538,7 +539,9 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getAllDepartmentList()
+      let response = null
+      const departmentService = new DepartmentService()
+      response = await departmentService.getAllDepartmentList()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     async handlerVisualizationModeChange() {
@@ -791,7 +794,6 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType)
       if (assistResponse.status === 201) {

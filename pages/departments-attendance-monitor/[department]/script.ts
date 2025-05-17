@@ -16,6 +16,7 @@ import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDa
 import { useMyGeneralStore } from '~/store/general'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   name: 'AttendanceMonitorByDepartment',
@@ -565,7 +566,7 @@ export default defineComponent({
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     async setDepartmentPositions() {
-      const response = await new DepartmentService().getDepartmentPositions(this.departmenSelected?.departmentId || 0)
+      const response = await new DepartmentService().getDepartmentPositions(parseInt(this.departmentID) || 0)
       this.departmentPositionList = response.status === 200 ? response._data.data.positions : []
     },
     async handlerDeparmentSelect() {
@@ -807,7 +808,6 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelByDepartment(startDay, endDay, this.datePay, departmentId, reportType)
       if (assistResponse.status === 201) {
