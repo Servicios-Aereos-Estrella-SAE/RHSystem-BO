@@ -26,6 +26,7 @@ export default defineComponent({
     drawerEmployeeRecordDelete: false,
     employeeRecord: null as EmployeeRecordInterface | null,
     employeeRecordProperty: null as EmployeeRecordPropertyInterface | null,
+    canManageUserResponsible: false
   }),
   computed: {
 
@@ -36,8 +37,9 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     await this.getCategoriesEmployee()
     myGeneralStore.setFullLoader(false)
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
-
   },
   methods: {
     async getCategoriesEmployee() {

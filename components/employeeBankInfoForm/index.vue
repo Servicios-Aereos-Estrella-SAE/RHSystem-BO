@@ -12,7 +12,7 @@
             Bank
           </label>
           <Dropdown v-model="employeeBank.bankId" :options="banksList" optionLabel="bankName" optionValue="bankId"
-            placeholder="Select bank" filter class="w-full md:w-14rem" />
+            placeholder="Select bank" filter class="w-full md:w-14rem" :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !employeeBank.bankId">Bank is
             required.</small>
         </div>
@@ -21,7 +21,7 @@
             Account CLABE
           </label>
           <InputText v-model="employeeBank.employeeBankAccountClabe" placeholder="Enter CLABE account" maxlength="18"
-            @keydown="restrictInput" @input="validateAccountClabe" />
+            @keydown="restrictInput" @input="validateAccountClabe" :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountClabe">Account CLABE
             is required.
           </small>
@@ -34,7 +34,7 @@
             Account number
           </label>
           <InputText v-model="employeeBank.employeeBankAccountNumber" placeholder="Enter Account Number" maxlength="10"
-            @keydown="restrictInput" />
+            @keydown="restrictInput" :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && employeeBank.employeeBankAccountNumber && !isValidAccountNumber">The
             account number must have 10 digits.
           </small>
@@ -44,7 +44,8 @@
             Account card number
           </label>
           <InputText v-model="employeeBank.employeeBankAccountCardNumber" placeholder="Enter Account Card Number"
-            maxlength="16" @keydown="restrictInput" @input="validateAccountCard" />
+            maxlength="16" @keydown="restrictInput" @input="validateAccountCard"
+            :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="employeeBank.employeeBankAccountCardNumber && !isValidAccountCardNumber">The
             account card not is valid.
           </small>
@@ -60,13 +61,14 @@
             Account currency type
           </label>
           <Dropdown v-model="employeeBank.employeeBankAccountCurrencyType" :options="currencyOptions"
-            optionLabel="label" optionValue="value" placeholder="Select currency type" class="w-full md:w-14rem" />
+            optionLabel="label" optionValue="value" placeholder="Select currency type" class="w-full md:w-14rem"
+            :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !employeeBank.employeeBankAccountCurrencyType">Account currency type
             is
             required.</small>
         </div>
         <div class="box-tools-footer">
-          <Button class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canManageUserResponsible" class="btn btn-block btn-primary" @click="onSave">
             Save employee bank
           </Button>
         </div>

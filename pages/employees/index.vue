@@ -186,7 +186,7 @@
             :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
+          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" @save="onSaveAddress"
             :click-on-close="() => { onCloseAddress() }" />
           <employeeRecords v-if="drawerRecords" :employee="employee" />
           <employeeBanks v-if="drawerBanks" :employee="employee" />

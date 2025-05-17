@@ -19,7 +19,8 @@ export default defineComponent({
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     employeeBank: { type: Object as PropType<EmployeeBankInterface>, required: true },
-    clickOnSave: { type: Function, default: null }
+    clickOnSave: { type: Function, default: null },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     banksList: [] as BankInterface[],

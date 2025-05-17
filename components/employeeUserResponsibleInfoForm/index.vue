@@ -14,12 +14,27 @@
           <Dropdown v-model="userResponsibleEmployee.userId" :options="usersList"
             :optionLabel="option => `${option.person.personFirstname} ${option.person.personLastname} ${option.person.personSecondLastname}`"
             optionValue="userId" placeholder="Select user" filter class="w-full md:w-14rem"
-            :disabled="!isNewUserResponsibleEmployee" />
+            :disabled="!isNewUserResponsibleEmployee || isDeleted || !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !userResponsibleEmployee.userId">User is
             required.</small>
         </div>
-        <div v-if="isNewUserResponsibleEmployee" class="box-tools-footer">
-          <Button class="btn btn-block btn-primary" @click="onSave">
+
+        <div class="input-box">
+          <label for="readonlySwicht">
+            Read only
+            ( {{ readonlySwicht ? 'Active' : 'Inactive' }} )
+          </label>
+          <InputSwitch v-model="readonlySwicht" :disabled="isDeleted || !canManageUserResponsible" />
+        </div>
+        <div class="input-box">
+          <label for="directBossSwicht">
+            Direct Boss
+            ( {{ directBossSwicht ? 'Active' : 'Inactive' }} )
+          </label>
+          <InputSwitch v-model="directBossSwicht" :disabled="isDeleted || !canManageUserResponsible" />
+        </div>
+        <div class="box-tools-footer">
+          <Button v-if="canManageUserResponsible" class="btn btn-block btn-primary" @click="onSave">
             Save user
           </Button>
         </div>

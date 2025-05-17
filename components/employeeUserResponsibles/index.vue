@@ -6,7 +6,7 @@
           <div>
             <div class="employee-user-responsibles-header">
               <div></div>
-              <Button v-if="canManageResponsibleEdit" class="btn btn-block" @click="addNew">
+              <Button v-if="canManageResponsibleEdit && canManageUserResponsible" class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -25,7 +25,8 @@
             <employeeUserResponsibleInfoCard :userResponsibleEmployee="userResponsibleEmployee"
               :click-on-edit="() => { onEdit(userResponsibleEmployee) }"
               :click-on-delete="() => { onDelete(userResponsibleEmployee) }" :isDeleted="isDeleted"
-              :canManageResponsibleEdit="canManageResponsibleEdit" />
+              :canManageResponsibleEdit="canManageResponsibleEdit"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="empty">
