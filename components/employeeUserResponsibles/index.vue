@@ -2,11 +2,11 @@
   <div v-if="isReady" class="employee-user-responsibles">
     <div v-if="isReady" class="employee">
       <div class="form-container">
-        <div class="employee-user-responsibles-wrapper">
+        <div class="user-responsibles-wrapper">
           <div>
             <div class="employee-user-responsibles-header">
               <div></div>
-              <Button class="btn btn-block" @click="addNew">
+              <Button v-if="canManageResponsibleEdit" class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -24,7 +24,8 @@
             :key="`employee-user-responsible-${index}`">
             <employeeUserResponsibleInfoCard :userResponsibleEmployee="userResponsibleEmployee"
               :click-on-edit="() => { onEdit(userResponsibleEmployee) }"
-              :click-on-delete="() => { onDelete(userResponsibleEmployee) }" :isDeleted="isDeleted" />
+              :click-on-delete="() => { onDelete(userResponsibleEmployee) }" :isDeleted="isDeleted"
+              :canManageResponsibleEdit="canManageResponsibleEdit" />
           </div>
         </div>
         <div v-else class="empty">

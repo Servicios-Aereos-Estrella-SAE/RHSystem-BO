@@ -7,6 +7,7 @@ import Calendar from 'primevue/calendar'
 import { useMyGeneralStore } from '~/store/general'
 import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
+import PersonService from '~/resources/scripts/services/PersonService';
 
 export default defineComponent({
   components: {
@@ -24,7 +25,8 @@ export default defineComponent({
     userResponsibleEmployee: null as UserResponsibleEmployeeInterface | null,
     drawerUserResponsibleEmployeeForm: false,
     drawerUserResponsibleEmployeeDelete: false,
-    isDeleted: false
+    isDeleted: false,
+    canManageResponsibleEdit: false
   }),
   computed: {
   },
@@ -32,6 +34,8 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    this.canManageResponsibleEdit = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-edit')
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
@@ -49,6 +53,7 @@ export default defineComponent({
       const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
       const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId)
       this.userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+      this.setEmployeeInUsers()
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -75,6 +80,7 @@ export default defineComponent({
         this.userResponsibleEmployeesList.push(userResponsibleEmployee)
         this.$forceUpdate()
       }
+      this.setEmployeeInUsers()
       this.drawerUserResponsibleEmployeeForm = false
       myGeneralStore.setFullLoader(false)
     },
@@ -116,5 +122,18 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
     },
+    async setEmployeeInUsers() {
+      for await (const userResponsible of this.userResponsibleEmployeesList) {
+        if (userResponsible.user?.personId) {
+          const personService = new PersonService()
+          const personResponse = await personService.getEmployee(userResponsible.user.personId)
+          if (personResponse) {
+            if (personResponse._data.data.employee) {
+              userResponsible.user.employee = personResponse._data.data.employee
+            }
+          }
+        }
+      }
+    }
   }
 })
