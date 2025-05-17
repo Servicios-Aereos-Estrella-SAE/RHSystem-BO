@@ -76,7 +76,11 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeReactivate: false,
     employeeTypes: [] as EmployeeTypeInterface[],
-    canManageUserResponsible: false
+    canManageUserResponsible: false,
+    ignoreConsecutiveAbsenceOptions: [
+      { label: 'Do not ignore consecutive absences report', value: 0 },
+      { label: 'Yes, ignore consecutive absences report', value: 1 }
+    ],
   }),
   computed: {
     displayEmployeeTypeFilter() {
@@ -184,6 +188,7 @@ export default defineComponent({
       }
     } else {
       this.employee.employeeAssistDiscriminator = 0
+      this.employee.employeeIgnoreConsecutiveAbsences = 0
       const employeeType = this.employeeTypes.find(type => type.employeeTypeSlug === 'employee')
 
       if (employeeType) {

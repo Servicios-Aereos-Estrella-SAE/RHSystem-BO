@@ -89,7 +89,8 @@
 
         <div class="btns-group">
           <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
-            severity="success" @click="showEmployeesWithFaults">
+            severity="success" :class="{ 'btn-info': employeesWithFaults.length > 0 }"
+            @click="drawerEmployeeWithFaults = true">
             Consecutive Faults
           </Button>
           <Button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">

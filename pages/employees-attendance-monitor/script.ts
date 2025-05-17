@@ -576,6 +576,7 @@ export default defineComponent({
 
       this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await this.setEmployeesWithFaults()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -705,6 +706,7 @@ export default defineComponent({
 
       this.setGeneralData()
       this.setPeriodData()
+      await this.setEmployeesWithFaults()
 
       myGeneralStore.setFullLoader(false)
     },
@@ -715,6 +717,7 @@ export default defineComponent({
         await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGeneralData()
         this.setPeriodData()
+        await this.setEmployeesWithFaults()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -938,19 +941,20 @@ export default defineComponent({
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
       return (diffInDays + 1) >= 3 ? true : false
     },
-    async showEmployeesWithFaults() {
+    async setEmployeesWithFaults() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
       this.employeesWithFaults = []
-      for await (const assist of this.employeeDepartmentPositionList) {
+      const assistEmployees = this.employeeDepartmentPositionList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployees) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
         let consecutiveFaults = 0
         let found3Consecutive = false
 
         for (const calendar of assist.calendar) {
-          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
             consecutiveFaults++
             if (consecutiveFaults === 3) {
               found3Consecutive = true
@@ -965,7 +969,7 @@ export default defineComponent({
           assist.employee.faultDays = []
 
           for (const calendar of assist.calendar) {
-            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
                 day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
               })
@@ -986,8 +990,8 @@ export default defineComponent({
       this.employeeDiscrimitorsList = this.employeeDiscrimitorsList.filter(emp => emp.employee.employeeAssistDiscriminator === 1)
 
       await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
-
-      for await (const assist of this.employeeDiscrimitorsList) {
+      const assistEmployeeDiscrimitors = this.employeeDiscrimitorsList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployeeDiscrimitors) {
         assist.employee.faultDays = []
         if (assist.calendar.length > 0) {
           let noCheckStreak = 0
@@ -997,7 +1001,7 @@ export default defineComponent({
             const noChecks = !calendar.assist.checkIn &&
               !calendar.assist.checkOut &&
               !calendar.assist.checkEatIn &&
-              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate
+              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday
 
             if (noChecks) {
               assist.employee.faultDays.push({
@@ -1016,7 +1020,6 @@ export default defineComponent({
           }
         }
       }
-      this.drawerEmployeeWithFaults = true
       myGeneralStore.setFullLoader(false)
     }
   }

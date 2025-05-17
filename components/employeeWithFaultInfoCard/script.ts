@@ -27,5 +27,8 @@ export default defineComponent({
   mounted() {
   },
   methods: {
+    goCalendar() {
+      window.open(`/employees-attendance-monitor/${this.employee.employeeCode}`)
+    }
   }
 })
