@@ -58,6 +58,7 @@ export default class PositionService {
   }
 
   async getPositionsDepartment(departmentId: number, userResponsibleId?: number | null): Promise<PositionInterface[]> {
+    console.log(departmentId)
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
     try {

@@ -63,6 +63,7 @@ export default defineComponent({
     employeeTypeId: null as number | null,
     activeButton: 'employee',
     canManageResponsibleRead: false,
+    canManageBiotime: false,
   }),
   computed: {
     isRootUser() {
@@ -93,6 +94,7 @@ export default defineComponent({
       this.positionId = null
       this.positions = []
       this.handlerSearchEmployee()
+      console.log(newVal)
       if (newVal) {
         this.getPositions(newVal)
       }
@@ -123,6 +125,7 @@ export default defineComponent({
       this.canReadOnlyWorkDisabilities = true
       this.canManageWorkDisabilities = true
       this.canManageResponsibleRead = true
+      this.canManageBiotime = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
@@ -134,6 +137,7 @@ export default defineComponent({
       this.canReadOnlyWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-work-disabilities') ? true : false
       this.canManageWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-work-disabilities') ? true : false
       this.canManageResponsibleRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-read')
+      this.canManageBiotime = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-biotime')
     }
     myGeneralStore.setFullLoader(false)
     await this.getWorkSchedules()

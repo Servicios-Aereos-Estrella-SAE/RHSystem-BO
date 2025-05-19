@@ -322,13 +322,11 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange();
     this.setDefaultVisualizationMode()
 
-    if (this.$config.public.ENVIRONMENT === 'production') {
-      await Promise.all([
-        this.setDepartmetList(),
-      ])
+    await Promise.all([
+      this.setDepartmetList(),
+    ])
 
-      await this.setDepartmentPositionEmployeeList()
-    }
+    await this.setDepartmentPositionEmployeeList()
     this.setGraphsData()
     this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
