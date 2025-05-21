@@ -13,6 +13,7 @@ import type { DepartmentInterface } from '~/resources/scripts/interfaces/Departm
 import PositionService from '~/resources/scripts/services/PositionService';
 import DepartmentService from '~/resources/scripts/services/DepartmentService';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
+import EmployeeService from '~/resources/scripts/services/EmployeeService';
 
 export default defineComponent({
   components: {
@@ -59,7 +60,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
-    this.canManageAssignedEdit = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-edit')
+    this.canManageAssignedEdit = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-assigned-edit')
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
@@ -86,17 +87,26 @@ export default defineComponent({
     async getUserAssignedEmployees() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      const { getSession } = useAuth()
-      const session: unknown = await getSession()
-      const authUser = session as UserInterface
+      const personService = new PersonService()
+      if (this.employee.person?.personId) {
+        const personResponse = await personService.show(this.employee.person?.personId)
+        if (personResponse.status === 200) {
+          const user = personResponse._data.data.person.user
+          this.userAssignedEmployeesList = []
+          const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+          if (user && user.userId) {
+            const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(user.userId, this.search, this.departmentId, this.positionId, null)
+            this.userAssignedEmployeesList = userAssignedEmployeeResponse._data.data.data.data
+            this.setEmployeeInUsers()
+          }
+        }
 
-      this.userAssignedEmployeesList = []
-      const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
-      if (authUser.userId) {
-        const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(authUser.userId, this.search, this.departmentId, this.positionId, null)
-        this.userAssignedEmployeesList = userAssignedEmployeeResponse.data.data
-        this.setEmployeeInUsers()
       }
+
+
+
+
+
       myGeneralStore.setFullLoader(false)
     },
     addNew() {
@@ -168,13 +178,18 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     async setEmployeeInUsers() {
+      const employeeService = new EmployeeService()
+      const personService = new PersonService()
       for await (const userAssigned of this.userAssignedEmployeesList) {
-        if (userAssigned.user?.personId) {
-          const personService = new PersonService()
-          const personResponse = await personService.getEmployee(userAssigned.user.personId)
-          if (personResponse) {
-            if (personResponse._data.data.employee) {
-              userAssigned.user.employee = personResponse._data.data.employee
+        if (userAssigned.employeeId) {
+          const employeeResponse = await employeeService.show(userAssigned.employeeId)
+          if (employeeResponse) {
+            if (employeeResponse._data.data.employee) {
+              userAssigned.employeeAssigned = employeeResponse._data.data.employee
+              if (userAssigned.employeeAssigned?.personId) {
+                const personResponse = await personService.show(userAssigned.employeeAssigned?.personId)
+                userAssigned.employeeAssigned.person = personResponse._data.data.person
+              }
             }
           }
         }

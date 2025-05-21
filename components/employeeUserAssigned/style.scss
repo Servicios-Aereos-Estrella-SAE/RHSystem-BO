@@ -5,6 +5,39 @@
   margin-top: 3.5rem;
   position: relative;
 
+
+  .head-employees-page {
+    display: grid;
+    grid-template-columns: 20rem repeat(2, auto);
+    gap: 0.5rem;
+
+    @media screen and (max-width: $desktop) {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    @media screen and (max-width: $ipad) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    @media screen and (max-width: $phone) {
+      grid-template-columns: 1fr;
+    }
+
+    .emp-status-control {
+      margin-top: 1.6rem;
+    }
+  }
+
+  .buttons-group {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    background-color: white;
+    padding: 1rem;
+    border-radius: $radius;
+    margin-top: 0.5rem;
+  }
+
   .employee-user-assigned-wrapper {
 
     .head-page {
@@ -37,7 +70,7 @@
       grid-template-columns: auto 20rem;
       gap: 0.5rem;
       margin-bottom: 1rem;
-      margin-top: 1rem;
+      margin-top: -2rem;
     }
 
     .file-list-wrapper {
