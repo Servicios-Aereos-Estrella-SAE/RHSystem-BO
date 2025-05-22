@@ -58,7 +58,7 @@
                   enable-background="new 0 0 24 24">
                   <path
                     d="M10 18c-.5 0-1-.2-1.4-.6l-4-4c-.8-.8-.8-2 0-2.8.8-.8 2.1-.8 2.8 0l2.6 2.6 6.6-6.6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8l-8 8c-.4.4-.9.6-1.4.6z"
-                    fill="#fff" class="fill-000000"></path>
+                    fill="#88a4bf" class="fill-000000"></path>
                 </svg>
                 Save selection
               </Button>
