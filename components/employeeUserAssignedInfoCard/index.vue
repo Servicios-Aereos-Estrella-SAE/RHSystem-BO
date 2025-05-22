@@ -19,16 +19,18 @@
         <div class="name capitalize">
           {{ employeeName }}
         </div>
-        <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="email">
+        <!--  <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="email">
           {{ `${userAssignedEmployee.employeeAssigned.person.user.userEmail}`.toLocaleLowerCase() }}
-        </div>
-        <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="rol capitalize">
+        </div> -->
+        <div
+          v-if="userAssignedEmployee.employeeAssigned.person.user && userAssignedEmployee.employeeAssigned.person.user.role"
+          class="rol capitalize">
           {{ `${userAssignedEmployee.employeeAssigned.person.user.role.roleName || ''}`.toLocaleLowerCase() }}
         </div>
-        <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="status capitalize">
+        <!--   <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="status capitalize">
           <div class="dot" :class="{ active: !!userAssignedEmployee.employeeAssigned.person.user.userActive }"></div>
           {{ userAssignedEmployee.employeeAssigned.person.user.userActive ? 'Active' : 'Inactive' }} User Access
-        </div>
+        </div> -->
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!userAssignedEmployee.userResponsibleEmployeeReadonly }"></div>
           {{ userAssignedEmployee.userResponsibleEmployeeReadonly ? 'Is' : 'Not is' }} Readonly

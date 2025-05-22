@@ -20,12 +20,13 @@ export default defineComponent({
     ToastService,
     Calendar
   },
-  name: 'employeeUserAssigned',
+  name: 'employeeUserAssignedSelection',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true }
   },
   data: () => ({
     isReady: false,
+    filteredEmployees: [] as EmployeeInterface[],
     userAssignedEmployeesList: [] as UserResponsibleEmployeeInterface[],
     userAssignedEmployee: null as UserResponsibleEmployeeInterface | null,
     drawerUserAssignedEmployeeForm: false,
@@ -38,21 +39,24 @@ export default defineComponent({
     departmentId: null as number | null,
     positionId: null as number | null,
     search: '' as string,
-    drawerEmployeeSelection: false
+    selectAllChecked: false,
   }),
   computed: {
+    selectAllLabel() {
+      return this.selectAllChecked ? 'Deselect All' : 'Select All'
+    }
   },
   watch: {
     'departmentId': function (newVal) {
       this.positionId = null
       this.positions = []
-      this.getUserAssignedEmployees()
+      this.handlerSearchEmployee()
       if (newVal) {
         this.getPositions(newVal)
       }
     },
     'positionId': function () {
-      this.getUserAssignedEmployees()
+      this.handlerSearchEmployee()
     },
   },
   async mounted() {
@@ -67,6 +71,7 @@ export default defineComponent({
 
     await this.getDepartments()
     await this.getUserAssignedEmployees()
+    await this.handlerSearchEmployee()
     myGeneralStore.setFullLoader(false)
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserAssigned = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
@@ -95,97 +100,114 @@ export default defineComponent({
           this.userAssignedEmployeesList = []
           const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
           if (user && user.userId) {
-            const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(user.userId, this.search, this.departmentId, this.positionId, null)
+            const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(user.userId, '', null, null, null)
             this.userAssignedEmployeesList = userAssignedEmployeeResponse._data.data.data.data
-            this.setEmployeeInUsers()
           }
         }
 
       }
       myGeneralStore.setFullLoader(false)
     },
-    addNew() {
-      if (this.employee.employeeId) {
-
-        this.drawerEmployeeSelection = true
-      }
-    },
-    async onSave(userAssignedEmployee: UserResponsibleEmployeeInterface) {
+    async handlerSearchEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.userAssignedEmployee = { ...userAssignedEmployee }
+      this.filteredEmployees = []
+      const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, null, 1, 99999999, false, null)
+      const list = response.status === 200 ? response._data.data.employees.data : []
+      for await (const employee of list) {
+        const isAssigned = this.userAssignedEmployeesList.find(a => a.employeeId === employee.employeeId)
 
-      const index = this.userAssignedEmployeesList.findIndex((userAssignedEmployee: UserResponsibleEmployeeInterface) => userAssignedEmployee.userResponsibleEmployeeId === this.userAssignedEmployee?.userResponsibleEmployeeId)
-      if (index !== -1) {
-        this.userAssignedEmployeesList[index] = userAssignedEmployee
-        this.$forceUpdate()
-      } else {
-        this.userAssignedEmployeesList.push(userAssignedEmployee)
-        this.$forceUpdate()
-      }
-      this.setEmployeeInUsers()
-      this.drawerUserAssignedEmployeeForm = false
-      myGeneralStore.setFullLoader(false)
-    },
-    onEdit(userAssignedEmployee: UserResponsibleEmployeeInterface) {
-      this.userAssignedEmployee = { ...userAssignedEmployee }
-      this.drawerUserAssignedEmployeeForm = true
-    },
-    onDelete(userAssignedEmployee: UserResponsibleEmployeeInterface) {
-      this.userAssignedEmployee = { ...userAssignedEmployee }
-      this.drawerUserAssignedEmployeeDelete = true
-    },
-    async confirmDelete() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      if (this.userAssignedEmployee) {
-        this.drawerUserAssignedEmployeeDelete = false
-        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
-        const userAssignedEmployeeResponse = await userResponsibleEmployeeService.delete(this.userAssignedEmployee)
-        if (userAssignedEmployeeResponse.status === 200) {
-          const index = this.userAssignedEmployeesList.findIndex((userAssignedEmployee: UserResponsibleEmployeeInterface) => userAssignedEmployee.userResponsibleEmployeeId === this.userAssignedEmployee?.userResponsibleEmployeeId)
-          if (index !== -1) {
-            this.userAssignedEmployeesList.splice(index, 1)
-            this.$forceUpdate()
-          }
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Delete employee assigned',
-            detail: userAssignedEmployeeResponse._data.message,
-            life: 5000,
-          })
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: 'Delete employee assigned employee',
-            detail: userAssignedEmployeeResponse._data.message,
-            life: 5000,
-          })
+        if (!isAssigned && this.employee.employeeId !== employee.employeeId) {
+          this.filteredEmployees.push(employee)
         }
       }
+
       myGeneralStore.setFullLoader(false)
-    },
-    async setEmployeeInUsers() {
-      const employeeService = new EmployeeService()
-      const personService = new PersonService()
-      for await (const userAssigned of this.userAssignedEmployeesList) {
-        if (userAssigned.employeeId) {
-          const employeeResponse = await employeeService.show(userAssigned.employeeId)
-          if (employeeResponse) {
-            if (employeeResponse._data.data.employee) {
-              userAssigned.employeeAssigned = employeeResponse._data.data.employee
-              if (userAssigned.employeeAssigned?.personId) {
-                const personResponse = await personService.show(userAssigned.employeeAssigned?.personId)
-                userAssigned.employeeAssigned.person = personResponse._data.data.person
-              }
-            }
-          }
-        }
-      }
     },
     async onSaveSelection() {
-      await this.getUserAssignedEmployees()
-      this.drawerEmployeeSelection = false
-    }
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
+      let userId = null
+      const personService = new PersonService()
+
+      if (this.employee.person?.personId) {
+        const personResponse = await personService.show(this.employee.person.personId)
+        if (personResponse.status === 200) {
+          const user = personResponse._data.data.person.user
+          userId = user.userId
+        }
+      }
+
+      if (userId && userId > 0) {
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+
+        const promises = this.filteredEmployees
+          .filter(employee => employee.userResponsibleEmployeeChecked)
+          .map(employee => {
+            if (employee.employeeId) {
+              const userResponsibleEmployee = {
+                userId: userId!,
+                employeeId: employee.employeeId,
+                userResponsibleEmployeeDirectBoss: employee.userResponsibleEmployeeDirectBoss ? 1 : 0,
+                userResponsibleEmployeeReadonly: employee.userResponsibleEmployeeReadonly ? 1 : 0,
+              } as UserResponsibleEmployeeInterface
+
+              return userResponsibleEmployeeService.store(userResponsibleEmployee)
+                .then(response => ({
+                  status: response.status,
+                  error: response._data?.error || response._data?.message || null
+                }))
+                .catch(error => ({
+                  status: 500,
+                  error: error.message || 'Unknown error'
+                }))
+
+            }
+
+          })
+        if (promises.length === 0) {
+          myGeneralStore.setFullLoader(false)
+          return this.$toast.add({
+            severity: 'warn',
+            summary: 'Employees',
+            detail: 'No employees selected.',
+            life: 7000,
+          })
+        }
+        const results = await Promise.all(promises)
+
+        const successCount = results.filter(res => res && res.status === 200 || res && res.status === 201).length
+        const errorMessages = results
+          .filter(res => res && res.status !== 200 && res.status !== 201)
+          .map(res => res && res.error)
+
+        if (successCount > 0) {
+          this.$emit('onUserAssignedEmployeeSave')
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Employees assigned successfully',
+            detail: `${successCount} employees assigned`,
+            life: 5000,
+          })
+        }
+
+        if (errorMessages.length > 0) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'error',
+            detail: errorMessages.join('; '),
+            life: 7000,
+          })
+        }
+      }
+
+      myGeneralStore.setFullLoader(false)
+    },
+    toggleSelectAll() {
+      for (const employee of this.filteredEmployees) {
+        employee.userResponsibleEmployeeChecked = this.selectAllChecked
+      }
+    },
   }
 })

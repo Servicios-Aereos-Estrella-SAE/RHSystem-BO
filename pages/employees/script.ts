@@ -15,6 +15,7 @@ import { useMyGeneralStore } from "~/store/general"
 import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService'
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
+import PersonService from '~/resources/scripts/services/PersonService'
 
 export default defineComponent({
   name: 'Employees',
@@ -65,6 +66,7 @@ export default defineComponent({
     canManageResponsibleRead: false,
     canManageBiotime: false,
     canManageAssignedRead: false,
+    currentEmployeeIsUser: false
   }),
   computed: {
     isRootUser() {
@@ -401,7 +403,7 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
       }
     },
-    onEditEmployee() {
+    async onEditEmployee() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
@@ -409,6 +411,7 @@ export default defineComponent({
       this.drawerResponsible = false
       this.drawerAssigned = false
       this.activeButton = 'employee'
+      this.currentEmployeeIsUser = await this.isCurrentEmployeeIsUser()
     },
     onEditPerson() {
       this.drawerEmployeePersonForm = true
@@ -571,7 +574,17 @@ export default defineComponent({
           }
         }
       }
-
+    },
+    async isCurrentEmployeeIsUser() {
+      if (this.employee?.personId) {
+        const personService = new PersonService()
+        const personResponse = await personService.show(this.employee?.personId)
+        const person = personResponse._data.data.person
+        if (person && person.user) {
+          return true
+        }
+      }
+      return false
     }
   },
 })
