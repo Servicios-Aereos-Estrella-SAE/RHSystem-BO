@@ -97,6 +97,23 @@ export default class UserResponsibleEmployeeService {
     return list
   }
 
+  async getAssignedByEmployee(userId: number, searchText: string, departmentId: number | null, positionId: number | null, employeeId: number | null) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    await $fetch(`${this.API_PATH}/users/${userId}/employees-assigned`, {
+      headers,
+      query: {
+        employeeId,
+        search: searchText,
+        departmentId,
+        positionId,
+      },
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
+  }
 
   validateInfo(userResponsibleEmployee: UserResponsibleEmployeeInterface): boolean {
     if (!userResponsibleEmployee.userId) {

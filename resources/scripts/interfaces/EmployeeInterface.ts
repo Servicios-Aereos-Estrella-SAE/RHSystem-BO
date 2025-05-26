@@ -44,6 +44,10 @@ interface EmployeeInterface {
   address?: EmployeeAddressInterface[],
   shift_exceptions?: ShiftExceptionInterface[],
   faultDays?: CalendarDayFault[]
+
+  userResponsibleEmployeeChecked?: boolean,
+  userResponsibleEmployeeReadonly?: boolean,
+  userResponsibleEmployeeDirectBoss: boolean,
 }
 
 export type { EmployeeInterface }

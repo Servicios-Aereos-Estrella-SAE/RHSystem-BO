@@ -1,3 +1,4 @@
+import type { EmployeeInterface } from "./EmployeeInterface"
 import type { UserInterface } from "./UserInterface"
 
 export interface UserResponsibleEmployeeInterface {
@@ -10,4 +11,5 @@ export interface UserResponsibleEmployeeInterface {
   userResponsibleEmployeeUpdatedAt?: string
   deletedAt?: string
   user?: UserInterface
+  employeeAssigned?: EmployeeInterface
 }

@@ -2,7 +2,7 @@
   <div class="employee-user-responsible-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewUserResponsibleEmployee ? 'Add user responsible employee' : 'Update user responsible employe' }}
+      {{ isNewUserResponsibleEmployee ? 'Add user responsible employee' : 'Update user responsible employee' }}
     </h1>
 
     <div v-if="isReady" class="employee-user-responsible-form">
