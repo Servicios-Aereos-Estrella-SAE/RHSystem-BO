@@ -7,7 +7,7 @@
           <h4>
             Select employees to assign
           </h4>
-          <div class="box head-employees-page">
+          <div class="head-employees-page">
             <div class="input-search">
               <div class="input-box">
                 <label for="search">
@@ -39,15 +39,11 @@
               <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                 placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
             </div>
-
           </div>
-
-
         </div>
         <div class="user-assigned-wrapper">
           <div>
             <div class="employee-user-assigned-header">
-              <div></div>
               <div class="checkbox-label-wrapper">
                 <Checkbox v-model="selectAllChecked" binary @change="toggleSelectAll" />
                 <label for="selectAll">{{ selectAllLabel }}</label>

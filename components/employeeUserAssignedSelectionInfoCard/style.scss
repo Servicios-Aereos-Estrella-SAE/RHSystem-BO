@@ -141,10 +141,19 @@
   .box-tools-footer {
     box-sizing: border-box;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     gap: 0.5rem;
     border-top: $border-dashed;
-    padding-top: 0.75rem !important;
-    margin-top: 0.75rem !important;
-  }
+
+    .checkbox-label-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: normal;
+      color: $text;
+      opacity: 0.75;
+      font-size: 0.8rem;
+      width: 100%;
+    }
+}
 }

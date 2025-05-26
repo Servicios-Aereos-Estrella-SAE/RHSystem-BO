@@ -3,7 +3,7 @@
     <div v-if="isReady" class="employee">
       <div class="form-container">
         <div class="filters">
-          <div class="box head-employees-page">
+          <div class="head-employees-assign">
             <div class="input-search">
               <div class="input-box">
                 <label for="search">
@@ -36,10 +36,7 @@
               <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                 placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
             </div>
-
           </div>
-
-
         </div>
         <div class="user-assigned-wrapper">
           <div>
@@ -52,7 +49,7 @@
                     d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
-                Add employee assigned
+                Assign employee
               </Button>
             </div>
           </div>
@@ -109,7 +106,7 @@
 
   .employee-user-assigned-form-sidebar {
     width: 100% !important;
-    max-width: 45rem !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
@@ -118,7 +115,7 @@
 
   .employee-user-assigned-selection-sidebar {
     width: 100% !important;
-    max-width: 55rem !important;
+    max-width: 53rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

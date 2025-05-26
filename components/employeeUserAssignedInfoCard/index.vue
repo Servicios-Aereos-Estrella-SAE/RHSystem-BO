@@ -14,31 +14,22 @@
           </svg>
         </div>
       </div>
-      <div v-if="userAssignedEmployee.employeeAssigned && userAssignedEmployee.employeeAssigned.person"
-        class="user-employee-data">
+      <div v-if="userAssignedEmployee.employeeAssigned && userAssignedEmployee.employeeAssigned.person" class="user-employee-data">
         <div class="name capitalize">
           {{ employeeName }}
         </div>
-        <!--  <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="email">
-          {{ `${userAssignedEmployee.employeeAssigned.person.user.userEmail}`.toLocaleLowerCase() }}
-        </div> -->
         <div
           v-if="userAssignedEmployee.employeeAssigned.person.user && userAssignedEmployee.employeeAssigned.person.user.role"
           class="rol capitalize">
           {{ `${userAssignedEmployee.employeeAssigned.person.user.role.roleName || ''}`.toLocaleLowerCase() }}
         </div>
-        <!--   <div v-if="userAssignedEmployee.employeeAssigned.person.user" class="status capitalize">
-          <div class="dot" :class="{ active: !!userAssignedEmployee.employeeAssigned.person.user.userActive }"></div>
-          {{ userAssignedEmployee.employeeAssigned.person.user.userActive ? 'Active' : 'Inactive' }} User Access
-        </div> -->
-        <div class="status capitalize">
-          <div class="dot" :class="{ active: !!userAssignedEmployee.userResponsibleEmployeeReadonly }"></div>
-          {{ userAssignedEmployee.userResponsibleEmployeeReadonly ? 'Is' : 'Not is' }} Readonly
-        </div>
-
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!userAssignedEmployee.userResponsibleEmployeeDirectBoss }"></div>
-          {{ userAssignedEmployee.userResponsibleEmployeeDirectBoss ? 'Is' : 'Not is' }} Direct Boss
+          Direct Employee
+        </div>
+        <div class="status capitalize">
+          <div class="dot" :class="{ active: !!userAssignedEmployee.userResponsibleEmployeeReadonly }"></div>
+          Readonly Access
         </div>
       </div>
     </div>

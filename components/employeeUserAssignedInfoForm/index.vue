@@ -8,9 +8,6 @@
     <div v-if="isReady" class="employee-user-assigned-form">
       <div class="form-container">
         <employeeModalInfoCard :employee="userAssignedEmployee.employeeAssigned" />
-
-
-
         <div class="input-box">
           <label for="readonlySwicht">
             Read only

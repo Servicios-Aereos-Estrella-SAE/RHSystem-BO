@@ -44,14 +44,20 @@
       </div>
     </div>
     <div v-if="canManageAssignedEdit" class="box-tools-footer">
-      <Checkbox v-model="employee.userResponsibleEmployeeChecked" binary />
-      <label for="userResponsibleEmployeeChecked"> Select </label>
+      <div class="checkbox-label-wrapper">
+        <Checkbox v-model="employee.userResponsibleEmployeeChecked" binary />
+        <label for="userResponsibleEmployeeChecked"> Select </label>
+      </div>
 
-      <Checkbox v-model="employee.userResponsibleEmployeeReadonly" name="userResponsibleEmployeeReadonly" binary />
-      <label for="userResponsibleEmployeeReadonly"> Readonly </label>
+      <div class="checkbox-label-wrapper">
+        <Checkbox v-model="employee.userResponsibleEmployeeReadonly" name="userResponsibleEmployeeReadonly" binary />
+        <label for="userResponsibleEmployeeReadonly"> Readonly </label>
+      </div>
 
-      <Checkbox v-model="employee.userResponsibleEmployeeDirectBoss" name="userResponsibleEmployeeDirectBoss" binary />
-      <label for="userResponsibleEmployeeDirectBoss"> Direct Boss </label>
+      <div class="checkbox-label-wrapper">
+        <Checkbox v-model="employee.userResponsibleEmployeeDirectBoss" name="userResponsibleEmployeeDirectBoss" binary />
+        <label for="userResponsibleEmployeeDirectBoss"> Direct Boss </label>
+      </div>
     </div>
   </div>
 </template>
