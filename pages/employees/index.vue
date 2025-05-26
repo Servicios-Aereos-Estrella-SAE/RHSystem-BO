@@ -66,7 +66,7 @@
                 </svg>
                 Employee
               </Button>
-              <Button class="btn" @click="syncEmployees">
+              <Button v-if="canManageBiotime" class="btn" @click="syncEmployees">
                 <span>
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path

@@ -63,6 +63,7 @@ export default defineComponent({
     employeeTypeId: null as number | null,
     activeButton: 'employee',
     canManageResponsibleRead: false,
+    canManageBiotime: false,
   }),
   computed: {
     isRootUser() {
@@ -123,6 +124,7 @@ export default defineComponent({
       this.canReadOnlyWorkDisabilities = true
       this.canManageWorkDisabilities = true
       this.canManageResponsibleRead = true
+      this.canManageBiotime = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
@@ -134,6 +136,7 @@ export default defineComponent({
       this.canReadOnlyWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-work-disabilities') ? true : false
       this.canManageWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-work-disabilities') ? true : false
       this.canManageResponsibleRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-read')
+      this.canManageBiotime = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-biotime')
     }
     myGeneralStore.setFullLoader(false)
     await this.getWorkSchedules()
@@ -144,32 +147,13 @@ export default defineComponent({
   },
   methods: {
     async getPositions(departmentId: number) {
-      const myGeneralStore = useMyGeneralStore()
-      let userResponsibleId = null
-      if (!myGeneralStore.isRoot) {
-        const { data } = useAuth()
-        const session: unknown = data.value as unknown as UserInterface
-        const authUser = session as UserInterface
-        userResponsibleId = authUser.userId
-      }
       const positionService = new PositionService()
-      this.positions = await positionService.getPositionsDepartment(departmentId, userResponsibleId)
+      this.positions = await positionService.getPositionsDepartment(departmentId)
     },
     async getDepartments() {
       let response = null
       const departmentService = new DepartmentService()
-      const myGeneralStore = useMyGeneralStore()
-      let userResponsibleId = null
-      if (!myGeneralStore.isRoot) {
-        const { data } = useAuth()
-        const session: unknown = data.value as unknown as UserInterface
-        const authUser = session as UserInterface
-        userResponsibleId = authUser.userId
-      }
-      const filters = {
-        userResponsibleId: userResponsibleId
-      }
-      response = await departmentService.getAllDepartmentList(filters)
+      response = await departmentService.getAllDepartmentList()
       this.departments = response._data.data.departments
     },
     async getEmployeeTypes() {
@@ -183,14 +167,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
       const onlyInactive = this.status === 'Terminated' ? true : false
-      let userResponsibleId = null
-      if (!myGeneralStore.isRoot) {
-        const { data } = useAuth()
-        const session: unknown = data.value as unknown as UserInterface
-        const authUser = session as UserInterface
-        userResponsibleId = authUser.userId
-      }
-      const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId, userResponsibleId)
+      const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId)
       const list = response.status === 200 ? response._data.data.employees.data : []
       this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
       this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0
@@ -573,3 +550,4 @@ export default defineComponent({
     }
   },
 })
+
