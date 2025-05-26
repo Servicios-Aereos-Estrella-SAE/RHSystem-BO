@@ -149,11 +149,13 @@ export default defineComponent({
           this.$emit('onShiftSave', shift as ShiftInterface)
           this.$emit('save-success')
         } else {
+          const msgError = response._data.error ? response._data.error : response._data.message
+          const severityType = response.status === 500 ? 'error' : 'warn'
           this.$toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'There was an error saving the shift',
-            life: 5000
+            severity: severityType,
+            summary: `Shift ${this.shift.shiftId ? 'update' : 'create'}`,
+            detail: msgError,
+            life: 5000,
           })
           this.$emit('save-error')
         }
