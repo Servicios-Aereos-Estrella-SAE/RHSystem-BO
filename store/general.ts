@@ -2,8 +2,11 @@ import { defineStore } from 'pinia'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface'
 import RoleService from '~/resources/scripts/services/RoleService'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService'
+import UserService from '~/resources/scripts/services/UserService'
 
 export const useMyGeneralStore = defineStore({
   id: 'myGeneralStore',
@@ -152,11 +155,11 @@ export const useMyGeneralStore = defineStore({
       const session: unknown = data.value as unknown as UserInterface
       const authUser = session as UserInterface
       let hasAccess = false
-      if (authUser && authUser.roleId) {
-        const roleService = new RoleService()
-        const roleResponse = await roleService.hasAccessDepartment(authUser.roleId, departmentId)
-        if (roleResponse && roleResponse.status === 200) {
-          hasAccess = roleResponse._data.data.roleHasAccess
+      if (authUser && authUser.userId) {
+        const userService = new UserService()
+        const userResponse = await userService.hasAccessDepartment(authUser.userId, departmentId)
+        if (userResponse && userResponse.status === 200) {
+          hasAccess = userResponse._data.data.userHasAccess
         }
       } else {
         this.isRoot = false
@@ -177,7 +180,7 @@ export const useMyGeneralStore = defineStore({
             this.isRoot = true
           } else if (authUser.role.roleSlug === 'rh-manager') {
             this.isRh = true
-          }  else if (authUser.role.roleSlug === 'admin') {
+          } else if (authUser.role.roleSlug === 'admin') {
             this.isAdmin = true
           } else {
             this.isRoot = false
@@ -214,6 +217,31 @@ export const useMyGeneralStore = defineStore({
     },
     setUserVacationFormStatus(status: boolean) {
       this.userVacationFormClosed = status
-    }
+    },
+    async canManageUserResponsibleEmployee(employeeId: number,) {
+      let userResponsibleEmployeesList = [] as Array<UserResponsibleEmployeeInterface>
+      let canManageUserResponsible = false
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        myGeneralStore.setFullLoader(true)
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+
+        userResponsibleEmployeesList = []
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
+        userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+        if (userResponsibleEmployeesList.length > 0) {
+          if (!userResponsibleEmployeesList[0].userResponsibleEmployeeReadonly) {
+            canManageUserResponsible = true
+          }
+        }
+        myGeneralStore.setFullLoader(false)
+      } else {
+        canManageUserResponsible = true
+      }
+      return canManageUserResponsible
+    },
   }
 })

@@ -2,11 +2,11 @@ import type { DepartmentInterface } from "../interfaces/DepartmentInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
 export default class DepartmentService {
- 
+
   protected API_PATH: string
   protected GENERAL_HEADERS: GeneralHeadersInterface
-  
-  constructor () {
+
+  constructor() {
     const { token } = useAuth()
     const CONFIG = useRuntimeConfig()
     this.API_PATH = CONFIG.public.BASE_API_PATH
@@ -24,7 +24,7 @@ export default class DepartmentService {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({  }),
+        body: JSON.stringify({}),
       });
 
       const data = await response.json();
@@ -36,29 +36,29 @@ export default class DepartmentService {
     return responseRequest;
   }
 
-  async getAllDepartmentList (filters?: Object) {
+  async getAllDepartmentList(filters?: Object) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/departments`, {
       headers,
       query: filters,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async getOnlyWithEmployees (filters?: Object) {
+  async getOnlyWithEmployees(filters?: Object) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     await $fetch(`${this.API_PATH}/departments/get-only-with-employees`, {
       headers,
       query: filters,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -67,7 +67,7 @@ export default class DepartmentService {
   async getSearchOrganization(search: string, currentPage: number, rowsPerPage: number) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
-  
+
     await $fetch(`${this.API_PATH}/departments/organization`, {
       headers,
       query: {
@@ -89,46 +89,46 @@ export default class DepartmentService {
         meta: responseRequest.data.meta
       }
     }
-    return responseRequest  
+    return responseRequest
   }
 
-  async getDepartmentPositions (departmentId: number) {
+  async getDepartmentPositions(departmentId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}/positions`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async show (departmentId: number) {
+  async show(departmentId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
 
-  async assignShift (departmentId: number, shiftId: number, applySince: string) {
+  async assignShift(departmentId: number, shiftId: number, applySince: string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
-    const query = { 'shiftId': shiftId,  'applySince': applySince }
+    const query = { 'shiftId': shiftId, 'applySince': applySince }
     try {
       await $fetch(`${this.API_PATH}/department/assign-shift/${departmentId}`, {
         headers,
         method: 'POST',
         query: { ...query },
-        onResponse ({ response }) { responseRequest = response },
-        onRequestError ({ response }) { responseRequest = response }
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
       })
     } catch (error) {
     }
@@ -143,8 +143,8 @@ export default class DepartmentService {
       headers,
       method: 'PUT',
       body: JSON.stringify(data),
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -158,8 +158,8 @@ export default class DepartmentService {
       headers,
       method: 'POST',
       body: JSON.stringify(data),
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
@@ -169,14 +169,14 @@ export default class DepartmentService {
     return data.departmentName && data.departmentCode
   }
 
-  async showOnSave (departmentId: number) {
+  async showOnSave(departmentId: number) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
 
     await $fetch(`${this.API_PATH}/departments/${departmentId}`, {
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
     const department = responseRequest.status === 200 ? responseRequest._data.data.department : {}
 
@@ -198,7 +198,7 @@ export default class DepartmentService {
         headers,
         method: 'POST',
         body: JSON.stringify({ positionId, departmentId }),
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) {
           console.error('response error', response)
           responseRequest = response
@@ -218,7 +218,7 @@ export default class DepartmentService {
       await $fetch(`${this.API_PATH}/departments-positions/${departmentId}/${positionId}`, {
         headers,
         method: 'DELETE',
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) {
           console.error('response error', response)
           responseRequest = response
@@ -238,7 +238,7 @@ export default class DepartmentService {
       await $fetch(`${this.API_PATH}/positions/${positionId}`, {
         headers,
         method: 'DELETE',
-        onResponse ({ response }) { responseRequest = response },
+        onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) {
           console.error('response error', response);
           responseRequest = response;
@@ -250,7 +250,7 @@ export default class DepartmentService {
     }
     return responseRequest;
   }
-  
+
   async delete(department: DepartmentInterface) {
     let responseRequest: any = null;
     const headers = { ...this.GENERAL_HEADERS }
@@ -261,7 +261,7 @@ export default class DepartmentService {
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
     });
-  
+
     return responseRequest;
   }
 
@@ -275,22 +275,22 @@ export default class DepartmentService {
       onResponse({ response }) { responseRequest = response; },
       onRequestError({ response }) { responseRequest = response; }
     });
-  
+
     return responseRequest;
   }
 
-  async getRotationIndex (departmentId: number,dateStart: string, dateEnd: string) {
+  async getRotationIndex(departmentId: number, dateStart: string, dateEnd: string) {
     let responseRequest: any = null
     const headers = { ...this.GENERAL_HEADERS }
-    const query = { 'dateStart': dateStart,  'dateEnd': dateEnd }
+    const query = { 'dateStart': dateStart, 'dateEnd': dateEnd }
     await $fetch(`${this.API_PATH}/departments/${departmentId}/get-rotation-index`, {
       query,
       headers,
-      onResponse ({ response }) { responseRequest = response },
-      onRequestError ({ response }) { responseRequest = response }
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
     })
 
     return responseRequest
   }
-  
+
 }

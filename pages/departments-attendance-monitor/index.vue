@@ -8,7 +8,7 @@
       </Title>
     </Head>
     <NuxtLayout name="backoffice">
-      <div class="dashboard-wrapper">
+      <div v-if="isReady" class="dashboard-wrapper">
         <div class="title">
           <h1>
             General Departments Attendance Monitor
@@ -89,11 +89,11 @@
 
         <div class="btns-group">
           <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
-            severity="success" @click="showEmployeesWithFaults">
+            severity="success" :class="{ 'btn-info': employeesWithFaults.length > 0 }"
+            @click="drawerEmployeeWithFaults = true">
             Consecutive Faults
           </Button>
-          <Button v-if="visualizationMode" class="btn" severity="success"
-            @click="drawerEmployeeWithOutShift = true">
+          <Button v-if="visualizationMode" class="btn" severity="success" @click="drawerEmployeeWithOutShift = true">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M6.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11ZM13 1c5.523 0 10 4.478 10 10s-4.477 10-10 10c-.335 0-.666-.017-.992-.049a6.5 6.5 0 0 0-8.96-8.96A10.003 10.003 0 0 1 3 11C3 5.478 7.477 1 13 1ZM3.716 14.589l-.07.057-.057.07a.5.5 0 0 0 0 .568l.057.07L5.793 17.5l-2.147 2.146-.057.07a.5.5 0 0 0 0 .568l.057.07.07.057a.5.5 0 0 0 .568 0l.07-.057L6.5 18.207l2.146 2.147.07.057a.5.5 0 0 0 .568 0l.07-.057.057-.07a.5.5 0 0 0 0-.568l-.057-.07L7.207 17.5l2.147-2.146.057-.07a.5.5 0 0 0 0-.568l-.057-.07-.07-.057a.5.5 0 0 0-.568 0l-.07.057L6.5 16.793l-2.146-2.147-.07-.057a.5.5 0 0 0-.492-.044l-.076.044ZM12.25 5a.75.75 0 0 0-.75.75l-.004 5.503c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25L13 5.75a.75.75 0 0 0-.75-.75Z"
@@ -200,6 +200,9 @@
           position="right" class="employee-whitout-shift" :showCloseIcon="true">
           <employeeWithFaultsList :employeesWithFaults="employeesWithFaults" />
         </Sidebar>
+      </div>
+      <div v-else class="loader">
+        <ProgressSpinner />
       </div>
     </NuxtLayout>
   </div>

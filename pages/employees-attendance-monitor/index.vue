@@ -90,7 +90,8 @@
         </div>
 
         <div class="head-ea-bts-group">
-          <Button v-if="displayConsecutiveFaultsBtn" class="btn" severity="success" @click="showEmployeesWithFaults">
+          <Button v-if="displayConsecutiveFaultsBtn" class="btn" :class="{ 'btn-info': employeesWithFaults.length > 0 }"
+            severity="success" @click="drawerEmployeeWithFaults = true">
             Consecutive Faults
           </Button>
           <button v-if="displayNoAssignedShiftBtn" class="btn" severity="success"

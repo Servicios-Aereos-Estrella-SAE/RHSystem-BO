@@ -237,5 +237,23 @@ export default class ShiftExceptionService {
     return true;
   }
 
+  async getEvidences(
+    shiftExceptionId: number,
+  ) {
+    let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS };
+
+    await $fetch(`${this.API_PATH}/shift-exception/${shiftExceptionId}/evidences`, {
+      headers,
+      onResponse({ response }) {
+        responseRequest = response;
+      },
+      onRequestError({ response }) {
+        responseRequest = response;
+      },
+    });
+
+    return responseRequest;
+  }
 
 }

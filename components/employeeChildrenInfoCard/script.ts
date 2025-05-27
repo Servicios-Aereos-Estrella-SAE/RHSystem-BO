@@ -11,6 +11,7 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
   }),

@@ -15,6 +15,7 @@ import { useMyGeneralStore } from "~/store/general"
 import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService'
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
+import PersonService from '~/resources/scripts/services/PersonService'
 
 export default defineComponent({
   name: 'Employees',
@@ -37,6 +38,7 @@ export default defineComponent({
     drawerRecords: false as boolean,
     drawerBanks: false as boolean,
     drawerResponsible: false as boolean,
+    drawerAssigned: false as boolean,
     drawerEmployeePhotoForm: false as boolean,
     drawerEmployeeDelete: false as boolean,
     drawerEmployeeSync: false as boolean,
@@ -60,7 +62,11 @@ export default defineComponent({
     status: 'Active',
     employeeTypes: [] as EmployeeTypeService[],
     employeeTypeId: null as number | null,
-    activeButton: 'employee'
+    activeButton: 'employee',
+    canManageResponsibleRead: false,
+    canManageBiotime: false,
+    canManageAssignedRead: false,
+    currentEmployeeIsUser: false
   }),
   computed: {
     isRootUser() {
@@ -77,8 +83,15 @@ export default defineComponent({
 
       return display
     },
-    displayResponsibleSection () {
-      if (this.isRootUser) {
+    displayResponsibleSection() {
+      if (this.isRootUser || this.canManageResponsibleRead) {
+        return true
+      }
+
+      return false
+    },
+    displayAssignedSection() {
+      if (this.isRootUser || this.canManageAssignedRead) {
         return true
       }
 
@@ -120,6 +133,9 @@ export default defineComponent({
       this.canManageFiles = true
       this.canReadOnlyWorkDisabilities = true
       this.canManageWorkDisabilities = true
+      this.canManageResponsibleRead = true
+      this.canManageBiotime = true
+      this.canManageAssignedRead = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
@@ -130,6 +146,9 @@ export default defineComponent({
       this.canManageFiles = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-files') ? true : false
       this.canReadOnlyWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-work-disabilities') ? true : false
       this.canManageWorkDisabilities = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-work-disabilities') ? true : false
+      this.canManageResponsibleRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-read')
+      this.canManageBiotime = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-biotime')
+      this.canManageAssignedRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-assigned-read')
     }
     myGeneralStore.setFullLoader(false)
     await this.getWorkSchedules()
@@ -384,13 +403,15 @@ export default defineComponent({
         myGeneralStore.setFullLoader(false)
       }
     },
-    onEditEmployee() {
+    async onEditEmployee() {
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
       this.drawerBanks = false
       this.drawerResponsible = false
+      this.drawerAssigned = false
       this.activeButton = 'employee'
+      this.currentEmployeeIsUser = await this.isCurrentEmployeeIsUser()
     },
     onEditPerson() {
       this.drawerEmployeePersonForm = true
@@ -398,6 +419,7 @@ export default defineComponent({
       this.drawerRecords = false
       this.drawerBanks = false
       this.drawerResponsible = false
+      this.drawerAssigned = false
       this.activeButton = 'person'
     },
     onEditRecords() {
@@ -405,6 +427,7 @@ export default defineComponent({
       this.drawerAddressForm = false
       this.drawerBanks = false
       this.drawerResponsible = false
+      this.drawerAssigned = false
       this.drawerRecords = true
       this.activeButton = 'records'
     },
@@ -414,6 +437,7 @@ export default defineComponent({
       this.drawerRecords = false
       this.drawerBanks = true
       this.drawerResponsible = false
+      this.drawerAssigned = false
       this.activeButton = 'banks'
     },
     onEditResponsible() {
@@ -422,7 +446,17 @@ export default defineComponent({
       this.drawerRecords = false
       this.drawerBanks = false
       this.drawerResponsible = true
+      this.drawerAssigned = false
       this.activeButton = 'responsible'
+    },
+    onEditAssigned() {
+      this.drawerEmployeePersonForm = false
+      this.drawerAddressForm = false
+      this.drawerRecords = false
+      this.drawerBanks = false
+      this.drawerResponsible = false
+      this.drawerAssigned = true
+      this.activeButton = 'assigned'
     },
     onClosePerson() {
       this.drawerEmployeePersonForm = false
@@ -485,6 +519,7 @@ export default defineComponent({
       this.drawerRecords = false
       this.drawerBanks = false
       this.drawerResponsible = false
+      this.drawerAssigned = false
     },
     onCloseAddress() {
       this.drawerAddressForm = false
@@ -539,7 +574,18 @@ export default defineComponent({
           }
         }
       }
-
+    },
+    async isCurrentEmployeeIsUser() {
+      if (this.employee?.personId) {
+        const personService = new PersonService()
+        const personResponse = await personService.show(this.employee?.personId)
+        const person = personResponse._data.data.person
+        if (person && person.user) {
+          return true
+        }
+      }
+      return false
     }
   },
 })
+

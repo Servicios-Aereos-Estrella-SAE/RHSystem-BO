@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: 'employeeInfoCard',
@@ -16,9 +17,10 @@ export default defineComponent({
     canManageFiles: { type: Boolean, default: false, required: true }
   },
   data: () => ({
+    canManageUserResponsible: false
   }),
   computed: {
-    employeeName () {
+    employeeName() {
       if (!this.employee.person) {
         return '---'
       }
@@ -26,32 +28,35 @@ export default defineComponent({
       const name = `${this.employee.person.personFirstname || ''} ${this.employee.person.personLastname || ''} ${this.employee.person.personSecondLastname || ''}`
       return name
     },
-    employeeInitial () {
+    employeeInitial() {
       const name = this.employeeName.trim()
       const first = name.charAt(0)
       return first.toUpperCase()
     }
   },
-  mounted() {
+  async mounted() {
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
   },
   methods: {
-    handlerClickOnEdit () {
+    handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
     },
-    handlerClickOnShifts () {
+    handlerClickOnShifts() {
       this.$emit('clickShifts', this.employee)
     },
     onClickPhoto() {
       this.clickOnPhoto()
     },
-    handlerClickOnDelete () {
+    handlerClickOnDelete() {
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
     },
-    handlerOpenProceedingFiles () {
+    handlerOpenProceedingFiles() {
       this.$emit('clickProceedingFiles', this.employee)
     }
   }
