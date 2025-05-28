@@ -1020,14 +1020,61 @@ export default defineComponent({
     async getExcelAllAssistance() {
       const assistExcelService = new AssistExcelService()
       const assists = await this.getDepartmentPositionAssistStatistics()
-      const title = await this.lineChartTitle
+      const title = `${this.getRange()}`
       assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
       const assistExcelService = new AssistExcelService()
       const assists = await this.getDepartmentPositionAssistStatistics()
-      const title = await this.lineChartTitle
+      const title = `Summary Report  ${this.getRange()}`
       assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+    },
+    async getExcelIncidentSummaryPayRoll() {
+      const assistExcelService = new AssistExcelService()
+      const assists = await this.getDepartmentPositionAssistStatistics()
+      const tradeName = await assistExcelService.getTradeName()
+      const title = `Incidencias ${tradeName} ${this.getRange()}`
+      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+    },
+    getRange() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      let startDay = ''
+      let endDay = ''
+      this.datePay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate.minus({ days: 1 })
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        this.datePay = this.getNextPayThursdayFromPeriodSelected(new Date(this.periodSelected))
+      } else {
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      }
+
+      const assistExcelService = new AssistExcelService()
+      const dayStart = assistExcelService.dateDay(startDay)
+      const monthStart = assistExcelService.dateMonth(startDay)
+      const yearStart = assistExcelService.dateYear(startDay)
+      const calendarDayStart = assistExcelService.calendarDay(yearStart, monthStart, dayStart)
+      const dayEnd = assistExcelService.dateDay(endDay)
+      const monthEnd = assistExcelService.dateMonth(endDay)
+      const yearEnd = assistExcelService.dateYear(endDay)
+      const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
+
+      return `From ${calendarDayStart} to ${calendarDayEnd}`
     }
   }
 })
