@@ -22,7 +22,7 @@
         </div>
         <div v-else>
           <div class="logo">
-            <img :src="getBackgroundImageLogo" alt="SAE">
+            <img :src="getBackgroundImageLogo">
           </div>
           <div class="guest-form">
             <div class="form-container">

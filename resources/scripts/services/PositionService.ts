@@ -118,3 +118,4 @@ export default class PositionService {
     return responseRequest.status === 200 ? responseRequest._data.data.positions : []
   }
 }
+

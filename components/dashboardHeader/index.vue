@@ -20,7 +20,7 @@
         </Button>
       </div>
       <div class="logo">
-        <img :src="getBackgroundImage" alt="SAE" class="img">
+        <img :src="getBackgroundImage" class="img">
       </div>
       <div class="header-content">
         <!-- <div class="notifications-badge">

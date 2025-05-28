@@ -13,15 +13,15 @@ export default defineComponent({
     allFilesCount: 0
   }),
   computed: {
-    getPercentage () {
+    getPercentage() {
       const total = this.allFilesCount
       const expired = this.proceedingFilesExpiredCount
       const available = total - expired
 
       const percentage = (available / total) * 100
-      return total > 0 ?  Math.floor(percentage) : 0
+      return total > 0 ? Math.floor(percentage) : 0
     },
-    availableCount () {
+    availableCount() {
       const total = this.allFilesCount
       const expired = this.proceedingFilesExpiredCount
       const toExpire = this.proceedingFilesExpiringCount
@@ -47,21 +47,21 @@ export default defineComponent({
     const dateNow = DateTime.now().toFormat('yyyy-LL-dd')
     const employeeProceedingFileResponse = await employeeProceedingFileService.getExpiresAndExpiring('2000-01-01', dateNow)
     if (employeeProceedingFileResponse.status === 200) {
-       this.proceedingFilesExpiredCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired.length
-       this.proceedingFilesExpiringCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring.length
-       this.allFilesCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.quantityFiles
+      this.proceedingFilesExpiredCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired.length
+      this.proceedingFilesExpiringCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring.length
+      this.allFilesCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.quantityFiles
     } else {
       this.$toast.add({
         severity: 'error',
         summary: 'Employee proceeding files',
         detail: employeeProceedingFileResponse._data.message,
         life: 5000,
-    });
+      });
     }
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    handlerClickOnCard () {
+    handlerClickOnCard() {
       if (this.clickOnCard) {
         this.clickOnCard()
       }

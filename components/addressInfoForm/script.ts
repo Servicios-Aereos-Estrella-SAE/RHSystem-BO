@@ -2,17 +2,20 @@ import type { AddressInterface } from "~/resources/scripts/interfaces/AddressInt
 import type { AddressTypeInterface } from "~/resources/scripts/interfaces/AddressTypeInterface";
 import type { CitySearchInterface } from "~/resources/scripts/interfaces/CitySearchInterface";
 import type { CountrySearchInterface } from "~/resources/scripts/interfaces/CountrySearchInterface";
+import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 import type { StateSearchInterface } from "~/resources/scripts/interfaces/StateSearchInterface";
 import AddressService from "~/resources/scripts/services/AddressService";
 import AddressTypeService from "~/resources/scripts/services/AddressTypeService";
+import { useMyGeneralStore } from "~/store/general";
 
 export default defineComponent({
-  
+
   name: 'AddressInfoForm',
   props: {
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
     address: { type: Object as PropType<AddressInterface>, required: true },
     clickOnSave: { type: Function, default: null },
-    
+
   },
   data: () => ({
     submitted: false,
@@ -23,6 +26,7 @@ export default defineComponent({
     selectCountry: '',
     selectState: '',
     selectCity: '',
+    canManageUserResponsible: false
   }),
   computed: {
   },
@@ -39,8 +43,11 @@ export default defineComponent({
       this.selectCity = this.address?.addressCity
     }
     await this.getAddressTypes()
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
   },
-  methods: { 
+  methods: {
     async getAddressTypes() {
       let response = null
       const addressTypeService = new AddressTypeService()
@@ -79,37 +86,37 @@ export default defineComponent({
       if (typeof this.selectCity === 'string' && this.selectCity.trim() !== '') {
         this.address.addressCity = this.selectCity
       }
-      if (!this.address.addressCountry || !this.address.addressState  || !this.address.addressCity || !this.address.addressTownship || !this.address.addressZipcode || !this.address.addressSettlement || !this.address.addressStreet || !this.address.addressTypeId || !this.address.addressExternalNumber) {
+      if (!this.address.addressCountry || !this.address.addressState || !this.address.addressCity || !this.address.addressTownship || !this.address.addressZipcode || !this.address.addressSettlement || !this.address.addressStreet || !this.address.addressTypeId || !this.address.addressExternalNumber) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }
-        const addressService = new AddressService()
-      
-        const response = this.address.addressId ? await addressService.update(this.address) : await addressService.create(this.address)
-        if (response.status === 200 || response.status === 201) {
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Address saved successfully',
-            life: 5000
-          });
-          const address = response._data.data.address
-          this.$emit('save', address as AddressInterface)
-          this.$emit('save-success');
-        } else {
-          this.$toast.add({
-            severity: 'warn',
-            summary: 'Error',
-            detail: response._data.error,
-            life: 5000
-          });
-          this.$emit('save-error');
-        }
+      const addressService = new AddressService()
+
+      const response = this.address.addressId ? await addressService.update(this.address) : await addressService.create(this.address)
+      if (response.status === 200 || response.status === 201) {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Address saved successfully',
+          life: 5000
+        });
+        const address = response._data.data.address
+        this.$emit('save', address as AddressInterface)
+        this.$emit('save-success');
+      } else {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Error',
+          detail: response._data.error,
+          life: 5000
+        });
+        this.$emit('save-error');
+      }
     },
     onCountrySelect(selectedOption: any) {
       if (this.address) {

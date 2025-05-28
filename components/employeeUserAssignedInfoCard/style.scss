@@ -1,0 +1,151 @@
+@import '/resources/styles/variables.scss';
+
+.employee-user-assigned-info-card {
+  border: $border;
+  border-radius: $radius;
+  padding: 1rem;
+  position: relative;
+  box-sizing: border-box;
+
+  .user-head {
+    display: grid;
+    grid-template-columns: 5rem auto;
+    gap: 0.75rem;
+
+    .avatar {
+      width: 5rem;
+      height: 5rem;
+      cursor: pointer;
+      background-color: rgba(60, 180, 229, 0.25);
+      border-radius: calc($radius / 2);
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      color: $primary;
+      font-size: 1.25rem;
+
+      .employee-photo {
+        width: 100%;
+        object-fit: cover;
+        height: 100%;
+        border-radius: calc($radius / 2);
+      }
+
+      .icon {
+        display: none !important;
+        background: white;
+        border-top-left-radius: calc($radius / 2);
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          width: 0.75rem;
+        }
+      }
+    }
+
+    .user-employee-data {
+      display: flex;
+      flex-flow: column;
+      gap: 0.5;
+      padding-top: 0.5rem;
+
+      .name {
+        font-weight: 500;
+        font-size: 0.8rem;
+        text-wrap: pretty;
+        display: -webkit-box;
+        overflow: hidden;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+      }
+
+      .email {
+        font-weight: normal;
+        font-size: 0.75rem;
+        text-wrap: pretty;
+        display: -webkit-box;
+        overflow: hidden;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        margin-top: 0.25rem;
+      }
+
+      .rol {
+        font-weight: normal;
+        font-size: 0.75rem;
+        text-wrap: pretty;
+        display: -webkit-box;
+        overflow: hidden;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        margin-top: 0.25rem;
+      }
+
+      .status {
+        font-weight: normal;
+        font-size: 0.75rem;
+        text-wrap: pretty;
+        display: -webkit-box;
+        overflow: hidden;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+
+        .dot {
+          width: 0.5rem;
+          height: 0.5rem;
+          margin-left: 0.5rem;
+          border-radius: $radius;
+          background-color: $gray;
+
+          &.active {
+            background-color: $success;
+            box-shadow: 0rem 0rem 0.2rem $success;
+          }
+        }
+      }
+    }
+  }
+
+  .info {
+    padding: 0.75rem;
+    box-sizing: border-box;
+    border: $border-dashed;
+    border-radius: calc($radius / 2);
+    margin-top: 1rem;
+    font-size: 0.7rem;
+    line-height: 1.25rem;
+
+    .employee-code {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    border-top: $border-dashed;
+    padding-top: 0.75rem !important;
+    margin-top: 0.75rem !important;
+  }
+}

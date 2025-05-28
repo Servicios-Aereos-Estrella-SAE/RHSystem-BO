@@ -8,7 +8,7 @@
       <div class="guest-page">
         <div>
           <div class="logo">
-            <img :src="getBackgroundImageLogo" alt="SAE">
+            <img :src="getBackgroundImageLogo">
           </div>
           <div class="guest-form">
             <h1>

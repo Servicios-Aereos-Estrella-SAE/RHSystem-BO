@@ -7,19 +7,19 @@
             <div class="input-box">
               <label for="personPhone">Phone</label>
               <InputMask v-model="employee.person.personPhone" mask="(999) 999 99 99" placeholder="Enter employee phone"
-                :disabled="isDeleted" />
+                :disabled="isDeleted || !canManageUserResponsible" />
             </div>
             <div class="input-box">
               <label for="personPhoneSecondary">Phone secondary</label>
               <InputMask v-model="employee.person.personPhoneSecondary" mask="(999) 999 99 99"
-                placeholder="Enter employee phone" :disabled="isDeleted" />
+                placeholder="Enter employee phone" :disabled="isDeleted || !canManageUserResponsible" />
             </div>
           </div>
           <div class="input-box">
             <label for="useremail">
               Email</label>
             <InputText id="useremail" v-model="employee.person.personEmail" type="email"
-              :invalid="submitted && isEmailInvalid" :disabled="isDeleted" />
+              :invalid="submitted && isEmailInvalid" :disabled="isDeleted || !canManageUserResponsible" />
             <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
               valid.</small>
           </div>
@@ -29,15 +29,17 @@
           <div class="input-box">
             <label for="personGender">Gender</label>
             <Dropdown v-model="employee.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-              placeholder="Select Gender" class="w-full md:w-14rem" :disabled="isDeleted" />
+              placeholder="Select Gender" class="w-full md:w-14rem"
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
           <div class="input-box">
             <div class="hire-date-box-container">
               <label for="employeeBirthDate">Birthday</label>
               <div v-if="!displayBirthDateCalendar" class="hire-date-box">
-                <InputText v-model="personBirthday" readonly class="capitalize" :disabled="isDeleted" />
+                <InputText v-model="personBirthday" readonly class="capitalize"
+                  :disabled="isDeleted || !canManageUserResponsible" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate" @click="handlerDisplayBirthDate"
-                  :disabled="isDeleted">
+                  :disabled="isDeleted || !canManageUserResponsible">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
@@ -47,7 +49,7 @@
               </div>
               <div v-if="displayBirthDateCalendar" class="hire-date-box-controller">
                 <Calendar v-model="employee.person.personBirthday" placeholder="Select birthday"
-                  :disabled="isDeleted" />
+                  :disabled="isDeleted || !canManageUserResponsible" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate"
                   @click="displayBirthDateCalendar = false">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -84,7 +86,7 @@
               <AutoComplete v-model="selectCountry" :suggestions="filteredCountries"
                 :item-value="option => option.personPlaceOfBirthCountry"
                 :optionLabel="option => option.personPlaceOfBirthCountry" @complete="handlerSearchCountries"
-                @change="onCountrySelect">
+                @change="onCountrySelect" :disabled="isDeleted || !canManageUserResponsible">
                 <template #option="slotProps">
                   <div>
                     <div class="name">
@@ -100,7 +102,7 @@
               </label>
               <AutoComplete v-model="selectState" :suggestions="filteredStates"
                 :optionLabel="option => option.personPlaceOfBirthState" @complete="handlerSearchStates"
-                @change="onStateSelect">
+                @change="onStateSelect" :disabled="isDeleted || !canManageUserResponsible">
                 <template #option="state">
                   <div>
                     <div class="name">
@@ -116,7 +118,7 @@
               </label>
               <AutoComplete v-model="selectCity" :suggestions="filteredCities"
                 :optionLabel="option => option.personPlaceOfBirthCity" @complete="handlerSearchCities"
-                @change="onCitySelect">
+                @change="onCitySelect" :disabled="isDeleted || !canManageUserResponsible">
                 <template #option="city">
                   <div>
                     <div class="name">
@@ -133,7 +135,8 @@
           <div class="input-box">
             <label for="personMaritalStatus">Marital status</label>
             <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label"
-              optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem" :disabled="isDeleted" />
+              optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem"
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
           <div
             v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'"
@@ -147,21 +150,21 @@
                 <div class="input-box">
                   <label for="employeeSpouseFirstname">First Name</label>
                   <InputText v-model="employeeSpouse.employeeSpouseFirstname" placeholder="Enter First Name"
-                    :disabled="isDeleted" />
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseFirstname">First name is
                     required.</small>
                 </div>
                 <div class="input-box">
                   <label for="employeeSpouseLastname">Last Name</label>
                   <InputText v-model="employeeSpouse.employeeSpouseLastname" placeholder="Enter Last Name"
-                    :disabled="isDeleted" />
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseLastname">Last name is
                     required.</small>
                 </div>
                 <div class="input-box">
                   <label for="employeeSpouseSecondLastName">Second Last Name</label>
                   <InputText v-model="employeeSpouse.employeeSpouseSecondLastname" placeholder="Enter Second Last Name"
-                    :disabled="isDeleted" />
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last
                     name
                     is
@@ -171,12 +174,12 @@
               <div class="input-box">
                 <label for="employeeSpousePhone">Phone</label>
                 <InputMask v-model="employeeSpouse.employeeSpousePhone" mask="(999) 999 99 99" placeholder="Enter phone"
-                  :disabled="isDeleted" />
+                  :disabled="isDeleted || !canManageUserResponsible" />
               </div>
               <div class="input-box">
                 <label for="employeeSpouseOcupation">Ocupation</label>
                 <InputText v-model="employeeSpouse.employeeSpouseOcupation" placeholder="Enter Ocupation"
-                  :disabled="isDeleted" />
+                  :disabled="isDeleted || !canManageUserResponsible" />
                 <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseOcupation">Ocupation is
                   required.</small>
               </div>
@@ -184,9 +187,10 @@
                 <div class="hire-date-box-container">
                   <label for="employeeSpouseBirthDate">Birthday</label>
                   <div v-if="!displaySpouseBirthDateCalendar" class="hire-date-box">
-                    <InputText v-model="spouseBirthday" readonly class="capitalize" :disabled="isDeleted" />
+                    <InputText v-model="spouseBirthday" readonly class="capitalize"
+                      :disabled="isDeleted || !canManageUserResponsible" />
                     <Button type="button" class="btn btn-block" id="display-input-hiredate"
-                      @click="handlerDisplaySpouseBirthDate" :disabled="isDeleted">
+                      @click="handlerDisplaySpouseBirthDate" :disabled="isDeleted || !canManageUserResponsible">
                       <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="m11.52 19.575-.356 1.423H6.25A3.25 3.25 0 0 1 3 17.748V8.5h17.998v2.511a3.279 3.279 0 0 0-2.607.95l-5.902 5.902a3.684 3.684 0 0 0-.969 1.712ZM20.998 6.25A3.25 3.25 0 0 0 17.748 3H6.25A3.25 3.25 0 0 0 3 6.25V7h17.998v-.75Zm-1.9 6.419-5.901 5.901a2.685 2.685 0 0 0-.707 1.248l-.457 1.83c-.2.797.522 1.518 1.318 1.319l1.83-.458a2.685 2.685 0 0 0 1.248-.706L22.33 15.9a2.286 2.286 0 0 0-3.233-3.232Z"
@@ -196,7 +200,7 @@
                   </div>
                   <div v-if="displaySpouseBirthDateCalendar" class="hire-date-box-controller">
                     <Calendar v-model="employeeSpouse.employeeSpouseBirthday" placeholder="Select birthday"
-                      :disabled="isDeleted" />
+                      :disabled="isDeleted || !canManageUserResponsible" />
                     <Button type="button" class="btn btn-block" id="display-input-hiredate"
                       @click="displaySpouseBirthDateCalendar = false">
                       <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -219,7 +223,7 @@
             </h2>
             <div class="head-page">
               <div></div>
-              <Button v-if="!isDeleted" class="btn btn-block" @click="addNewChildren">
+              <Button v-if="!isDeleted && canManageUserResponsible" class="btn btn-block" @click="addNewChildren">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -233,6 +237,7 @@
               <EmployeeChildrenInfoCard v-for="(employeeChildren, index) in employeeChildrenList"
                 :key="`employee-children-${employeeChildren.employeeChildrenId}-${index}`"
                 :employeeChildren="employeeChildren" :can-update="canUpdate" :can-delete="canDelete"
+                :canManageUserResponsible="canManageUserResponsible"
                 :click-on-edit="() => { onEditEmployeeChildren(employeeChildren) }"
                 :click-on-delete="() => { onDeleteEmployeeChildren(employeeChildren) }" />
             </div>
@@ -252,7 +257,7 @@
                 <div class="input-box">
                   <label for="employeeEmergencyContactFirstname">First Name</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactFirstname"
-                    placeholder="Enter First Name" :disabled="isDeleted" />
+                    placeholder="Enter First Name" :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
                     v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactFirstname">First
                     name is
@@ -261,7 +266,7 @@
                 <div class="input-box">
                   <label for="employeeEmergencyContactLastname">Last Name</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactLastname"
-                    placeholder="Enter Last Name" :disabled="isDeleted" />
+                    placeholder="Enter Last Name" :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
                     v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactLastname">Last
                     name is
@@ -270,7 +275,7 @@
                 <div class="input-box">
                   <label for="employeeEmergencyContactSecondLastName">Second Last Name</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactSecondLastname"
-                    placeholder="Enter Second Last Name" :disabled="isDeleted" />
+                    placeholder="Enter Second Last Name" :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
                     v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">Second
                     last
@@ -282,7 +287,7 @@
               <div class="input-box">
                 <label for="employeeEmergencyContactPhone">Phone</label>
                 <InputMask v-model="employeeEmergencyContact.employeeEmergencyContactPhone" mask="(999) 999 99 99"
-                  placeholder="Enter phone" :disabled="isDeleted" />
+                  placeholder="Enter phone" :disabled="isDeleted || !canManageUserResponsible" />
                 <small class="p-error"
                   v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactPhone">Phone
                   is
@@ -291,7 +296,7 @@
               <div class="input-box">
                 <label for="employeeEmergencyContactRelationship">Relationship</label>
                 <InputText v-model="employeeEmergencyContact.employeeEmergencyContactRelationship"
-                  placeholder="Enter Relationship" :disabled="isDeleted" />
+                  placeholder="Enter Relationship" :disabled="isDeleted || !canManageUserResponsible" />
                 <small class="p-error"
                   v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactRelationship">Relationship
                   is
@@ -302,7 +307,7 @@
         </div>
 
         <div class="box-tools-footer">
-          <button type="button" class="btn btn-primary btn-block" @click="onSave">
+          <button v-if="canManageUserResponsible" type="button" class="btn btn-primary btn-block" @click="onSave">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
@@ -317,12 +322,13 @@
         </transition>
 
         <Sidebar v-model:visible="drawerEmployeeChildrenForm" :blockScroll="true" :closeOnEscape="false"
-          :dismissable="false" header="Employee form" position="right" class="shift-form-sidebar" :showCloseIcon="true">
+          :dismissable="false" header="Employee form" position="right" class="children-form-sidebar"
+          :showCloseIcon="true">
           <div v-if="employee && employee.employeeId > 0">
             <employeeModalInfoCard :employee="employee" />
           </div>
-          <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted"
-            @save="onSaveChildren" />
+          <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted" @save="onSaveChildren"
+            :canManageUserResponsible="canManageUserResponsible" />
         </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeChildrenDelete" @confirmDelete="confirmDeleteEmployeeChildren"
@@ -344,4 +350,16 @@
 
 <style lang="scss" scoped>
   @import './style';
+</style>
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .children-form-sidebar {
+    width: 100% !important;
+    max-width: 45rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

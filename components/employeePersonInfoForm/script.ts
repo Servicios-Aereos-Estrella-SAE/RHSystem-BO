@@ -23,6 +23,7 @@ import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildr
 import UserService from '~/resources/scripts/services/UserService'
 import type { EmployeeEmergencyContactInterface } from '~/resources/scripts/interfaces/EmployeeEmergencyContactInterface'
 import EmployeeEmergencyContactService from '~/resources/scripts/services/EmployeeEmergencyContactService'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   components: {
@@ -101,7 +102,8 @@ export default defineComponent({
       { label: 'Not specified', value: 'Otro' }
     ],
     employeeEmergencyContact: null as EmployeeEmergencyContactInterface | null,
-    emergencyContactIsRequired: false
+    emergencyContactIsRequired: false,
+    canManageUserResponsible: false
   }),
   computed: {
     getAge() {
@@ -201,6 +203,9 @@ export default defineComponent({
         }
       }
     }
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
   },
   methods: {
@@ -378,7 +383,6 @@ export default defineComponent({
 
 
       if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
-        console.log(this.employee.person.personMaritalStatus)
         if (this.employeeSpouse) {
           const employeeSpouseBirthday: string | Date | null = this.employeeSpouse.employeeSpouseBirthday ?? null
           this.employeeSpouse.employeeSpouseBirthday = this.convertToDateTime(employeeSpouseBirthday)

@@ -66,7 +66,7 @@
                 </svg>
                 Employee
               </Button>
-              <Button class="btn" @click="syncEmployees">
+              <Button v-if="canManageBiotime" class="btn" @click="syncEmployees">
                 <span>
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -138,14 +138,6 @@
               </svg>
               Work
             </Button>
-            <Button v-if="displayResponsibleSection" :class="{ 'btn-active': isActive('responsible') }" class="btn" @click="onEditResponsible">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.968 2.325a1.75 1.75 0 0 1 2.064 0l7.421 5.416c.977.712.474 2.257-.734 2.26H4.28c-1.208-.003-1.71-1.548-.734-2.26l7.421-5.416ZM13 6.25a1 1 0 1 0-2 0 1 1 0 0 0 2 0ZM11.25 16h-2v-5h2v5ZM14.75 16h-2v-5h2v5ZM18.5 16h-2.25v-5h2.25v5ZM18.75 17H5.25A2.25 2.25 0 0 0 3 19.25v.5c0 .415.336.75.75.75h16.5a.75.75 0 0 0 .75-.75v-.5A2.25 2.25 0 0 0 18.75 17ZM7.75 16H5.5v-5h2.25v5Z"
-                  fill="#88a4bf" class="fill-212121"></path>
-              </svg>
-              Responsible
-            </Button>
             <Button :class="{ 'btn-active': isActive('person') }" class="btn" @click="onEditPerson">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -178,18 +170,37 @@
               </svg>
               Banks
             </Button>
+            <Button v-if="displayResponsibleSection" :class="{ 'btn-active': isActive('responsible') }" class="btn"
+              @click="onEditResponsible">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M7.998 5.75A3.752 3.752 0 1 1 12.5 9.427V11.5h3.25A2.25 2.25 0 0 1 18 13.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a.75.75 0 0 0-.75-.75h-8a.75.75 0 0 0-.75.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a2.25 2.25 0 0 1 2.25-2.25H11V9.427A3.754 3.754 0 0 1 7.998 5.75Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
+              Responsible
+            </Button>
+            <Button v-if="displayAssignedSection && currentEmployeeIsUser"
+              :class="{ 'btn-active': isActive('assigned') }" class="btn" @click="onEditAssigned">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M7.998 5.75A3.752 3.752 0 1 1 12.5 9.427V11.5h3.25A2.25 2.25 0 0 1 18 13.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a.75.75 0 0 0-.75-.75h-8a.75.75 0 0 0-.75.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a2.25 2.25 0 0 1 2.25-2.25H11V9.427A3.754 3.754 0 0 1 7.998 5.75Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
+              Assigned
+            </Button>
           </div>
 
           <employeeInfoForm
-            v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible"
+            v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible && !drawerAssigned"
             :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :address="address" @save="onSaveAddress"
+          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" @save="onSaveAddress"
             :click-on-close="() => { onCloseAddress() }" />
           <employeeRecords v-if="drawerRecords" :employee="employee" />
           <employeeBanks v-if="drawerBanks" :employee="employee" />
           <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" />
+          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
@@ -239,7 +250,7 @@
 
   .employee-sidebar-forms {
     width: 90% !important;
-    max-width: 45rem !important;
+    max-width: 55rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

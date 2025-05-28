@@ -20,6 +20,7 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -325,9 +326,6 @@ export default defineComponent({
 
     const fullPath = this.$route.path
     const firstSegment = fullPath.split('/')[1]
-    this.canSeeConsecutiveFaults = false
-    const systemModuleSlug = firstSegment
-    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
 
     await this.setDefaultVisualizationMode()
 
@@ -339,7 +337,9 @@ export default defineComponent({
     this.setGeneralData()
     this.setPeriodData()
     this.getDepartmentPositionAssistStatistics()
-
+    this.canSeeConsecutiveFaults = false
+    const systemModuleSlug = firstSegment
+    this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -570,13 +570,14 @@ export default defineComponent({
       const departmentId = null
       const positionId = null
       const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
+      const myGeneralStore = useMyGeneralStore()
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
 
       this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
-
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
+      await this.setEmployeesWithFaults()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
@@ -623,13 +624,16 @@ export default defineComponent({
       }
     },
     async setDepartmetList() {
-      const response = await new DepartmentService().getAllDepartmentList()
+      let response = null
+      const departmentService = new DepartmentService()
+      response = await departmentService.getAllDepartmentList()
       this.departmentList = response.status === 200 ? response._data.data.departments : []
     },
     getDepartmentPositionAssistStatistics() {
       const departmentListStatistics: any[] = []
 
       this.departmentList.forEach((department: DepartmentInterface) => {
+
         const departmentId = department.departmentId
         const list = this.employeeDepartmentPositionList.filter(item => item.employee.departmentId === departmentId)
         const statistics = {
@@ -702,6 +706,7 @@ export default defineComponent({
 
       this.setGeneralData()
       this.setPeriodData()
+      await this.setEmployeesWithFaults()
 
       myGeneralStore.setFullLoader(false)
     },
@@ -712,6 +717,7 @@ export default defineComponent({
         await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGeneralData()
         this.setPeriodData()
+        await this.setEmployeesWithFaults()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -782,7 +788,6 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
-
       const assistService = new AssistService()
       const assistResponse = await assistService.getExcelAll(startDay, endDay, this.datePay, reportType)
       if (assistResponse.status === 201) {
@@ -936,19 +941,20 @@ export default defineComponent({
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
       return (diffInDays + 1) >= 3 ? true : false
     },
-    async showEmployeesWithFaults() {
+    async setEmployeesWithFaults() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
 
       this.employeesWithFaults = []
-      for await (const assist of this.employeeDepartmentPositionList) {
+      const assistEmployees = this.employeeDepartmentPositionList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployees) {
         if (assist.employee.employeeAssistDiscriminator !== 0) continue
 
         let consecutiveFaults = 0
         let found3Consecutive = false
 
         for (const calendar of assist.calendar) {
-          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+          if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
             consecutiveFaults++
             if (consecutiveFaults === 3) {
               found3Consecutive = true
@@ -963,7 +969,7 @@ export default defineComponent({
           assist.employee.faultDays = []
 
           for (const calendar of assist.calendar) {
-            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate) {
+            if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
                 day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
               })
@@ -984,8 +990,8 @@ export default defineComponent({
       this.employeeDiscrimitorsList = this.employeeDiscrimitorsList.filter(emp => emp.employee.employeeAssistDiscriminator === 1)
 
       await Promise.all(this.employeeDiscrimitorsList.map(emp => this.getEmployeeAssistCalendar(emp)))
-
-      for await (const assist of this.employeeDiscrimitorsList) {
+      const assistEmployeeDiscrimitors = this.employeeDiscrimitorsList.filter(a => !a.employee.employeeIgnoreConsecutiveAbsences)
+      for await (const assist of assistEmployeeDiscrimitors) {
         assist.employee.faultDays = []
         if (assist.calendar.length > 0) {
           let noCheckStreak = 0
@@ -995,7 +1001,7 @@ export default defineComponent({
             const noChecks = !calendar.assist.checkIn &&
               !calendar.assist.checkOut &&
               !calendar.assist.checkEatIn &&
-              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate
+              !calendar.assist.checkEatOut && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday
 
             if (noChecks) {
               assist.employee.faultDays.push({
@@ -1014,7 +1020,6 @@ export default defineComponent({
           }
         }
       }
-      this.drawerEmployeeWithFaults = true
       myGeneralStore.setFullLoader(false)
     },
     async getExcelAllAssistance() {

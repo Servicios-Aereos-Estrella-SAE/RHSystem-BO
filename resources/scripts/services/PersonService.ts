@@ -68,6 +68,20 @@ export default class PersonService {
     return responseRequest
   }
 
+  async show(personId: number) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+    try {
+      await $fetch(`${this.API_PATH}/persons/${personId}`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   isValidRFC(rfc: string, aceptarGenerico: Boolean = true) {
     if (!rfc) { return false }
 

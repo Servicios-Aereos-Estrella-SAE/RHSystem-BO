@@ -9,6 +9,8 @@ export default defineComponent({
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
+    canManageResponsibleEdit: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
@@ -16,7 +18,7 @@ export default defineComponent({
     employeeNumber: null as string | null,
     photo: null as string | null,
     department: null as string | null,
-    position: null as string | null,
+    position: null as string | null
   }),
   computed: {
     getPhoto() {

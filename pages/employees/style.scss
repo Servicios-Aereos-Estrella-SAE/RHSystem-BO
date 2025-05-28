@@ -84,13 +84,23 @@
 
 .box-tools {
   box-sizing: border-box;
-  display: flex;
-  grid-auto-flow: dense;
-  justify-content: center;
-  grid-template-columns: repeat(2, 1fr);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: .25rem;
-  margin-top: 0.5rem;
-  margin-bottom: -2rem;
+  margin: -1.25rem;
+  border-bottom: $border;
+  border-top: $border;
+  border-color: #f5f5fa;
+  border-width: 0.5rem;
+  padding: 1.25rem;
+
+  @media screen and (max-width: $ipad) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media screen and (max-width: $phone) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   .btn {
     width: 100%;

@@ -30,7 +30,7 @@ export default defineComponent({
     ],
   }),
   computed: {
-    groupShifts () {
+    groupShifts() {
       const group: any[] = []
 
       this.flags.forEach(flag => {
@@ -55,7 +55,7 @@ export default defineComponent({
       return group
     }
   },
-  created () {},
+  created() { },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -102,6 +102,7 @@ export default defineComponent({
         shiftTimeStart: "",
         shiftActiveHours: 0,
         shiftRestDays: "",
+        shiftAccumulatedFault: 1,
         shiftCreatedAt: null,
         shiftUpdatedAt: null,
         shiftDeletedAt: null,

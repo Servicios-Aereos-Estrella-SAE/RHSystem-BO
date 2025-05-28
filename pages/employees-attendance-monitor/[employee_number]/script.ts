@@ -12,6 +12,7 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInterface'
 import ToleranceService from '~/resources/scripts/services/ToleranceService'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',

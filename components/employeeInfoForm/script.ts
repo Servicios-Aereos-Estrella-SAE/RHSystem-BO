@@ -20,6 +20,10 @@ import FlightAttendantService from '~/resources/scripts/services/FlightAttendant
 import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/FlightAttendantInterface';
 import UserService from '~/resources/scripts/services/UserService';
 import type { EmployeeTypeInterface } from '~/resources/scripts/interfaces/EmployeeTypeInterface';
+import { useMyGeneralStore } from '~/store/general';
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -72,9 +76,14 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeReactivate: false,
     employeeTypes: [] as EmployeeTypeInterface[],
+    canManageUserResponsible: false,
+    ignoreConsecutiveAbsenceOptions: [
+      { label: 'Do not ignore consecutive absences report', value: 0 },
+      { label: 'Yes, ignore consecutive absences report', value: 1 }
+    ],
   }),
   computed: {
-    displayEmployeeTypeFilter () {
+    displayEmployeeTypeFilter() {
       let display = false
 
       if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
@@ -179,6 +188,7 @@ export default defineComponent({
       }
     } else {
       this.employee.employeeAssistDiscriminator = 0
+      this.employee.employeeIgnoreConsecutiveAbsences = 0
       const employeeType = this.employeeTypes.find(type => type.employeeTypeSlug === 'employee')
 
       if (employeeType) {
@@ -189,7 +199,9 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-
+    const myGeneralStore = useMyGeneralStore()
+    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
   },
   methods: {

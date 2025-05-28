@@ -322,6 +322,32 @@
         <div v-if="item.shiftExceptionCheckOutTime" class="exception-time">
           Check Out Time: {{ item.shiftExceptionCheckOutTime }}
         </div>
+        <div v-if="item.shiftExceptionEvidences && item.shiftExceptionEvidences.length > 0" class="input-box">
+          <h3>Evidences</h3>
+          <div class="evidence-grid">
+            <div v-for="(evidence, index) in item.shiftExceptionEvidences" :key="index" class="evidence-card">
+              <a :href="evidence.shiftExceptionEvidenceFile" target="_blank" rel="noopener" class="preview-link">
+                <template v-if="isImage(evidence.shiftExceptionEvidenceFile)">
+                  <img :src="evidence.shiftExceptionEvidenceFile" alt="Preview" class="preview-full" />
+                </template>
+                <template v-else-if="isVideo(evidence.shiftExceptionEvidenceFile)">
+                  <div class="video-preview">
+                    <video :src="evidence.shiftExceptionEvidenceFile" class="preview-full" muted></video>
+                    <div class="play-icon-overlay">
+                      <i class="pi pi-play play-icon"></i>
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="file-icon-container">
+                    <i class="pi pi-file preview-icon"></i>
+                  </div>
+                </template>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
       <br>
       <h3 v-if="employeeShiftChangesList.length > 0">Shift change notes</h3>
@@ -393,6 +419,78 @@
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
+    }
+
+    .evidence-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .evidence-card {
+      width: 45px;
+      height: 45px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f9fafb;
+    }
+
+    .preview-link {
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-decoration: none;
+    }
+
+    .preview-full {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .file-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background-color: #f3f4f6;
+    }
+
+    .preview-icon {
+      font-size: .8rem;
+      color: #6b7280;
+    }
+
+    .video-preview {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .video-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play-icon-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .play-icon {
+      font-size: .8rem;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      padding: 4px;
     }
   }
 </style>

@@ -211,11 +211,12 @@ export default defineComponent({
         parentPositionSyncId: "",
         companyId: null,
         businessUnitId: null,
-        departmentId: undefined,
+        departmentId: null,
         positionLastSynchronizationAt: null,
         positionCreatedAt: null,
         positionUpdatedAt: null,
-        positionDeletedAt: null
+        positionDeletedAt: null,
+        parentPosition: null,
       }, ... await positionService.getPositionsDepartment(departmentId)]
     },
     async getDepartments() {
