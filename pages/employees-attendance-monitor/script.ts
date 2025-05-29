@@ -20,7 +20,6 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -140,6 +139,8 @@ export default defineComponent({
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
+    searchTime: null as null | Date,
+
   }),
   computed: {
     weeklyStartDay() {
@@ -578,12 +579,14 @@ export default defineComponent({
       this.employeeDepartmentPositionList = this.employeeDepartmentPositionList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
       await this.setEmployeesWithFaults()
+      this.setSearchTime()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+
       this.employeesWithOutShift = []
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
@@ -707,7 +710,7 @@ export default defineComponent({
       this.setGeneralData()
       this.setPeriodData()
       await this.setEmployeesWithFaults()
-
+      this.setSearchTime()
       myGeneralStore.setFullLoader(false)
     },
     async handlerPeriodChange() {
@@ -718,6 +721,7 @@ export default defineComponent({
         this.setGeneralData()
         this.setPeriodData()
         await this.setEmployeesWithFaults()
+        this.setSearchTime()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -1023,18 +1027,21 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     async getExcelAllAssistance() {
+      await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
       const assists = await this.getDepartmentPositionAssistStatistics()
       const title = `${this.getRange()}`
       assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
+      await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
       const assists = await this.getDepartmentPositionAssistStatistics()
       const title = `Summary Report  ${this.getRange()}`
       assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
     },
     async getExcelIncidentSummaryPayRoll() {
+      await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
       const assists = await this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
@@ -1080,6 +1087,21 @@ export default defineComponent({
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
       return `From ${calendarDayStart} to ${calendarDayEnd}`
+    },
+    setSearchTime() {
+      const now = new Date()
+      this.searchTime = now
+    },
+    async verifiySearchTime() {
+      const now = new Date()
+      const nowTime = now.getTime()
+      if (this.searchTime instanceof Date) {
+        const diffMs = nowTime - this.searchTime.getTime()
+        const diffMinutes = diffMs / 1000 / 60
+        if (diffMinutes >= 5) {
+          await this.handlerPeriodChange()
+        }
+      }
     }
   }
 })

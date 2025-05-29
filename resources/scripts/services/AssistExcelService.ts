@@ -170,12 +170,13 @@ export default class AssistExcelService {
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    saveAs(blob, 'Incident summary Report.xlsx')
+    saveAs(blob, 'Incident summary payroll Report.xlsx')
     myGeneralStore.setFullLoader(false)
   }
 
   async addImageLogo(workbook: ExcelJS.Workbook, worksheet: ExcelJS.Worksheet, type: string) {
-    const imageLogoUrl = await 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/general/logos/logo_sae.webp'//getLogo()
+    const myGeneralStore = useMyGeneralStore()
+    const imageLogoUrl = myGeneralStore.backgroundImage ? myGeneralStore.backgroundImage : 'https://sae-assets.sfo3.cdn.digitaloceanspaces.com/general/logos/logo_sae.webp'
     const imageResponse = await axios.get(imageLogoUrl, { responseType: 'arraybuffer' })
     const imageBuffer = imageResponse.data
 
@@ -199,9 +200,9 @@ export default class AssistExcelService {
     let adjustedWidth = imageWidth * scale
     let adjustedHeight = imageHeight * scale
 
-    let col = 0
-    if (col === 0) {
-      const increaseFactor = 1.3
+    let col = 0.27
+    if (col === 0.27) {
+      const increaseFactor = 1.05
       adjustedWidth *= increaseFactor
       adjustedHeight *= increaseFactor
     }
@@ -212,13 +213,16 @@ export default class AssistExcelService {
     })
     if (type != 'payroll') {
       worksheet.addImage(imageId, {
-        tl: { col, row: 0 },
+        tl: { col, row: 0.6 },
         ext: { width: adjustedWidth, height: adjustedHeight },
       })
     } else {
-      col = 14
+      col = 14.2
+      const increaseFactor = 1.3
+      adjustedWidth *= increaseFactor
+      adjustedHeight *= increaseFactor
       worksheet.addImage(imageId, {
-        tl: { col, row: 1 },
+        tl: { col, row: 1.2 },
         ext: { width: adjustedWidth, height: adjustedHeight },
       })
     }
@@ -667,6 +671,7 @@ export default class AssistExcelService {
     totalRowIncident.totalFaults = 0
     totalRowIncident.hoursWorked = 0
   }
+
   async addRowIncidentCalendar(
     employee: EmployeeInterface,
     employeeCalendar: AssistDayInterface[],
@@ -1022,6 +1027,7 @@ export default class AssistExcelService {
     totalRowIncident.totalFaults += rowByDepartment.totalFaults
     totalRowIncident.hoursWorked += rowByDepartment.hoursWorked
   }
+
   async getTardiesTolerance() {
     let tardies = 0
     const toleranceService = new ToleranceService()
@@ -1041,6 +1047,7 @@ export default class AssistExcelService {
     }
     return tardies
   }
+
   addHeadRowIncident(worksheet: ExcelJS.Worksheet) {
     const headerRow = worksheet.addRow([
       'Department',
@@ -1133,6 +1140,7 @@ export default class AssistExcelService {
     columnS.width = 16
     columnS.alignment = { vertical: 'middle', horizontal: 'center' }
   }
+
   async addTitleIncidentPayrollToWorkSheet(
     workbook: ExcelJS.Workbook,
     worksheet: ExcelJS.Worksheet,
@@ -1553,6 +1561,7 @@ export default class AssistExcelService {
       }
     }
   }
+
   getVacationBonus(employee: EmployeeInterface, datePay: string) {
     if (!employee.employeeHireDate) {
       return 0
@@ -1585,6 +1594,7 @@ export default class AssistExcelService {
 
     return hire.getMonth() === pay.getMonth()
   }
+
   async getTradeName() {
     let tradeName = 'BO'
     const systemSettingService = new SystemSettingService()
@@ -1596,10 +1606,12 @@ export default class AssistExcelService {
     }
     return tradeName
   }
+
   async getBusinessUnits() {
     const body = await new BusinessUnitService().index()
     this.businessUnits = body.status === 200 ? body._data.data.data || [] : []
   }
+
   paintBorderAll(worksheet: ExcelJS.Worksheet, rowCount: number) {
     for (let rowIndex = 6; rowIndex <= rowCount + 5; rowIndex++) {
       const row = worksheet.getRow(rowIndex)

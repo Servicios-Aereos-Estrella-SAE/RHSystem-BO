@@ -6,6 +6,7 @@ import type { PositionInterface } from "./PositionInterface"
 import type { EmployeeAddressInterface } from "./EmployeeAddressInterface"
 import type { ShiftExceptionInterface } from "./ShiftExceptionInterface"
 import type { CalendarDayFault } from "./CalendarDayFault"
+import type { AssistDayInterface } from "./AssistDayInterface"
 
 interface EmployeeInterface {
   employeeId: number | null,
@@ -44,6 +45,7 @@ interface EmployeeInterface {
   address?: EmployeeAddressInterface[],
   shift_exceptions?: ShiftExceptionInterface[],
   faultDays?: CalendarDayFault[]
+  calendar?: AssistDayInterface[]
 
   userResponsibleEmployeeChecked?: boolean,
   userResponsibleEmployeeReadonly?: boolean,
