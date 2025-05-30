@@ -1,16 +1,16 @@
 import { DateTime } from "luxon"
 import type { AssistDayInterface } from "../interfaces/AssistDayInterface"
 import type { EmployeeInterface } from "../interfaces/EmployeeInterface"
-import type { AssistExcelRowInterface } from "../interfaces/assist_excel_row_interface"
+import type { AssistExcelRowInterface } from "../interfaces/AssistExcelRowInterface"
 import type { ShiftExceptionInterface } from "../interfaces/ShiftExceptionInterface"
 import axios from "axios"
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 import { useMyGeneralStore } from "~/store/general"
-import type { AssistIncidentExcelRowInterface } from "../interfaces/assist_incident_excel_row_interface"
+import type { AssistIncidentExcelRowInterface } from "../interfaces/AssistIncidentExcelRowInterface"
 import ToleranceService from "./ToleranceService"
 import SystemSettingService from "./SystemSettingService"
-import type { AssistIncidentPayrollExcelRowInterface } from "../interfaces/assist_incident_payroll_excel_row_interface"
+import type { AssistIncidentPayrollExcelRowInterface } from "../interfaces/AssistIncidentPayrollExcelRowInterface"
 import BusinessUnitService from "./BusinessUnitService"
 import type { BusinessUnitInterface } from "../interfaces/BusinessUnitInterface"
 import EmployeeService from "./EmployeeService"
@@ -148,10 +148,8 @@ export default class AssistExcelService {
     const totalRowIncident = {} as AssistIncidentExcelRowInterface
     await this.cleanTotalByDepartment(totalRowIncident)
     await this.cleanTotalByDepartment(totalRowByDepartmentIncident)
-    let hasEmployees = false
     for await (const assist of assists) {
       for await (const employee of assist.employees) {
-        hasEmployees = true
         let newRows = [] as AssistIncidentPayrollExcelRowInterface[]
         newRows = await this.addRowIncidentPayrollCalendar(
           employee.employee,
@@ -1413,7 +1411,7 @@ export default class AssistExcelService {
           }
           if (
             calendar.assist.checkInStatus === 'fault' &&
-            !calendar.assist.isRestDay &&
+            !calendar.assist.isRestDay && !calendar.assist.isFutureDay &&
             !faultProcessed
           ) {
             if (calendar.assist.dateShift && calendar.assist.dateShift.shiftAccumulatedFault > 0) {
@@ -1573,7 +1571,6 @@ export default class AssistExcelService {
     if (!this.isFirstPayMonth(datePay)) {
       return 0
     }
-
     if (this.isAnniversaryInPayMonth(employee.employeeHireDate.toString(), datePay)) {
       return 1
     }
@@ -1582,15 +1579,19 @@ export default class AssistExcelService {
   }
 
   isFirstPayMonth(dateString: string) {
-    const date = new Date(dateString)
+    const [year, month, day] = dateString.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
     const dayOfMonth = date.getDate()
-
     return dayOfMonth >= 1 && dayOfMonth <= 15
   }
 
   isAnniversaryInPayMonth(hireDate: string, datePay: string) {
-    const hire = new Date(hireDate)
-    const pay = new Date(datePay)
+    const [hireYear, hireMonth, hireDay] = hireDate.split('-').map(Number)
+    const [payYear, payMonth, payDay] = datePay.split('-').map(Number)
+
+    const hire = new Date(hireYear, hireMonth - 1, hireDay)
+    const pay = new Date(payYear, payMonth - 1, payDay)
+
 
     return hire.getMonth() === pay.getMonth()
   }

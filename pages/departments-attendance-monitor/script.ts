@@ -618,6 +618,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+      let endDayFourteen = ''
       this.employeesWithOutShift = []
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
@@ -633,6 +634,7 @@ export default defineComponent({
 
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate//.minus({ days: 1 })
+        endDayFourteen = endDate.minus({ days: 1 }).toFormat('yyyy-MM-dd')
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
@@ -644,6 +646,9 @@ export default defineComponent({
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
+        if (this.visualizationMode?.value === 'fourteen') {
+          employee.calendar = employee.calendar.filter(a => a.day <= endDayFourteen)
+        }
         this.setGeneralStatisticsData(employee, employee.calendar)
         if (assistReq.status === 400) {
           const employeeNoShift = employee?.employee || null
