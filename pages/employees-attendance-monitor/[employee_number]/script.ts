@@ -301,6 +301,13 @@ export default defineComponent({
       }
 
       return false
+    },
+    canDisplayFrontExcel() {
+      if (this.isRoot) {
+        return true
+      }
+
+      return false
     }
   },
   created() {

@@ -309,6 +309,18 @@ export default defineComponent({
       }
 
       return false
+    },
+    isRootUser() {
+      const myGeneralStore = useMyGeneralStore()
+      const flag = myGeneralStore.isRoot
+      return flag
+    },
+    canDisplayFrontExcel() {
+      if (this.isRootUser) {
+        return true
+      }
+
+      return false
     }
   },
   created() {

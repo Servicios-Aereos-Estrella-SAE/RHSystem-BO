@@ -147,7 +147,7 @@
             </svg>
           </button>
         </div>
-        <div class="head-ea-bts-group">
+        <div v-if="canDisplayFrontExcel" class="head-ea-bts-group">
           <div></div>
           <div></div>
           <div></div>

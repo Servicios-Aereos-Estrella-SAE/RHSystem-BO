@@ -175,7 +175,7 @@
             </Button>
           </div>
         </div>
-        <div class="employee-attendance-head-tools">
+        <div v-if="canDisplayFrontExcel" class="employee-attendance-head-tools">
           <div v-if="visualizationMode">
             <Button class="btn" severity="success" @click="getExcelAllAssistance">
               Detailed front

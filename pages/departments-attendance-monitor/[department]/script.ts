@@ -300,6 +300,13 @@ export default defineComponent({
     },
     isRangeAtLeast3Days() {
       return this.isDatesAtLeast3Days()
+    },
+    canDisplayFrontExcel() {
+      if (this.isRootUser) {
+        return true
+      }
+
+      return false
     }
   },
   created() {

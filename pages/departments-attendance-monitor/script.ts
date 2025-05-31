@@ -140,6 +140,11 @@ export default defineComponent({
     searchTime: null as null | Date,
   }),
   computed: {
+    isRootUser() {
+      const myGeneralStore = useMyGeneralStore()
+      const flag = myGeneralStore.isRoot
+      return flag
+    },
     weeklyStartDay() {
       const daysList = []
 
@@ -302,6 +307,13 @@ export default defineComponent({
     },
     isRangeAtLeast3Days() {
       return this.isDatesAtLeast3Days()
+    },
+    canDisplayFrontExcel() {
+      if (this.isRootUser) {
+        return true
+      }
+
+      return false
     }
   },
   created() {
