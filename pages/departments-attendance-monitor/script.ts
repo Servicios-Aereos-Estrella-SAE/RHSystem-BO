@@ -19,6 +19,7 @@ import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
+import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 
 export default defineComponent({
   components: {
@@ -136,6 +137,7 @@ export default defineComponent({
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     isReady: false,
+    searchTime: null as null | Date,
   }),
   computed: {
     weeklyStartDay() {
@@ -559,6 +561,7 @@ export default defineComponent({
         await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
         this.setGraphsData()
         await this.setEmployeesWithFaults()
+        this.setSearchTime()
         myGeneralStore.setFullLoader(false)
       }
     },
@@ -588,6 +591,7 @@ export default defineComponent({
       await this.setEmployeesWithFaults()
 
       this.setGraphsData()
+      this.setSearchTime()
       myGeneralStore.setFullLoader(false)
     },
     async handlerSearchEmployee(event: any) {
@@ -607,12 +611,14 @@ export default defineComponent({
       this.employeeDepartmentList = this.employeeDepartmentList.filter(emp => emp.employee.employeeAssistDiscriminator === 0)
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
       await this.setEmployeesWithFaults()
+      this.setSearchTime()
     },
     async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
+      let endDayFourteen = ''
       this.employeesWithOutShift = []
       if (this.visualizationMode?.value === 'fourteen') {
         const startDate = DateTime.fromObject({
@@ -628,6 +634,7 @@ export default defineComponent({
 
         const startDayMinusOne = startDate.minus({ days: 1 })
         const endDayMinusOne = endDate//.minus({ days: 1 })
+        endDayFourteen = endDate.minus({ days: 1 }).toFormat('yyyy-MM-dd')
         startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
         endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
       } else {
@@ -639,6 +646,9 @@ export default defineComponent({
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
+        if (this.visualizationMode?.value === 'fourteen') {
+          employee.calendar = employee.calendar.filter(a => a.day <= endDayFourteen)
+        }
         this.setGeneralStatisticsData(employee, employee.calendar)
         if (assistReq.status === 400) {
           const employeeNoShift = employee?.employee || null
@@ -654,17 +664,19 @@ export default defineComponent({
       }
     },
     getDepartmentPositionAssistStatistics() {
-      const departmentListStatistics: Array<{
-        department: DepartmentInterface
-        statistics: {
-          onTimePercentage: number
-          onTolerancePercentage: number
-          onDelayPercentage: number
-          onEarlyOutPercentage: number
-          onFaultPercentage: number
-        }
-        employeesCount: number
-      }> = []
+      /*  const departmentListStatistics: Array<{
+          department: DepartmentInterface
+          statistics: {
+            onTimePercentage: number
+            onTolerancePercentage: number
+            onDelayPercentage: number
+            onEarlyOutPercentage: number
+            onFaultPercentage: number
+          },
+          employees: Array<EmployeeInterface>,
+          employeesCount: number
+        }> = []  */
+      const departmentListStatistics: any[] = []
 
       this.departmentCollection.forEach(async (department: DepartmentInterface) => {
         const departmentId = department.departmentId
@@ -699,6 +711,7 @@ export default defineComponent({
             departmentListStatistics.push({
               department,
               statistics,
+              employees: list,
               employeesCount: listLength,
             })
           }
@@ -1015,6 +1028,83 @@ export default defineComponent({
         }
       }
       myGeneralStore.setFullLoader(false)
+    },
+    async getExcelAllAssistance() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const assists = await this.getDepartmentPositionAssistStatistics()
+      const title = `${this.getRange()}`
+      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+    },
+    async getExcelIncidentSummary() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const assists = await this.getDepartmentPositionAssistStatistics()
+      const title = `Summary Report  ${this.getRange()}`
+      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+    },
+    async getExcelIncidentSummaryPayRoll() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const assists = await this.getDepartmentPositionAssistStatistics()
+      const tradeName = await assistExcelService.getTradeName()
+      const title = `Incidencias ${tradeName} ${this.getRange()}`
+      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+    },
+    getRange() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      let startDay = ''
+      let endDay = ''
+      this.datePay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate.minus({ days: 1 })
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        this.datePay = this.getNextPayThursdayFromPeriodSelected(new Date(this.periodSelected))
+      } else {
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      }
+
+      const assistExcelService = new AssistExcelService()
+      const dayStart = assistExcelService.dateDay(startDay)
+      const monthStart = assistExcelService.dateMonth(startDay)
+      const yearStart = assistExcelService.dateYear(startDay)
+      const calendarDayStart = assistExcelService.calendarDay(yearStart, monthStart, dayStart)
+      const dayEnd = assistExcelService.dateDay(endDay)
+      const monthEnd = assistExcelService.dateMonth(endDay)
+      const yearEnd = assistExcelService.dateYear(endDay)
+      const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
+
+      return `From ${calendarDayStart} to ${calendarDayEnd}`
+    },
+    setSearchTime() {
+      const now = new Date()
+      this.searchTime = now
+    },
+    async verifiySearchTime() {
+      const now = new Date()
+      const nowTime = now.getTime()
+      if (this.searchTime instanceof Date) {
+        const diffMs = nowTime - this.searchTime.getTime()
+        const diffMinutes = diffMs / 1000 / 60
+        if (diffMinutes >= 5) {
+          await this.handlerPeriodChange()
+        }
+      }
     }
   }
 })

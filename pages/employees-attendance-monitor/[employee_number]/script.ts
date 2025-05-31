@@ -13,6 +13,7 @@ import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInter
 import ToleranceService from '~/resources/scripts/services/ToleranceService'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -136,7 +137,8 @@ export default defineComponent({
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
     startDay: '',
     endDay: '',
-    canSync: false
+    canSync: false,
+    searchTime: null as null | Date,
   }),
   computed: {
     isRoot() {
@@ -586,6 +588,7 @@ export default defineComponent({
       this.workedActiveTime = await this.sumShiftActiveHours(this.employeeCalendar)
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
+      this.setSearchTime()
     },
     async calculateTotalElapsedTimeWithCrossing(dataList: Array<{
       checkIn?: { assistPunchTime?: string | null }
@@ -992,6 +995,107 @@ export default defineComponent({
       start.setHours(0, 0, 0, 0)
       const isStartAfterLimit = start >= limit
       return isStartAfterLimit
+    },
+    async getExcelAllAssistance() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const employee = this.employee
+      if (employee) {
+        employee.calendar = this.employeeCalendar
+
+      }
+      const assists = [{
+        department: this.employee?.department,
+        employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
+      }]
+      const title = `${this.getRange()}`
+      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+    },
+    async getExcelIncidentSummary() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const title = `Summary Report  ${this.getRange()}`
+      const employee = this.employee
+      if (employee) {
+        employee.calendar = this.employeeCalendar
+
+      }
+      const assists = [{
+        department: this.employee?.department,
+        employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
+      }]
+      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+    },
+    async getExcelIncidentSummaryPayRoll() {
+      await this.verifiySearchTime()
+      const assistExcelService = new AssistExcelService()
+      const employee = this.employee
+      if (employee) {
+        employee.calendar = this.employeeCalendar
+
+      }
+      const assists = [{
+        department: this.employee?.department,
+        employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
+      }]
+      const tradeName = await assistExcelService.getTradeName()
+      const title = `Incidencias ${tradeName} ${this.getRange()}`
+      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+    },
+    getRange() {
+      const firstDay = this.weeklyStartDay[0]
+      const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+      let startDay = ''
+      let endDay = ''
+      this.datePay = ''
+      if (this.visualizationMode?.value === 'fourteen') {
+        const startDate = DateTime.fromObject({
+          year: firstDay.year,
+          month: firstDay.month,
+          day: firstDay.day,
+        })
+        const endDate = DateTime.fromObject({
+          year: lastDay.year,
+          month: lastDay.month,
+          day: lastDay.day,
+        })
+
+        const startDayMinusOne = startDate.minus({ days: 1 })
+        const endDayMinusOne = endDate.minus({ days: 1 })
+        startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+        endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        this.datePay = this.getNextPayThursdayFromPeriodSelected(new Date(this.periodSelected))
+      } else {
+        startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+        endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      }
+
+      const assistExcelService = new AssistExcelService()
+      const dayStart = assistExcelService.dateDay(startDay)
+      const monthStart = assistExcelService.dateMonth(startDay)
+      const yearStart = assistExcelService.dateYear(startDay)
+      const calendarDayStart = assistExcelService.calendarDay(yearStart, monthStart, dayStart)
+      const dayEnd = assistExcelService.dateDay(endDay)
+      const monthEnd = assistExcelService.dateMonth(endDay)
+      const yearEnd = assistExcelService.dateYear(endDay)
+      const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
+
+      return `From ${calendarDayStart} to ${calendarDayEnd}`
+    },
+    setSearchTime() {
+      const now = new Date()
+      this.searchTime = now
+    },
+    async verifiySearchTime() {
+      const now = new Date()
+      const nowTime = now.getTime()
+      if (this.searchTime instanceof Date) {
+        const diffMs = nowTime - this.searchTime.getTime()
+        const diffMinutes = diffMs / 1000 / 60
+        if (diffMinutes >= 5) {
+          await this.handlerPeriodChange()
+        }
+      }
     }
   }
 })
