@@ -453,6 +453,20 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getDaysWorkDisability(employeeId: number, datePay: string) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/${employeeId}/get-days-work-disability`, {
+        headers,
+        query: { datePay },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 
 }
 
