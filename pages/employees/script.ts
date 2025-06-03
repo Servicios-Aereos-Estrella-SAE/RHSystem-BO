@@ -16,6 +16,7 @@ import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddress
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   name: 'Employees',
@@ -184,6 +185,20 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
       this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0
       this.filteredEmployees = list
+      const { data } = useAuth()
+      const session: unknown = data.value as unknown as UserInterface
+      const authUser = session as UserInterface
+      if (authUser && authUser.userId) {
+        if (authUser.person && authUser.person.employee && authUser.person.employee.employeeId) {
+          const employeeService = new EmployeeService()
+          const employeeResponse = await employeeService.show(authUser.person.employee.employeeId)
+          if (employeeResponse && employeeResponse.status === 200) {
+            const employee = employeeResponse._data.data.employee
+            employee.person = employeeResponse._data.data.employee.person
+            this.filteredEmployees.unshift(employee)
+          }
+        }
+      }
       myGeneralStore.setFullLoader(false)
     },
     async getWorkSchedules() {

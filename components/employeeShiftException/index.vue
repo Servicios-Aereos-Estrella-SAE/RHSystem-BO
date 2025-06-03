@@ -11,7 +11,7 @@
         <div v-if="displayAddButton" class="shift-exception-wrapper">
           <div class="head-page">
             <div class="input-box">
-              <Button class="btn btn-block" @click="addNew">
+              <Button v-if="canManageUserResponsible" class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -27,7 +27,8 @@
           <div v-for="(shiftException, index) in shiftExceptionsList" :key="`exception-${index}`">
             <employeeShiftExceptionCard :shiftException="shiftException" :isDeleted="isDeleted"
               :click-on-edit="() => { onEdit(shiftException) }" :click-on-delete="() => { onDelete(shiftException) }"
-              :canManageToPreviousDays="canManageToPreviousDays" :canManageException="canManageException" />
+              :canManageToPreviousDays="canManageToPreviousDays" :canManageException="canManageException"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="shift-exception-wrapper">

@@ -21,6 +21,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
     canManageException: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptions: [] as Array<ShiftExceptionInterface>,
@@ -38,7 +39,7 @@ export default defineComponent({
     sessionUser: null as UserInterface | null
   }),
   computed: {
-    displayAddButton () {
+    displayAddButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -65,7 +66,7 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface

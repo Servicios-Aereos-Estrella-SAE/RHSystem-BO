@@ -23,7 +23,8 @@ export default defineComponent({
     workDisabilityPeriodExpense: { type: Object as PropType<WorkDisabilityPeriodExpenseInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     submitted: false,

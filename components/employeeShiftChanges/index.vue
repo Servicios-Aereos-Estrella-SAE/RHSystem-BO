@@ -11,7 +11,7 @@
         <div v-if="displayAddButton" class="employee-shift-change-wrapper">
           <div class="head-page">
             <div class="input-box">
-              <Button class="btn btn-block" @click="addNew">
+              <Button v-if="canManageUserResponsible" class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -27,9 +27,9 @@
           <div v-for="(employeeShiftChange, index) in employeeShiftChangesList" :key="`change-${index}`">
             <employeeShiftChangeCard :employeeShiftChange="employeeShiftChange" :isDeleted="isDeleted"
               :click-on-edit="() => { onEdit(employeeShiftChange) }"
-              :click-on-delete="() => { onDelete(employeeShiftChange) }"
-              :shift="shift"
-              :canManageToPreviousDays="canManageToPreviousDays" :canManageShiftChange="canManageChange" />
+              :click-on-delete="() => { onDelete(employeeShiftChange) }" :shift="shift"
+              :canManageToPreviousDays="canManageToPreviousDays" :canManageShiftChange="canManageChange"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="employee-shift-change-wrapper">

@@ -56,7 +56,8 @@ export default defineComponent({
     currentEmployeeCalendar: null as AssistDayInterface | null,
     canManageShiftOrException: true,
     startDateLimit: DateTime.local(2023, 12, 29).toJSDate(),
-    canManageShiftChanges: false
+    canManageShiftChanges: false,
+    canManageUserResponsible: false
   }),
   setup() {
     const router = useRouter()
@@ -128,7 +129,9 @@ export default defineComponent({
       const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
       this.canManageShiftChanges = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift-change')
     }
-
+    if (this.employee.employeeId) {
+      this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(this.employee.employeeId)
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },

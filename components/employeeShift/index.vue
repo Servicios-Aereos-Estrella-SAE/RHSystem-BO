@@ -104,7 +104,8 @@
         :employee="employee" :employeeCalendarAssist="item" :shiftsList="shiftsList" :isDeleted="isDeleted"
         :canUpdateShift="canManageShiftOrException" :startDateLimit="startDateLimit"
         @successShiftAssigned="onSuccessShiftAssigned" @clickExceptions="onClickExceptions"
-        @clickShiftChanges="onClickShiftChanges" :canManageShiftChanges="canManageShiftChanges" />
+        @clickShiftChanges="onClickShiftChanges" :canManageShiftChanges="canManageShiftChanges"
+        :canManageUserResponsible="canManageUserResponsible" />
     </div>
     <div v-else class="no-shifts">
       This employee has no shifts assigned to this month
@@ -113,7 +114,8 @@
     <Sidebar v-model:visible="drawerShiftExceptions" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
       header="Employee shift exceptions" position="right" class="shift-exceptions-sidebar">
       <employeeShiftException :employee="employee" :date="selectedExceptionDate" :shift="currentShift"
-        :canManageException="canManageShiftOrException" @save="onSave" />
+        :canManageException="canManageShiftOrException" @save="onSave"
+        :canManageUserResponsible="canManageUserResponsible" />
     </Sidebar>
 
 
@@ -127,28 +129,31 @@
       header="Employee exceptions" position="right" class="shift-changes-sidebar">
       <employeeShiftChanges :employee="employee" :date="selectedExceptionDate" :shift="currentShift"
         :employeeCalendar="currentEmployeeCalendar" :canManageChange="canManageShiftOrException"
-        @saveShiftChanges="onSaveShiftChanges" />
+        @saveShiftChanges="onSaveShiftChanges" :canManageUserResponsible="canManageUserResponsible" />
     </Sidebar>
 
 
     <Sidebar v-model:visible="displaySidebarVacations" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
       header="vacations" position="right" class="shift-vacations-sidebar">
       <employeeVacations :employee="employee" @manageVacations="handlerVacationsManager" :status-form="statusForm"
-        :can-manage-vacation="canManageVacation" :canManageException="canManageShiftOrException" />
+        :can-manage-vacation="canManageVacation" :canManageException="canManageShiftOrException"
+        :canManageUserResponsible="canManageUserResponsible" />
     </Sidebar>
 
     <Sidebar v-model:visible="displaySidebarVacationsManager" @hide="handlerSidebarVacationsClose(vacationPeriod)"
       :blockScroll="true" :dismissable="false" :closeOnEscape="false" header="vacations" position="right"
       class="shift-vacations-manage-sidebar">
       <employeeVacationsControl :employee="employee" :vacation-period="vacationPeriod"
-        :can-manage-vacation="canManageVacation" :canManageException="canManageShiftOrException" @save="onSave" />
+        :can-manage-vacation="canManageVacation" :canManageException="canManageShiftOrException" @save="onSave"
+        :canManageUserResponsible="canManageUserResponsible" />
     </Sidebar>
 
     <Sidebar v-model:visible="displaySidebarWorkDisabilities" :blockScroll="true" :dismissable="false"
       :closeOnEscape="false" header="work disabilities" position="right" class="work-disabilities-sidebar">
       <employeeWorkDisabilities :employee="employee" :status-form="statusForm"
         :canManageException="canManageShiftOrException" :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-        :canManageWorkDisabilities="canManageWorkDisabilities" @save="onSave" />
+        :canManageWorkDisabilities="canManageWorkDisabilities" @save="onSave"
+        :canManageUserResponsible="canManageUserResponsible" />
     </Sidebar>
 
   </div>

@@ -27,7 +27,8 @@ export default defineComponent({
     workDisability: { type: Object as PropType<WorkDisabilityInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     insuranceCoverageTypeList: [] as InsuranceCoverageTypeInterface[],
@@ -48,7 +49,7 @@ export default defineComponent({
     sessionUser: null as UserInterface | null
   }),
   computed: {
-    displayHeadActions () {
+    displayHeadActions() {
       if (!this.sessionUser) {
         return false
       }
@@ -97,7 +98,7 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface
