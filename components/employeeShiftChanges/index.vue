@@ -46,12 +46,13 @@
     <Sidebar v-model:visible="drawerEmployeeShiftChangeForm" header="form" position="right"
       class="employee-shift-change-form-sidebar" :showCloseIcon="true">
       <employeeShiftChangeInfoForm :employeeShiftChange="employeeShiftChange" :employee="employee" :date="date"
-        :shift="shift" @onShiftChangeSave="onSave" @onEmployeeShiftChangeSaveAll="onSaveAll" />
+        :shift="shift" :canManageUserResponsible="canManageUserResponsible" @onShiftChangeSave="onSave"
+        @onEmployeeShiftChangeSaveAll="onSaveAll" />
     </Sidebar>
 
     <transition name="page">
       <confirmDelete v-if="drawerEmployeeShiftChangeDelete" @confirmDelete="confirmDelete"
-        @cancelDelete="drawerShiftChangeDelete = false" />
+        @cancelDelete="drawerEmployeeShiftChangeDelete = false" />
     </transition>
 
 

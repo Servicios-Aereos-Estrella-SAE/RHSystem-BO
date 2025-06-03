@@ -26,6 +26,7 @@ export default defineComponent({
     employeeShiftChange: { type: Object as PropType<EmployeeShiftChangeInterface>, required: true },
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     submitted: false,

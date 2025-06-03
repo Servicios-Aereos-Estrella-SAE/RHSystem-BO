@@ -192,15 +192,16 @@
 
           <employeeInfoForm
             v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible && !drawerAssigned"
-            :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
+            :employee="employee" :can-update="canUpdate" @save="onSave"
+            :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" @save="onSaveAddress"
-            :click-on-close="() => { onCloseAddress() }" />
-          <employeeRecords v-if="drawerRecords" :employee="employee" />
-          <employeeBanks v-if="drawerBanks" :employee="employee" />
-          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" />
-          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" />
+          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" :can-update="canUpdate"
+            @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
+          <employeeRecords v-if="drawerRecords" :employee="employee" :can-update="canUpdate" />
+          <employeeBanks v-if="drawerBanks" :employee="employee" :can-update="canUpdate" />
+          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" :can-update="canUpdate" />
+          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" :can-update="canUpdate" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
@@ -214,7 +215,7 @@
           <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"
             :can-manage-exception-request="canManageExceptionRequest"
             :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-            :canManageWorkDisabilities="canManageWorkDisabilities" />
+            :canManageWorkDisabilities="canManageWorkDisabilities" :can-update="canUpdate" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"

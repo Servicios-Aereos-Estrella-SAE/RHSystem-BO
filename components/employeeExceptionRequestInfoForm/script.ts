@@ -25,7 +25,8 @@ export default defineComponent({
     changeStatus: { type: Boolean },
     clickOnSave: { type: Function, default: null },
     canUpdate: { type: Boolean, default: false },
-    canDelete: { type: Boolean, default: false }
+    canDelete: { type: Boolean, default: false },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     exceptionTypeList: [] as ExceptionTypeInterface[],
@@ -71,7 +72,7 @@ export default defineComponent({
         : null
     },
     "applyToMoreThanOneDay"() {
-     this.exceptionRequest.daysToApply = 0
+      this.exceptionRequest.daysToApply = 0
     }
   },
   async mounted() {
@@ -192,7 +193,7 @@ export default defineComponent({
           severity: 'warn',
           summary: 'Validation data',
           detail: 'Missing data',
-            life: 5000,
+          life: 5000,
         })
         return
       }

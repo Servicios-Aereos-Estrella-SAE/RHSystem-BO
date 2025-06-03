@@ -13,17 +13,17 @@
             Read only
             ( {{ readonlySwicht ? 'Active' : 'Inactive' }} )
           </label>
-          <InputSwitch v-model="readonlySwicht" :disabled="isDeleted || !canManageUserAssigned" />
+          <InputSwitch v-model="readonlySwicht" :disabled="isDeleted || !canUpdate || !canManageUserAssigned" />
         </div>
         <div class="input-box">
           <label for="directBossSwicht">
             Direct Boss
             ( {{ directBossSwicht ? 'Active' : 'Inactive' }} )
           </label>
-          <InputSwitch v-model="directBossSwicht" :disabled="isDeleted || !canManageUserAssigned" />
+          <InputSwitch v-model="directBossSwicht" :disabled="isDeleted || !canUpdate || !canManageUserAssigned" />
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageUserAssigned" class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canUpdate && canManageUserAssigned" class="btn btn-block btn-primary" @click="onSave">
             Save employee
           </Button>
         </div>

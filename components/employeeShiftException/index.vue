@@ -45,7 +45,8 @@
     <Sidebar v-model:visible="drawerShiftExceptionForm" header="form" position="right"
       class="shift-exception-form-sidebar" :showCloseIcon="true">
       <employeeShiftExceptionInfoForm :shiftException="shiftException" :employee="employee" :date="date" :shift="shift"
-        @onShiftExceptionSave="onSave" @onShiftExceptionSaveAll="onSaveAll" />
+        :canManageUserResponsible="canManageUserResponsible" @onShiftExceptionSave="onSave"
+        @onShiftExceptionSaveAll="onSaveAll" />
     </Sidebar>
 
     <transition name="page">

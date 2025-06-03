@@ -21,6 +21,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
     canManageException: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
@@ -36,7 +37,7 @@ export default defineComponent({
     isDeleted: false,
   }),
   computed: {
-    selectedExceptionDate () {
+    selectedExceptionDate() {
       const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     }
@@ -88,7 +89,7 @@ export default defineComponent({
     onSave(exceptionRequest: ExceptionRequestInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.exceptionRequest = {...exceptionRequest}
+      this.exceptionRequest = { ...exceptionRequest }
       if (this.exceptionRequest.requestedDate) {
         const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('UTC-6')
         this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
@@ -108,7 +109,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       for await (const exceptionRequest of exceptionRequests) {
-        this.exceptionRequest = {...exceptionRequest}
+        this.exceptionRequest = { ...exceptionRequest }
         if (this.exceptionRequest.requestedDate) {
           const newDate = DateTime.fromISO(this.exceptionRequest.requestedDate.toString(), { setZone: true }).setZone('UTC-6')
           this.exceptionRequest.requestedDate = newDate ? newDate.toString() : ''
@@ -127,11 +128,11 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     onEdit(exceptionRequest: ExceptionRequestInterface) {
-      this.exceptionRequest = {...exceptionRequest}
+      this.exceptionRequest = { ...exceptionRequest }
       this.drawerExceptionRequestForm = true
     },
     onDelete(exceptionRequest: ExceptionRequestInterface) {
-      this.exceptionRequest = {...exceptionRequest}
+      this.exceptionRequest = { ...exceptionRequest }
       this.selectedDateTimeDeleted = ''
       if (this.exceptionRequest.requestedDate) {
         this.selectedDateTimeDeleted = DateTime.fromISO(this.exceptionRequest.requestedDate.toString()).toHTTP()
@@ -157,7 +158,7 @@ export default defineComponent({
             severity: 'error',
             summary: 'Delete exception request',
             detail: exceptionRequestResponse._data.message,
-              life: 5000,
+            life: 5000,
           })
         }
       }

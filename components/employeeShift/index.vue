@@ -122,7 +122,8 @@
     <Sidebar v-model:visible="drawerShiftException" :blockScroll="true" :dismissable="false" :closeOnEscape="false"
       header="Employee exceptions" position="right" class="shift-exceptions-req-sidebar">
       <employeeExceptionRequest :employee="employee" :date="selectedExceptionDate"
-        :canManageException="canManageShiftOrException" @saveExceptionRequest="onSaveExceptionRequest" />
+        :canManageException="canManageShiftOrException" :canManageUserResponsible="canManageUserResponsible"
+        @saveExceptionRequest="onSaveExceptionRequest" />
     </Sidebar>
 
     <Sidebar v-model:visible="drawerShiftChanges" :blockScroll="true" :dismissable="false" :closeOnEscape="false"

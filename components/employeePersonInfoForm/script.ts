@@ -206,6 +206,9 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
     this.isReady = true
   },
   methods: {

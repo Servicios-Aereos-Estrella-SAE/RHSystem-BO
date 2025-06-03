@@ -25,7 +25,7 @@
             <employeeUserResponsibleInfoCard :userResponsibleEmployee="userResponsibleEmployee"
               :click-on-edit="() => { onEdit(userResponsibleEmployee) }"
               :click-on-delete="() => { onDelete(userResponsibleEmployee) }" :isDeleted="isDeleted"
-              :canManageResponsibleEdit="canManageResponsibleEdit"
+              :can-update="canUpdate" :canManageResponsibleEdit="canManageResponsibleEdit"
               :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
@@ -37,7 +37,8 @@
           <Sidebar v-model:visible="drawerUserResponsibleEmployeeForm" header="User" position="right"
             class="employee-user-responsible-form-sidebar" :showCloseIcon="true">
             <employeeUserResponsibleInfoForm :userResponsibleEmployee="userResponsibleEmployee" :employee="employee"
-              @onUserResponsibleEmployeeSave="onSave" :usersAsigned="userResponsibleEmployeesList" />
+              :can-update="canUpdate" @onUserResponsibleEmployeeSave="onSave"
+              :usersAsigned="userResponsibleEmployeesList" />
           </Sidebar>
         </div>
       </div>

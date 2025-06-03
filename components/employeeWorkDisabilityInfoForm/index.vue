@@ -13,7 +13,8 @@
           </label>
           <Dropdown v-model="workDisability.insuranceCoverageTypeId" :options="insuranceCoverageTypeList"
             optionLabel="insuranceCoverageTypeName" optionValue="insuranceCoverageTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
+            class="w-full md:w-14rem"
+            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !workDisability.insuranceCoverageTypeId">
             Insurance coverage type is
             required.
@@ -28,7 +29,8 @@
           </label>
         </div>
         <div v-if="displayHeadActions" class="box-tools-footer">
-          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities" class="btn btn-block" @click="addNewPeriod">
+          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities && canManageUserResponsible"
+            class="btn btn-block" @click="addNewPeriod">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z"
@@ -36,7 +38,8 @@
             </svg>
             Add period
           </Button>
-          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities" class="btn btn-block" @click="addNewNote">
+          <Button v-if="!isNewWorkDisability && canManageWorkDisabilities && canManageUserResponsible"
+            class="btn btn-block" @click="addNewNote">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M12 6.5a5.5 5.5 0 1 0-11 0 5.5 5.5 0 0 0 11 0ZM7 7l.001 2.504a.5.5 0 0 1-1 0V7H3.496a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 1 0V6h2.503a.5.5 0 0 1 0 1H7.001Z"
@@ -49,8 +52,8 @@
             </svg>
             Add note
           </Button>
-          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
-            @click="onSave">
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
+            class="btn btn-block btn-primary" @click="onSave">
             <svg viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
               enable-background="new 0 0 24 24">
               <path
@@ -84,7 +87,8 @@
             </h2>
             <div v-for="(workDisabilityNote, index) in workDisabilityNotesList" :key="`work-disability-note-${index}`">
               <workDisabilityNoteInfoCard :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-                :canManageWorkDisabilities="canManageWorkDisabilities" :isDeleted="isDeleted"
+                :canManageWorkDisabilities="canManageWorkDisabilities"
+                :canManageUserResponsible="canManageUserResponsible" :isDeleted="isDeleted"
                 :work-disability-note="workDisabilityNote" :click-on-edit="() => { onEditNote(workDisabilityNote) }"
                 :click-on-delete="() => { onDeleteNote(workDisabilityNote) }" />
             </div>
@@ -103,7 +107,8 @@
         class="work-disability-note-form-sidebar" :showCloseIcon="true">
         <employeeWorkDisabilityNoteInfoForm :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
           :canManageWorkDisabilities="canManageWorkDisabilities" :workDisabilityNote="workDisabilityNote"
-          :employee="employee" @onWorkDisabilityNoteSave="onSaveNote" />
+          :canManageUserResponsible="canManageUserResponsible" :employee="employee"
+          @onWorkDisabilityNoteSave="onSaveNote" />
       </Sidebar>
     </div>
     <div v-else class="loader">

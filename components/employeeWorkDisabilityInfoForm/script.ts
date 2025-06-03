@@ -72,6 +72,7 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
     if (this.workDisability.workDisabilityId) {
       const workDisabilityService = new WorkDisabilityService()
