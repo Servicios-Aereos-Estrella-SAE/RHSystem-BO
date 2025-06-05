@@ -304,7 +304,7 @@ export default defineComponent({
       return false
     },
     displayNoAssignedShiftBtn() {
-      if (this.visualizationMode) {
+      if (this.visualizationMode && this.employeesWithOutShift.length > 0) {
         return true
       }
 

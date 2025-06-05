@@ -89,6 +89,9 @@
         @cancelDelete="drawerUserAssignedEmployeeDelete = false" />
     </transition>
   </div>
+  <div v-else class="loader">
+    <ProgressSpinner />
+  </div>
 </template>
 
 

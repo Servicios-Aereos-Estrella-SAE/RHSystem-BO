@@ -97,7 +97,7 @@ export default defineComponent({
           if (user && user.userId) {
             const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(user.userId, this.search, this.departmentId, this.positionId, null)
             this.userAssignedEmployeesList = userAssignedEmployeeResponse._data.data.data.data
-            this.setEmployeeInUsers()
+            await this.setEmployeeInUsers()
           }
         }
 
@@ -113,6 +113,7 @@ export default defineComponent({
     async onSave(userAssignedEmployee: UserResponsibleEmployeeInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      this.isReady = false
       this.userAssignedEmployee = { ...userAssignedEmployee }
 
       const index = this.userAssignedEmployeesList.findIndex((userAssignedEmployee: UserResponsibleEmployeeInterface) => userAssignedEmployee.userResponsibleEmployeeId === this.userAssignedEmployee?.userResponsibleEmployeeId)
@@ -125,6 +126,7 @@ export default defineComponent({
       }
       this.setEmployeeInUsers()
       this.drawerUserAssignedEmployeeForm = false
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     onEdit(userAssignedEmployee: UserResponsibleEmployeeInterface) {
@@ -184,8 +186,13 @@ export default defineComponent({
       }
     },
     async onSaveSelection() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.isReady = false
       await this.getUserAssignedEmployees()
       this.drawerEmployeeSelection = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
