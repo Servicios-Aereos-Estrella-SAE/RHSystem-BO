@@ -16,6 +16,7 @@ import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddress
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
+import { DateTime } from 'luxon'
 
 export default defineComponent({
   name: 'Employees',
@@ -585,6 +586,55 @@ export default defineComponent({
         }
       }
       return false
+    },
+    async getVacationExcel() {
+      let yearStart = 2018
+      const oldestEmployee = this.filteredEmployees.reduce((oldest, current) => {
+        if (!current.employeeHireDate || !oldest.employeeHireDate) {
+          return oldest;
+        }
+
+        const currentDate = new Date(current.employeeHireDate);
+        const oldestDate = new Date(oldest.employeeHireDate);
+
+        return currentDate < oldestDate ? current : oldest;
+      });
+      if (oldestEmployee && oldestEmployee.employeeHireDate) {
+        yearStart = DateTime.fromISO(oldestEmployee.employeeHireDate.toString()).year
+      }
+      const yearEnd = (new Date().getFullYear()) + 1 as number
+      const dateStart = `${yearStart}-01-01`
+      const dateEnd = `${yearEnd}-12-31`
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const assistService = new EmployeeService()
+      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false)
+      if (assistResponse.status === 201) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `Vacations Report.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel vacation',
+          detail: 'Excel was created successfully',
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel vacation',
+          detail: msgError,
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      }
     }
   },
 })
