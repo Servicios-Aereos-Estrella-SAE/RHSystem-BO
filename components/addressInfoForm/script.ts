@@ -15,7 +15,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     address: { type: Object as PropType<AddressInterface>, required: true },
     clickOnSave: { type: Function, default: null },
-
+    canUpdate: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     submitted: false,
@@ -46,6 +46,9 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
   },
   methods: {
     async getAddressTypes() {

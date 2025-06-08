@@ -35,6 +35,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
     flightAttendant: { type: Object as PropType<FlightAttendantInterface>, required: false, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
     clickOnSave: { type: Function, default: null },
     clickOnEdit: { type: Function, default: null },
   },
@@ -202,6 +203,9 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
     this.isReady = true
   },
   methods: {

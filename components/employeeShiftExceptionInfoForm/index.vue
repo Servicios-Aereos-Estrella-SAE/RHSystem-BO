@@ -34,14 +34,15 @@
           </label>
           <Dropdown v-model="shiftException.exceptionTypeId" :options="exceptionTypeList"
             optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
-            class="w-full md:w-14rem" @update:model-value="handleTypeChange" />
+            class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
         </div>
         <div class="input-box">
           <label for="description">
             Reason
           </label>
-          <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30" />
+          <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30"
+            :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && needReason && !shiftException.shiftExceptionsDescription">
             Reason is required.
           </small>
@@ -50,7 +51,7 @@
           <label for="check-in-time">
             {{ needPeriodHours ? 'From' : 'Check in time' }}
           </label>
-          <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly />
+          <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckInTime">
             {{ needPeriodHours ? 'From' : 'Check in time' }} is required
           </small>
@@ -59,7 +60,8 @@
           <label for="check-out-time">
             {{ needPeriodHours ? 'To' : 'Check out time' }}
           </label>
-          <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly />
+          <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly
+            :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
             {{ needPeriodHours ? 'To' : 'Check out time' }} is required
           </small>
@@ -69,7 +71,8 @@
             Salary enjoyment
           </label>
           <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label"
-            optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem" />
+            optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem"
+            :disabled="!canManageUserResponsible" />
           <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
             Salary enjoyment is required.
           </small>
@@ -85,7 +88,7 @@
           </label>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" :custom-upload="true" :maxFileSize="1000000"
             chooseLabel="Click to select files" :multiple="true" :show-upload-button="false" @select="validateFiles"
-            :showCancelButton="false">
+            :showCancelButton="false" :disabled="!canManageUserResponsible">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -155,7 +158,7 @@
           </div>
         </div>
         <div class="box-tools-footer">
-          <Button class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canManageUserResponsible" class="btn btn-block btn-primary" @click="onSave">
             Save exception
           </Button>
         </div>

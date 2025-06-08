@@ -20,6 +20,7 @@ export default defineComponent({
     isDeleted: { type: Boolean, required: true },
     canUpdateShift: { type: Boolean, required: true },
     canManageShiftChanges: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
     startDateLimit: { type: Date, required: true }
   },
   data: () => ({

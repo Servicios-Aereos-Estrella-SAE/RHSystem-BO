@@ -19,6 +19,7 @@ export default defineComponent({
   name: 'employeeRecords',
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    canUpdate: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     isReady: false,
@@ -39,6 +40,9 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
     this.isReady = true
   },
   methods: {

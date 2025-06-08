@@ -16,7 +16,7 @@
           <FileUpload v-if="canManageWorkDisabilities && canManageCurrentPeriod" ref="fileUpload" v-model="files"
             name="demo[]" url="/api/upload" accept="image/*,application/pdf" chooseLabel="Click to select file"
             :showUploadButton="false" :showCancelButton="false" :custom-upload="true" :fileLimit="1"
-            @select="validateFiles" @upload="onAdvancedUpload($event)">
+            :disabled="!canManageUserResponsible" @select="validateFiles" @upload="onAdvancedUpload($event)">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -65,7 +65,7 @@
             Document folio
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
-            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
+            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
           <small class="p-error"
             v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket
             folio
@@ -82,7 +82,8 @@
           </label>
           <Dropdown v-model="workDisabilityPeriod.workDisabilityTypeId" :options="workDisabilityTypeList"
             optionLabel="workDisabilityTypeName" optionValue="workDisabilityTypeId" placeholder="" filter
-            class="w-full md:w-14rem" :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" />
+            class="w-full md:w-14rem"
+            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">Work disability type is
             required.</small>
         </div>
@@ -130,8 +131,8 @@
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="!isNewWorkDisabilityPeriod && canManageWorkDisabilities" class="btn btn-block"
-            @click="addNewExpense">
+          <Button v-if="!isNewWorkDisabilityPeriod && canManageWorkDisabilities && canManageUserResponsible"
+            class="btn btn-block" @click="addNewExpense">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M12 6.5a5.5 5.5 0 1 0-11 0 5.5 5.5 0 0 0 11 0ZM7 7l.001 2.504a.5.5 0 0 1-1 0V7H3.496a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 1 0V6h2.503a.5.5 0 0 1 0 1H7.001Z"
@@ -144,8 +145,8 @@
             </svg>
             Add expense
           </Button>
-          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
-            @click="onSave">
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
+            class="btn btn-block btn-primary" @click="onSave">
             Save work disability period
           </Button>
         </div>
@@ -162,7 +163,8 @@
               :click-on-edit="() => { onEditExpense(workDisabilityPeriodExpense) }"
               :click-on-delete="() => { onDeleteExpense(workDisabilityPeriodExpense) }"
               :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-              :canManageWorkDisabilities="canManageWorkDisabilities" />
+              :canManageWorkDisabilities="canManageWorkDisabilities"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="work-disability-period-expenses-wrapper">
@@ -175,7 +177,8 @@
           <employeeWorkDisabilityPeriodExpenseInfoForm :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
             :canManageWorkDisabilities="canManageWorkDisabilities"
             :workDisabilityPeriodExpense="workDisabilityPeriodExpense" :workDisabilityPeriod="workDisabilityPeriod"
-            :employee="employee" @onWorkDisabilityPeriodExpenseSave="onSaveExpense" />
+            :employee="employee" @onWorkDisabilityPeriodExpenseSave="onSaveExpense"
+            :canManageUserResponsible="canManageUserResponsible" />
         </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerWorkDisabilityPeriodExpenseDelete" @confirmDelete="confirmDeleteExpense"

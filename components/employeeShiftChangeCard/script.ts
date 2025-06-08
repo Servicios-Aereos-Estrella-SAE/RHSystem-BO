@@ -14,6 +14,7 @@ export default defineComponent({
     isDeleted: { type: Boolean, required: true },
     canManageToPreviousDays: { type: Boolean, required: true },
     canManageShiftChange: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,

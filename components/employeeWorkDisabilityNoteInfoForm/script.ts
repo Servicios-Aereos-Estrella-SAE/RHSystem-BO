@@ -19,7 +19,8 @@ export default defineComponent({
     workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     submitted: false,
@@ -80,8 +81,8 @@ export default defineComponent({
         workDisabilityNoteResponse = await workDisabilityNoteService.show(workDisabilityNoteResponse._data.data.workDisabilityNote.workDisabilityNoteId)
         if (workDisabilityNoteResponse.status === 200) {
           const workDisabilityNote = workDisabilityNoteResponse._data.data.workDisabilityNote
-         
-       
+
+
           this.$emit('onWorkDisabilityNoteSave', workDisabilityNote as WorkDisabilityNoteInterface, shiftExceptionsError as Array<ShiftExceptionErrorInterface>)
         }
       } else {

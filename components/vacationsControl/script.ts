@@ -20,6 +20,7 @@ export default defineComponent({
     isDeleted: { type: Boolean, required: true },
     vacationPeriodAvailableDays: { type: Number, required: true },
     canManageException: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     shiftExceptionsDate: '',
@@ -40,7 +41,7 @@ export default defineComponent({
     }
   },
   computed: {
-    displayEditVacationDayButton () {
+    displayEditVacationDayButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -55,7 +56,7 @@ export default defineComponent({
 
       return false
     },
-    displayDestroyVacationDayButton () {
+    displayDestroyVacationDayButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -89,7 +90,7 @@ export default defineComponent({
     this.verifyPermissionManagePreviousDays()
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface

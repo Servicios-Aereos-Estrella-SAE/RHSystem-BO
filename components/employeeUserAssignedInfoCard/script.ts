@@ -11,6 +11,8 @@ export default defineComponent({
     isDeleted: { type: Boolean, required: true },
     canManageAssignedEdit: { type: Boolean, required: true },
     canManageUserAssigned: { type: Boolean, required: true },
+    canUpdate: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
