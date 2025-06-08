@@ -75,7 +75,9 @@
 
       </div>
     </div>
-
+    <div v-else class="loader">
+      <ProgressSpinner />
+    </div>
     <transition name="page">
       <confirmDelete v-if="drawerUserAssignedEmployeeDelete" @confirmDelete="confirmDelete"
         @cancelDelete="drawerUserAssignedEmployeeDelete = false" />

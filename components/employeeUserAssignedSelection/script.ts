@@ -127,7 +127,7 @@ export default defineComponent({
     async onSaveSelection() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-
+      this.isReady = false
       let userId = null
       const personService = new PersonService()
 
@@ -142,32 +142,30 @@ export default defineComponent({
       if (userId && userId > 0) {
         const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
 
-        const promises = this.filteredEmployees
-          .filter(employee => employee.userResponsibleEmployeeChecked)
-          .map(employee => {
-            if (employee.employeeId) {
-              const userResponsibleEmployee = {
-                userId: userId!,
-                employeeId: employee.employeeId,
-                userResponsibleEmployeeDirectBoss: employee.userResponsibleEmployeeDirectBoss ? 1 : 0,
-                userResponsibleEmployeeReadonly: employee.userResponsibleEmployeeReadonly ? 1 : 0,
-              } as UserResponsibleEmployeeInterface
+        const selectedEmployees = this.filteredEmployees
+          .filter(employee => employee.userResponsibleEmployeeChecked && employee.employeeId)
 
-              return userResponsibleEmployeeService.store(userResponsibleEmployee)
-                .then(response => ({
-                  status: response.status,
-                  error: response._data?.error || response._data?.message || null
-                }))
-                .catch(error => ({
-                  status: 500,
-                  error: error.message || 'Unknown error'
-                }))
+        const promises = selectedEmployees.map(employee => {
+          const userResponsibleEmployee = {
+            userId: userId!,
+            employeeId: employee.employeeId,
+            userResponsibleEmployeeDirectBoss: employee.userResponsibleEmployeeDirectBoss ? 1 : 0,
+            userResponsibleEmployeeReadonly: employee.userResponsibleEmployeeReadonly ? 1 : 0,
+          } as UserResponsibleEmployeeInterface
 
-            }
-
-          })
+          return userResponsibleEmployeeService.store(userResponsibleEmployee)
+            .then(response => ({
+              status: response.status,
+              error: (response._data as { error?: string })?.error || null
+            }))
+            .catch(error => ({
+              status: 500,
+              error: error.message || 'Unknown error'
+            }))
+        })
         if (promises.length === 0) {
           myGeneralStore.setFullLoader(false)
+          this.isReady = true
           return this.$toast.add({
             severity: 'warn',
             summary: 'Employees',
@@ -175,6 +173,7 @@ export default defineComponent({
             life: 7000,
           })
         }
+
         const results = await Promise.all(promises)
 
         const successCount = results.filter(res => res && res.status === 200 || res && res.status === 201).length
@@ -183,16 +182,18 @@ export default defineComponent({
           .map(res => res && res.error)
 
         if (successCount > 0) {
-          this.$emit('onUserAssignedEmployeeSave')
           this.$toast.add({
             severity: 'success',
             summary: 'Employees assigned successfully',
             detail: `${successCount} employees assigned`,
             life: 5000,
           })
+          this.$emit('onUserAssignedEmployeeSave')
         }
 
         if (errorMessages.length > 0) {
+          this.isReady = true
+          myGeneralStore.setFullLoader(false)
           this.$toast.add({
             severity: 'warn',
             summary: 'error',
@@ -202,7 +203,6 @@ export default defineComponent({
         }
       }
 
-      myGeneralStore.setFullLoader(false)
     },
     toggleSelectAll() {
       for (const employee of this.filteredEmployees) {

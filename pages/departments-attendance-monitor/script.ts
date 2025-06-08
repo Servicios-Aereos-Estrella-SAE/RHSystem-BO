@@ -314,7 +314,14 @@ export default defineComponent({
       }
 
       return false
-    }
+    },
+    displayNoAssignedShiftBtn() {
+      if (this.visualizationMode && this.employeesWithOutShift.length > 0) {
+        return true
+      }
+
+      return false
+    },
   },
   created() {
     const minDateString = '2024-05-01T00:00:00'
@@ -676,18 +683,6 @@ export default defineComponent({
       }
     },
     getDepartmentPositionAssistStatistics() {
-      /*  const departmentListStatistics: Array<{
-          department: DepartmentInterface
-          statistics: {
-            onTimePercentage: number
-            onTolerancePercentage: number
-            onDelayPercentage: number
-            onEarlyOutPercentage: number
-            onFaultPercentage: number
-          },
-          employees: Array<EmployeeInterface>,
-          employeesCount: number
-        }> = []  */
       const departmentListStatistics: any[] = []
 
       this.departmentCollection.forEach(async (department: DepartmentInterface) => {

@@ -40,17 +40,9 @@
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                   placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
               </div>
-              <div v-if="displayEmployeeTypeFilter" class="input-box">
-                <label for="employee-type">
-                  Employee type
-                </label>
-                <Dropdown v-model="employeeTypeId" :options="employeeTypes" optionLabel="employeeTypeName"
-                  optionValue="employeeTypeId" placeholder="Select a Employee Type" filter class="w-full md:w-14rem"
-                  showClear />
-              </div>
               <div class="input-box">
-                <SelectButton v-model="status" :options="optionsActive" aria-labelledby="basic"
-                  class="emp-status-control" />
+                <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="optionsActive"
+                  aria-labelledby="basic" class="emp-status-control" />
               </div>
 
               <div></div>
