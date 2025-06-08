@@ -18,6 +18,7 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
+import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
 
 export default defineComponent({
   name: 'AttendanceMonitorByDepartment',
@@ -126,7 +127,7 @@ export default defineComponent({
     drawerVacations: false,
     vacationDateStart: '',
     vacationDateEnd: '',
-    currentDepartmentId: null as Number | null,
+    currentDepartmentId: null as number | null,
     employeesWithOutShift: [] as EmployeeInterface[],
     drawerEmployeeWithOutShift: false,
     canSeeConsecutiveFaults: false,
@@ -134,6 +135,7 @@ export default defineComponent({
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     searchTime: null as null | Date,
+    employeeWorkDisabilities: [] as EmployeeInterface[]
   }),
   computed: {
     weeklyStartDay() {
@@ -1080,24 +1082,30 @@ export default defineComponent({
     async getExcelAllAssistance() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `${this.getRange()}`
-      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+      await assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `Summary Report  ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
       const title = `Incidencias ${tradeName} ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+      const filters = {
+        assists: assists,
+        title: title ? title : '',
+        datePay: this.datePay,
+        employeeWorkDisabilities: this.employeeWorkDisabilities,
+      } as AssistExcelFilterIncidentSummaryPayRollInterface
+      await assistExcelService.getExcelIncidentSummaryPayRoll(filters)
     },
     getRange() {
       const firstDay = this.weeklyStartDay[0]
@@ -1140,6 +1148,9 @@ export default defineComponent({
       return `From ${calendarDayStart} to ${calendarDayEnd}`
     },
     setSearchTime() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        this.getWorkDisabilities()
+      }
       const now = new Date()
       this.searchTime = now
     },
@@ -1153,6 +1164,18 @@ export default defineComponent({
           await this.handlerPeriodChange()
         }
       }
-    }
+    },
+    async getWorkDisabilities() {
+      this.employeeWorkDisabilities = []
+      const employeeService = new EmployeeService()
+      this.getRange()
+      this.currentDepartmentId = parseInt(!this.departmentID ? this.$route.params.department.toString() : this.departmentID)
+      if (this.currentDepartmentId) {
+        const employeeResponse = await employeeService.getDaysWorkDisabilityAll(this.datePay, this.currentDepartmentId, null)
+        if (employeeResponse.status === 200) {
+          this.employeeWorkDisabilities = employeeResponse._data.data.data
+        }
+      }
+    },
   }
 })
