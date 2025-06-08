@@ -17,18 +17,25 @@ export default class UserResponsibleEmployeeService {
 
   async store(userResponsibleEmployee: UserResponsibleEmployeeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
-    let responseRequest: any = null
+
     try {
-      await $fetch(`${this.API_PATH}/user-responsible-employees`, {
+      const response = await $fetch(`${this.API_PATH}/user-responsible-employees`, {
         headers,
         method: 'POST',
         body: { ...userResponsibleEmployee },
-        onResponse({ response }) { responseRequest = response },
-        onRequestError({ response }) { responseRequest = response }
       })
-    } catch (error) {
+      return {
+        status: 200,
+        _data: response,
+      }
+    } catch (error: any) {
+      return {
+        status: error?.response?.status || 500,
+        _data: {
+          error: error?.response?._data?.message || error.message || 'Unknown error',
+        },
+      }
     }
-    return responseRequest
   }
 
   async update(userResponsibleEmployee: UserResponsibleEmployeeInterface) {

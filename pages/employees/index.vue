@@ -40,17 +40,9 @@
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                   placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
               </div>
-              <div v-if="displayEmployeeTypeFilter" class="input-box">
-                <label for="employee-type">
-                  Employee type
-                </label>
-                <Dropdown v-model="employeeTypeId" :options="employeeTypes" optionLabel="employeeTypeName"
-                  optionValue="employeeTypeId" placeholder="Select a Employee Type" filter class="w-full md:w-14rem"
-                  showClear />
-              </div>
               <div class="input-box">
-                <SelectButton v-model="status" :options="optionsActive" aria-labelledby="basic"
-                  class="emp-status-control" />
+                <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="optionsActive"
+                  aria-labelledby="basic" class="emp-status-control" />
               </div>
 
               <div></div>
@@ -192,15 +184,16 @@
 
           <employeeInfoForm
             v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible && !drawerAssigned"
-            :employee="employee" @save="onSave" :click-on-edit="() => { onEditPerson(employee) }" />
+            :employee="employee" :can-update="canUpdate" @save="onSave"
+            :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" @save="onSaveAddress"
-            :click-on-close="() => { onCloseAddress() }" />
-          <employeeRecords v-if="drawerRecords" :employee="employee" />
-          <employeeBanks v-if="drawerBanks" :employee="employee" />
-          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" />
-          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" />
+          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" :can-update="canUpdate"
+            @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
+          <employeeRecords v-if="drawerRecords" :employee="employee" :can-update="canUpdate" />
+          <employeeBanks v-if="drawerBanks" :employee="employee" :can-update="canUpdate" />
+          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" :can-update="canUpdate" />
+          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" :can-update="canUpdate" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
@@ -214,7 +207,7 @@
           <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"
             :can-manage-exception-request="canManageExceptionRequest"
             :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
-            :canManageWorkDisabilities="canManageWorkDisabilities" />
+            :canManageWorkDisabilities="canManageWorkDisabilities" :can-update="canUpdate" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"

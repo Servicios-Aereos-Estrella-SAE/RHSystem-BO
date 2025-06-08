@@ -20,6 +20,7 @@ import ToastService from 'primevue/toastservice';
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
+import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
 
 export default defineComponent({
   components: {
@@ -138,6 +139,7 @@ export default defineComponent({
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     isReady: false,
     searchTime: null as null | Date,
+    employeeWorkDisabilities: [] as EmployeeInterface[]
   }),
   computed: {
     isRootUser() {
@@ -314,7 +316,14 @@ export default defineComponent({
       }
 
       return false
-    }
+    },
+    displayNoAssignedShiftBtn() {
+      if (this.visualizationMode && this.employeesWithOutShift.length > 0) {
+        return true
+      }
+
+      return false
+    },
   },
   created() {
     const minDateString = '2024-05-01T00:00:00'
@@ -676,18 +685,6 @@ export default defineComponent({
       }
     },
     getDepartmentPositionAssistStatistics() {
-      /*  const departmentListStatistics: Array<{
-          department: DepartmentInterface
-          statistics: {
-            onTimePercentage: number
-            onTolerancePercentage: number
-            onDelayPercentage: number
-            onEarlyOutPercentage: number
-            onFaultPercentage: number
-          },
-          employees: Array<EmployeeInterface>,
-          employeesCount: number
-        }> = []  */
       const departmentListStatistics: any[] = []
 
       this.departmentCollection.forEach(async (department: DepartmentInterface) => {
@@ -1044,24 +1041,30 @@ export default defineComponent({
     async getExcelAllAssistance() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `${this.getRange()}`
-      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+      await assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `Summary Report  ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
       const title = `Incidencias ${tradeName} ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+      const filters = {
+        assists: assists,
+        title: title ? title : '',
+        datePay: this.datePay,
+        employeeWorkDisabilities: this.employeeWorkDisabilities,
+      } as AssistExcelFilterIncidentSummaryPayRollInterface
+      await assistExcelService.getExcelIncidentSummaryPayRoll(filters)
     },
     getRange() {
       const firstDay = this.weeklyStartDay[0]
@@ -1104,6 +1107,9 @@ export default defineComponent({
       return `From ${calendarDayStart} to ${calendarDayEnd}`
     },
     setSearchTime() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        this.getWorkDisabilities()
+      }
       const now = new Date()
       this.searchTime = now
     },
@@ -1117,6 +1123,15 @@ export default defineComponent({
           await this.handlerPeriodChange()
         }
       }
-    }
+    },
+    async getWorkDisabilities() {
+      this.employeeWorkDisabilities = []
+      const employeeService = new EmployeeService()
+      this.getRange()
+      const employeeResponse = await employeeService.getDaysWorkDisabilityAll(this.datePay, null, null)
+      if (employeeResponse.status === 200) {
+        this.employeeWorkDisabilities = employeeResponse._data.data.data
+      }
+    },
   }
 })

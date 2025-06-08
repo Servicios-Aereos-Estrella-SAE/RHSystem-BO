@@ -22,7 +22,8 @@ export default defineComponent({
   },
   name: 'employeeUserAssigned',
   props: {
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    canUpdate: { type: Boolean, default: false, required: true }
   },
   data: () => ({
     isReady: false,
@@ -38,7 +39,8 @@ export default defineComponent({
     departmentId: null as number | null,
     positionId: null as number | null,
     search: '' as string,
-    drawerEmployeeSelection: false
+    drawerEmployeeSelection: false,
+    canManageUserResponsible: false
   }),
   computed: {
   },
@@ -71,7 +73,10 @@ export default defineComponent({
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserAssigned = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
     this.isReady = true
-
+    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
   },
   methods: {
     async getPositions(departmentId: number) {
@@ -97,7 +102,7 @@ export default defineComponent({
           if (user && user.userId) {
             const userAssignedEmployeeResponse = await userResponsibleEmployeeService.getAssignedByEmployee(user.userId, this.search, this.departmentId, this.positionId, null)
             this.userAssignedEmployeesList = userAssignedEmployeeResponse._data.data.data.data
-            this.setEmployeeInUsers()
+            await this.setEmployeeInUsers()
           }
         }
 
@@ -113,6 +118,7 @@ export default defineComponent({
     async onSave(userAssignedEmployee: UserResponsibleEmployeeInterface) {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      this.isReady = false
       this.userAssignedEmployee = { ...userAssignedEmployee }
 
       const index = this.userAssignedEmployeesList.findIndex((userAssignedEmployee: UserResponsibleEmployeeInterface) => userAssignedEmployee.userResponsibleEmployeeId === this.userAssignedEmployee?.userResponsibleEmployeeId)
@@ -125,6 +131,7 @@ export default defineComponent({
       }
       this.setEmployeeInUsers()
       this.drawerUserAssignedEmployeeForm = false
+      this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
     onEdit(userAssignedEmployee: UserResponsibleEmployeeInterface) {
@@ -184,8 +191,13 @@ export default defineComponent({
       }
     },
     async onSaveSelection() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.isReady = false
       await this.getUserAssignedEmployees()
       this.drawerEmployeeSelection = false
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
     }
   }
 })

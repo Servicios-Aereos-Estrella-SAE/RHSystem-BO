@@ -19,7 +19,8 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     usersAsigned: { type: Array as PropType<UserResponsibleEmployeeInterface[]>, required: true },
     userResponsibleEmployee: { type: Object as PropType<UserResponsibleEmployeeInterface>, required: true },
-    clickOnSave: { type: Function, default: null }
+    clickOnSave: { type: Function, default: null },
+    canUpdate: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     usersList: [] as UserInterface[],
@@ -48,6 +49,9 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
     const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
     this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
     this.isReady = true
   },
   methods: {

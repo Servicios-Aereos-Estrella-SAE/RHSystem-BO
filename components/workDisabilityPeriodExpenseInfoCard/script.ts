@@ -11,7 +11,8 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,

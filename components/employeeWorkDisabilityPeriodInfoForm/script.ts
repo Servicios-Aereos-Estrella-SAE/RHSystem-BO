@@ -26,7 +26,8 @@ export default defineComponent({
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     workDisabilityTypeList: [] as WorkDisabilityTypeInterface[],

@@ -1,15 +1,21 @@
 <template>
   <div v-if="isReady" class="employee-shift-vacations">
-    <employeeModalInfoCard :employee="employee"/>
+    <employeeModalInfoCard :employee="employee" />
     <h1>
       Manage vacations
     </h1>
 
-    <vacationsPeriodCard :vacation-period="currentVacationPeriod" hideManager class="period-info" :can-manage-vacation="canManageVacation" />
+    <vacationsPeriodCard :vacation-period="currentVacationPeriod" hideManager class="period-info"
+      :can-manage-vacation="canManageVacation" />
 
     <div class="head">
-      <button v-if="displayAddButton" class="btn btn-block" @click="addNewVacation">
-        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" fill="#88a4bf" class="fill-212121"></path></svg>
+      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block" @click="addNewVacation">
+        <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+            fill="#88a4bf" class="fill-000000"></path>
+        </svg>
         Add vacation day
       </button>
     </div>
@@ -18,24 +24,17 @@
       <div class="vacations-wrapper">
         <div v-for="(shiftException, index) in shiftExceptions" :key="`employee-vacation-${index}`">
           <vacationsControl :shift-exception="shiftException"
-            :click-on-delete="() => { onDelete(shiftException, index) }"
-            :isDeleted="isDeleted"
-            @onShiftExceptionSave="onSave"
-            @onShiftExceptionSaveAll="onSaveAll"
+            :click-on-delete="() => { onDelete(shiftException, index) }" :isDeleted="isDeleted"
+            @onShiftExceptionSave="onSave" @onShiftExceptionSaveAll="onSaveAll"
             @onShiftExceptionCancel="onCancel(index)"
             :vacationPeriodAvailableDays="currentVacationPeriod.vacationPeriodAvailableDays"
-            :can-manage-vacation="canManageVacation"
-            :canManageException="canManageException"
-            :employee="employee"
-            :index-card="index"/>
+            :can-manage-vacation="canManageVacation" :canManageException="canManageException" :employee="employee"
+            :index-card="index" :canManageUserResponsible="canManageUserResponsible" />
         </div>
       </div>
       <transition name="page">
-        <confirmDelete
-          v-if="drawerShiftExceptionDelete"
-          @confirmDelete="confirmDelete"
-          @cancelDelete="drawerShiftExceptionDelete = false"
-        />
+        <confirmDelete v-if="drawerShiftExceptionDelete" @confirmDelete="confirmDelete"
+          @cancelDelete="drawerShiftExceptionDelete = false" />
       </transition>
     </div>
     <ProgressSpinner v-else />

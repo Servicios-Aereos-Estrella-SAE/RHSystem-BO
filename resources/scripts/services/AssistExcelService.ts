@@ -14,6 +14,7 @@ import type { AssistIncidentPayrollExcelRowInterface } from "../interfaces/Assis
 import BusinessUnitService from "./BusinessUnitService"
 import type { BusinessUnitInterface } from "../interfaces/BusinessUnitInterface"
 import EmployeeService from "./EmployeeService"
+import type { AssistExcelFilterIncidentSummaryPayRollInterface } from "../interfaces/AssistExcelFilterIncidentSummaryPayRollInterface"
 
 export default class AssistExcelService {
   protected businessUnits: Array<BusinessUnitInterface>
@@ -95,8 +96,8 @@ export default class AssistExcelService {
     let currentDepartmentId = 0
     let totalRowByDepartmentIncident = {} as AssistIncidentExcelRowInterface
     const totalRowIncident = {} as AssistIncidentExcelRowInterface
-    await this.cleanTotalByDepartment(totalRowIncident)
-    await this.cleanTotalByDepartment(totalRowByDepartmentIncident)
+    this.cleanTotalByDepartment(totalRowIncident)
+    this.cleanTotalByDepartment(totalRowByDepartmentIncident)
     let hasEmployees = false
     for await (const assist of assists) {
 
@@ -104,7 +105,7 @@ export default class AssistExcelService {
         if (currentDepartmentId > 0 && hasEmployees) {
           hasEmployees = false
           rowsIncident.push(JSON.parse(JSON.stringify(totalRowByDepartmentIncident)))
-          await this.addTotalRow(totalRowIncident, totalRowByDepartmentIncident)
+          this.addTotalRow(totalRowIncident, totalRowByDepartmentIncident)
           this.cleanTotalByDepartment(totalRowByDepartmentIncident)
         }
 
@@ -116,15 +117,15 @@ export default class AssistExcelService {
         let newRows = [] as AssistIncidentExcelRowInterface[]
         newRows = await this.addRowIncidentCalendar(employee.employee, employee.calendar, tardies)
         for await (const row of newRows) {
-          await this.addTotalByDepartment(totalRowByDepartmentIncident, row)
+          this.addTotalByDepartment(totalRowByDepartmentIncident, row)
           rowsIncident.push(row)
         }
       }
 
     }
-    await rowsIncident.push(totalRowByDepartmentIncident)
-    await this.addTotalRow(totalRowIncident, totalRowByDepartmentIncident)
-    await rowsIncident.push(totalRowIncident)
+    rowsIncident.push(totalRowByDepartmentIncident)
+    this.addTotalRow(totalRowIncident, totalRowByDepartmentIncident)
+    rowsIncident.push(totalRowIncident)
     await this.addRowIncidentToWorkSheet(rowsIncident, worksheet)
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
@@ -133,29 +134,30 @@ export default class AssistExcelService {
     myGeneralStore.setFullLoader(false)
   }
 
-  async getExcelIncidentSummaryPayRoll(assists: any[], title: string, datePay: string) {
+  async getExcelIncidentSummaryPayRoll(filters: AssistExcelFilterIncidentSummaryPayRollInterface) {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    this.getBusinessUnits()
+    await this.getBusinessUnits()
     const workbook = new ExcelJS.Workbook()
     const rowsIncidentPayroll = [] as AssistIncidentPayrollExcelRowInterface[]
     const worksheet = workbook.addWorksheet('Incident Summary Payroll')
-    await this.addTitleIncidentPayrollToWorkSheet(workbook, worksheet, title)
+    await this.addTitleIncidentPayrollToWorkSheet(workbook, worksheet, filters.title)
     this.addHeadRowIncidentPayroll(worksheet)
     const tardies = await this.getTardiesTolerance()
-    assists.sort((a, b) => a.department.departmentId - b.department.departmentId)
+    filters.assists.sort((a, b) => a.department.departmentId - b.department.departmentId)
     let totalRowByDepartmentIncident = {} as AssistIncidentExcelRowInterface
     const totalRowIncident = {} as AssistIncidentExcelRowInterface
-    await this.cleanTotalByDepartment(totalRowIncident)
-    await this.cleanTotalByDepartment(totalRowByDepartmentIncident)
-    for await (const assist of assists) {
+    this.cleanTotalByDepartment(totalRowIncident)
+    this.cleanTotalByDepartment(totalRowByDepartmentIncident)
+    for await (const assist of filters.assists) {
       for await (const employee of assist.employees) {
         let newRows = [] as AssistIncidentPayrollExcelRowInterface[]
         newRows = await this.addRowIncidentPayrollCalendar(
           employee.employee,
           employee.calendar,
           tardies,
-          datePay
+          filters.datePay,
+          filters.employeeWorkDisabilities,
         )
         for await (const row of newRows) {
           rowsIncidentPayroll.push(row)
@@ -164,7 +166,7 @@ export default class AssistExcelService {
 
     }
     await this.addRowIncidentPayrollToWorkSheet(rowsIncidentPayroll, worksheet)
-    await this.paintBorderAll(worksheet, rowsIncidentPayroll.length)
+    this.paintBorderAll(worksheet, rowsIncidentPayroll.length)
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
@@ -537,7 +539,7 @@ export default class AssistExcelService {
         this.paintIncidents(worksheet, rowCount, rowData.incidents)
         this.paintCheckOutStatus(worksheet, rowCount, rowData.checkOutStatus)
         if (status === 'Terminated') {
-          await this.paintEmployeeTerminated(worksheet, 'B', rowCount)
+          this.paintEmployeeTerminated(worksheet, 'B', rowCount)
         }
       }
       if (rowData.exceptions.length > 0) {
@@ -1299,7 +1301,8 @@ export default class AssistExcelService {
     employee: EmployeeInterface,
     employeeCalendar: AssistDayInterface[],
     tardies: number,
-    datePay: string
+    datePay: string,
+    employeeWorkDisabilities: EmployeeInterface[]
   ) {
     const rows = [] as AssistIncidentPayrollExcelRowInterface[]
     let department = employee.department?.departmentAlias ? employee.department.departmentAlias : ''
@@ -1433,7 +1436,12 @@ export default class AssistExcelService {
     earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, tardies)
     vacationBonus = this.getVacationBonus(employee, datePay)
     if (employee.employeeId) {
-      daysWorkDisability = await this.getDaysWorkDisability(employee.employeeId, datePay)
+      const existEmployee = employeeWorkDisabilities.find(a => a.employeeId === employee.employeeId)
+      if (existEmployee && existEmployee.shift_exceptions) {
+        daysWorkDisability = existEmployee.shift_exceptions?.length
+      } else {
+        daysWorkDisability = 0
+      }
     } else {
       daysWorkDisability = 0
     }
@@ -1628,14 +1636,5 @@ export default class AssistExcelService {
     }
   }
 
-  async getDaysWorkDisability(employeeId: number, datePay: string) {
-    const employeeService = new EmployeeService()
-    const employeeResponse = await employeeService.getDaysWorkDisability(employeeId, datePay)
-    if (employeeResponse.status === 200) {
-      const days = employeeResponse._data.data.data
-      return days
-    }
 
-    return 0
-  }
 }

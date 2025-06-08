@@ -26,8 +26,35 @@
   }
 
   .work-disabilities-wrapper {
+    box-sizing: border-box;
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 0.5rem;
+    grid-auto-flow: dense;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+
+    .head-page {
+      display: grid;
+      grid-template-columns: 15rem auto;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+
+      @media screen and (max-width: $ipad) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .empty-data {
+      text-align: center;
+      background-color: $gray;
+      padding: 2rem;
+      color: $icon;
+      border-radius: $radius;
+      font-size: 0.8rem;
+      height: 10rem;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }

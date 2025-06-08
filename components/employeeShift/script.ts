@@ -29,7 +29,8 @@ export default defineComponent({
     canManageVacation: { type: Boolean, required: true },
     canManageExceptionRequest: { type: Boolean, required: true },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canUpdate: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     isReady: false,
@@ -56,7 +57,8 @@ export default defineComponent({
     currentEmployeeCalendar: null as AssistDayInterface | null,
     canManageShiftOrException: true,
     startDateLimit: DateTime.local(2023, 12, 29).toJSDate(),
-    canManageShiftChanges: false
+    canManageShiftChanges: false,
+    canManageUserResponsible: false
   }),
   setup() {
     const router = useRouter()
@@ -128,7 +130,12 @@ export default defineComponent({
       const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
       this.canManageShiftChanges = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift-change')
     }
-
+    if (this.employee.employeeId) {
+      this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(this.employee.employeeId)
+    }
+    if (this.canManageUserResponsible && !this.canUpdate) {
+      this.canManageUserResponsible = false
+    }
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },

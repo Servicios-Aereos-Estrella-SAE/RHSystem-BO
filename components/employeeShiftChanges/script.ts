@@ -27,6 +27,7 @@ export default defineComponent({
       type: Object as PropType<AssistDayInterface>, required: true
     },
     canManageChange: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,

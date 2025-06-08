@@ -164,7 +164,7 @@
             </label>
             <Dropdown v-model="employee.employeeIgnoreConsecutiveAbsences" :options="ignoreConsecutiveAbsenceOptions"
               optionLabel="label" optionValue="value" placeholder="Select" class="w-full md:w-14rem"
-              :disabled="isDeleted" />
+              :disabled="isDeleted || !canManageUserResponsible" />
           </div>
         </div>
 
