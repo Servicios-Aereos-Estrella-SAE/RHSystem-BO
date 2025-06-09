@@ -42,7 +42,8 @@
           <div>
             <div class="employee-user-assigned-header">
               <div></div>
-              <Button v-if="canManageAssignedEdit && canManageUserAssigned" class="btn btn-block" @click="addNew">
+              <Button v-if="canManageAssignedEdit && canManageUserAssigned && canManageUserResponsible && canUpdate"
+                class="btn btn-block" @click="addNew">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -60,8 +61,9 @@
             :key="`employee-user-assigned-${index}`">
             <employeeUserAssignedInfoCard :userAssignedEmployee="userAssignedEmployee"
               :click-on-edit="() => { onEdit(userAssignedEmployee) }"
-              :click-on-delete="() => { onDelete(userAssignedEmployee) }" :isDeleted="isDeleted"
-              :canManageAssignedEdit="canManageAssignedEdit" :canManageUserAssigned="canManageUserAssigned" />
+              :click-on-delete="() => { onDelete(userAssignedEmployee) }" :isDeleted="isDeleted" :can-update="canUpdate"
+              :canManageAssignedEdit="canManageAssignedEdit" :canManageUserAssigned="canManageUserAssigned"
+              :canManageUserResponsible="canManageUserResponsible" />
           </div>
         </div>
         <div v-else class="empty">
@@ -72,7 +74,7 @@
           <Sidebar v-model:visible="drawerUserAssignedEmployeeForm" header="User" position="right"
             class="employee-user-assigned-form-sidebar" :showCloseIcon="true">
             <employeeUserAssignedInfoForm :userAssignedEmployee="userAssignedEmployee" :employee="employee"
-              @onUserAssignedEmployeeSave="onSave" :usersAsigned="[]" />
+              :can-update="canUpdate" @onUserAssignedEmployeeSave="onSave" :usersAsigned="[]" />
           </Sidebar>
         </div>
         <div class="card flex justify-content-center">
@@ -88,6 +90,9 @@
       <confirmDelete v-if="drawerUserAssignedEmployeeDelete" @confirmDelete="confirmDelete"
         @cancelDelete="drawerUserAssignedEmployeeDelete = false" />
     </transition>
+  </div>
+  <div v-else class="loader">
+    <ProgressSpinner />
   </div>
 </template>
 

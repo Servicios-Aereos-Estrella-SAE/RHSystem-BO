@@ -15,42 +15,43 @@ export default defineComponent({
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canManageException: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
-    exceptionTypeList: [], 
-    isReady: false, 
+    exceptionTypeList: [],
+    isReady: false,
   }),
   computed: {
-    calendarDay () {
+    calendarDay() {
       const dateToException = DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
       return dateToException.setLocale('en').toFormat('DDDD')
     },
     formattedRequestedDate() {
       return this.exceptionRequest.requestedDate
-      ? DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' }).toFormat('yyyy-MM-dd')
-      : ''
+        ? DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' }).toFormat('yyyy-MM-dd')
+        : ''
     },
   },
   async mounted() {
     await this.fetchExceptionTypes()
   },
   methods: {
-    handlerClickOnEdit () {
+    handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
     },
-    handlerClickOnDelete () {
+    handlerClickOnDelete() {
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
     },
-    handlerClickOnEditException () {
+    handlerClickOnEditException() {
       if (this.clickOnEditException) {
         this.clickOnEditException()
       }
     },
-    handlerClickOnDeleteException () {
+    handlerClickOnDeleteException() {
       if (this.clickOnDeleteException) {
         this.clickOnDeleteException()
       }
@@ -62,7 +63,7 @@ export default defineComponent({
         if (response.status === 200) {
           // Filtra la lista para excluir el tipo de excepción con slug "vacation"
           this.exceptionTypeList = response._data.data.exceptionTypes.data.filter(
-            (            item: { exceptionTypeSlug: string }) => item.exceptionTypeSlug !== 'vacation'
+            (item: { exceptionTypeSlug: string }) => item.exceptionTypeSlug !== 'vacation'
           )
         }
       } catch (error) {
@@ -73,10 +74,10 @@ export default defineComponent({
     // Método para obtener el nombre del tipo de excepción
     getExceptionTypeName(exceptionTypeId: any) {
       const exceptionType = this.exceptionTypeList.find(
-        (        type: { exceptionTypeId: any }) => type.exceptionTypeId === exceptionTypeId
+        (type: { exceptionTypeId: any }) => type.exceptionTypeId === exceptionTypeId
       )
       return exceptionType ? exceptionType.exceptionTypeTypeName : 'Unknown Type'
     }
-  
+
   }
 })

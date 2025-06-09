@@ -15,7 +15,8 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     statusForm: { type: Boolean, required: false, default: false },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false as boolean,
@@ -34,7 +35,7 @@ export default defineComponent({
     }
   },
   computed: {
-    displayAddButton () {
+    displayAddButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -69,7 +70,7 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface

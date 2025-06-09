@@ -16,7 +16,8 @@ export default defineComponent({
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
@@ -24,7 +25,7 @@ export default defineComponent({
     sessionUser: null as UserInterface | null
   }),
   computed: {
-    displayDestroyButton () {
+    displayDestroyButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -46,28 +47,28 @@ export default defineComponent({
     await this.validateDisabilityDateRange()
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface
       this.sessionUser = authUser
     },
-    handlerClickOnEdit () {
+    handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
     },
-    handlerClickOnDelete () {
+    handlerClickOnDelete() {
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
     },
-    handlerClickOnEditException () {
+    handlerClickOnEditException() {
       if (this.clickOnEditException) {
         this.clickOnEditException()
       }
     },
-    handlerClickOnDeleteException () {
+    handlerClickOnDeleteException() {
       if (this.clickOnDeleteException) {
         this.clickOnDeleteException()
       }

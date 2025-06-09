@@ -20,6 +20,7 @@ import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
+import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
 
 export default defineComponent({
   components: {
@@ -140,6 +141,7 @@ export default defineComponent({
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     searchTime: null as null | Date,
+    employeeWorkDisabilities: [] as EmployeeInterface[]
 
   }),
   computed: {
@@ -304,7 +306,7 @@ export default defineComponent({
       return false
     },
     displayNoAssignedShiftBtn() {
-      if (this.visualizationMode) {
+      if (this.visualizationMode && this.employeesWithOutShift.length > 0) {
         return true
       }
 
@@ -1046,24 +1048,30 @@ export default defineComponent({
     async getExcelAllAssistance() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `${this.getRange()}`
-      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+      await assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const title = `Summary Report  ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const assists = await this.getDepartmentPositionAssistStatistics()
+      const assists = this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
       const title = `Incidencias ${tradeName} ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+      const filters = {
+        assists: assists,
+        title: title ? title : '',
+        datePay: this.datePay,
+        employeeWorkDisabilities: this.employeeWorkDisabilities,
+      } as AssistExcelFilterIncidentSummaryPayRollInterface
+      await assistExcelService.getExcelIncidentSummaryPayRoll(filters)
     },
     getRange() {
       const firstDay = this.weeklyStartDay[0]
@@ -1106,6 +1114,9 @@ export default defineComponent({
       return `From ${calendarDayStart} to ${calendarDayEnd}`
     },
     setSearchTime() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        this.getWorkDisabilities()
+      }
       const now = new Date()
       this.searchTime = now
     },
@@ -1118,6 +1129,15 @@ export default defineComponent({
         if (diffMinutes >= 5) {
           await this.handlerPeriodChange()
         }
+      }
+    },
+    async getWorkDisabilities() {
+      this.employeeWorkDisabilities = []
+      const employeeService = new EmployeeService()
+      this.getRange()
+      const employeeResponse = await employeeService.getDaysWorkDisabilityAll(this.datePay, null, null)
+      if (employeeResponse.status === 200) {
+        this.employeeWorkDisabilities = employeeResponse._data.data.data
       }
     }
   }

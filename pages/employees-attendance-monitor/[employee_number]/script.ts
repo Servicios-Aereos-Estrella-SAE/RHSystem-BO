@@ -14,6 +14,7 @@ import ToleranceService from '~/resources/scripts/services/ToleranceService'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
+import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -139,6 +140,7 @@ export default defineComponent({
     endDay: '',
     canSync: false,
     searchTime: null as null | Date,
+    employeeWorkDisabilities: [] as EmployeeInterface[]
   }),
   computed: {
     isRoot() {
@@ -1016,7 +1018,7 @@ export default defineComponent({
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
       const title = `${this.getRange()}`
-      assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+      await assistExcelService.getExcelAllAssistance(assists, title ? title : '')
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
@@ -1031,7 +1033,7 @@ export default defineComponent({
         department: this.employee?.department,
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
-      assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
@@ -1047,7 +1049,13 @@ export default defineComponent({
       }]
       const tradeName = await assistExcelService.getTradeName()
       const title = `Incidencias ${tradeName} ${this.getRange()}`
-      assistExcelService.getExcelIncidentSummaryPayRoll(assists, title ? title : '', this.datePay)
+      const filters = {
+        assists: assists,
+        title: title ? title : '',
+        datePay: this.datePay,
+        employeeWorkDisabilities: this.employeeWorkDisabilities,
+      } as AssistExcelFilterIncidentSummaryPayRollInterface
+      await assistExcelService.getExcelIncidentSummaryPayRoll(filters)
     },
     getRange() {
       const firstDay = this.weeklyStartDay[0]
@@ -1090,6 +1098,9 @@ export default defineComponent({
       return `From ${calendarDayStart} to ${calendarDayEnd}`
     },
     setSearchTime() {
+      if (this.visualizationMode?.value === 'fourteen') {
+        this.getWorkDisabilities()
+      }
       const now = new Date()
       this.searchTime = now
     },
@@ -1103,6 +1114,17 @@ export default defineComponent({
           await this.handlerPeriodChange()
         }
       }
-    }
+    },
+    async getWorkDisabilities() {
+      this.employeeWorkDisabilities = []
+      const employeeService = new EmployeeService()
+      this.getRange()
+      if (this.employee?.employeeId) {
+        const employeeResponse = await employeeService.getDaysWorkDisabilityAll(this.datePay, null, this.employee?.employeeId)
+        if (employeeResponse.status === 200) {
+          this.employeeWorkDisabilities = employeeResponse._data.data.data
+        }
+      }
+    },
   }
 })

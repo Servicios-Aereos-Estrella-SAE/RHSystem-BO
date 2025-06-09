@@ -15,6 +15,7 @@ export default defineComponent({
     isDeleted: { type: Boolean, required: true },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
     onlySeeInfo: { type: Boolean, required: false },
   },
   data: () => ({
@@ -23,7 +24,7 @@ export default defineComponent({
     sessionUser: null as UserInterface | null
   }),
   computed: {
-    displayPeriodActions () {
+    displayPeriodActions() {
       if (!this.sessionUser) {
         return false
       }
@@ -45,7 +46,7 @@ export default defineComponent({
     await this.validateDisabilityDateRange()
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface

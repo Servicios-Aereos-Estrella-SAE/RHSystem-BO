@@ -3,9 +3,12 @@
     <employeeModalInfoCard :employee="employee" />
     <workDisabilityPeriodInfoCard :isDeleted="true" :work-disability-period="workDisabilityPeriod"
       :click-on-edit="() => { }" :click-on-delete="() => { }" :canReadOnlyWorkDisabilities="false"
-      :canManageWorkDisabilities="false" :onlySeeInfo="true" />
+      :canManageWorkDisabilities="false" :onlySeeInfo="true" :employee="employee"
+      :canManageUserResponsible="canManageUserResponsible" />
     <h1>
-      {{ isNewWorkDisabilityPeriodExpense ? 'Add work disability period expense' : 'Update work disability period expense' }}
+      {{ isNewWorkDisabilityPeriodExpense ?
+      'Add work disability period expense'
+      : 'Update work disability period expense' }}
     </h1>
 
     <div v-if="isReady" class="work-disability-period-expense-form">
@@ -18,7 +21,7 @@
           <FileUpload v-if="canManageWorkDisabilities && canManageCurrentPeriod" ref="fileUpload" v-model="files"
             name="demo[]" url="/api/upload" accept="image/*,application/pdf" chooseLabel="Click to select file"
             :showUploadButton="false" :showCancelButton="false" :custom-upload="true" :fileLimit="1"
-            @select="validateFiles" @upload="onAdvancedUpload($event)">
+            @select="validateFiles" @upload="onAdvancedUpload($event)" :disabled="!canManageUserResponsible">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -71,15 +74,16 @@
             Amount
           </label>
           <InputNumber v-model="workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount"
-            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod" mode="currency" currency="MXN" fluid />
+            :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible"
+            mode="currency" currency="MXN" fluid />
           <small class="p-error"
             v-if="submitted && !workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount">Amount
             is required.
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod" class="btn btn-block btn-primary"
-            @click="onSave">
+          <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
+            class="btn btn-block btn-primary" @click="onSave">
             Save work disability period expense
           </Button>
         </div>

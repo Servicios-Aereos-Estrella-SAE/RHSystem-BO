@@ -17,6 +17,7 @@ import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/Em
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
 import { DateTime } from 'luxon'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   name: 'Employees',
@@ -52,6 +53,7 @@ export default defineComponent({
     canManageFiles: false as boolean,
     canReadOnlyWorkDisabilities: false as boolean,
     canManageWorkDisabilities: false as boolean,
+    canReadTerminatedEmployees: false as boolean,
     drawerShifts: false as boolean,
     drawerProceedingFiles: false as boolean,
     hasAccessToManageShifts: false as boolean,
@@ -61,7 +63,6 @@ export default defineComponent({
     positionId: null as number | null,
     optionsActive: ref(['Active', 'Terminated']),
     status: 'Active',
-    employeeTypes: [] as EmployeeTypeService[],
     employeeTypeId: null as number | null,
     activeButton: 'employee',
     canManageResponsibleRead: false,
@@ -74,15 +75,6 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
       return flag
-    },
-    displayEmployeeTypeFilter() {
-      let display = false
-
-      if (this.$config.public.SYSTEM_BUSINESS.includes('sae')) {
-        display = true
-      }
-
-      return display
     },
     displayResponsibleSection() {
       if (this.isRootUser || this.canManageResponsibleRead) {
@@ -137,6 +129,7 @@ export default defineComponent({
       this.canManageResponsibleRead = true
       this.canManageBiotime = true
       this.canManageAssignedRead = true
+      this.canReadTerminatedEmployees = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
@@ -150,12 +143,12 @@ export default defineComponent({
       this.canManageResponsibleRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-read')
       this.canManageBiotime = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-biotime')
       this.canManageAssignedRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-assigned-read')
+      this.canReadTerminatedEmployees = await myGeneralStore.hasAccess(systemModuleSlug, 'read-terminated-employees')
     }
     myGeneralStore.setFullLoader(false)
     await this.getWorkSchedules()
     await this.handlerSearchEmployee()
     await this.getDepartments()
-    await this.getEmployeeTypes()
     this.hasAccessToManageShifts = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift')
   },
   methods: {
@@ -168,12 +161,6 @@ export default defineComponent({
       const departmentService = new DepartmentService()
       response = await departmentService.getAllDepartmentList()
       this.departments = response._data.data.departments
-    },
-    async getEmployeeTypes() {
-      let response = null
-      const employeeTypeService = new EmployeeTypeService()
-      response = await employeeTypeService.getFilteredList('')
-      this.employeeTypes = response._data.data.employeeTypes.data
     },
     async handlerSearchEmployee() {
       const myGeneralStore = useMyGeneralStore()

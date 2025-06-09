@@ -26,6 +26,7 @@ export default defineComponent({
     date: { type: Date, required: true },
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     canManageException: { type: Boolean, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
     isReady: false,
@@ -49,7 +50,7 @@ export default defineComponent({
       const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
       return day
     },
-    displayAddButton () {
+    displayAddButton() {
       if (!this.sessionUser) {
         return false
       }
@@ -104,7 +105,7 @@ export default defineComponent({
 
   },
   methods: {
-    async setSessionUser () {
+    async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()
       const authUser = session as UserInterface

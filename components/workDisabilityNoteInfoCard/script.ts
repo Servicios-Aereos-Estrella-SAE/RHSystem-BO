@@ -11,22 +11,23 @@ export default defineComponent({
     clickOnDelete: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
-    canManageWorkDisabilities: { type: Boolean, default: false, required: true }
+    canManageWorkDisabilities: { type: Boolean, default: false, required: true },
+    canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
-    isReady: false, 
+    isReady: false,
   }),
   computed: {
   },
   mounted() {
   },
   methods: {
-    handlerClickOnEdit () {
+    handlerClickOnEdit() {
       if (this.clickOnEdit) {
         this.clickOnEdit()
       }
     },
-    handlerClickOnDelete () {
+    handlerClickOnDelete() {
       if (this.clickOnDelete) {
         this.clickOnDelete()
       }
