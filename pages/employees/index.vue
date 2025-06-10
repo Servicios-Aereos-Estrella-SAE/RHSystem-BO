@@ -184,16 +184,16 @@
 
           <employeeInfoForm
             v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible && !drawerAssigned"
-            :employee="employee" :can-update="canUpdate" @save="onSave"
+            :employee="employee" :can-update="canUpdateInformation" @save="onSave"
             :click-on-edit="() => { onEditPerson(employee) }" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
-            :click-on-close="() => { onClosePerson() }" :can-update="canUpdate" :can-delete="canDelete" />
-          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address" :can-update="canUpdate"
-            @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
-          <employeeRecords v-if="drawerRecords" :employee="employee" :can-update="canUpdate" />
-          <employeeBanks v-if="drawerBanks" :employee="employee" :can-update="canUpdate" />
-          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" :can-update="canUpdate" />
-          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" :can-update="canUpdate" />
+            :click-on-close="() => { onClosePerson() }" :can-update="canUpdateInformation" :can-delete="canDelete" />
+          <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address"
+            :can-update="canUpdateInformation" @save="onSaveAddress" :click-on-close="() => { onCloseAddress() }" />
+          <employeeRecords v-if="drawerRecords" :employee="employee" :can-update="canUpdateInformation" />
+          <employeeBanks v-if="drawerBanks" :employee="employee" :can-update="canUpdateInformation" />
+          <employeeUserResponsibles v-if="drawerResponsible" :employee="employee" :can-update="canUpdateInformation" />
+          <employeeUserAssigned v-if="drawerAssigned" :employee="employee" :can-update="canUpdateInformation" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"

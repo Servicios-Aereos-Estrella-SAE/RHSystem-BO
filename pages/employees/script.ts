@@ -45,6 +45,7 @@ export default defineComponent({
     drawerEmployeeSync: false as boolean,
     canCreate: false as boolean,
     canUpdate: false as boolean,
+    canUpdateInformation: false as boolean,
     canDelete: false as boolean,
     canManageVacation: false as boolean,
     canManageExceptionRequest: false as boolean,
@@ -118,6 +119,7 @@ export default defineComponent({
     if (myGeneralStore.isRoot) {
       this.canCreate = true
       this.canUpdate = true
+      this.canUpdateInformation = true
       this.canDelete = true
       this.canManageVacation = true
       this.canManageExceptionRequest = true
@@ -132,6 +134,7 @@ export default defineComponent({
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+      this.canUpdateInformation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update-information') ? true : false
       this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
       this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
       this.canManageExceptionRequest = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'exception-request') ? true : false
