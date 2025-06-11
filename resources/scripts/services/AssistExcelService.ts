@@ -354,7 +354,7 @@ export default class AssistExcelService {
         status = 'NEXT'
       } else if (calendar.assist.isRestDay && !firstCheck) {
         status = 'REST'
-      } else if (calendar.assist.isVacationDate) {
+      } else if (calendar.assist.isVacationDate && status !== 'ONTIME') {
         status = 'VACATIONS'
       } else if (calendar.assist.isHoliday) {
         status = 'HOLIDAY'
