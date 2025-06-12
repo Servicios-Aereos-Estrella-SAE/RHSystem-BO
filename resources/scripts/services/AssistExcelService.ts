@@ -23,7 +23,7 @@ export default class AssistExcelService {
     this.businessUnits = []
   }
 
-  async getExcelAllAssistance(assists: any[], title: string) {
+  async getExcelAllAssistance(assists: any[], title: string, dateEnd: string) {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     const rows = [] as AssistExcelRowInterface[]
@@ -67,7 +67,7 @@ export default class AssistExcelService {
     assists.sort((a, b) => a.department.departmentId - b.department.departmentId)
     for await (const assist of assists) {
       for await (const employee of assist.employees) {
-        const newRows = await this.addRowCalendar(employee.employee, employee.calendar)
+        const newRows = await this.addRowCalendar(employee.employee, employee.calendar, dateEnd)
         for await (const row of newRows) {
           rows.push(row)
         }
@@ -81,7 +81,7 @@ export default class AssistExcelService {
     myGeneralStore.setFullLoader(false)
   }
 
-  async getExcelIncidentSummary(assists: any[], title: string) {
+  async getExcelIncidentSummary(assists: any[], title: string, dateEnd: string) {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     // Crear un nuevo libro de Excel
@@ -115,7 +115,7 @@ export default class AssistExcelService {
       for await (const employee of assist.employees) {
         hasEmployees = true
         let newRows = [] as AssistIncidentExcelRowInterface[]
-        newRows = await this.addRowIncidentCalendar(employee.employee, employee.calendar, tardies)
+        newRows = await this.addRowIncidentCalendar(employee.employee, employee.calendar, tardies, dateEnd)
         for await (const row of newRows) {
           this.addTotalByDepartment(totalRowByDepartmentIncident, row)
           rowsIncident.push(row)
@@ -332,104 +332,110 @@ export default class AssistExcelService {
     columnQ.alignment = { vertical: 'middle', horizontal: 'center' }
   }
 
-  async addRowCalendar(employee: EmployeeInterface, employeeCalendar: AssistDayInterface[]) {
+  async addRowCalendar(employee: EmployeeInterface, employeeCalendar: AssistDayInterface[], dateEnd: string) {
     const rows = [] as AssistExcelRowInterface[]
+    const dateEndFormat = new Date(dateEnd);
     for await (const calendar of employeeCalendar) {
-      const exceptions = [] as ShiftExceptionInterface[]
-      if (calendar.assist.exceptions.length > 0) {
-        for await (const exception of calendar.assist.exceptions) {
-          exceptions.push(exception)
+      const date = new Date(calendar.day);
+      if (date <= dateEndFormat) {
+
+        const exceptions = [] as ShiftExceptionInterface[]
+        if (calendar.assist.exceptions.length > 0) {
+          for await (const exception of calendar.assist.exceptions) {
+            exceptions.push(exception)
+          }
         }
-      }
-      const day = this.dateDay(calendar.day)
-      const month = this.dateMonth(calendar.day)
-      const year = this.dateYear(calendar.day)
-      const calendarDay = this.calendarDayMonth(year, month, day)
-      const firstCheck = this.chekInTime(calendar)
-      const lastCheck = this.chekOutTime(calendar)
-      let status = calendar.assist.checkInStatus
-        ? `${calendar.assist.checkInStatus}`.toUpperCase()
-        : ''
-      if (calendar.assist.isFutureDay) {
-        status = 'NEXT'
-      } else if (calendar.assist.isRestDay && !firstCheck) {
-        status = 'REST'
-      } else if (calendar.assist.isVacationDate && status !== 'ONTIME') {
-        status = 'VACATIONS'
-      } else if (calendar.assist.isHoliday) {
-        status = 'HOLIDAY'
-      }
-      if (!calendar.assist.dateShift) {
-        status = ''
-      }
-      let department = employee.department?.departmentAlias
-        ? employee.department.departmentAlias
-        : ''
-      department =
-        department === '' && employee.department?.departmentName
-          ? employee.department.departmentName
+        const day = this.dateDay(calendar.day)
+        const month = this.dateMonth(calendar.day)
+        const year = this.dateYear(calendar.day)
+        const calendarDay = this.calendarDayMonth(year, month, day)
+        const firstCheck = this.chekInTime(calendar)
+        const lastCheck = this.chekOutTime(calendar)
+        let status = calendar.assist.checkInStatus
+          ? `${calendar.assist.checkInStatus}`.toUpperCase()
           : ''
-      let position = employee.position?.positionAlias ? employee.position.positionAlias : ''
-      position =
-        position === '' && employee.position?.positionName ? employee.position.positionName : ''
-      let shiftName = ''
-      let shiftStartDate = ''
-      let shiftEndsDate = ''
-      let hoursWorked = 0
-      if (calendar && calendar.assist && calendar.assist.dateShift) {
-        shiftName = calendar.assist.dateShift.shiftName
-        shiftStartDate = calendar.assist.dateShift.shiftTimeStart
-        const hoursToAddParsed = 0
-        const time = DateTime.fromFormat(shiftStartDate, 'HH:mm:ss')
-        const newTime = time.plus({ hours: hoursToAddParsed })
-        shiftEndsDate = newTime.toFormat('HH:mm:ss')
-      }
-
-      const checkInTime = calendar.assist.checkIn?.assistPunchTimeUtc
-      const checkOutTime = calendar.assist.checkOut?.assistPunchTimeUtc
-
-      const firstCheckTime = checkInTime ? DateTime.fromISO(checkInTime.toString(), { zone: 'UTC-6' }) : null
-      const lastCheckTime = checkOutTime ? DateTime.fromISO(checkOutTime.toString(), { zone: 'UTC-6' }) : null
-
-      if (firstCheckTime && lastCheckTime && firstCheckTime.isValid && lastCheckTime.isValid) {
-        const durationInMinutes = lastCheckTime.diff(firstCheckTime, 'minutes').as('minutes')
-        let hours = Math.floor(durationInMinutes / 60)
-        let minutes = Math.round(durationInMinutes % 60)
-        if (minutes >= 60) {
-          hours += Math.floor(minutes / 60)
-          minutes = minutes % 60
+        if (calendar.assist.isFutureDay) {
+          status = 'NEXT'
+        } else if (calendar.assist.isRestDay && !firstCheck) {
+          status = 'REST'
+        } else if (calendar.assist.isVacationDate && status !== 'ONTIME') {
+          status = 'VACATIONS'
+        } else if (calendar.assist.isHoliday) {
+          status = 'HOLIDAY'
         }
-        const timeInDecimal = hours + minutes / 60
-        hoursWorked += timeInDecimal
+        if (!calendar.assist.dateShift) {
+          status = ''
+        }
+        let department = employee.department?.departmentAlias
+          ? employee.department.departmentAlias
+          : ''
+        department =
+          department === '' && employee.department?.departmentName
+            ? employee.department.departmentName
+            : ''
+        let position = employee.position?.positionAlias ? employee.position.positionAlias : ''
+        position =
+          position === '' && employee.position?.positionName ? employee.position.positionName : ''
+        let shiftName = ''
+        let shiftStartDate = ''
+        let shiftEndsDate = ''
+        let hoursWorked = 0
+        if (calendar && calendar.assist && calendar.assist.dateShift) {
+          shiftName = calendar.assist.dateShift.shiftName
+          shiftStartDate = calendar.assist.dateShift.shiftTimeStart
+          const hoursToAddParsed = 0
+          const time = DateTime.fromFormat(shiftStartDate, 'HH:mm:ss')
+          const newTime = time.plus({ hours: hoursToAddParsed })
+          shiftEndsDate = newTime.toFormat('HH:mm:ss')
+        }
+
+        const checkInTime = calendar.assist.checkIn?.assistPunchTimeUtc
+        const checkOutTime = calendar.assist.checkOut?.assistPunchTimeUtc
+
+        const firstCheckTime = checkInTime ? DateTime.fromISO(checkInTime.toString(), { zone: 'UTC-6' }) : null
+        const lastCheckTime = checkOutTime ? DateTime.fromISO(checkOutTime.toString(), { zone: 'UTC-6' }) : null
+
+        if (firstCheckTime && lastCheckTime && firstCheckTime.isValid && lastCheckTime.isValid) {
+          const durationInMinutes = lastCheckTime.diff(firstCheckTime, 'minutes').as('minutes')
+          let hours = Math.floor(durationInMinutes / 60)
+          let minutes = Math.round(durationInMinutes % 60)
+          if (minutes >= 60) {
+            hours += Math.floor(minutes / 60)
+            minutes = minutes % 60
+          }
+          const timeInDecimal = hours + minutes / 60
+          hoursWorked += timeInDecimal
+        }
+
+        const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
+        const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
+
+        rows.push({
+          code: employee.employeeCode.toString(),
+          name: `${employee.employeeFirstName} ${employee.employeeLastName}`,
+          department: department,
+          position: position,
+          date: calendarDay,
+          shiftAssigned: shiftName,
+          shiftStartDate: shiftStartDate,
+          shiftEndsDate: shiftEndsDate,
+          checkInTime: rowCheckInTime,
+          firstCheck: firstCheck,
+          lunchTime: rowLunchTime,
+          returnLunchTime: rowReturnLunchTime,
+          checkOutTime: rowCheckOutTime,
+          lastCheck: lastCheck,
+          hoursWorked: hoursWorked,
+          incidents: status,
+          notes: '',
+          sundayPremium: '',
+          checkOutStatus: calendar.assist.checkOutStatus,
+          exceptions: exceptions,
+        })
       }
 
-      const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
-      const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-      const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-      const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
-
-      rows.push({
-        code: employee.employeeCode.toString(),
-        name: `${employee.employeeFirstName} ${employee.employeeLastName}`,
-        department: department,
-        position: position,
-        date: calendarDay,
-        shiftAssigned: shiftName,
-        shiftStartDate: shiftStartDate,
-        shiftEndsDate: shiftEndsDate,
-        checkInTime: rowCheckInTime,
-        firstCheck: firstCheck,
-        lunchTime: rowLunchTime,
-        returnLunchTime: rowReturnLunchTime,
-        checkOutTime: rowCheckOutTime,
-        lastCheck: lastCheck,
-        hoursWorked: hoursWorked,
-        incidents: status,
-        notes: '',
-        sundayPremium: '',
-        checkOutStatus: calendar.assist.checkOutStatus,
-        exceptions: exceptions,
-      })
     }
     return rows
   }
@@ -675,7 +681,8 @@ export default class AssistExcelService {
   async addRowIncidentCalendar(
     employee: EmployeeInterface,
     employeeCalendar: AssistDayInterface[],
-    tardies: number
+    tardies: number,
+    dateEnd: string,
   ) {
     const rows = [] as AssistIncidentExcelRowInterface[]
     let department = employee.department?.departmentAlias ? employee.department.departmentAlias : ''
@@ -697,104 +704,109 @@ export default class AssistExcelService {
     let delayFaults = 0
     let earlyOutsFaults = 0
     let hoursWorked = 0
+    const dateEndFormat = new Date(dateEnd);
     const exceptions = [] as ShiftExceptionInterface[]
     for await (const calendar of employeeCalendar) {
-      if (!calendar.assist.isFutureDay) {
-        let faultProcessed = false
-        let holidayWorked = false
-        if (calendar.assist.isHoliday && calendar.assist.checkIn) {
-          holidaysWorked += 1
-          holidayWorked = true
-        }
-        if (calendar.assist.exceptions.length > 0) {
-          for await (const exception of calendar.assist.exceptions) {
-            if (exception.exceptionType) {
-              const exceptionTypeSlug = exception.exceptionType.exceptionTypeSlug
-              if (exceptionTypeSlug !== 'rest-day' && exceptionTypeSlug !== 'vacation') {
-                exceptions.push(exception)
-              }
-              if (exceptionTypeSlug === 'descanso-laborado' && !holidayWorked) {
+      const date = new Date(calendar.day);
+      if (date <= dateEndFormat) {
+        if (!calendar.assist.isFutureDay) {
+          let faultProcessed = false
+          let holidayWorked = false
+          if (calendar.assist.isHoliday && calendar.assist.checkIn) {
+            holidaysWorked += 1
+            holidayWorked = true
+          }
+          if (calendar.assist.exceptions.length > 0) {
+            for await (const exception of calendar.assist.exceptions) {
+              if (exception.exceptionType) {
+                const exceptionTypeSlug = exception.exceptionType.exceptionTypeSlug
+                if (exceptionTypeSlug !== 'rest-day' && exceptionTypeSlug !== 'vacation') {
+                  exceptions.push(exception)
+                }
+                if (exceptionTypeSlug === 'descanso-laborado' && !holidayWorked) {
+                  if (
+                    exception.shiftExceptionEnjoymentOfSalary &&
+                    exception.shiftExceptionEnjoymentOfSalary === 1 &&
+                    calendar.assist.checkIn
+                  ) {
+                    restWorked += 1
+                  }
+                }
                 if (
-                  exception.shiftExceptionEnjoymentOfSalary &&
-                  exception.shiftExceptionEnjoymentOfSalary === 1 &&
-                  calendar.assist.checkIn
+                  exceptionTypeSlug === 'absence-from-work' &&
+                  exception.shiftExceptionEnjoymentOfSalary !== 1
                 ) {
-                  restWorked += 1
+                  faultProcessed = true
+                  if (
+                    calendar.assist.dateShift &&
+                    calendar.assist.dateShift.shiftAccumulatedFault > 0
+                  ) {
+                    faults += calendar.assist.dateShift.shiftAccumulatedFault
+                  } else {
+                    faults += 1
+                  }
                 }
               }
-              if (
-                exceptionTypeSlug === 'absence-from-work' &&
-                exception.shiftExceptionEnjoymentOfSalary !== 1
-              ) {
-                faultProcessed = true
-                if (
-                  calendar.assist.dateShift &&
-                  calendar.assist.dateShift.shiftAccumulatedFault > 0
-                ) {
-                  faults += calendar.assist.dateShift.shiftAccumulatedFault
-                } else {
-                  faults += 1
-                }
+            }
+          }
+          const firstCheck = this.chekInTime(calendar)
+          if (calendar.assist.dateShift) {
+            daysWorked += 1
+            if (calendar.assist.checkInStatus !== 'fault') {
+              if (calendar.assist.checkInStatus === 'ontime') {
+                daysOnTime += 1
+              } else if (calendar.assist.checkInStatus === 'tolerance') {
+                tolerances += 1
+              } else if (calendar.assist.checkInStatus === 'delay') {
+                delays += 1
+              }
+            }
+            if (calendar.assist.checkOutStatus !== 'fault') {
+              if (calendar.assist.checkOutStatus === 'delay') {
+                earlyOuts += 1
+              }
+            }
+            if (
+              calendar.assist.isSundayBonus &&
+              (calendar.assist.checkIn ||
+                calendar.assist.checkOut ||
+                (calendar.assist.assitFlatList && calendar.assist.assitFlatList.length > 0))
+            ) {
+              sundayBonus += 1
+            }
+            if (calendar.assist.isRestDay && !firstCheck) {
+              rests += 1
+            }
+            if (calendar.assist.isVacationDate) {
+              vacations += 1
+            }
+            if (
+              calendar.assist.checkInStatus === 'fault' &&
+              !calendar.assist.isRestDay &&
+              !faultProcessed
+            ) {
+              if (calendar.assist.dateShift && calendar.assist.dateShift.shiftAccumulatedFault > 0) {
+                faults += calendar.assist.dateShift.shiftAccumulatedFault
+              } else {
+                faults += 1
               }
             }
           }
-        }
-        const firstCheck = this.chekInTime(calendar)
-        if (calendar.assist.dateShift) {
-          daysWorked += 1
-          if (calendar.assist.checkInStatus !== 'fault') {
-            if (calendar.assist.checkInStatus === 'ontime') {
-              daysOnTime += 1
-            } else if (calendar.assist.checkInStatus === 'tolerance') {
-              tolerances += 1
-            } else if (calendar.assist.checkInStatus === 'delay') {
-              delays += 1
-            }
-          }
-          if (calendar.assist.checkOutStatus !== 'fault') {
-            if (calendar.assist.checkOutStatus === 'delay') {
-              earlyOuts += 1
-            }
-          }
-          if (
-            calendar.assist.isSundayBonus &&
-            (calendar.assist.checkIn ||
-              calendar.assist.checkOut ||
-              (calendar.assist.assitFlatList && calendar.assist.assitFlatList.length > 0))
-          ) {
-            sundayBonus += 1
-          }
-          if (calendar.assist.isRestDay && !firstCheck) {
-            rests += 1
-          }
-          if (calendar.assist.isVacationDate) {
-            vacations += 1
-          }
-          if (
-            calendar.assist.checkInStatus === 'fault' &&
-            !calendar.assist.isRestDay &&
-            !faultProcessed
-          ) {
-            if (calendar.assist.dateShift && calendar.assist.dateShift.shiftAccumulatedFault > 0) {
-              faults += calendar.assist.dateShift.shiftAccumulatedFault
-            } else {
-              faults += 1
-            }
-          }
-        }
-        const checkInTime = calendar.assist.checkIn?.assistPunchTimeUtc
-        const checkOutTime = calendar.assist.checkOut?.assistPunchTimeUtc
+          const checkInTime = calendar.assist.checkIn?.assistPunchTimeUtc
+          const checkOutTime = calendar.assist.checkOut?.assistPunchTimeUtc
 
-        const firstCheckTime = checkInTime ? DateTime.fromISO(checkInTime.toString(), { zone: 'UTC-6' }) : null
-        const lastCheckTime = checkOutTime ? DateTime.fromISO(checkOutTime.toString(), { zone: 'UTC-6' }) : null
+          const firstCheckTime = checkInTime ? DateTime.fromISO(checkInTime.toString(), { zone: 'UTC-6' }) : null
+          const lastCheckTime = checkOutTime ? DateTime.fromISO(checkOutTime.toString(), { zone: 'UTC-6' }) : null
 
-        if (firstCheckTime && lastCheckTime && firstCheckTime.isValid && lastCheckTime.isValid) {
-          const duration = lastCheckTime.diff(firstCheckTime, 'minutes')
-          const hours = Math.floor(duration.as('minutes') / 60)
-          const minutes = duration.as('minutes') % 60
-          hoursWorked += hours + minutes / 60
+          if (firstCheckTime && lastCheckTime && firstCheckTime.isValid && lastCheckTime.isValid) {
+            const duration = lastCheckTime.diff(firstCheckTime, 'minutes')
+            const hours = Math.floor(duration.as('minutes') / 60)
+            const minutes = duration.as('minutes') % 60
+            hoursWorked += hours + minutes / 60
+          }
         }
       }
+
     }
 
     delayFaults = this.getFaultsFromDelays(delays, tardies)
