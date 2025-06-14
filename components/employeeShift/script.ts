@@ -17,7 +17,6 @@ import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeServ
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
-import { EmployeeShift } from '#build/components';
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 
 export default defineComponent({
