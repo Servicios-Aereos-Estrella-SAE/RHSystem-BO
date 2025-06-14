@@ -15,6 +15,7 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface'
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -559,7 +560,21 @@ export default defineComponent({
       const employeeID = this.employee?.employeeId || 0
       const assistReq = await new AssistService().index(startDay, endDay, employeeID)
       const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-      this.employeeCalendar = employeeCalendar
+
+      const newEmployeeCalendar = [] as AssistDayInterface[]
+      const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+      const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+
+      for await (const calendar of calendars) {
+        const employeeCalendar = {
+          day: calendar.day,
+          assist: calendar,
+        } as AssistDayInterface
+        newEmployeeCalendar.push(employeeCalendar)
+      }
+
+      this.employeeCalendar = newEmployeeCalendar
       if (this.employeeCalendar.length > 0) {
         this.employeeCalendar.pop()
       }
