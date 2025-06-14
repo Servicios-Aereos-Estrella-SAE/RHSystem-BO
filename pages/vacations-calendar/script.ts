@@ -236,13 +236,47 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const assistService = new EmployeeService()
-      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false)
+      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false, true)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `${ this.yearSelected } Vacations Report.xlsx`)
+        link.setAttribute('download', `${this.yearSelected} Vacations Report.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel vacation',
+          detail: 'Excel was created successfully',
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel vacation',
+          detail: msgError,
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      }
+    },
+    async getVacationsUsedExcel() {
+      const dateStart = `${this.yearSelected}-01-01`
+      const dateEnd = `${this.yearSelected}-12-31`
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const assistService = new EmployeeService()
+      const assistResponse = await assistService.getVacationsUsedExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false)
+      if (assistResponse.status === 201) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `${this.yearSelected} Vacations Used Report.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

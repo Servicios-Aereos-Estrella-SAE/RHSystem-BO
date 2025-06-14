@@ -16,6 +16,7 @@ import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddress
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
+import { DateTime } from 'luxon'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
@@ -45,6 +46,7 @@ export default defineComponent({
     drawerEmployeeSync: false as boolean,
     canCreate: false as boolean,
     canUpdate: false as boolean,
+    canUpdateInformation: false as boolean,
     canDelete: false as boolean,
     canManageVacation: false as boolean,
     canManageExceptionRequest: false as boolean,
@@ -118,6 +120,7 @@ export default defineComponent({
     if (myGeneralStore.isRoot) {
       this.canCreate = true
       this.canUpdate = true
+      this.canUpdateInformation = true
       this.canDelete = true
       this.canManageVacation = true
       this.canManageExceptionRequest = true
@@ -132,6 +135,7 @@ export default defineComponent({
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
+      this.canUpdateInformation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update-information') ? true : false
       this.canDelete = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete') ? true : false
       this.canManageVacation = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'manage-vacation') ? true : false
       this.canManageExceptionRequest = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'exception-request') ? true : false
@@ -572,6 +576,55 @@ export default defineComponent({
         }
       }
       return false
+    },
+    async getVacationExcel() {
+      let yearStart = 2018
+      const oldestEmployee = this.filteredEmployees.reduce((oldest, current) => {
+        if (!current.employeeHireDate || !oldest.employeeHireDate) {
+          return oldest;
+        }
+
+        const currentDate = new Date(current.employeeHireDate);
+        const oldestDate = new Date(oldest.employeeHireDate);
+
+        return currentDate < oldestDate ? current : oldest;
+      });
+      if (oldestEmployee && oldestEmployee.employeeHireDate) {
+        yearStart = DateTime.fromISO(oldestEmployee.employeeHireDate.toString()).year
+      }
+      const yearEnd = (new Date().getFullYear()) + 1 as number
+      const dateStart = `${yearStart}-01-01`
+      const dateEnd = `${yearEnd}-12-31`
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      const assistService = new EmployeeService()
+      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false, false)
+      if (assistResponse.status === 201) {
+        const blob = await assistResponse._data
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `Vacations Report.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Excel vacation',
+          detail: 'Excel was created successfully',
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      } else {
+        const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Excel vacation',
+          detail: msgError,
+          life: 5000,
+        })
+        myGeneralStore.setFullLoader(false)
+      }
     }
   },
 })

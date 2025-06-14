@@ -426,6 +426,38 @@ export default class EmployeeService {
   async getVacationExcel(searchText: string, departmentId: number | null, positionId: number | null,
     startDate: string | Date,
     endDate: string | Date,
+    onlyInactive: boolean,
+    onlyOneYear: boolean
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = {
+        search: searchText,
+        startDate: startDate,
+        endDate: endDate,
+        departmentId: departmentId,
+        positionId: positionId,
+        onlyInactive: onlyInactive,
+        onlyOneYear: onlyOneYear,
+      }
+      await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationsUsedExcel(searchText: string, departmentId: number | null, positionId: number | null,
+    startDate: string | Date,
+    endDate: string | Date,
     onlyInactive: boolean
   ) {
     let responseRequest: any = null
@@ -438,7 +470,7 @@ export default class EmployeeService {
         positionId: positionId,
         onlyInactive: onlyInactive
       }
-      await $fetch(`${this.API_PATH}/employees-vacations/get-excel`, {
+      await $fetch(`${this.API_PATH}/employees-vacations/get-vacations-used-excel`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
