@@ -104,8 +104,9 @@
         :employee="employee" :employeeCalendarAssist="item" :shiftsList="shiftsList" :isDeleted="isDeleted"
         :canUpdateShift="canManageShiftOrException" :startDateLimit="startDateLimit"
         @successShiftAssigned="onSuccessShiftAssigned" @clickExceptions="onClickExceptions"
-        @clickShiftChanges="onClickShiftChanges" :canManageShiftChanges="canManageShiftChanges"
-        :canManageUserResponsible="canManageUserResponsible" />
+        @clickShiftChanges="onClickShiftChanges" :click-on-delete="() => { onDeleteShift(item) }"
+        :canManageShiftChanges="canManageShiftChanges" :canManageUserResponsible="canManageUserResponsible"
+        :canRemoveShiftAssigned="canRemoveShiftAssigned" />
     </div>
     <div v-else class="no-shifts">
       This employee has no shifts assigned to this month
@@ -168,6 +169,10 @@
   <transition name="page">
     <exceptionRequestsError v-if="drawerExceptionRequestsError" :exceptionRequests="exceptionRequestsError"
       @confirm="drawerExceptionRequestsError = false" @cancel="drawerExceptionRequestsError = false" />
+  </transition>
+  <transition name="page">
+    <confirmDelete v-if="drawerCalendarShiftDelete" @confirmDelete="confirmDeleteShift"
+      @cancelDelete="drawerCalendarShiftDelete = false" />
   </transition>
 </template>
 
