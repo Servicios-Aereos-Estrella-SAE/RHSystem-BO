@@ -42,16 +42,15 @@
                 </label>
                 <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
                   optionValue="departmentId" placeholder="Select a Department" filter
-                  @change="onHandlerDepartmentChange"
-                  showClear />
+                  @change="onHandlerDepartmentChange" showClear />
               </div>
               <div class="input-box">
                 <label for="positionId">Position</label>
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
                   placeholder="Select a Position" filter @change="onHandlerPositionChange" showClear />
               </div>
-              <div>
-                <Button class="btn btn-vacations" @click="getVacationExcel">
+              <div class="input-box">
+                <Button class="btn btn-block btn-vacations" @click="getVacationExcel">
                   <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -62,6 +61,18 @@
                   </span>
                 </Button>
               </div>
+              <div class="input-box">
+                <Button class="btn btn-block btn-vacations" @click="getVacationsUsedExcel">
+                  <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                      fill="#88a4bf" class="fill-000000"></path>
+                  </svg>
+                  <span>
+                    Vacations used
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -69,12 +80,8 @@
             Vacations days on year
           </h2>
 
-          <CalendarView
-            :year="yearSelected"
-            :marked-days="filterVacations"
-            marked-day-class="vacation"
-            @day-click="onShowCurrentVacation"
-          />
+          <CalendarView :year="yearSelected" :marked-days="filterVacations" marked-day-class="vacation"
+            @day-click="onShowCurrentVacation" />
 
         </div>
         <div v-else class="loader">
