@@ -259,7 +259,8 @@ export default defineComponent({
             holiday: null,
             hasExceptions: false,
             exceptions: [],
-            assitFlatList: []
+            assitFlatList: [],
+            isBirthday: false
           }
         }
 
