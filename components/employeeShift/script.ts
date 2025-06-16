@@ -16,6 +16,8 @@ import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfa
 import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeService';
 import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/ExceptionTypeInterface';
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
+import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
+import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 
 export default defineComponent({
   components: {
@@ -58,7 +60,10 @@ export default defineComponent({
     canManageShiftOrException: true,
     startDateLimit: DateTime.local(2023, 12, 29).toJSDate(),
     canManageShiftChanges: false,
-    canManageUserResponsible: false
+    canManageUserResponsible: false,
+    canRemoveShiftAssigned: false,
+    drawerCalendarShiftDelete: false,
+    employeeCalendarAssist: null as AssistDayInterface | null,
   }),
   setup() {
     const router = useRouter()
@@ -126,9 +131,11 @@ export default defineComponent({
     }
     if (myGeneralStore.isRoot) {
       this.canManageShiftChanges = true
+      this.canRemoveShiftAssigned = true
     } else {
       const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
       this.canManageShiftChanges = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift-change')
+      this.canRemoveShiftAssigned = await myGeneralStore.hasAccess(systemModuleSlug, 'remove-shift-assigned-to-the-day')
     }
     if (this.employee.employeeId) {
       this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(this.employee.employeeId)
@@ -251,7 +258,8 @@ export default defineComponent({
             holiday: null,
             hasExceptions: false,
             exceptions: [],
-            assitFlatList: []
+            assitFlatList: [],
+            isBirthday: false
           }
         }
 
@@ -363,6 +371,42 @@ export default defineComponent({
       } else {
         this.startDateLimit = DateTime.now().minus({ days: 1 }).toJSDate()
       }
+    },
+    onDeleteShift(employeeCalendarAssist: AssistDayInterface) {
+      this.employeeCalendarAssist = employeeCalendarAssist
+      this.drawerCalendarShiftDelete = true
+    },
+    async confirmDeleteShift() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      if (this.employeeCalendarAssist && this.employeeCalendarAssist.assist.employeeShiftId) {
+        this.drawerCalendarShiftDelete = false
+        const employeShiftService = new EmployeeShiftService()
+        const employeeShift = {
+          employeeShiftId: this.employeeCalendarAssist.assist.employeeShiftId,
+        } as EmployeeShiftInterface
+        const employeeShiftResponse = await employeShiftService.delete(employeeShift)
+        if (employeeShiftResponse.status === 200) {
+
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete employee shift',
+            detail: employeeShiftResponse._data.message,
+            life: 5000,
+          })
+
+          await this.getEmployeeCalendar()
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete employee shift',
+            detail: employeeShiftResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+      myGeneralStore.setFullLoader(false)
+
     }
   }
 })

@@ -21,7 +21,9 @@ export default defineComponent({
     canUpdateShift: { type: Boolean, required: true },
     canManageShiftChanges: { type: Boolean, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
-    startDateLimit: { type: Date, required: true }
+    canRemoveShiftAssigned: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true },
+    clickOnDelete: { type: Function, default: null },
   },
   data: () => ({
     employeeCalendar: null as AssistDayInterface | null,
@@ -30,7 +32,8 @@ export default defineComponent({
     shiftEditSelected: null as AssistDayInterface | null,
     canManagementShift: false,
     sessionUser: null as UserInterface | null,
-    isReady: false
+    isReady: false,
+    isDirectlyAssignedShift: false,
   }),
   computed: {
     displayButtonManageShift() {
@@ -89,6 +92,11 @@ export default defineComponent({
     this.employeeCalendar = JSON.parse(JSON.stringify(this.employeeCalendarAssist)) as AssistDayInterface
   },
   async mounted() {
+    if (this.employeeCalendar?.assist.dateShiftApplySince) {
+      const day = this.employeeCalendar?.day
+      const dateShiftApplySince = new Date(this.employeeCalendar?.assist.dateShiftApplySince)
+      this.isDirectlyAssignedShift = day === dateShiftApplySince.toISOString().slice(0, 10)
+    }
     this.setSessionUser()
     this.validateAccess()
     this.isReady = true
@@ -218,6 +226,11 @@ export default defineComponent({
         nextPayDate = nextPayDate.plus({ weeks: 1 });
       }
       return nextPayDate.toJSDate()
-    }
+    },
+    handlerClickOnDelete() {
+      if (this.clickOnDelete) {
+        this.clickOnDelete()
+      }
+    },
   },
 })

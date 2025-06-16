@@ -1032,13 +1032,15 @@ export default defineComponent({
         department: this.employee?.department,
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
-      const title = `${this.getRange()}`
-      await assistExcelService.getExcelAllAssistance(assists, title ? title : '')
+      const range = this.getRange()
+      const title = `${range.title}`
+      await assistExcelService.getExcelAllAssistance(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService()
-      const title = `Summary Report  ${this.getRange()}`
+      const range = this.getRange()
+      const title = `Summary Report  ${range.title}`
       const employee = this.employee
       if (employee) {
         employee.calendar = this.employeeCalendar
@@ -1048,7 +1050,7 @@ export default defineComponent({
         department: this.employee?.department,
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
-      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '')
+      await assistExcelService.getExcelIncidentSummary(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
@@ -1063,7 +1065,8 @@ export default defineComponent({
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
       const tradeName = await assistExcelService.getTradeName()
-      const title = `Incidencias ${tradeName} ${this.getRange()}`
+      const range = this.getRange()
+      const title = `Incidencias ${tradeName} ${range.title}`
       const filters = {
         assists: assists,
         title: title ? title : '',
@@ -1110,7 +1113,7 @@ export default defineComponent({
       const yearEnd = assistExcelService.dateYear(endDay)
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
-      return `From ${calendarDayStart} to ${calendarDayEnd}`
+      return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
       if (this.visualizationMode?.value === 'fourteen') {

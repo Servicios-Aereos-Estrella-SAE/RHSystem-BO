@@ -8,6 +8,25 @@
   text-align: center;
   color: $icon;
 
+  .icons {
+    position: absolute;
+    margin-left: 11%;
+    display: flex;
+    gap: 0.25rem;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  .icon-wrapper {
+    position: absolute;
+    margin-left: 11rem;
+    z-index: 10;
+    background-color: white;
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+
   .date {
     font-size: 1.25rem;
     font-weight: 500;
