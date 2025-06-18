@@ -574,7 +574,6 @@ export default defineComponent({
           calendar.exceptions = shiftExceptionResponse
         }
 
-
         const employeeCalendar = {
           day: calendar.day,
           assist: calendar,
@@ -583,11 +582,11 @@ export default defineComponent({
         newEmployeeCalendar.push(employeeCalendar)
       }
 
-      this.employeeCalendar = newEmployeeCalendar
+      this.employeeCalendar = employeeCalendar
       //this.employeeCalendar = employeeCalendar
-      /*  if (this.employeeCalendar.length > 0) {
-         this.employeeCalendar.pop()
-       } */
+      if (this.employeeCalendar.length > 0) {
+        this.employeeCalendar.pop()
+      }
       let delays = 0
       const assistArray = [] as Array<{
         checkIn: { assistPunchTime?: string | null }

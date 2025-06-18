@@ -19,6 +19,8 @@ import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/As
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService';
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
 
 export default defineComponent({
   name: 'AttendanceMonitorByDepartment',
@@ -689,9 +691,28 @@ export default defineComponent({
       try {
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        const newEmployeeCalendar = [] as AssistDayInterface[]
+        const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+        const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+        const shiftExceptionService = new ShiftExceptionService()
+        for await (const calendar of calendars) {
+          calendar.exceptions = []
+          if (calendar.hasExceptions) {
+            const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeID, null, calendar.day, calendar.day)
+            calendar.exceptions = shiftExceptionResponse
+          }
+
+          const employeeCalendar = {
+            day: calendar.day,
+            assist: calendar,
+          } as AssistDayInterface
+
+          newEmployeeCalendar.push(employeeCalendar)
+        }
         employee.calendar = employeeCalendar
         this.setGeneralStatisticsData(employee, employee.calendar)
-        if (assistReq.status === 400) {
+        if (employeeAssistCalendarReq.status === 400) {
           const employeeNoShift = employee?.employee || null
 
           if (employeeNoShift) {
