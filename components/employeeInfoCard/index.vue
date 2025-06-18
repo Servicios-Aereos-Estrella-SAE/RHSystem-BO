@@ -2,7 +2,7 @@
   <div class="box user-info-card">
     <div class="employee-head">
       <div class="avatar" @click="onClickPhoto">
-        <img v-if="employee.employeePhoto" :src="employee.employeePhoto" alt="Employee Photo" class="employee-photo" />
+        <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo" class="employee-photo" />
         <div v-else class="username-initial">
           {{ employeeInitial }}
         </div>

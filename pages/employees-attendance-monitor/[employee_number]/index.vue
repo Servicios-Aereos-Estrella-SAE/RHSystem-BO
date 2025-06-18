@@ -11,7 +11,7 @@
         <div class="box head-page">
           <div class="employee-wrapper">
             <div class="avatar">
-              <img v-if="employee.employeePhoto" :src="employee.employeePhoto" alt="Employee Photo"
+              <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo"
                 class="employee-photo" @click="onClickPhoto" />
               <svg v-else viewBox="0 0 500 500" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                 <path clip-rule="evenodd"
