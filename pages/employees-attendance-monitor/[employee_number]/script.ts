@@ -559,8 +559,8 @@ export default defineComponent({
       }
 
       const employeeID = this.employee?.employeeId || 0
-      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      /*   const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[] */
 
       const newEmployeeCalendar = [] as AssistDayInterface[]
       const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
@@ -582,7 +582,7 @@ export default defineComponent({
         newEmployeeCalendar.push(employeeCalendar)
       }
 
-      this.employeeCalendar = employeeCalendar
+      this.employeeCalendar = newEmployeeCalendar
       //this.employeeCalendar = employeeCalendar
       if (this.employeeCalendar.length > 0) {
         this.employeeCalendar.pop()

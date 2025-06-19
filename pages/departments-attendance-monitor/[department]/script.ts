@@ -689,8 +689,8 @@ export default defineComponent({
       }
       const employeeID = employee?.employee?.employeeId || 0
       try {
-        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        /*  const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[] */
         const newEmployeeCalendar = [] as AssistDayInterface[]
         const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
         const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
@@ -710,7 +710,7 @@ export default defineComponent({
 
           newEmployeeCalendar.push(employeeCalendar)
         }
-        employee.calendar = employeeCalendar
+        employee.calendar = newEmployeeCalendar
         this.setGeneralStatisticsData(employee, employee.calendar)
         if (employeeAssistCalendarReq.status === 400) {
           const employeeNoShift = employee?.employee || null
