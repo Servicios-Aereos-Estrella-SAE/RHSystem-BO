@@ -43,8 +43,16 @@ export default defineComponent({
       return initial
     },
     avatarImage () {
-      const initial = `${this.authUser?.person?.employee?.employeePhoto || ''}`
-      return initial
+      const imagePath = `${this.authUser?.person?.employee?.employeePhoto || ''}`
+
+      if (!imagePath) {
+        return ''
+      }
+
+      const CONFIG = useRuntimeConfig()
+      const API_PATH = CONFIG.public.BASE_API_PATH
+      const photoPath = `${API_PATH}/proxy-image?url=${imagePath}`
+      return photoPath
     }
   },
   created () {

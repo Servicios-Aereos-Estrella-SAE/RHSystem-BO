@@ -10,16 +10,15 @@
   gap: 0.5rem;
 
   .avatar {
-    background-color: antiquewhite;
-    height: 100%;
-    cursor: pointer;
-    background-color: $gray;
+    height: 7rem;
+    background-color: #d2edf8;
     border-radius: $radius;
     border: solid 0.2rem white;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 1.5rem;
 
     svg {
       width: 3rem;

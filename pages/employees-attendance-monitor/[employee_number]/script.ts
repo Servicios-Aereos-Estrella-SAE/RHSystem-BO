@@ -312,6 +312,12 @@ export default defineComponent({
       }
 
       return false
+    },
+    getEmployeePhoto () {
+      const CONFIG = useRuntimeConfig()
+      const API_PATH = CONFIG.public.BASE_API_PATH
+      const photoPath = `${API_PATH}/proxy-image?url=${this.employee?.employeePhoto}`
+      return photoPath
     }
   },
   created() {
