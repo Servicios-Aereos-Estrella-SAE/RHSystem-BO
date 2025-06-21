@@ -17,6 +17,7 @@ import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface'
 import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService'
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
+import HolidayService from '~/resources/scripts/services/HolidayService'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -313,7 +314,7 @@ export default defineComponent({
 
       return false
     },
-    getEmployeePhoto () {
+    getEmployeePhoto() {
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${this.employee?.employeePhoto}`
@@ -571,13 +572,27 @@ export default defineComponent({
       const newEmployeeCalendar = [] as AssistDayInterface[]
       const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
       const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
-
+      const holidayService = new HolidayService()
       const shiftExceptionService = new ShiftExceptionService()
       for await (const calendar of calendars) {
         calendar.exceptions = []
         if (calendar.hasExceptions) {
           const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeID, null, calendar.day, calendar.day)
           calendar.exceptions = shiftExceptionResponse
+        }
+        if (calendar.isHoliday) {
+          const response = await holidayService.getFilteredList(
+            '',
+            calendar.day,
+            calendar.day,
+            1,
+            999999
+          )
+          if (response.status === 200) {
+            if (response._data.holidays.data.length > 0) {
+              calendar.holiday = response._data.holidays.data[0]
+            }
+          }
         }
 
         const employeeCalendar = {
