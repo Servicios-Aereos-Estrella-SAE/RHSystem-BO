@@ -24,7 +24,8 @@ export default defineComponent({
     commentsSidebar: false as boolean,
     dayExceptions: [] as ShiftExceptionInterface[],
     employeeShiftChangesList: [] as EmployeeShiftChangeInterface[],
-    hasNotes: false
+    hasNotes: false,
+    showChecksList: false
   }),
   computed: {
     dateYear() {
@@ -199,6 +200,11 @@ export default defineComponent({
         }
       }
     },
+    async displayChecks() {
+      if (this.checkAssist.assist.assitFlatList.length > 0) {
+        this.showChecksList = true
+      }
+    },
     getFileName(url: string) {
       if (!url) return 'Unknown file'
       try {
@@ -221,5 +227,11 @@ export default defineComponent({
       if (!url) return false
       return /\.(mp4|webm|ogg)$/i.test(url);
     },
+    formattedDate(date: string) {
+      if (date) {
+        const dateTime = DateTime.fromISO(date as string)
+        return dateTime.toFormat('HH:mma')
+      }
+    }
   }
 })

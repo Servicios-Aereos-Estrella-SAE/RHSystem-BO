@@ -1,6 +1,6 @@
 <template>
   <div class="attendance-calendar-day-wrapper" v-if="checkAssist">
-    <div v-if="checkAssist && checkAssist.assist.dateShift" class="attendance-calendar-day">
+    <div v-if="checkAssist && checkAssist.assist.dateShift && !showChecksList" class="attendance-calendar-day">
       <div class="day" :class="{ future: cardIsFuture, rest: cardIsRest }">
         <div class="date">
           <div>
@@ -272,6 +272,66 @@
               Sunday bonus
             </div>
           </div>
+          <div :class="{'check info': true, 'inactive': !checkAssist.assist.assitFlatList.length > 0}"
+            @click="displayChecks(checkAssist)">
+            <div class="icon">
+              <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                <path fill="none" d="M0 0h256v256H0z"></path>
+                <path
+                  d="m235.7 136.9-42.7 64a15.9 15.9 0 0 1-13.3 7.1H24a7.8 7.8 0 0 1-7-4.2 8 8 0 0 1 .3-8.2L62.4 128 17.3 60.4a8 8 0 0 1-.3-8.2 7.8 7.8 0 0 1 7-4.2h155.7a15.9 15.9 0 0 1 13.3 7.1l42.7 64a16 16 0 0 1 0 17.8Z"
+                  fill="#3CB4E5" class="fill-000000"></path>
+              </svg>
+            </div>
+            <div class="note" :class="{ active: checkAssist.assist.assitFlatList.length > 0 }">
+              Checks
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else-if="showChecksList" class="attendance-calendar-day">
+      <div class="day" :class="{ future: cardIsFuture, rest: cardIsRest }">
+        <div class="date">
+          <div>
+            {{ calendarDay }}
+            <small class="week-day">
+              {{ weekDayName }}
+            </small>
+          </div>
+          <div class="icons">
+            <div class="calendar-icon-info" @click="showChecksList = false">
+              <svg data-v-6cfe538f="" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path data-v-6cfe538f=""
+                  d="M10.295 19.716a1 1 0 0 0 1.404-1.425l-5.37-5.29h13.67a1 1 0 1 0 0-2H6.336L11.7 5.714a1 1 0 0 0-1.404-1.424l-6.924 6.822a1.25 1.25 0 0 0 0 1.78l6.924 6.823Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
+            </div>
+          </div>
+
+
+        </div>
+        <span class="shift">
+          {{ checkAssist.assist?.dateShift?.shiftName || '---' }}
+        </span>
+        <h3>Checks</h3>
+        <div class="checks-grid">
+          <div v-for="(assist, indexFlat) in checkAssist.assist.assitFlatList" :key="indexFlat" class="check-card">
+            <div class="check">
+              <div class="icon">
+                <svg data-v-6de6f350="" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path data-v-6de6f350=""
+                    d="M11 17.5a6.47 6.47 0 0 1 1.022-3.5h-7.77a2.249 2.249 0 0 0-2.248 2.25v.577c0 .892.318 1.756.898 2.435 1.566 1.834 3.952 2.74 7.098 2.74.931 0 1.796-.08 2.593-.24A6.475 6.475 0 0 1 11 17.5ZM10 2.005a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                  <path data-v-6de6f350=""
+                    d="M17.5 12a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Zm2 5.5h-2V15a.5.5 0 1 0-1 0v3a.5.5 0 0 0 .5.5h2.5a.5.5 0 0 0 0-1Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
+              </div>
+              <div class="time eat-time">
+                {{ formattedDate(assist.assistPunchTime) }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -421,6 +481,7 @@
       width: 100% !important;
     }
 
+
     .evidence-grid {
       display: flex;
       flex-wrap: wrap;
@@ -428,6 +489,15 @@
     }
 
     .evidence-card {
+      width: 45px;
+      height: 45px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f9fafb;
+    }
+
+    .check-card {
       width: 45px;
       height: 45px;
       border: 1px solid #e5e7eb;
