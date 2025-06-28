@@ -304,7 +304,7 @@ export default defineComponent({
 
       return false
     },
-    canDisplayFrontExcel() {
+    canDisplayAPIExcel() {
       if (this.isRoot) {
         return true
       }

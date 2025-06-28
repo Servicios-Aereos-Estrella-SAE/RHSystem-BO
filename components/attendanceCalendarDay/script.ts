@@ -230,7 +230,7 @@ export default defineComponent({
     formattedDate(date: string) {
       if (date) {
         const dateTime = DateTime.fromISO(date as string, { setZone: true }).setZone('UTC-6')
-        return dateTime.toFormat('HH:mma')
+        return dateTime.toFormat('TT')
       }
     }
   }

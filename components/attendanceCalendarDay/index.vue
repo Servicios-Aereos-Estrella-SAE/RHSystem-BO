@@ -279,15 +279,10 @@
           :class="{'check info': true, 'inactive': !checkAssist.assist.assitFlatList.length > 0}"
           @click="displayChecks(checkAssist)">
           <div class="icon">
-            <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-              <path fill="none" d="M0 0h256v256H0z"></path>
-              <path
-                d="m235.7 136.9-42.7 64a15.9 15.9 0 0 1-13.3 7.1H24a7.8 7.8 0 0 1-7-4.2 8 8 0 0 1 .3-8.2L62.4 128 17.3 60.4a8 8 0 0 1-.3-8.2 7.8 7.8 0 0 1 7-4.2h155.7a15.9 15.9 0 0 1 13.3 7.1l42.7 64a16 16 0 0 1 0 17.8Z"
-                fill="#3CB4E5" class="fill-000000"></path>
-            </svg>
+            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 13.5H11.25C10.836 13.5 10.5 13.164 10.5 12.75V6.75C10.5 6.336 10.836 6 11.25 6C11.664 6 12 6.336 12 6.75V12H15.25C15.664 12 16 12.336 16 12.75C16 13.164 15.664 13.5 15.25 13.5ZM12 2C6.478 2 2 6.478 2 12C2 17.522 6.478 22 12 22C17.522 22 22 17.522 22 12C22 6.478 17.522 2 12 2Z" fill="#3CB4E5"/></svg>
           </div>
           <div class="note" :class="{ active: checkAssist.assist.assitFlatList.length > 0 }">
-            Checks
+            All day records
           </div>
         </div>
       </div>
@@ -310,13 +305,10 @@
               </svg>
             </div>
           </div>
-
-
         </div>
         <span class="shift">
           {{ checkAssist.assist?.dateShift?.shiftName || '---' }}
         </span>
-        <h3>Checks</h3>
         <div class="checks-grid">
           <div v-for="(assist, indexFlat) in checkAssist.assist.assitFlatList" :key="indexFlat" class="check-card">
             <div class="check">
