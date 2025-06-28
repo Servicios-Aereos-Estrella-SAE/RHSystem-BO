@@ -15,6 +15,9 @@ import BusinessUnitService from "./BusinessUnitService"
 import type { BusinessUnitInterface } from "../interfaces/BusinessUnitInterface"
 import EmployeeService from "./EmployeeService"
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from "../interfaces/AssistExcelFilterIncidentSummaryPayRollInterface"
+import type { SystemSettingInterface } from "../interfaces/SystemSettingInterface"
+import type { AssistIncidentPayrollCalendarExcelFilterInterface } from "../interfaces/AssistIncidentPayrollCalendarExcelFilterInterface"
+import type { AssistIncidentSummaryCalendarExcelFilterInterface } from "../interfaces/AssistIncidentSummaryCalendarExcelFilterInterface"
 
 export default class AssistExcelService {
   protected businessUnits: Array<BusinessUnitInterface>
@@ -91,6 +94,7 @@ export default class AssistExcelService {
     await this.addTitleIncidentToWorkSheet(workbook, worksheet, title)
     this.addHeadRowIncident(worksheet)
     const tardies = await this.getTardiesTolerance()
+    const toleranceCountPerAbsences = await this.getToleranceCountPerAbsence()
     const rowsIncident = [] as AssistIncidentExcelRowInterface[]
     assists.sort((a, b) => a.department.departmentId - b.department.departmentId);
     let currentDepartmentId = 0
@@ -115,7 +119,14 @@ export default class AssistExcelService {
       for await (const employee of assist.employees) {
         hasEmployees = true
         let newRows = [] as AssistIncidentExcelRowInterface[]
-        newRows = await this.addRowIncidentCalendar(employee.employee, employee.calendar, tardies, dateEnd)
+        const incidentSummaryFilters: AssistIncidentSummaryCalendarExcelFilterInterface = {
+          employee: employee.employee,
+          employeeCalendar: employee.calendar,
+          tardies: tardies,
+          toleranceCountPerAbsences: toleranceCountPerAbsences,
+          dateEnd: dateEnd
+        }
+        newRows = await this.addRowIncidentCalendar(incidentSummaryFilters)
         for await (const row of newRows) {
           this.addTotalByDepartment(totalRowByDepartmentIncident, row)
           rowsIncident.push(row)
@@ -144,6 +155,7 @@ export default class AssistExcelService {
     await this.addTitleIncidentPayrollToWorkSheet(workbook, worksheet, filters.title)
     this.addHeadRowIncidentPayroll(worksheet)
     const tardies = await this.getTardiesTolerance()
+    const toleranceCountPerAbsences = await this.getToleranceCountPerAbsence()
     filters.assists.sort((a, b) => a.department.departmentId - b.department.departmentId)
     let totalRowByDepartmentIncident = {} as AssistIncidentExcelRowInterface
     const totalRowIncident = {} as AssistIncidentExcelRowInterface
@@ -152,12 +164,16 @@ export default class AssistExcelService {
     for await (const assist of filters.assists) {
       for await (const employee of assist.employees) {
         let newRows = [] as AssistIncidentPayrollExcelRowInterface[]
+        const incidentPayrollFilters: AssistIncidentPayrollCalendarExcelFilterInterface = {
+          employee: employee.employee,
+          employeeCalendar: employee.calendar,
+          tardies: tardies,
+          datePay: filters.datePay,
+          toleranceCountPerAbsences: toleranceCountPerAbsences,
+          employeeWorkDisabilities: filters.employeeWorkDisabilities
+        }
         newRows = await this.addRowIncidentPayrollCalendar(
-          employee.employee,
-          employee.calendar,
-          tardies,
-          filters.datePay,
-          filters.employeeWorkDisabilities,
+          incidentPayrollFilters
         )
         for await (const row of newRows) {
           rowsIncidentPayroll.push(row)
@@ -679,16 +695,13 @@ export default class AssistExcelService {
   }
 
   async addRowIncidentCalendar(
-    employee: EmployeeInterface,
-    employeeCalendar: AssistDayInterface[],
-    tardies: number,
-    dateEnd: string,
+    filters: AssistIncidentSummaryCalendarExcelFilterInterface
   ) {
     const rows = [] as AssistIncidentExcelRowInterface[]
-    let department = employee.department?.departmentAlias ? employee.department.departmentAlias : ''
+    let department = filters.employee.department?.departmentAlias ? filters.employee.department.departmentAlias : ''
     department =
-      department === '' && employee.department?.departmentName
-        ? employee.department.departmentName
+      department === '' && filters.employee.department?.departmentName
+        ? filters.employee.department.departmentName
         : ''
     let daysWorked = 0
     let daysOnTime = 0
@@ -704,9 +717,9 @@ export default class AssistExcelService {
     let delayFaults = 0
     let earlyOutsFaults = 0
     let hoursWorked = 0
-    const dateEndFormat = new Date(dateEnd);
+    const dateEndFormat = new Date(filters.dateEnd)
     const exceptions = [] as ShiftExceptionInterface[]
-    for await (const calendar of employeeCalendar) {
+    for await (const calendar of filters.employeeCalendar) {
       const date = new Date(calendar.day);
       if (date <= dateEndFormat) {
         if (!calendar.assist.isFutureDay) {
@@ -809,11 +822,14 @@ export default class AssistExcelService {
 
     }
 
-    delayFaults = this.getFaultsFromDelays(delays, tardies)
-    earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, tardies)
+    const delayTolerances = this.getFaultsFromDelays(tolerances, filters.toleranceCountPerAbsences)
+    delays += delayTolerances
+
+    delayFaults = this.getFaultsFromDelays(delays, filters.tardies)
+    earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, filters.tardies)
     rows.push({
-      employeeId: employee.employeeCode.toString(),
-      employeeName: `${employee.employeeFirstName} ${employee.employeeLastName}`,
+      employeeId: filters.employee.employeeCode.toString(),
+      employeeName: `${filters.employee.employeeFirstName} ${filters.employee.employeeLastName}`,
       department: department,
       daysWorked: daysWorked,
       daysOnTime: daysOnTime,
@@ -1310,17 +1326,13 @@ export default class AssistExcelService {
   }
 
   async addRowIncidentPayrollCalendar(
-    employee: EmployeeInterface,
-    employeeCalendar: AssistDayInterface[],
-    tardies: number,
-    datePay: string,
-    employeeWorkDisabilities: EmployeeInterface[]
+    filters: AssistIncidentPayrollCalendarExcelFilterInterface
   ) {
     const rows = [] as AssistIncidentPayrollExcelRowInterface[]
-    let department = employee.department?.departmentAlias ? employee.department.departmentAlias : ''
+    let department = filters.employee.department?.departmentAlias ? filters.employee.department.departmentAlias : ''
     department =
-      department === '' && employee.department?.departmentName
-        ? employee.department.departmentName
+      department === '' && filters.employee.department?.departmentName
+        ? filters.employee.department.departmentName
         : department
     let daysWorked = 0
     let daysOnTime = 0
@@ -1339,7 +1351,7 @@ export default class AssistExcelService {
     let vacationBonus = 0
     let daysWorkDisability = 0
     const exceptions = [] as ShiftExceptionInterface[]
-    for await (const calendar of employeeCalendar) {
+    for await (const calendar of filters.employeeCalendar) {
       if (!calendar.assist.isFutureDay) {
         let faultProcessed = false
         let laborRestCounted = false
@@ -1444,11 +1456,15 @@ export default class AssistExcelService {
         }
       }
     }
-    delayFaults = this.getFaultsFromDelays(delays, tardies)
-    earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, tardies)
-    vacationBonus = this.getVacationBonus(employee, datePay)
-    if (employee.employeeId) {
-      const existEmployee = employeeWorkDisabilities.find(a => a.employeeId === employee.employeeId)
+
+    const delayTolerances = this.getFaultsFromDelays(tolerances, filters.toleranceCountPerAbsences)
+    delays += delayTolerances
+
+    delayFaults = this.getFaultsFromDelays(delays, filters.tardies)
+    earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, filters.tardies)
+    vacationBonus = this.getVacationBonus(filters.employee, filters.datePay)
+    if (filters.employee.employeeId) {
+      const existEmployee = filters.employeeWorkDisabilities.find(a => a.employeeId === filters.employee.employeeId)
       if (existEmployee && existEmployee.shift_exceptions) {
         daysWorkDisability = existEmployee.shift_exceptions?.length
       } else {
@@ -1459,15 +1475,15 @@ export default class AssistExcelService {
     }
 
     let company = ''
-    if (employee.payrollBusinessUnitId) {
-      const payrollBusinessUnit = this.businessUnits.find(a => a.businessUnitId === employee.payrollBusinessUnitId)
+    if (filters.employee.payrollBusinessUnitId) {
+      const payrollBusinessUnit = this.businessUnits.find(a => a.businessUnitId === filters.employee.payrollBusinessUnitId)
       if (payrollBusinessUnit) {
         company = payrollBusinessUnit.businessUnitName
       }
     }
     rows.push({
-      employeeName: `${employee.employeeFirstName} ${employee.employeeLastName}`,
-      employeeId: employee.employeeCode.toString(),
+      employeeName: `${filters.employee.employeeFirstName} ${filters.employee.employeeLastName}`,
+      employeeId: filters.employee.employeeCode.toString(),
       department: department,
       company: company,
       faults: faults,
@@ -1648,5 +1664,19 @@ export default class AssistExcelService {
     }
   }
 
+  async getToleranceCountPerAbsence() {
+    let tolerancePerAbsence = 0
+    const systemSettingService = new SystemSettingService()
+    const systemSettingActive = (await systemSettingService.getActive()) as unknown as SystemSettingInterface
+    if (systemSettingActive) {
+      if (systemSettingActive.systemSettingToleranceCountPerAbsence) {
+        tolerancePerAbsence = systemSettingActive.systemSettingToleranceCountPerAbsence
+      }
+    }
+    if (tolerancePerAbsence === 0) {
+      tolerancePerAbsence = 3
+    }
+    return tolerancePerAbsence
+  }
 
 }

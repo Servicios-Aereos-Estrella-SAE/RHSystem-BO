@@ -311,7 +311,7 @@ export default defineComponent({
 
       return false
     },
-    getEmployeePhoto () {
+    getEmployeePhoto() {
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${this.employee?.employeePhoto}`
@@ -520,8 +520,11 @@ export default defineComponent({
       }
     },
     async getEmployeeCalendar() {
+
       const toleranceService = new ToleranceService()
       const toleranceResponse = await toleranceService.getTardinessTolerance()
+      const assistExcelService = new AssistExcelService()
+      const toleranceCountPerAbsences = await assistExcelService.getToleranceCountPerAbsence()
       if (toleranceResponse.status === 200) {
         const tolerance = toleranceResponse._data.data.tardinessTolerance
         if (tolerance) {
@@ -570,6 +573,7 @@ export default defineComponent({
         this.employeeCalendar.pop()
       }
       let delays = 0
+      let tolerances = 0
       const assistArray = [] as Array<{
         checkIn: { assistPunchTime?: string | null }
         checkOut: { assistPunchTime?: string | null }
@@ -596,11 +600,22 @@ export default defineComponent({
         if (day.assist.checkInStatus === 'delay') {
           delays += 1
         }
+        if (day.assist.dateShift) {
+          if (day.assist.checkInStatus !== 'fault') {
+            if (day.assist.checkInStatus === 'tolerance') {
+              tolerances += 1
+            }
+          }
+        }
       }
       this.setGeneralData()
       this.workedTime = await this.calculateTotalElapsedTimeWithCrossing(assistArray)
       this.workedProductiveTime = await this.calculateProductiveElapsedTime(assistArray)
       this.workedActiveTime = await this.sumShiftActiveHours(this.employeeCalendar)
+
+      const delayTolerances = assistExcelService.getFaultsFromDelays(tolerances, toleranceCountPerAbsences)
+      delays += delayTolerances
+
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
       this.setSearchTime()

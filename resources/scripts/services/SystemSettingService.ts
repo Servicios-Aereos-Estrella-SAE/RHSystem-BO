@@ -165,6 +165,10 @@ export default class SystemSettingService {
       console.error('Wrong sidebar color');
       return false;
     }
+    if (!systemSetting.systemSettingToleranceCountPerAbsence) {
+      console.error('Wrong tolerance count per absence');
+      return false;
+    }
 
     return true;
   }
