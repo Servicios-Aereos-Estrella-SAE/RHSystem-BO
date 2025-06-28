@@ -5,7 +5,8 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 export default defineComponent({
   name: 'employeeModalInfoCard',
   props: {
-    employee: { type: Object as PropType<EmployeeInterface>, required: true }
+    employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    hideBottomLine: { type: Boolean, default: false }
   },
   data: () => ({
   }),

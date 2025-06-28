@@ -10,6 +10,7 @@ interface SystemSettingInterface {
   systemSettingSidebarColor: string | null,
   systemSettingBusinessUnits: string | null,
   systemSettingActive: number | null,
+  systemSettingToleranceCountPerAbsence: number | null,
   systemSettingCreatedAt: Date | string | null,
   systemSettingUpdatedAt: Date | string | null,
   systemSettingDeletedAt: Date | string | null,

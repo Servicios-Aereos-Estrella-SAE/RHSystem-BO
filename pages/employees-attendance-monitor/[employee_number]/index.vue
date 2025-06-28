@@ -8,98 +8,76 @@
     </Head>
     <NuxtLayout name="backoffice">
       <div v-if="employee" class="dashboard-wrapper">
-        <div class="box head-page">
-          <div class="employee-wrapper">
-            <div class="avatar">
-              <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo"
-                class="employee-photo" @click="onClickPhoto" />
-              <svg v-else viewBox="0 0 500 500" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path clip-rule="evenodd"
-                  d="M415.762 346.214c-19.078-24.896-42.156-41.063-75.223-50.236l-30.983 108.475c0 9.992-8.181 18.172-18.172 18.172-9.988 0-18.169-8.18-18.169-18.172v-86.311c0-12.536-10.178-22.715-22.715-22.715-12.536 0-22.713 10.179-22.713 22.715v86.311c0 9.992-8.181 18.172-18.17 18.172-9.992 0-18.173-8.18-18.173-18.172l-30.983-108.475c-33.068 9.262-56.145 25.34-75.221 50.236-7.542 9.812-11.64 29.527-11.908 40.07.09 2.725 0 5.906 0 9.082v36.345c0 20.078 16.264 36.34 36.343 36.34h281.648c20.078 0 36.345-16.262 36.345-36.34v-36.345c0-3.176-.089-6.357 0-9.082-.275-10.543-4.368-30.259-11.906-40.07zm-260.66-218.141c0 53.059 33.078 131.013 95.398 131.013 61.237 0 95.396-77.954 95.396-131.013 0-53.057-42.702-96.124-95.396-96.124s-95.398 43.067-95.398 96.124z"
-                  fill="#87a4bf" fill-rule="evenodd" class="fill-010101"></path>
-              </svg>
-            </div>
-            <h1 class="">
-              <div :class="employee.deletedAt ? 'deleted': ''">
-                {{ `${employee.employeeFirstName || ''}`.toUpperCase() }}
-                {{ `${employee.employeeLastName || ''}`.toUpperCase() }}
-                <span class="name-emp-code">
-                  ( Emp. ID: {{ employee.employeeCode }} )
-                </span>
+        <div class="box employee-info-wrap">
+          <employeeModalInfoCard :employee="employee" hideBottomLine />
+        </div>
+        <div class="box employee-attendance-head-page">
+          <div class="employee-search-filter">
+            <div class="input-search">
+              <div class="input-box">
+                <label for="search">
+                  Search employee
+                </label>
+                <AutoComplete v-model="selectedEmployee"
+                  :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+                  :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
+                  <template #option="employee">
+                    <div class="item-employee-filter-attendance-monitor">
+                      <div class="name">
+                        {{ employee.option.employeeFirstName }}
+                        {{ employee.option.employeeLastName }}
+                      </div>
+                      <div class="position-department">
+                        {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
+                        /
+                        {{ employee.option.position.positionAlias || employee.option.position.positionName }}
+                      </div>
+                    </div>
+                  </template>
+                </AutoComplete>
               </div>
-              <small>
-                {{ employee.department.departmentAlias || employee.department.departmentName }}
-                /
-                {{ employee.position.positionAlias || employee.position.positionName }}
-              </small>
-              <small class="emp-code">
-                Emp. ID: {{ employee.employeeCode }}
-              </small>
-            </h1>
-          </div>
-          <div></div>
-          <div class="input-search">
-            <div class="input-box">
-              <label for="search">
-                Search employee
-              </label>
-              <AutoComplete v-model="selectedEmployee"
-                :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
-                :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
-                <template #option="employee">
-                  <div class="item-employee-filter-attendance-monitor">
-                    <div class="name">
-                      {{ employee.option.employeeFirstName }}
-                      {{ employee.option.employeeLastName }}
-                    </div>
-                    <div class="position-department">
-                      {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
-                      /
-                      {{ employee.option.position.positionAlias || employee.option.position.positionName }}
-                    </div>
-                  </div>
-                </template>
-              </AutoComplete>
+              <button class="btn btn-block">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
+              </button>
             </div>
-            <button class="btn btn-block">
-              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
-                  fill="#88a4bf" class="fill-212121"></path>
-              </svg>
-            </button>
+            <div></div>
           </div>
-          <div v-if="visualizationMode" class="input-box">
-            <label for="departments">
-              Visualization mode
-            </label>
-            <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
-              optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
-              @change="onHandlerVisualizationModeChange" />
-          </div>
-          <div v-if="visualizationMode" class="input-box">
-            <label for="departments">
-              Period
-            </label>
-            <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
-              v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
-              :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" :showWeek="false"
-              @update:modelValue="handlerPeriodChange" />
-            <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Custom'"
-              v-model="datesSelected" :view="visualizationMode.calendar_format.mode"
-              :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
-              selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
-              @update:modelValue="handlerPeriodChange" :showWeek="false" />
-
-            <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
-              v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
-              :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
-              :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
-              :disabledDates="disabledNoPaymentDates" :showWeek="false">
-            </Calendar>
+          <div class="employee-period-filter">
+            <div v-if="visualizationMode" class="input-box">
+              <label>
+                Visualization mode
+              </label>
+              <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
+                optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
+                @change="onHandlerVisualizationModeChange" />
+            </div>
+            <div v-if="visualizationMode" class="input-box">
+              <label>
+                Period
+              </label>
+              <Calendar
+                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
+                v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
+                :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" :showWeek="false"
+                @update:modelValue="handlerPeriodChange" />
+              <Calendar
+                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Custom'"
+                v-model="datesSelected" :view="visualizationMode.calendar_format.mode"
+                :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
+                selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
+                @update:modelValue="handlerPeriodChange" :showWeek="false" />
+              <Calendar
+                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+                v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
+                :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
+                :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
+                :disabledDates="disabledNoPaymentDates" :showWeek="false">
+              </Calendar>
+            </div>
           </div>
         </div>
 
@@ -143,85 +121,60 @@
               </svg>
             </Button>
           </div>
-          <div v-if="visualizationMode">
-            <!-- <Button class="btn" severity="success" @click="getExcel('Assistance Report')">
-              Detailed
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </Button> -->
-            <Button class="btn" severity="success" @click="getExcelAllAssistance">
-              Detailed
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </Button>
-          </div>
-          <div v-if="visualizationMode">
-            <!-- <Button class="btn" severity="success" @click="getExcel('Incident Summary')">
-              Summary
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </Button> -->
-            <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelIncidentSummary">
-              Summary front
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </button>
-          </div>
-          <div v-if="visualizationMode && visualizationMode?.name === 'Fourteen'">
-            <Button class="btn" severity="success" @click="getExcel('Incident Summary Payroll')">
-              Payroll
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </Button>
-          </div>
         </div>
-        <div v-if="canDisplayFrontExcel" class="employee-attendance-head-tools">
-          <div v-if="visualizationMode">
-            <Button class="btn" severity="success" @click="getExcelAllAssistance">
-              Detailed front
+
+        <div class="employee-attendance-head-tools excel-reports-wrapper">
+          <Button class="btn" severity="success" @click="getExcelAllAssistance">
+            Detailed
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </Button>
+          <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelIncidentSummary">
+            Summary
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </button>
+          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcelIncidentSummaryPayRoll">
+            Payroll
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="canDisplayAPIExcel" class="employee-attendance-head-tools excel-reports-wrapper from-api">
+          <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
+              Detailed API
               <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
                   fill="#88a4bf" class="fill-000000"></path>
               </svg>
             </Button>
-          </div>
-          <div v-if="visualizationMode">
-            <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelIncidentSummary">
-              Summary front
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </button>
-          </div>
-
-          <div v-if="visualizationMode && visualizationMode?.name === 'Fourteen'">
-            <button class="btn" severity="success" @click="getExcelIncidentSummaryPayRoll">
-              Payroll front
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                  fill="#88a4bf" class="fill-000000"></path>
-              </svg>
-            </button>
-          </div>
+          <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Incident Summary')">
+            Summary API
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </Button>
+          <Button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcel('Incident Summary Payroll')">
+            Payroll API
+            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+          </Button>
         </div>
 
         <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">

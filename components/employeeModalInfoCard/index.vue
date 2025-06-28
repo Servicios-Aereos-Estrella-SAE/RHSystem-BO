@@ -1,5 +1,5 @@
 <template>
-  <div class="user-info-card">
+  <div :class="['user-info-card', { 'hide-bottom-line': hideBottomLine }]">
     <div class="avatar">
       <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo" class="employee-photo" @click="onClickPhoto" />
       <div v-else class="username-initial">
