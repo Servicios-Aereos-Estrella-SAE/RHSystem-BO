@@ -279,7 +279,11 @@
           :class="{'check info': true, 'inactive': !checkAssist.assist.assitFlatList.length > 0}"
           @click="displayChecks(checkAssist)">
           <div class="icon">
-            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.25 13.5H11.25C10.836 13.5 10.5 13.164 10.5 12.75V6.75C10.5 6.336 10.836 6 11.25 6C11.664 6 12 6.336 12 6.75V12H15.25C15.664 12 16 12.336 16 12.75C16 13.164 15.664 13.5 15.25 13.5ZM12 2C6.478 2 2 6.478 2 12C2 17.522 6.478 22 12 22C17.522 22 22 17.522 22 12C22 6.478 17.522 2 12 2Z" fill="#3CB4E5"/></svg>
+            <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M15.25 13.5H11.25C10.836 13.5 10.5 13.164 10.5 12.75V6.75C10.5 6.336 10.836 6 11.25 6C11.664 6 12 6.336 12 6.75V12H15.25C15.664 12 16 12.336 16 12.75C16 13.164 15.664 13.5 15.25 13.5ZM12 2C6.478 2 2 6.478 2 12C2 17.522 6.478 22 12 22C17.522 22 22 17.522 22 12C22 6.478 17.522 2 12 2Z"
+                fill="#3CB4E5" />
+            </svg>
           </div>
           <div class="note" :class="{ active: checkAssist.assist.assitFlatList.length > 0 }">
             All day records
@@ -324,6 +328,13 @@
               </div>
               <div class="time eat-time">
                 {{ formattedDate(assist.assistPunchTime) }}
+              </div>
+              <div v-if="canDeleteCheckAssist" class="icon" @click="onDeleteCheckAssist(assist.assistId)">
+                <svg data-v-5254e972="" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path data-v-5254e972=""
+                    d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1Zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648Zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648ZM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
               </div>
             </div>
           </div>
@@ -429,6 +440,10 @@
       </div>
     </Sidebar>
   </div>
+  <transition name="page">
+    <confirmDelete v-if="drawerCheckAssistDelete" @confirmDelete="confirmDeleteCheckAssist"
+      @cancelDelete="onCancelCheckAssistDelete" />
+  </transition>
 </template>
 
 <script>

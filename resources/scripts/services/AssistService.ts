@@ -196,4 +196,20 @@ export default class AssistService {
     }
     return responseRequest
   }
+
+  async inactivate(assistId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/v1/assists/${assistId}/inactivate`, {
+        headers,
+        method: 'PUT',
+        body: { assistId },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
 }
