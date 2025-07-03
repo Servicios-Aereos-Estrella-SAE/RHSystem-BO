@@ -9,6 +9,7 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
 import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
+import AssistService from '~/resources/scripts/services/AssistService';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
@@ -19,13 +20,17 @@ export default defineComponent({
     checkAssist: { type: Object as PropType<AssistDayInterface>, required: true },
     discriminated: { type: Boolean, required: false },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
+    onRefresh: { type: Function, default: null },
+    canDeleteCheckAssist: { type: Boolean, default: false, required: true },
   },
   data: () => ({
     commentsSidebar: false as boolean,
     dayExceptions: [] as ShiftExceptionInterface[],
     employeeShiftChangesList: [] as EmployeeShiftChangeInterface[],
     hasNotes: false,
-    showChecksList: false
+    showChecksList: false,
+    drawerCheckAssistDelete: false as boolean,
+    assistId: null as number | null
   }),
   computed: {
     dateYear() {
@@ -232,6 +237,46 @@ export default defineComponent({
         const dateTime = DateTime.fromISO(date as string, { setZone: true }).setZone('UTC-6')
         return dateTime.toFormat('TT')
       }
+    },
+    onDeleteCheckAssist(assistId: number) {
+      this.assistId = assistId
+      this.drawerCheckAssistDelete = true
+    },
+    async confirmDeleteCheckAssist() {
+      if (this.assistId) {
+        this.drawerCheckAssistDelete = false
+        const assistService = new AssistService()
+        const assistResponse = await assistService.inactivate(this.assistId)
+
+        if (assistResponse.status === 200) {
+          const index = this.checkAssist.assist.assitFlatList.findIndex(a => a.assistId === this.assistId)
+          if (index !== -1) {
+            this.checkAssist.assist.assitFlatList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete assist',
+            detail: assistResponse._data.message,
+            life: 5000,
+          })
+          if (this.onRefresh) {
+            this.onRefresh()
+          }
+
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete assist',
+            detail: assistResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+    },
+    onCancelCheckAssistDelete() {
+      this.assistId = null
+      this.drawerCheckAssistDelete = false
     }
   }
 })
