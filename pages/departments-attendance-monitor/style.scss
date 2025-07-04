@@ -51,6 +51,16 @@
       }
     }
 
+    .departments-excel-report-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 1rem;
+      border-radius: $radius;
+      margin-bottom: 0.5rem;
+    }
+
     .btns-group {
       padding: 1rem;
       border-radius: calc($radius / 2);

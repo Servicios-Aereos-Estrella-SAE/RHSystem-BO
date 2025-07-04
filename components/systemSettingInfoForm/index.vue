@@ -106,6 +106,17 @@
             required.</small>
         </div>
 
+
+        <div class="input-box">
+          <label for="systemSettingToleranceCountPerAbsence">Tolerance count to delay</label>
+          <InputNumber id="ToleranceCountPerAbsence" v-model="systemSetting.systemSettingToleranceCountPerAbsence"
+            :invalid="submitted" />
+          <small class="p-error" v-if="submitted && !systemSetting.systemSettingToleranceCountPerAbsence">Tolerance
+            count per absence is
+            required.</small>
+        </div>
+
+
         <div v-if="!isNewSystemSetting" class="input-box">
           <label for="toleranceDelay">Tolerance Delay (Minutes)</label>
           <div style="display: flex; align-items: center; gap: 40px;">

@@ -128,6 +128,7 @@ export default defineComponent({
     workedActiveTime: '',
     canReadTimeWorked: false,
     canAddAssistManual: false,
+    canDeleteCheckAssist: false,
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
@@ -307,7 +308,7 @@ export default defineComponent({
 
       return false
     },
-    canDisplayFrontExcel() {
+    canDisplayAPIExcel() {
       if (this.isRoot) {
         return true
       }
@@ -344,9 +345,11 @@ export default defineComponent({
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
+      this.canDeleteCheckAssist = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
+      this.canDeleteCheckAssist = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete-check-assist') ? true : false
     }
 
     this.periodSelected = new Date()
@@ -523,8 +526,11 @@ export default defineComponent({
       }
     },
     async getEmployeeCalendar() {
+
       const toleranceService = new ToleranceService()
       const toleranceResponse = await toleranceService.getTardinessTolerance()
+      const assistExcelService = new AssistExcelService()
+      const toleranceCountPerAbsences = await assistExcelService.getToleranceCountPerAbsence()
       if (toleranceResponse.status === 200) {
         const tolerance = toleranceResponse._data.data.tardinessTolerance
         if (tolerance) {
@@ -609,6 +615,7 @@ export default defineComponent({
         this.employeeCalendar.pop()
       }
       let delays = 0
+      let tolerances = 0
       const assistArray = [] as Array<{
         checkIn: { assistPunchTime?: string | null }
         checkOut: { assistPunchTime?: string | null }
@@ -635,11 +642,22 @@ export default defineComponent({
         if (day.assist.checkInStatus === 'delay') {
           delays += 1
         }
+        if (day.assist.dateShift) {
+          if (day.assist.checkInStatus !== 'fault') {
+            if (day.assist.checkInStatus === 'tolerance') {
+              tolerances += 1
+            }
+          }
+        }
       }
       this.setGeneralData()
       this.workedTime = await this.calculateTotalElapsedTimeWithCrossing(assistArray)
       this.workedProductiveTime = await this.calculateProductiveElapsedTime(assistArray)
       this.workedActiveTime = await this.sumShiftActiveHours(this.employeeCalendar)
+
+      const delayTolerances = assistExcelService.getFaultsFromDelays(tolerances, toleranceCountPerAbsences)
+      delays += delayTolerances
+
       this.faultsDelays = await this.getFaultsFromDelays(delays)
       this.faultsEarlyOuts = await this.getFaultsFromDelays(this.earlyOuts)
       this.setSearchTime()
@@ -1174,5 +1192,8 @@ export default defineComponent({
         }
       }
     },
+    async onRefresh() {
+      await this.handlerPeriodChange()
+    }
   }
 })
