@@ -579,6 +579,7 @@ export default defineComponent({
       const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
       const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
       const holidayService = new HolidayService()
+      const assistService = new AssistService()
       const shiftExceptionService = new ShiftExceptionService()
       for await (const calendar of calendars) {
         calendar.exceptions = []
@@ -600,12 +601,24 @@ export default defineComponent({
             }
           }
         }
+        calendar.assitFlatList = []
+        if (calendar.hasAssitFlatList) {
+          const response = await assistService.getFlatList(
+            employeeID,
+            calendar.day,
+            calendar.day
+          )
+          if (response.status === 200) {
+            calendar.assitFlatList = response._data.data.data
+          }
+        }
 
-        const employeeCalendar = {
+        let employeeCalendar = {
           day: calendar.day,
           assist: calendar,
         } as AssistDayInterface
 
+        employeeCalendar = assistService.verifyCheckOutToday(employeeCalendar)
         newEmployeeCalendar.push(employeeCalendar)
       }
 
