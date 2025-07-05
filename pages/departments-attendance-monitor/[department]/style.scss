@@ -10,7 +10,6 @@
   }
 
   .dashboard-wrapper {
-    // min-height: 100dvh;
     box-sizing: border-box;
 
     .title {
@@ -49,6 +48,15 @@
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
       }
+    }
+
+    .department-excel-report-buttons {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .btns-group {

@@ -231,18 +231,33 @@ export default defineComponent({
       })
     },
     async getVacationExcel() {
-      const dateStart = `${this.yearSelected}-01-01`
-      const dateEnd = `${this.yearSelected}-12-31`
+      let yearStart = 2018
+      const oldestEmployee = this.filteredEmployees.reduce((oldest, current) => {
+        if (!current.employeeHireDate || !oldest.employeeHireDate) {
+          return oldest;
+        }
+
+        const currentDate = new Date(current.employeeHireDate);
+        const oldestDate = new Date(oldest.employeeHireDate);
+
+        return currentDate < oldestDate ? current : oldest;
+      });
+      if (oldestEmployee && oldestEmployee.employeeHireDate) {
+        yearStart = DateTime.fromISO(oldestEmployee.employeeHireDate.toString()).year
+      }
+      const yearEnd = (new Date().getFullYear()) + 1 as number
+      const dateStart = `${yearStart}-01-01`
+      const dateEnd = `${yearEnd}-12-31`
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const assistService = new EmployeeService()
-      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false, true)
+      const assistResponse = await assistService.getVacationExcel(this.search, this.departmentId, this.positionId, dateStart, dateEnd, false, false)
       if (assistResponse.status === 201) {
         const blob = await assistResponse._data
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `${this.yearSelected} Vacations Report.xlsx`)
+        link.setAttribute('download', `Vacations Report.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

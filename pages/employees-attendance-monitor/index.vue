@@ -85,7 +85,6 @@
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
               :disabledDates="disabledNoPaymentDates" :showWeek="false">
             </Calendar>
-
           </div>
         </div>
 
@@ -120,6 +119,9 @@
                 data-v-6de6f350=""></path>
             </svg>
           </button>
+        </div>
+
+        <div class="box employees-excel-report-buttons">
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelAllAssistance">
             Detailed
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -136,8 +138,7 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
-            @click="getExcelIncidentSummaryPayRoll">
+          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcelIncidentSummaryPayRoll">
             Payroll
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -151,7 +152,6 @@
           <div></div>
           <div></div>
           <div></div>
-
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
             Detailed API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">

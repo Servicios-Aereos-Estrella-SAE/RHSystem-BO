@@ -125,6 +125,7 @@ export default defineComponent({
     workedActiveTime: '',
     canReadTimeWorked: false,
     canAddAssistManual: false,
+    canDeleteCheckAssist: false,
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
@@ -341,9 +342,11 @@ export default defineComponent({
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
+      this.canDeleteCheckAssist = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
+      this.canDeleteCheckAssist = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete-check-assist') ? true : false
     }
 
     this.periodSelected = new Date()
@@ -1150,5 +1153,8 @@ export default defineComponent({
         }
       }
     },
+    async onRefresh() {
+      await this.handlerPeriodChange()
+    }
   }
 })

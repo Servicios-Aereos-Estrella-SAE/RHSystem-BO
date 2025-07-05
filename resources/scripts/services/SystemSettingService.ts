@@ -166,7 +166,7 @@ export default class SystemSettingService {
       return false;
     }
     if (!systemSetting.systemSettingToleranceCountPerAbsence) {
-      console.error('Wrong tolerance count per absence');
+      console.error('Wrong tolerance count to delay');
       return false;
     }
 
