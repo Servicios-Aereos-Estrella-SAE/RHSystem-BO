@@ -697,18 +697,7 @@ export default defineComponent({
 
         const shiftExceptionService = new ShiftExceptionService()
         for await (const calendar of calendars) {
-          calendar.exceptions = []
-          if (calendar.hasExceptions) {
-            const shiftExceptionResponse = await shiftExceptionService.getByEmployee(employeeID, null, calendar.day, calendar.day)
-            calendar.exceptions = shiftExceptionResponse
-          }
-
-          const employeeCalendar = {
-            day: calendar.day,
-            assist: calendar,
-          } as AssistDayInterface
-
-          newEmployeeCalendar.push(employeeCalendar)
+          newEmployeeCalendar.push(calendar)
         }
         employee.calendar = newEmployeeCalendar
         this.setGeneralStatisticsData(employee, employee.calendar)

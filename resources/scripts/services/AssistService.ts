@@ -236,29 +236,4 @@ export default class AssistService {
 
     return responseRequest
   }
-
-  verifyCheckOutToday(checkAssist: AssistDayInterface) {
-    if (!checkAssist?.assist?.dateShift) {
-      return checkAssist
-    }
-    if (checkAssist.assist.checkInStatus === 'fault') {
-      return checkAssist
-    }
-    const hourStart = checkAssist.assist.dateShift.shiftTimeStart
-    const shiftActiveHours = checkAssist.assist.dateShift.shiftActiveHours
-    const day = checkAssist.day
-
-    const stringDate = `${day}T${hourStart}`
-    const start = DateTime.fromISO(stringDate, { zone: 'UTC-6' })
-    const end = start.plus({ hours: shiftActiveHours })
-
-    const now = DateTime.now().setZone('UTC-6')
-    if (end < now) {
-      if (checkAssist.assist.checkIn && !checkAssist.assist.checkOut) {
-        checkAssist.assist.checkInStatus = 'fault'
-      }
-    }
-
-    return checkAssist
-  }
 }
