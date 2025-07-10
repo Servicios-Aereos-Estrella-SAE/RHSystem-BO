@@ -136,12 +136,14 @@ export default defineComponent({
     employeesWithOutShift: [] as EmployeeInterface[],
     drawerEmployeeWithOutShift: false,
     canSeeConsecutiveFaults: false,
+    canSeeSwitchOptionGetAssist: false,
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     isReady: false,
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    getAssistFromSaveCalendarSwicht: true,
   }),
   computed: {
     isRootUser() {
@@ -327,6 +329,11 @@ export default defineComponent({
       return false
     },
   },
+  watch: {
+    getAssistFromSaveCalendarSwicht() {
+      this.handlerPeriodChange()
+    },
+  },
   created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
@@ -354,6 +361,7 @@ export default defineComponent({
     await this.setDepartmentPositionEmployeeList()
     this.setGraphsData()
     this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
+    this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -668,15 +676,23 @@ export default defineComponent({
       try {
         /*  const assistReq = await new AssistService().index(startDay, endDay, employeeID)
          const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[] */
-        const newEmployeeCalendar = [] as AssistDayInterface[]
-        const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
-        const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+        let employeeAssistCalendarReq
+        if (this.getAssistFromSaveCalendarSwicht) {
+          const newEmployeeCalendar = [] as AssistDayInterface[]
+          employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+          const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
 
-        for await (const calendar of calendars) {
-          newEmployeeCalendar.push(calendar)
+          for await (const calendar of calendars) {
+            newEmployeeCalendar.push(calendar)
+          }
+
+          employee.calendar = newEmployeeCalendar
+        } else {
+          const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
+          const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+          employee.calendar = employeeCalendar
         }
 
-        employee.calendar = newEmployeeCalendar
         if (this.visualizationMode?.value === 'fourteen') {
           employee.calendar = employee.calendar.filter(a => a.day <= endDayFourteen)
         }

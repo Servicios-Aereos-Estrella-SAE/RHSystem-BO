@@ -88,6 +88,12 @@
         </div>
 
         <div class="btns-group">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
             severity="success" :class="{ 'btn-info': employeesWithFaults.length > 0 }"
             @click="drawerEmployeeWithFaults = true">
@@ -138,7 +144,8 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcelIncidentSummaryPayRoll">
+          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+            @click="getExcelIncidentSummaryPayRoll">
             Payroll
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -166,7 +173,8 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcel('Incident Summary Payroll')">
+          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+            @click="getExcel('Incident Summary Payroll')">
             Payroll API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
