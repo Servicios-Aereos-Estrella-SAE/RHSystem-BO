@@ -215,16 +215,19 @@
           <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
             @onEmployeeContractSave="onEmployeeContractSave" />
         </Sidebar>
-
+        <Sidebar v-model:visible="drawerEmployeeSync" :closeOnEscape="true" header="Employee sync" position="right"
+          class="employees-sync" :showCloseIcon="true">
+          <employeeSyncList :employeesSync="employeesSync" />
+        </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
             @cancelDelete="onCancelEmployeeDelete" />
         </transition>
 
-        <transition name="page">
+        <!--  <transition name="page">
           <confirmRefuse v-if="drawerEmployeeSync" :actionType="'accept'" @confirmAccept="confirmSync"
             @cancelRefused="drawerEmployeeSync = false" />
-        </transition>
+        </transition> -->
       </NuxtLayout>
     </div>
   </div>
@@ -270,6 +273,15 @@
 
   .employee-proceeding-file-sidebar {
     width: 90% !important;
+    max-width: 90rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .employees-sync {
+    width: 20% !important;
     max-width: 90rem !important;
 
     @media screen and (max-width: $sm) {

@@ -520,5 +520,20 @@ export default class EmployeeService {
     return responseRequest
   }
 
+  async getBiometrics() {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/get-biometrics`, {
+        method: 'GET',
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
 }
 

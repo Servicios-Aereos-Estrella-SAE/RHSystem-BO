@@ -18,6 +18,7 @@ import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/E
 import PersonService from '~/resources/scripts/services/PersonService'
 import { DateTime } from 'luxon'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
 
 export default defineComponent({
   name: 'Employees',
@@ -69,7 +70,8 @@ export default defineComponent({
     canManageResponsibleRead: false,
     canManageBiotime: false,
     canManageAssignedRead: false,
-    currentEmployeeIsUser: false
+    currentEmployeeIsUser: false,
+    employeesSync: [] as EmployeeSyncInterface[],
   }),
   computed: {
     isRootUser() {
@@ -308,7 +310,13 @@ export default defineComponent({
       this.drawerEmployeePhotoForm = false
     },
     async syncEmployees() {
-      this.drawerEmployeeSync = true
+      const employeeService = new EmployeeService()
+      const employeeResponse = await employeeService.getBiometrics()
+      this.employeesSync = []
+      if (employeeResponse.status === 200) {
+        this.employeesSync = employeeResponse._data.data.employeesSync
+        this.drawerEmployeeSync = true
+      }
     },
     async confirmSync() {
       this.drawerEmployeeSync = false
