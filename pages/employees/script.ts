@@ -310,35 +310,14 @@ export default defineComponent({
       this.drawerEmployeePhotoForm = false
     },
     async syncEmployees() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       const employeeService = new EmployeeService()
       const employeeResponse = await employeeService.getBiometrics()
       this.employeesSync = []
       if (employeeResponse.status === 200) {
         this.employeesSync = employeeResponse._data.data.employeesSync
         this.drawerEmployeeSync = true
-      }
-    },
-    async confirmSync() {
-      this.drawerEmployeeSync = false
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      const employeeService = new EmployeeService()
-      const employeeResponse = await employeeService.synchronization()
-      if (employeeResponse.status === 201) {
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Synchronization employees',
-          detail: employeeResponse._data.message,
-          life: 5000,
-        })
-        await this.handlerSearchEmployee()
-      } else {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Synchronization employees',
-          detail: employeeResponse._data.message,
-          life: 5000,
-        })
       }
       myGeneralStore.setFullLoader(false)
     },
@@ -585,6 +564,9 @@ export default defineComponent({
       }
       return false
     },
+    onSaveSync() {
+      this.drawerEmployeeSync = false
+    }
   },
 })
 

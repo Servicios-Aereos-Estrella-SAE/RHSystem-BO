@@ -535,5 +535,26 @@ export default class EmployeeService {
     return responseRequest
   }
 
+
+  async synchronizationBySelection(employees: Array<any>) {
+    const formData = new FormData()
+    const headers = { ...this.GENERAL_HEADERS }
+    employees.forEach((employeeCode) => {
+      formData.append('employees[]', employeeCode)
+    })
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/synchronization/by-selection/employees`, {
+        headers,
+        method: 'POST',
+        body: formData,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
 }
 
