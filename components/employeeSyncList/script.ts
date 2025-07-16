@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
+import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   emits: ['onSaveSync'],
@@ -35,6 +36,8 @@ export default defineComponent({
       this.drawerEmployeeSync = true
     },
     async confirmSync() {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
       this.drawerEmployeeSync = false
       const employees = this.employeesSync
         .filter(employee => employee.checked)
@@ -67,6 +70,7 @@ export default defineComponent({
           life: 5000,
         })
       }
+      myGeneralStore.setFullLoader(false)
     }
   }
 })
