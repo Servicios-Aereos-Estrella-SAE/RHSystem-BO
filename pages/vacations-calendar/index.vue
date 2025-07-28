@@ -14,11 +14,17 @@
           <div class="filters">
             <div class="box head-employees-page">
               <div class="input-box">
-                <label for="vacation">
-                  Period
-                </label>
-                <Calendar v-if="isReady" v-model="periodSelected" view="year" dateFormat="yy"
-                  @update:modelValue="handlerPeriodChange" />
+                <label for="start-year">Start Year</label>
+                <Calendar v-if="isReady" v-model="periodSelectedStart" view="year" dateFormat="yy"
+                  @update:modelValue="handlerPeriodStartChange" :minDate="yearStartLimitDate"
+                  :maxDate="yearEndLimitDate" />
+              </div>
+
+              <div class="input-box">
+                <label for="end-year">End Year</label>
+                <Calendar v-if="isReady" v-model="periodSelectedEnd" view="year" dateFormat="yy"
+                  @update:modelValue="handlerPeriodEndChange" :minDate="yearStartLimitDate"
+                  :maxDate="yearEndLimitDate" />
               </div>
               <div class="input-search">
                 <!-- -->
@@ -89,10 +95,10 @@
           </div>
 
           <h2>
-            Vacations days on year
+            Vacations days on year {{ yearSelectedEnd }}
           </h2>
 
-          <CalendarView :year="yearSelected" :marked-days="filterVacations" marked-day-class="vacation"
+          <CalendarView :year="yearSelectedEnd" :marked-days="filterVacations" marked-day-class="vacation"
             @day-click="onShowCurrentVacation" />
 
         </div>

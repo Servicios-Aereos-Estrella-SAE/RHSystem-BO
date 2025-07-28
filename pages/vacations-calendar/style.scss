@@ -35,7 +35,7 @@
 
     .head-employees-page {
       display: grid;
-      grid-template-columns: 15rem repeat(3, auto) 12rem 12rem 12rem;
+      grid-template-columns: 10rem 10rem repeat(3, auto) 12rem 12rem 12rem;
       gap: 0.5rem;
 
       @media screen and (max-width: $desktop) {
