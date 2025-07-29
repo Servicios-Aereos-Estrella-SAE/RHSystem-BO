@@ -13,6 +13,7 @@ import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/Empl
 import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
+import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface';
 
 export default defineComponent({
   components: {
@@ -45,13 +46,16 @@ export default defineComponent({
     displayDateToCalendar: false as boolean,
     selectedEmployee: null as EmployeeInterface | null,
     filteredEmployees: [] as EmployeeInterface[],
-    shiftList: [] as EmployeeShiftInterface[],
+    shiftList: [] as ShiftInterface[],
     dateRestDayFrom: 'Work day' as string,
     employeeToSelectedName: '' as string,
     dateTo: '' as string,
     dateRestDayTo: '' as string,
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
     employeeShiftChangeChangeThisShift: false,
+    shiftTemp: null as ShiftInterface | null,
+    drawerShiftForm: false,
+    canCreateShift: false,
   }),
   computed: {
     selectedDate() {
@@ -62,7 +66,9 @@ export default defineComponent({
   watch: {
     'employeeShiftChange.employeeShiftChangeDateTo'(newValue, oldValue) {
       if (newValue !== oldValue) {
-        this.setShiftTo();
+        if (!this.employeeShiftChange.employeeShiftChangeId) {
+          this.setShiftTo();
+        }
       }
     },
     'employeeShiftChange.employeeShiftChangeChangeThisShift'(newValue, oldValue) {
@@ -73,10 +79,11 @@ export default defineComponent({
           this.employeeShiftChange.employeeShiftChangeDateTo = this.date
           this.employeeShiftChange.employeeIdTo = this.employee.employeeId
           this.selectedEmployee = this.employee
-          this.employeeShiftChange.shiftIdTo = null
-          this.setShiftTo();
+          if (!this.employeeShiftChange.employeeShiftChangeId) {
+            this.employeeShiftChange.shiftIdTo = null
+            this.setShiftTo();
+          }
         }
-
       }
     },
   },
@@ -122,6 +129,15 @@ export default defineComponent({
     if (!this.employeeShiftChange.employeeShiftChangeId) {
       this.handleTypeChange()
     }
+
+    const systemModuleSlug = 'shifts'
+    const permissions = await myGeneralStore.getAccess(systemModuleSlug)
+    if (myGeneralStore.isRoot) {
+      this.canCreateShift = true
+    } else {
+      this.canCreateShift = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
+    }
+
   },
   methods: {
     getNextPayThursday() {
@@ -153,6 +169,16 @@ export default defineComponent({
       const response = await new ShiftService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.data : []
       this.shiftList = list
+      if (this.employeeShiftChange.shiftIdTo) {
+        const existShift = this.shiftList.find(a => a.shiftId === this.employeeShiftChange.shiftIdTo)
+        if (!existShift) {
+          const shiftResponse = await new ShiftService().show(this.employeeShiftChange.shiftIdTo)
+          if (shiftResponse?.status === 200) {
+            this.shiftList.push(shiftResponse._data.data.shift)
+          }
+        }
+      }
+
     },
     async onSave() {
       this.submitted = true
@@ -318,5 +344,40 @@ export default defineComponent({
         this.setShiftTo()
       }
     },
+    addNewShift() {
+      const newShift: ShiftInterface = {
+        employees: [],
+        shiftId: null,
+        shiftName: "",
+        shiftDayStart: 0,
+        shiftTimeStart: "",
+        shiftActiveHours: 0,
+        shiftRestDays: "",
+        shiftAccumulatedFault: 1,
+        shiftCreatedAt: null,
+        shiftUpdatedAt: null,
+        shiftDeletedAt: null,
+        employee_count: undefined,
+        shiftTemp: 1,
+      }
+      this.shiftTemp = newShift
+      this.drawerShiftForm = true
+    },
+    onSaveShift(shift: ShiftInterface) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.shiftTemp = { ...shift }
+      const index = this.shiftList.findIndex((s: ShiftInterface) => s.shiftId === this.shiftTemp?.shiftId)
+      if (index !== -1) {
+        this.shiftList[index] = shift
+        this.$forceUpdate()
+      } else {
+        this.shiftList.unshift(shift)
+        this.$forceUpdate()
+      }
+      this.employeeShiftChange.shiftIdTo = this.shiftTemp.shiftId
+      myGeneralStore.setFullLoader(false)
+      this.drawerShiftForm = false
+    }
   }
 })
