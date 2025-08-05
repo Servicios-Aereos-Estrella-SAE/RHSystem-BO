@@ -123,6 +123,36 @@ export default defineComponent({
           for await (const file of proceedingFilesExpiring) {
             this.employeeProceedingFiles.push(file)
           }
+
+          const contractsExpired = employeeProceedingFileResponse._data.data.employeeProceedingFiles.contractsExpired
+
+          for await (const file of contractsExpired) {
+            const proceedingFile = {
+              proceedingFileName: file.employeeContractFolio,
+              proceedingFilePath: file.employeeContractFile,
+              proceedingFileExpirationAt: file.employeeContractEndDate,
+              person: file.employee.person,
+              isContract: true,
+            } as ProceedingFileInterface
+            this.employeeProceedingFiles.push(
+              proceedingFile
+            )
+          }
+
+          const contractsExpiring = employeeProceedingFileResponse._data.data.employeeProceedingFiles.contractsExpiring
+
+          for await (const file of contractsExpiring) {
+            const proceedingFile = {
+              proceedingFileName: file.employeeContractFolio,
+              proceedingFilePath: file.employeeContractFile,
+              proceedingFileExpirationAt: file.employeeContractEndDate,
+              person: file.employee.person,
+              isContract: true,
+            } as ProceedingFileInterface
+            this.employeeProceedingFiles.push(
+              proceedingFile
+            )
+          }
         }
       } else {
         this.$toast.add({

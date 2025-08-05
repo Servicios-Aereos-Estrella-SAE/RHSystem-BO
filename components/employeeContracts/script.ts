@@ -66,6 +66,7 @@ export default defineComponent({
         departmentId: null,
         positionId: null,
         payrollBusinessUnitId: null,
+        employeeContractActive: 1,
       }
       this.employeeContract = newEmployeeContract
       this.drawerEmployeeContractForm = true
