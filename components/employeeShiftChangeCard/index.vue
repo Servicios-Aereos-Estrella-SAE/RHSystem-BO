@@ -21,8 +21,9 @@
           v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)"
           class="employee">
           Change with
-          {{ employeeShiftChange.employeeTo.employeeFirstName }}
-          {{ employeeShiftChange.employeeTo.employeeLastName }}
+          {{ employeeShiftChange.employeeTo.person?.personFirstname }}
+          {{ employeeShiftChange.employeeTo.person?.personLastname }}
+          {{ employeeShiftChange.employeeTo.person?.personSecondLastname }}
         </div>
 
         <div v-if="employeeShiftChange.shiftTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0"

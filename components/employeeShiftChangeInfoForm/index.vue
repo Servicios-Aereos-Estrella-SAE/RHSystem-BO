@@ -70,14 +70,15 @@
             Employee To
           </label>
           <AutoComplete v-if="isNewEmployeeShiftChange" v-model="selectedEmployee"
-            :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+            :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
             :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect"
             class="uppercase" :disabled="!canManageUserResponsible">
             <template #option="employee">
               <div class="item-employee-filter-attendance-monitor">
                 <div class="name uppercase">
-                  {{ employee.option.employeeFirstName }}
-                  {{ employee.option.employeeLastName }}
+                  {{ employee.option.person?.personFirstname }}
+                  {{ employee.option.person?.personLastname }}
+                  {{ employee.option.person?.personSecondLastname }}
                 </div>
                 <div class="position-department">
                   {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}

@@ -102,7 +102,7 @@ export default defineComponent({
         const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('UTC-6').setLocale('en').toFormat('DDDD')
         this.dateTo = newDate
       }
-      this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.employeeFirstName} ${this.employeeShiftChange.employeeTo.employeeLastName}`
+      this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.person?.personFirstname} ${this.employeeShiftChange.employeeTo.person?.personLastname} ${this.employeeShiftChange.employeeTo.person?.personSecondLastname}`
       if (this.employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1) {
         this.dateRestDayTo = 'Rest day'
       } else {
