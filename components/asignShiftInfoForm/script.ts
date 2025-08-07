@@ -16,7 +16,7 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props, {emit}) {
+  setup(props, { emit }) {
     const config = useRuntimeConfig();
     const availableShifts = ref<ShiftInterface[]>([]);
     const selectedShift = ref<ShiftInterface | null>(null);
@@ -57,6 +57,7 @@ export default defineComponent({
 
               await axios.post(`${config.public.BASE_API_PATH}/employee_shifts`, requestBody);
             } catch (error) {
+
               console.error(`Failed to assign shift to employee ${employee.employeeFirstName} ${employee.employeeLastName}:`, error);
             }
           }

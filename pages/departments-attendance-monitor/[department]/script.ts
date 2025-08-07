@@ -695,7 +695,7 @@ export default defineComponent({
           const employeeNoShift = employee?.employee || null
 
           if (employeeNoShift) {
-            const employeeNoShiftName = `${employeeNoShift.employeeFirstName} ${employeeNoShift.employeeLastName}`
+            const employeeNoShiftName = `${employeeNoShift.person?.personFirstname} ${employeeNoShift.person?.personLastname} ${employeeNoShift.person?.personSecondLastname}`
             const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
             console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
             this.employeesWithOutShift.push(employeeNoShift)
