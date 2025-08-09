@@ -24,6 +24,7 @@ export default defineComponent({
     canRemoveShiftAssigned: { type: Boolean, required: true },
     startDateLimit: { type: Date, required: true },
     clickOnDelete: { type: Function, default: null },
+    withOutLimitDays: { type: Boolean, required: true },
   },
   data: () => ({
     employeeCalendar: null as AssistDayInterface | null,
@@ -109,7 +110,7 @@ export default defineComponent({
     },
     validateAccess() {
       const myGeneralStore = useMyGeneralStore()
-      if (myGeneralStore.isRoot) {
+      if (myGeneralStore.isRoot || this.withOutLimitDays) {
         this.canManagementShift = true
       } else {
         this.validateCanUpdateShift()
@@ -131,14 +132,20 @@ export default defineComponent({
       }
 
       const startLimit = DateTime.fromJSDate(this.startDateLimit, { zone: 'utc' }).startOf('day')
-
       if (selectedDate < startLimit) {
+        this.canManagementShift = false
+        return
+      }
+
+      const today = DateTime.now().setZone('utc').startOf('day');
+      if (selectedDate > today) {
         this.canManagementShift = false
         return
       }
 
       if ((this.employee.employeeId === this.sessionUser.person?.employee?.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
         this.canManagementShift = false
+
         return
       }
 
