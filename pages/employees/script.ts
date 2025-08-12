@@ -18,6 +18,7 @@ import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/E
 import PersonService from '~/resources/scripts/services/PersonService'
 import { DateTime } from 'luxon'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
 
 export default defineComponent({
   name: 'Employees',
@@ -69,7 +70,8 @@ export default defineComponent({
     canManageResponsibleRead: false,
     canManageBiotime: false,
     canManageAssignedRead: false,
-    currentEmployeeIsUser: false
+    currentEmployeeIsUser: false,
+    employeesSync: [] as EmployeeSyncInterface[],
   }),
   computed: {
     isRootUser() {
@@ -308,29 +310,14 @@ export default defineComponent({
       this.drawerEmployeePhotoForm = false
     },
     async syncEmployees() {
-      this.drawerEmployeeSync = true
-    },
-    async confirmSync() {
-      this.drawerEmployeeSync = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const employeeService = new EmployeeService()
-      const employeeResponse = await employeeService.synchronization()
-      if (employeeResponse.status === 201) {
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Synchronization employees',
-          detail: employeeResponse._data.message,
-          life: 5000,
-        })
-        await this.handlerSearchEmployee()
-      } else {
-        this.$toast.add({
-          severity: 'error',
-          summary: 'Synchronization employees',
-          detail: employeeResponse._data.message,
-          life: 5000,
-        })
+      const employeeResponse = await employeeService.getBiometrics()
+      this.employeesSync = []
+      if (employeeResponse.status === 200) {
+        this.employeesSync = employeeResponse._data.data.employeesSync
+        this.drawerEmployeeSync = true
       }
       myGeneralStore.setFullLoader(false)
     },
@@ -577,6 +564,9 @@ export default defineComponent({
       }
       return false
     },
+    onSaveSync() {
+      this.drawerEmployeeSync = false
+    }
   },
 })
 
