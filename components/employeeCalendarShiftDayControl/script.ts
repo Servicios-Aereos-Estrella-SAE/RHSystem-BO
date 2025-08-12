@@ -61,13 +61,11 @@ export default defineComponent({
       if (!this.canManageShiftChanges) {
         return false
       }
-
       if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
         if (!this.employeeCalendar?.assist.hasExceptions && !this.employeeCalendar?.assist.isVacationDate && !this.employeeCalendar?.assist.isWorkDisabilityDate) {
           return true
         }
       }
-
       return false
     },
     displayAcceptEditShiftButton() {
@@ -133,12 +131,6 @@ export default defineComponent({
 
       const startLimit = DateTime.fromJSDate(this.startDateLimit, { zone: 'utc' }).startOf('day')
       if (selectedDate < startLimit) {
-        this.canManagementShift = false
-        return
-      }
-
-      const today = DateTime.now().setZone('utc').startOf('day');
-      if (selectedDate > today) {
         this.canManagementShift = false
         return
       }

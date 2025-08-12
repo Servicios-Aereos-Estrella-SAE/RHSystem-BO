@@ -27,6 +27,7 @@ export default defineComponent({
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canManageUserResponsible: { type: Boolean, required: true },
+    canManageToPreviousDays: { type: Boolean, required: true },
   },
   data: () => ({
     exceptionTypeList: [] as ExceptionTypeInterface[],

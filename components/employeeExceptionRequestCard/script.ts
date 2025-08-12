@@ -10,16 +10,17 @@ export default defineComponent({
     exceptionRequest: { type: Object as PropType<ExceptionRequestInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
     clickOnDelete: { type: Function, default: null },
-
     clickOnEditException: { type: Function, default: null },
     clickOnDeleteException: { type: Function, default: null },
     isDeleted: { type: Boolean, required: true },
     canManageException: { type: Boolean, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     exceptionTypeList: [],
     isReady: false,
+    canManageCurrentDay: false,
   }),
   computed: {
     calendarDay() {
@@ -34,6 +35,18 @@ export default defineComponent({
   },
   async mounted() {
     await this.fetchExceptionTypes()
+    const requestedDate = DateTime
+      .fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
+      .startOf('day')
+
+    const limitDate = DateTime
+      .fromJSDate(this.startDateLimit)
+      .toUTC()
+      .startOf('day')
+
+    if (requestedDate.toMillis() >= limitDate.toMillis()) {
+      this.canManageCurrentDay = true
+    }
   },
   methods: {
     handlerClickOnEdit() {

@@ -42,7 +42,7 @@
           <Dropdown v-model="exceptionRequest.exceptionTypeId" :options="exceptionTypeList"
             optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
             class="w-full md:w-14rem" @update:model-value="handleTypeChange"
-            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible" />
+            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Type is
             required.</small>
         </div>
@@ -51,7 +51,7 @@
             Description
           </label>
           <Textarea v-model="exceptionRequest.exceptionRequestDescription" rows="5" cols="30"
-            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible" />
+            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestDescription">
             Description is required.
           </small>
@@ -62,7 +62,8 @@
           </label>
           <Calendar v-model="exceptionRequest.requestedDate" dateFormat="yy-mm-dd" placeholder="Select date"
             class="w-full md:w-14rem"
-            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible" />
+            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay"
+            :minDate="startDateLimit" />
           <small class="p-error" v-if="submitted && !exceptionRequest.requestedDate">
             Requested date is required.
           </small>
@@ -72,7 +73,7 @@
             Check in time
           </label>
           <Calendar v-model="exceptionRequest.exceptionRequestCheckInTime" timeOnly
-            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible" />
+            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckInTime">
             Check in time is required.
           </small>
@@ -82,14 +83,14 @@
             Check out time
           </label>
           <Calendar v-model="exceptionRequest.exceptionRequestCheckOutTime" timeOnly
-            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible" />
+            :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckOutTime">
             Check out time is required.
           </small>
         </div>
         <div class="box-tools-footer">
           <Button
-            v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending' && canManageUserResponsible"
+            v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending' && canManageUserResponsible && canManageCurrentDay"
             class="btn btn-block btn-primary" @click="onSave">
             Save
           </Button>

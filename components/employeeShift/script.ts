@@ -108,6 +108,8 @@ export default defineComponent({
   created() {
   },
   async mounted() {
+
+
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
