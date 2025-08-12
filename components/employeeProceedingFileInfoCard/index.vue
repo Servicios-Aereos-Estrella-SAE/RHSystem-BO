@@ -40,6 +40,10 @@
             </span>
           </div>
         </div>
+        <div class="status capitalize">
+          <div class="dot" :class="{ active: !!employeeProceedingFile.proceedingFile.proceedingFileActive }"></div>
+          {{ employeeProceedingFile.proceedingFile.proceedingFileActive ? 'Active' : 'Inactive' }}
+        </div>
       </div>
     </div>
   </div>
