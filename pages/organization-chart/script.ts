@@ -70,7 +70,7 @@ export default defineComponent({
       expandedKeys.value = {}
     }
 
-    const fetchData  = async () => {
+    const fetchData = async () => {
       try {
         const response = await new DepartmentService().getSearchOrganization(search.value, currentPage.value, rowsPerPage.value)
         const department = response._data.data.departments[0]
@@ -189,7 +189,7 @@ export default defineComponent({
       const position: PositionInterface = dpNode.data as PositionInterface
       const nodes: IChartNode[] = []
 
-      if (dpNode.meta.node_type === 'department'){
+      if (dpNode.meta.node_type === 'department') {
         department.departments?.forEach((depto: DepartmentInterface) => {
           const chartNode: IChartNode = {
             key: Math.round(Math.random() * new Date().getTime()),
@@ -245,7 +245,7 @@ export default defineComponent({
         })
       }
 
-      if (dpNode.meta.node_type === 'position'){
+      if (dpNode.meta.node_type === 'position') {
         position.positions?.forEach((pos: PositionInterface) => {
           const chartNode: IChartNode = {
             key: Math.round(Math.random() * new Date().getTime()),
@@ -277,12 +277,12 @@ export default defineComponent({
     const getNodeNamePrefix = (dpNode: PositionInterface | DepartmentInterface, objType: string) => {
       let name = ''
 
-      if (objType === 'department'){
+      if (objType === 'department') {
         const department = dpNode as DepartmentInterface
         name = department.departmentName
       }
 
-      if (objType === 'position'){
+      if (objType === 'position') {
         const position = dpNode as PositionInterface
         name = position.positionName
       }
@@ -316,10 +316,10 @@ export default defineComponent({
         }
 
         const name = splitted.map((text: string, i: number) => i > 0 ? text : '').join(' ')
-        const employeeNames = position.employees?.map(emp => `- ${emp.employeeFirstName} ${emp.employeeLastName}`).join('<br />')
+        const employeeNames = position.employees?.map(emp => `- ${emp.person?.personFirstname} ${emp.person?.personLastname} ${emp.person?.personSecondLastname}`).join('<br />')
         const fullNodeName = `<div class="node-label-name">${position.positionName}</div>${employeeNames ? `<div class="node-sublabel">${employeeNames}</div>` : ''}`
 
-        const employeChartNames = position.employees?.map(emp => `${emp.employeeFirstName} ${emp.employeeLastName}`).join('<br />')
+        const employeChartNames = position.employees?.map(emp => `${emp.person?.personFirstname} ${emp.person?.personLastname} ${emp.person?.personSecondLastname}`).join('<br />')
         const clearedFullNodeName = `<div class="node-label-name">${name}</div>${employeChartNames ? `<div class="node-sublabel">${employeChartNames}</div>` : ''}`
 
         return { clear_name: clearedFullNodeName, name: fullNodeName }
@@ -366,7 +366,7 @@ export default defineComponent({
         expandedKeys.value[node.key] = true;
 
         for (let child of node.children) {
-            expandNode(child);
+          expandNode(child);
         }
       }
     }
@@ -400,8 +400,8 @@ export default defineComponent({
           }
 
           console.log('🚀 -----------------------------------------🚀')
-            console.log('🚀 ~ handlerEditNode ~ position:', position)
-            console.log('🚀 -----------------------------------------🚀')
+          console.log('🚀 ~ handlerEditNode ~ position:', position)
+          console.log('🚀 -----------------------------------------🚀')
 
           displayPositionSidebarForm.value = true
         }

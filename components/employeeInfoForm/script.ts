@@ -398,15 +398,16 @@ export default defineComponent({
       }
 
 
-      // convert employee last name to last name and second last name
-      const lastnames = this.employee.employeeLastName.split(' ')
+
+      const lastname = this.employee.employeeLastName
+      const secondLastname = this.employee.employeeSecondLastName
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
 
       const person: PeopleInterface = {
         personId: this.employee.person?.personId ?? null,
         personFirstname: this.employee.employeeFirstName,
-        personLastname: lastnames[0],
-        personSecondLastname: lastnames.length > 1 ? lastnames[1] : '',
+        personLastname: lastname,
+        personSecondLastname: secondLastname,
         personGender: this.employee.person?.personGender ?? null,
         personBirthday: this.convertToDateTime(personBirthday),
         personPhone: this.employee.person?.personPhone ?? null,

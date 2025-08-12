@@ -198,7 +198,10 @@ export default class EmployeeService {
       console.error('Wrong employee last name');
       return false;
     }
-
+    if (!employee.employeeSecondLastName) {
+      console.error('Wrong employee second last name');
+      return false;
+    }
     if (!employee.employeeTypeId) {
       console.error('Wrong employee type id');
       return false;
