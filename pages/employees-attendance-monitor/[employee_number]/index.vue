@@ -83,6 +83,12 @@
         </div>
 
         <div class="employee-attendance-head-tools">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <div v-if="visualizationMode">
             <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
               Vacations

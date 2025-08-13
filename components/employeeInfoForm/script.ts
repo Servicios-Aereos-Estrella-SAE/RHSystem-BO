@@ -187,7 +187,14 @@ export default defineComponent({
           this.positions.push(this.employee.position)
         }
       }
+      const myGeneralStore = useMyGeneralStore()
+      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+      this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+      if (this.canManageUserResponsible && !this.canUpdate) {
+        this.canManageUserResponsible = false
+      }
     } else {
+      this.canManageUserResponsible = true
       this.employee.employeeAssistDiscriminator = 0
       this.employee.employeeIgnoreConsecutiveAbsences = 0
       const employeeType = this.employeeTypes.find(type => type.employeeTypeSlug === 'employee')
@@ -200,18 +207,13 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-    const myGeneralStore = useMyGeneralStore()
-    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
-    if (this.canManageUserResponsible && !this.canUpdate) {
-      this.canManageUserResponsible = false
-    }
+
     this.isReady = true
   },
   methods: {
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
-      this.positions = await positionService.getPositionsDepartment(departmentId)
+      this.positions = await positionService.getPositionsDepartment(departmentId, true)
     },
     async getDepartments() {
       let response = null

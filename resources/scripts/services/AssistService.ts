@@ -1,3 +1,5 @@
+import { DateTime } from "luxon"
+import type { AssistDayInterface } from "../interfaces/AssistDayInterface"
 import type { AssistInterface } from "../interfaces/AssistInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 
@@ -210,6 +212,28 @@ export default class AssistService {
       })
     } catch (error) {
     }
+    return responseRequest
+  }
+
+  async getFlatList(
+    employeeId: number,
+    dateStart: string | Date,
+    dateEnd: string | Date
+  ) {
+    let responseRequest: any = null
+    try {
+      const headers = { ...this.GENERAL_HEADERS }
+      const query = { dateStart, dateEnd, employeeId }
+
+      await $fetch(`${this.API_PATH}/v1/assists/get-flat-list`, {
+        headers,
+        query,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+
     return responseRequest
   }
 }

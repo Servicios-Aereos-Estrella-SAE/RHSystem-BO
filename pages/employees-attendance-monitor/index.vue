@@ -90,6 +90,12 @@
         </div>
 
         <div class="head-ea-bts-group">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <Button v-if="displayConsecutiveFaultsBtn" class="btn" :class="{ 'btn-info': employeesWithFaults.length > 0 }"
             severity="success" @click="drawerEmployeeWithFaults = true">
             Consecutive Faults

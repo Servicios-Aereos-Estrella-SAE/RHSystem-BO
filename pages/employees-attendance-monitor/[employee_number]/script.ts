@@ -15,6 +15,9 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface'
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService'
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
+import HolidayService from '~/resources/scripts/services/HolidayService'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -126,6 +129,7 @@ export default defineComponent({
     canReadTimeWorked: false,
     canAddAssistManual: false,
     canDeleteCheckAssist: false,
+    canSeeSwitchOptionGetAssist: false,
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
@@ -141,7 +145,8 @@ export default defineComponent({
     endDay: '',
     canSync: false,
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    getAssistFromSaveCalendarSwicht: true,
   }),
   computed: {
     isRoot() {
@@ -319,6 +324,11 @@ export default defineComponent({
       return photoPath
     }
   },
+  watch: {
+    getAssistFromSaveCalendarSwicht() {
+      this.handlerPeriodChange()
+    },
+  },
   created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
@@ -339,16 +349,19 @@ export default defineComponent({
     this.canSync = false
     const systemModuleSlug = firstSegment
     this.canSync = await myGeneralStore.hasAccess(systemModuleSlug, 'sync-assist')
+
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
       this.canDeleteCheckAssist = true
+      this.canSeeSwitchOptionGetAssist = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
       this.canDeleteCheckAssist = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete-check-assist') ? true : false
-    }
+      this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
 
+    }
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange()
 
@@ -569,9 +582,21 @@ export default defineComponent({
       }
 
       const employeeID = this.employee?.employeeId || 0
-      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-      this.employeeCalendar = employeeCalendar
+      if (this.getAssistFromSaveCalendarSwicht) {
+        const newEmployeeCalendar = [] as AssistDayInterface[]
+        const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+        const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+        for await (let calendar of calendars) {
+          newEmployeeCalendar.push(calendar)
+        }
+
+        this.employeeCalendar = newEmployeeCalendar
+      } else {
+        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        this.employeeCalendar = employeeCalendar
+      }
       if (this.employeeCalendar.length > 0) {
         this.employeeCalendar.pop()
       }

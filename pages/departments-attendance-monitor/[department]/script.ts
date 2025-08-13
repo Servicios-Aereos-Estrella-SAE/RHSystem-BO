@@ -19,6 +19,8 @@ import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/As
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService';
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
 
 export default defineComponent({
   name: 'AttendanceMonitorByDepartment',
@@ -131,11 +133,13 @@ export default defineComponent({
     employeesWithOutShift: [] as EmployeeInterface[],
     drawerEmployeeWithOutShift: false,
     canSeeConsecutiveFaults: false,
+    canSeeSwitchOptionGetAssist: false,
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    getAssistFromSaveCalendarSwicht: true,
   }),
   computed: {
     weeklyStartDay() {
@@ -318,6 +322,11 @@ export default defineComponent({
       return false
     },
   },
+  watch: {
+    getAssistFromSaveCalendarSwicht() {
+      this.handlerPeriodChange()
+    },
+  },
   created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
@@ -346,6 +355,7 @@ export default defineComponent({
     await this.init()
 
     this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
+    this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -687,11 +697,26 @@ export default defineComponent({
       }
       const employeeID = employee?.employee?.employeeId || 0
       try {
-        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-        employee.calendar = employeeCalendar
+        /*  const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[] */
+        let employeeAssistCalendarReq
+        if (this.getAssistFromSaveCalendarSwicht) {
+          const newEmployeeCalendar = [] as AssistDayInterface[]
+          employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+          const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+          for await (const calendar of calendars) {
+            newEmployeeCalendar.push(calendar)
+          }
+          employee.calendar = newEmployeeCalendar
+        } else {
+          const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
+          const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+          employee.calendar = employeeCalendar
+        }
+
         this.setGeneralStatisticsData(employee, employee.calendar)
-        if (assistReq.status === 400) {
+        if (employeeAssistCalendarReq.status === 400) {
           const employeeNoShift = employee?.employee || null
 
           if (employeeNoShift) {
