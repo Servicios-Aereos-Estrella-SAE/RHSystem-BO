@@ -19,7 +19,7 @@
       </Button>
     </div>
     <div v-else class="form-date">
-      <Calendar v-model="shiftException.shiftExceptionsDate" dateFormat="yy-mm-dd" />
+      <Calendar v-model="shiftException.shiftExceptionsDate" dateFormat="yy-mm-dd" :minDate="startDateLimit" />
       <Button v-if="canManageUserResponsible" class="btn" @click="handlerClickOnSave()"
         :disabled="!canManageVacation || isDeleted">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -93,7 +93,7 @@
           </label>
           <Calendar v-if="isNewWorkDisabilityPeriod" v-model="workDisabilityPeriod.workDisabilityPeriodStartDate"
             dateFormat="yy-mm-dd" placeholder="Select date range" class="w-full md:w-14rem"
-            :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" />
+            :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" :minDate="startDateLimit" />
           <div v-else class="period-applied">
             <div class="period-applied-date">
               <div class="icon">
@@ -131,7 +131,8 @@
           </small>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="!isNewWorkDisabilityPeriod && canManageWorkDisabilities && canManageUserResponsible"
+          <Button
+            v-if="!isNewWorkDisabilityPeriod && canManageWorkDisabilities && canManageUserResponsible && canManageCurrentPeriod"
             class="btn btn-block" @click="addNewExpense">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -164,7 +165,8 @@
               :click-on-delete="() => { onDeleteExpense(workDisabilityPeriodExpense) }"
               :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
               :canManageWorkDisabilities="canManageWorkDisabilities"
-              :canManageUserResponsible="canManageUserResponsible" />
+              :canManageUserResponsible="canManageUserResponsible"
+              :date="workDisabilityPeriod.workDisabilityPeriodStartDate" :startDateLimit="startDateLimit" />
           </div>
         </div>
         <div v-else class="work-disability-period-expenses-wrapper">
@@ -177,7 +179,7 @@
           <employeeWorkDisabilityPeriodExpenseInfoForm :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
             :canManageWorkDisabilities="canManageWorkDisabilities"
             :workDisabilityPeriodExpense="workDisabilityPeriodExpense" :workDisabilityPeriod="workDisabilityPeriod"
-            :employee="employee" @onWorkDisabilityPeriodExpenseSave="onSaveExpense"
+            :employee="employee" :startDateLimit="startDateLimit" @onWorkDisabilityPeriodExpenseSave="onSaveExpense"
             :canManageUserResponsible="canManageUserResponsible" />
         </Sidebar>
         <transition name="page">

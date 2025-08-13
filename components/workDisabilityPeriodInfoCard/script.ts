@@ -17,6 +17,7 @@ export default defineComponent({
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
     onlySeeInfo: { type: Boolean, required: false },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     isReady: false,
@@ -44,6 +45,21 @@ export default defineComponent({
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
     await this.setSessionUser()
     await this.validateDisabilityDateRange()
+    if (this.canManageCurrentPeriod) {
+      const workDisabilityPeriodStartDate = DateTime
+        .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate, { zone: 'utc' })
+        .startOf('day')
+
+      const limitDate = DateTime
+        .fromJSDate(this.startDateLimit)
+        .toUTC()
+        .startOf('day')
+      if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+        this.canManageCurrentPeriod = true
+      } else {
+        this.canManageCurrentPeriod = false
+      }
+    }
   },
   methods: {
     async setSessionUser() {

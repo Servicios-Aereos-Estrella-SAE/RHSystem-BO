@@ -359,12 +359,21 @@ export default defineComponent({
   },
   methods: {
     getStartPeriodDay() {
-      const datePay = this.getNextPayThursday()
-      const payDate = DateTime.fromJSDate(datePay).startOf('day')
-      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
-      const thursday = startOfWeek.plus({ days: 3 })
-      const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-      this.startDateLimit = startLimit.toJSDate()
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
     },
     async getEmployee() {
       const employeCode = this.$route.params.employee_number

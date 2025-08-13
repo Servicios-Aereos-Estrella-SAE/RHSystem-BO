@@ -4,7 +4,6 @@ import type { PropType } from 'vue'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import Tooltip from 'primevue/tooltip';
 import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface';
-import { isValid } from 'date-fns';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
 import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
@@ -22,6 +21,7 @@ export default defineComponent({
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     onRefresh: { type: Function, default: null },
     canDeleteCheckAssist: { type: Boolean, default: false, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     commentsSidebar: false as boolean,
@@ -30,7 +30,8 @@ export default defineComponent({
     hasNotes: false,
     showChecksList: false,
     drawerCheckAssistDelete: false as boolean,
-    assistId: null as number | null
+    assistId: null as number | null,
+    canDeletePreviousAssist: false
   }),
   computed: {
     dateYear() {
@@ -187,6 +188,19 @@ export default defineComponent({
       if (this.employeeShiftChangesList.length > 0) {
         this.hasNotes = this.employeeShiftChangesList[0].employeeShiftChangeNote ? true : false;
       }
+    }
+    const workDisabilityPeriodStartDate = DateTime
+      .fromISO(this.checkAssist.day, { zone: 'utc' })
+      .startOf('day')
+
+    const limitDate = DateTime
+      .fromJSDate(this.startDateLimit)
+      .toUTC()
+      .startOf('day')
+    if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+      this.canDeletePreviousAssist = true
+    } else {
+      this.canDeletePreviousAssist = false
     }
   },
   methods: {

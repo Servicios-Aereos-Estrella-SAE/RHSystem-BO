@@ -36,16 +36,19 @@ export default defineComponent({
   async mounted() {
     await this.fetchExceptionTypes()
     const requestedDate = DateTime
-      .fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
+      .fromISO(this.exceptionRequest.requestedDate)
+      .setZone('local')
       .startOf('day')
 
     const limitDate = DateTime
       .fromJSDate(this.startDateLimit)
-      .toUTC()
+      .setZone('local')
       .startOf('day')
 
-    if (requestedDate.toMillis() >= limitDate.toMillis()) {
-      this.canManageCurrentDay = true
+    if (requestedDate.isValid && limitDate.isValid) {
+      if (requestedDate.toISODate()! >= limitDate.toISODate()!) {
+        this.canManageCurrentDay = true
+      }
     }
   },
   methods: {

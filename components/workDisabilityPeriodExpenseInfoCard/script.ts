@@ -13,6 +13,8 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    date: { type: String, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     isReady: false,
@@ -22,6 +24,21 @@ export default defineComponent({
   },
   async mounted() {
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
+    if (this.canManageCurrentPeriod) {
+      const workDisabilityPeriodStartDate = DateTime
+        .fromISO(this.date, { zone: 'utc' })
+        .startOf('day')
+
+      const limitDate = DateTime
+        .fromJSDate(this.startDateLimit)
+        .toUTC()
+        .startOf('day')
+      if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+        this.canManageCurrentPeriod = true
+      } else {
+        this.canManageCurrentPeriod = false
+      }
+    }
   },
   methods: {
     getDate(date: string) {

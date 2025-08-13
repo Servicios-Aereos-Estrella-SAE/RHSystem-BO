@@ -28,6 +28,7 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     workDisabilityTypeList: [] as WorkDisabilityTypeInterface[],
@@ -57,6 +58,7 @@ export default defineComponent({
     },
   },
   async mounted() {
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
@@ -88,6 +90,21 @@ export default defineComponent({
       const workDisabilityPeriodResponse = await workDisabilityPeriodService.show(this.workDisabilityPeriod.workDisabilityPeriodId)
       if (workDisabilityPeriodResponse.status === 200) {
         this.workDisabilityPeriodExpensesList = workDisabilityPeriodResponse._data.data.workDisabilityPeriod.workDisabilityPeriodExpenses
+      }
+      if (this.canManageCurrentPeriod) {
+        const workDisabilityPeriodStartDate = DateTime
+          .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate, { zone: 'utc' })
+          .startOf('day')
+
+        const limitDate = DateTime
+          .fromJSDate(this.startDateLimit)
+          .toUTC()
+          .startOf('day')
+        if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+          this.canManageCurrentPeriod = true
+        } else {
+          this.canManageCurrentPeriod = false
+        }
       }
     }
     let hasAccess = false

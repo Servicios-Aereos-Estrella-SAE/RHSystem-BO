@@ -144,6 +144,7 @@ export default defineComponent({
       }
     }
 
+
     this.setMinDate(isVacation)
     if (this.exceptionRequest.exceptionRequestId) {
       const requestedDate = DateTime
