@@ -190,12 +190,11 @@ export default defineComponent({
       }
     }
     const workDisabilityPeriodStartDate = DateTime
-      .fromISO(this.checkAssist.day, { zone: 'utc' })
+      .fromISO(this.checkAssist.day)
       .startOf('day')
 
     const limitDate = DateTime
       .fromJSDate(this.startDateLimit)
-      .toUTC()
       .startOf('day')
     if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
       this.canDeletePreviousAssist = true

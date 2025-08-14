@@ -123,13 +123,13 @@ export default defineComponent({
         return
       }
 
-      const selectedDate = DateTime.fromISO(this.employeeCalendarAssist.day, { zone: 'utc' }).startOf('day')
+      const selectedDate = DateTime.fromISO(this.employeeCalendarAssist.day).startOf('day')
 
       if (!selectedDate.isValid) {
         return
       }
 
-      const startLimit = DateTime.fromJSDate(this.startDateLimit, { zone: 'utc' }).startOf('day')
+      const startLimit = DateTime.fromJSDate(this.startDateLimit).startOf('day')
       if (selectedDate < startLimit) {
         this.canManagementShift = false
         return

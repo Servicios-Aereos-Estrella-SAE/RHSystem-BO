@@ -111,7 +111,7 @@ export default defineComponent({
           if (authUser.role.roleManagementDays) {
             const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
             const shiftExceptionsDate = DateTime
-              .fromFormat(this.shiftExceptionsDate, 'LLLL dd, yyyy',)
+              .fromFormat(this.shiftExceptionsDate, 'LLLL dd, yyyy')
               .startOf('day');
 
             const limitDate = DateTime

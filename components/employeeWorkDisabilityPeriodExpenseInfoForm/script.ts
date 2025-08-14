@@ -49,12 +49,11 @@ export default defineComponent({
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
     if (this.canManageCurrentPeriod) {
       const workDisabilityPeriodStartDate = DateTime
-        .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate, { zone: 'utc' })
+        .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate)
         .startOf('day')
 
       const limitDate = DateTime
         .fromJSDate(this.startDateLimit)
-        .toUTC()
         .startOf('day')
       if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
         this.canManageCurrentPeriod = true

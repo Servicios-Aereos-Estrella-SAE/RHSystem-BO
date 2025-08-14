@@ -37,18 +37,14 @@ export default defineComponent({
     await this.fetchExceptionTypes()
     const requestedDate = DateTime
       .fromISO(this.exceptionRequest.requestedDate)
-      .setZone('local')
       .startOf('day')
 
     const limitDate = DateTime
       .fromJSDate(this.startDateLimit)
-      .setZone('local')
       .startOf('day')
 
-    if (requestedDate.isValid && limitDate.isValid) {
-      if (requestedDate.toISODate()! >= limitDate.toISODate()!) {
-        this.canManageCurrentDay = true
-      }
+    if (requestedDate.toMillis() >= limitDate.toMillis()) {
+      this.canManageCurrentDay = true
     }
   },
   methods: {

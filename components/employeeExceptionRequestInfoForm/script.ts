@@ -148,12 +148,11 @@ export default defineComponent({
     this.setMinDate(isVacation)
     if (this.exceptionRequest.exceptionRequestId) {
       const requestedDate = DateTime
-        .fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
+        .fromISO(this.exceptionRequest.requestedDate)
         .startOf('day')
 
       const limitDate = DateTime
         .fromJSDate(this.startDateLimit)
-        .toUTC()
         .startOf('day')
 
       if (requestedDate.toMillis() >= limitDate.toMillis()) {

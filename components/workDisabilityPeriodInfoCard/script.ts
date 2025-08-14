@@ -46,15 +46,16 @@ export default defineComponent({
     await this.setSessionUser()
     await this.validateDisabilityDateRange()
     if (this.canManageCurrentPeriod) {
+      if (this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
+
+      }
       const workDisabilityPeriodStartDate = DateTime
         .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate, { zone: 'utc' })
-        .startOf('day')
 
       const limitDate = DateTime
         .fromJSDate(this.startDateLimit)
-        .toUTC()
-        .startOf('day')
-      if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+
+      if (workDisabilityPeriodStartDate.isValid && limitDate.isValid && workDisabilityPeriodStartDate.toISODate() >= limitDate.toISODate()) {
         this.canManageCurrentPeriod = true
       } else {
         this.canManageCurrentPeriod = false
