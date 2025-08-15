@@ -369,7 +369,7 @@ export default defineComponent({
     async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
-        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
+        const employeeResponse = await new EmployeeService().getByCode(employeCode.toString())
         if (employeeResponse?.status === 200) {
           const employee = employeeResponse._data.data.employee
           this.employee = employee

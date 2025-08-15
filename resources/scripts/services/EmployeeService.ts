@@ -146,7 +146,7 @@ export default class EmployeeService {
     }
   }
 
-  async getByCode(code: number) {
+  async getByCode(code: number | string) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     try {
