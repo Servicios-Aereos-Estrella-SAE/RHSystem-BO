@@ -141,7 +141,14 @@ export default defineComponent({
     endDay: '',
     canSync: false,
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    canManageShifts: false,
+    drawerShifts: false as boolean,
+    canManageVacation: false as boolean,
+    canManageExceptionRequest: false as boolean,
+    canReadOnlyWorkDisabilities: false as boolean,
+    canManageWorkDisabilities: false as boolean,
+    canUpdate: false as boolean,
   }),
   computed: {
     isRoot() {
@@ -354,7 +361,12 @@ export default defineComponent({
 
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
-
+    this.canManageShifts = await myGeneralStore.hasAccess('employees', 'manage-shift')
+    this.canManageVacation = await myGeneralStore.hasAccess('employees', 'manage-vacation')
+    this.canManageExceptionRequest = await myGeneralStore.hasAccess('employees', 'exception-request')
+    this.canReadOnlyWorkDisabilities = await myGeneralStore.hasAccess('employees', 'read-work-disabilities')
+    this.canManageWorkDisabilities = await myGeneralStore.hasAccess('employees', 'manage-work-disabilities')
+    this.canUpdate = await myGeneralStore.hasAccess('employees', 'update')
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -1154,6 +1166,9 @@ export default defineComponent({
       }
     },
     async onRefresh() {
+      await this.handlerPeriodChange()
+    },
+    async onSidebarShiftsClose() {
       await this.handlerPeriodChange()
     }
   }
