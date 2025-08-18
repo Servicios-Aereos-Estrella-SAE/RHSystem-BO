@@ -37,6 +37,7 @@ export default defineComponent({
   methods: {
     async getPeriods() {
       this.vacationPeriods = []
+      let previousAvailableDays = 0
       if (this.employee.employeeId && this.employee.employeeHireDate) {
         const employeeService = new EmployeeService()
         const employeeResponse = await employeeService.getYearsWorked(this.employee.employeeId, null)
@@ -57,8 +58,10 @@ export default defineComponent({
                 vacationPeriodActiveWorkYears: year.yearsPassed,
                 vacationPeriodCorrespondingDays: correspondingDays,
                 vacationPeriodUsedDays: usedDays,
-                vacationPeriodAvailableDays: availableDays
+                vacationPeriodAvailableDays: availableDays,
+                vacationPreviousAvailableDays: previousAvailableDays,
               } as VacationPeriodInterface
+              previousAvailableDays += availableDays
               this.vacationPeriods.push(vacationPeriod)
             }
           }

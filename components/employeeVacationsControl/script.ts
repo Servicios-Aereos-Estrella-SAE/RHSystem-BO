@@ -11,6 +11,7 @@ import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionSe
 import { useMyGeneralStore } from '~/store/general'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
+import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
 
 export default defineComponent({
   components: {
@@ -36,7 +37,8 @@ export default defineComponent({
     currentVacationPeriod: null as VacationPeriodInterface | null,
     countsNewVacation: 0,
     isDeleted: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    restrictFutureVacations: false
   }),
   computed: {
     displayAddButton() {
@@ -63,6 +65,17 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    const systemSettingService = new SystemSettingService()
+    const systemSettingResponse = await systemSettingService.getActive()
+
+    if (systemSettingResponse) {
+
+      let isRestrictFutureVacationActive: number = 0;
+      isRestrictFutureVacationActive = systemSettingResponse.systemSettingRestrictFutureVacation
+        ? systemSettingResponse.systemSettingRestrictFutureVacation
+        : 0;
+      this.restrictFutureVacations = isRestrictFutureVacationActive === 1 ? true : false
+    }
     this.isReady = true
   },
   methods: {
@@ -84,6 +97,7 @@ export default defineComponent({
 
     },
     async addNewVacation() {
+      const myGeneralStore = useMyGeneralStore()
       if (!this.canManageVacation) {
         this.$toast.add({
           severity: 'warn',
@@ -93,6 +107,19 @@ export default defineComponent({
         })
         return
       }
+
+      if (!myGeneralStore.isRoot && this.restrictFutureVacations) {
+        if (this.vacationPeriod.vacationPreviousAvailableDays > 0) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'You cannot add vacation in this period because there is still available vacation in previous periods',
+            life: 5000,
+          })
+          return
+        }
+      }
+
       if (this.currentVacationPeriod) {
         const availableDays = this.currentVacationPeriod.vacationPeriodAvailableDays - this.countsNewVacation
         if (availableDays <= 0) {
