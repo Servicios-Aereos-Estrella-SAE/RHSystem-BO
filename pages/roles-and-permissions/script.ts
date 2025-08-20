@@ -1,9 +1,7 @@
-import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
 import type { RoleInterface } from '~/resources/scripts/interfaces/RoleInterface'
 import type { RoleModuleInterface } from '~/resources/scripts/interfaces/RoleModuleInterface'
 import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfaces/RoleSystemPermissionInterface'
 import type { SystemModuleInterface } from '~/resources/scripts/interfaces/SystemModuleInterface'
-import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import RoleService from '~/resources/scripts/services/RoleService'
 import SystemModuleService from '~/resources/scripts/services/SystemModuleService'
 import { useMyGeneralStore } from '~/store/general'
@@ -19,9 +17,22 @@ export default defineComponent({
     roleSelected: 0,
     canUpdate: false,
     canRead: false,
-    activeEdit: false
+    activeEdit: false,
+    role: null as RoleInterface | null,
+    newRole: null as RoleInterface | null,
+    drawerRoleForm: false,
+    drawerRoleDelete: false,
+    activeSwicht: false,
+    submitted: false,
   }),
   computed: {
+  },
+  watch: {
+    'activeSwicht': function () {
+      if (this.role) {
+        this.role.roleActive = this.activeSwicht ? 1 : 0
+      }
+    },
   },
   created() { },
   async mounted() {
@@ -30,7 +41,9 @@ export default defineComponent({
 
     await this.validateAccess()
     await this.init()
-
+    if (this.roleList.length > 0) {
+      this.handlerSelectRole(0)
+    }
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -59,7 +72,6 @@ export default defineComponent({
       await Promise.all([
         this.getSystemModules(),
       ])
-
       await this.getRoles()
     },
     async getSystemModules() {
@@ -114,16 +126,65 @@ export default defineComponent({
     async onSave() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      this.submitted = true
+      if (this.role) {
+        const roleService = new RoleService()
+        if (!roleService.validateInfo(this.role)) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Validation data',
+            detail: 'Missing data',
+            life: 5000,
+          })
+          myGeneralStore.setFullLoader(false)
+          return
+        }
+        let roleResponse = null
+        if (!this.role.roleId) {
+          roleResponse = await roleService.store(this.role)
+        } else {
+          roleResponse = await roleService.update(this.role)
+        }
+        if (roleResponse.status === 201 || roleResponse.status === 200) {
+          this.$toast.add({
+            severity: 'success',
+            summary: `Role ${this.role.roleId ? 'updated' : 'created'}`,
+            detail: roleResponse._data.message,
+            life: 5000,
+          })
+
+          roleResponse = await roleService.show(roleResponse._data.data.role.roleId)
+          if (roleResponse && roleResponse.status === 200) {
+            const role = roleResponse._data.data.role
+            this.role = role
+            this.onSaveRole(role)
+          }
+        } else {
+          const msgError = roleResponse._data.error ? roleResponse._data.error : roleResponse._data.message
+          this.$toast.add({
+            severity: 'error',
+            summary: `Role ${this.role.roleId ? 'updated' : 'created'}`,
+            detail: msgError,
+            life: 5000,
+          })
+          myGeneralStore.setFullLoader(false)
+          return
+        }
+      }
+
       try {
         const promises = this.roleList.map(async (role, index) => {
           const permissions = []
           for (const permissionId of this.permissions[index]) {
             permissions.push(permissionId)
           }
-          const response = await new RoleService().assign(role.roleId, permissions)
-          if (response.status !== 201) {
-            throw new Error(response._data.message || 'Failed to assign role')
+          if (role.roleId) {
+            const response = await new RoleService().assign(role.roleId, permissions)
+            if (response.status !== 201) {
+              throw new Error(response._data.message || 'Failed to assign role')
+            }
           }
+
         })
 
         await Promise.all(promises)
@@ -134,6 +195,10 @@ export default defineComponent({
           detail: 'All roles were assigned successfully.',
           life: 5000,
         })
+        this.getRoles()
+        if (this.roleList.length > 0) {
+          this.handlerSelectRole(0)
+        }
         this.activeEdit = false
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'There was an error assigning roles.'
@@ -160,6 +225,76 @@ export default defineComponent({
       }
 
       this.roleSelected = index
+      this.role = { ...this.roleList[this.roleSelected] }
+      let isActive: number = 1
+      isActive = this.role.roleActive
+      this.activeSwicht = isActive === 1 ? true : false
+    },
+    addNew() {
+      const newRole: RoleInterface = {
+        roleId: null,
+        roleName: '',
+        roleActive: 1,
+        roleDescription: '',
+        roleSlug: '',
+      }
+      this.newRole = newRole
+      this.drawerRoleForm = true
+    },
+    async onSaveRole(role: RoleInterface) {
+      this.newRole = { ...role }
+
+      const index = this.roleList.findIndex((role: RoleInterface) => role.roleId === this.newRole?.roleId)
+      if (index !== -1) {
+        this.roleList[index] = role
+        this.$forceUpdate()
+      } else {
+        this.roleList.push(role)
+        this.$forceUpdate()
+      }
+      this.getRoles()
+      if (this.roleList.length > 0) {
+        this.handlerSelectRole(0)
+      }
+      this.$forceUpdate()
+      this.newRole = null
+      this.drawerRoleForm = false
+    },
+    onDelete(role: RoleInterface) {
+      this.role = role
+      this.drawerRoleDelete = true
+    },
+    async confirmDelete() {
+      if (this.role) {
+        this.drawerRoleDelete = false
+        const roleService = new RoleService()
+        const roleResponse = await roleService.delete(this.role)
+        if (roleResponse.status === 200) {
+          const index = this.roleList.findIndex((role: RoleInterface) => role.roleId === this.role?.roleId)
+          if (index !== -1) {
+            this.roleList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete role',
+            detail: roleResponse._data.message,
+            life: 5000,
+          })
+          this.getRoles()
+          if (this.roleList.length > 0) {
+            this.handlerSelectRole(0)
+          }
+          this.$forceUpdate()
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete role',
+            detail: roleResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
     }
   }
 })

@@ -1,0 +1,24 @@
+@import '/resources/styles/variables.scss';
+
+
+.role-info-form {
+  position: relative;
+
+  h1 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: block;
+    border-bottom: solid $background 0.5rem;
+    margin: -1.25rem;
+    padding: 1.25rem;
+    padding-bottom: 2rem;
+    padding-top: 3.25rem;
+    margin-bottom: 2rem;
+  }
+
+
+  .form-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
