@@ -234,10 +234,6 @@ export default class RoleService {
       console.error('Wrong name');
       return false;
     }
-    if (!role.roleDescription) {
-      console.error('Wrong description');
-      return false;
-    }
     return true;
   }
 }

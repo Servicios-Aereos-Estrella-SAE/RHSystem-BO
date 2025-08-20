@@ -50,7 +50,7 @@
                 </button>
               </div>
             </div>
-            <button v-if="!activeEdit" class="btn btn-block" @click="addNew">
+            <button v-if="!activeEdit && canCreate" class="btn btn-block" @click="addNew">
               <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -84,10 +84,9 @@
 
               <div class="form-group description">
                 <label for="roleDescription">Description</label>
-                <Textarea id="roleDescription" v-model="role.roleDescription"
-                  :invalid="submitted && !role.roleDescription" rows="3" autoResize
+                <Textarea id="roleDescription" v-model="role.roleDescription" rows="3"
                   :disabled="!canUpdate || !activeEdit" />
-                <small class="p-error" v-if="submitted && !role.roleDescription">Description is required.</small>
+
               </div>
             </div>
 
@@ -135,12 +134,12 @@
   export default Script
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import './style';
 
   .role-form-sidebar {
     width: 100% !important;
-    max-width: 35rem !important;
+    max-width: 40rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

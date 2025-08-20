@@ -15,6 +15,7 @@ export default defineComponent({
     systemModulesList: [] as SystemModuleInterface[],
     permissions: [] as number[][],
     roleSelected: 0,
+    canCreate: false,
     canUpdate: false,
     canRead: false,
     activeEdit: false,
@@ -53,9 +54,11 @@ export default defineComponent({
       const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
       if (myGeneralStore.isRoot) {
+        this.canCreate = true
         this.canUpdate = true
         this.canRead = true
       } else {
+        this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
         this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
         this.canRead = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read') ? true : false
       }

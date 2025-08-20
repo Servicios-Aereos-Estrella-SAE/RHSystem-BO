@@ -6,12 +6,17 @@
     </h1>
     <div v-if="isReady" class="role-form">
       <div class="form-container">
-        <div class="checkbox-item">
-          <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
-          <label for="activeSwicht">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}
-          </label>
+        <div class="input-box">
+          <label for="roleName">
+            Status</label>
+          <div class="checkbox">
+            <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
+            <label for="activeSwicht">
+              {{ activeSwicht ? 'Active' : 'Inactive' }}
+            </label>
+          </div>
         </div>
+
         <div class="input-box">
           <label for="roleName">
             Name</label>
@@ -21,9 +26,8 @@
         <div class="input-box">
           <label for="roleDescription">
             Description</label>
-          <Textarea id="roleDescription" v-model="role.roleDescription" :invalid="submitted && !role.roleDescription"
-            rows="3" autoResize />
-          <small class="p-error" v-if="submitted && !role.roleDescription">Description is required.</small>
+          <Textarea id="roleDescription" v-model="role.roleDescription" rows="3" autoResize />
+
         </div>
 
         <div class="box-tools-footer form-buttons">
