@@ -4,6 +4,13 @@ import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: "Login",
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
   },
   data: () => ({
@@ -15,7 +22,7 @@ export default defineComponent({
     isGuest: false,
   }),
   computed: {
-    getBackgroundImageLogo(){
+    getBackgroundImageLogo() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage

@@ -9,6 +9,15 @@ export default defineComponent({
   name: 'dashboardHeader',
   props: {
   },
+  setup() {
+    const { locales, t, locale, setLocale } = useI18n()
+    return {
+      t,
+      locale,
+      locales,
+      setLocale
+    }
+  },
   data: () => ({
     socketIO: null as any,
     authUser: null as UserInterface | null,
@@ -21,28 +30,29 @@ export default defineComponent({
     currentPage: 1,
     rowsPerPage: 10,
     notificationAudio: null as HTMLAudioElement | null,
+    currentLocale: ''
   }),
   computed: {
-    getBusinessName (){
+    getBusinessName() {
       const myGeneralStore = useMyGeneralStore()
       const value = myGeneralStore.activeSystemBusinessName
       return value
     },
-    getBackgroundImage(){
+    getBackgroundImage() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage
     },
-    displayBackButton () {
+    displayBackButton() {
       const path = this.$route.fullPath
       const isRoot = path.split('/').length > 2
       return isRoot
     },
-    avatarLetter () {
+    avatarLetter() {
       const initial = `${this.authUser?.userEmail?.charAt(0) || ''}`.toLocaleUpperCase()
       return initial
     },
-    avatarImage () {
+    avatarImage() {
       const imagePath = `${this.authUser?.person?.employee?.employeePhoto || ''}`
 
       if (!imagePath) {
@@ -55,9 +65,10 @@ export default defineComponent({
       return photoPath
     }
   },
-  created () {
+  created() {
   },
   mounted() {
+    this.currentLocale = this.locale
     // this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
@@ -90,19 +101,19 @@ export default defineComponent({
     // await this.handlerFetchNotifications()
   },
   methods: {
-    async setAuthUser () {
+    async setAuthUser() {
       const { data } = useAuth()
       const authUser = data.value as unknown as UserInterface
       this.authUser = authUser
     },
-    async toggleAside () {
+    async toggleAside() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.toggleDisplayAside()
     },
-    handlerBack () {
+    handlerBack() {
       this.$router.go(-1)
     },
-    toggleNotification(){
+    toggleNotification() {
       this.drawerNotifications = true
     },
     async handlerFetchNotifications() {

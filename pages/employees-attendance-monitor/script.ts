@@ -21,11 +21,19 @@ import AssistStatistic from '~/resources/scripts/models/AssistStatistic'
 import AssistService from '~/resources/scripts/services/AssistService'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
+import { useI18n } from 'vue-i18n'
 
 export default defineComponent({
   components: {
     Toast,
     ToastService,
+  },
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
   },
   name: 'EmployeesMonitorPosition',
   props: {
@@ -104,7 +112,7 @@ export default defineComponent({
       },
       series: [] as Array<Object>
     },
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<{ name: string }>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
@@ -145,6 +153,18 @@ export default defineComponent({
 
   }),
   computed: {
+    getStatus() {
+      return this.statusList.map(item => ({
+        name: item.name,
+        label: this.$t(`status.${item.name}`)
+      }))
+    },
+    getVisualizationModes() {
+      return this.visualizationModeOptions.map(item => ({
+        ...item,
+        label: this.$t(`visualizationModes.${item.value}`)
+      }))
+    },
     weeklyStartDay() {
       const daysList = []
 
@@ -246,16 +266,17 @@ export default defineComponent({
     lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
+        return `${this.t('Monthly behavior by the year,')} ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'monthly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Behavior in ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
+
+        return `${this.t('Behavior in')} ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'weekly') {
-        return 'Weekly behavior'
+        return this.t('Weekly behavior')
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
@@ -273,13 +294,13 @@ export default defineComponent({
           day: endDateObject.day
         }).minus({ days: 1 }).setLocale('en');
 
-        return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
+        return `${this.t('Behavior from')}  ${startDate.toFormat('DDD')} ${this.t('to')}  ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
         const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
         const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
-        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+        return `${this.t('Behavior from')} ${date.toFormat('DDD')} ${this.t('to')} ${dateEnd.toFormat('DDD')}`
       }
     },
     assistSyncStatusDate() {
@@ -420,10 +441,18 @@ export default defineComponent({
       const delay = Math.round((delays / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
-      serieData.push({ name: `On time (${`${qtyOnTime}`.padStart(2, '0')} Arrivals)`, y: assist, color: '#33D4AD' })
-      serieData.push({ name: `Tolerances (${`${qtyOnTolerance}`.padStart(2, '0')} Arrivals)`, y: tolerance, color: '#3CB4E5' })
-      serieData.push({ name: `Delays (${`${qtyOnDelay}`.padStart(2, '0')} Arrivals)`, y: delay, color: '#FF993A' })
-      serieData.push({ name: `Faults (${`${qtyOnFault}`.padStart(2, '0')} Absences)`, y: fault, color: '#d45633' })
+      serieData.push({
+        name: `${this.t('On time')} (${`${qtyOnTime}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: assist, color: '#33D4AD'
+      })
+      serieData.push({
+        name: `${this.t('Tolerances')}(${`${qtyOnTolerance}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: tolerance, color: '#3CB4E5'
+      })
+      serieData.push({
+        name: `${this.t('Delays')} (${`${qtyOnDelay}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: delay, color: '#FF993A'
+      })
+      serieData.push({
+        name: `${this.t('Faults')}(${`${qtyOnFault}`.padStart(2, '0')} ${this.t('Absences')})`, y: fault, color: '#d45633'
+      })
 
       this.generalData.series[0].data = serieData
       this.evaluatedEmployees = this.employeeDepartmentPositionList.filter(e => e.assistStatistics.totalAvailable > 0).length
