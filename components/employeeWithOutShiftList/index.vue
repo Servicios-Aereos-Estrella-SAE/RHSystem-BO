@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReady" class="employee-without-shift-list">
-    <h4>No assigned shift</h4>
+    <h4>{{ $t('no_assigned_shift') }}</h4>
     <div v-if="employeesWithOutShift.length > 0" class="without-shift-wrapper">
       <div v-for="(employee, index) in employeesWithOutShift" :key="`employee-${employee.employeeId}-${index}`">
         <employeeWithOutShiftInfoCard :employee="employee" />
@@ -8,7 +8,7 @@
     </div>
     <div v-else class="employee-card-wrapper">
       <div class="empty-data">
-        There are no employees
+        {{ $t('there_are_no_employees') }}
       </div>
     </div>
 

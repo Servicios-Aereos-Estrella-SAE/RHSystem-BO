@@ -15,14 +15,14 @@
           {{ `Emp. ID: ${employee.employeeCode}` }}
         </div>
         <div class="employee-email">
-          {{ `Email: ${employee.employeeBusinessEmail || 'Not assigned'}` }}
+          {{ `${ $t('email') }: ${employee.employeeBusinessEmail || 'Not assigned'}` }}
         </div>
       </div>
     </div>
 
     <div class="info">
       <div class="business-unit">
-        {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
+        {{ `${ $t('business_unit') }: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
       </div>
       <div class="capitalize">
         {{ `${employee.department.departmentName || ''}`}}
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="info">
-      <h5>Faults:</h5>
+      <h5>{{ $t('faults') }}:</h5>
       <div v-for="(day, index) in employee.faultDays"
         :key="`employee-day-fault-${employee?.employeeCode || Math.random()}-${index}`">
         {{ day.day }}

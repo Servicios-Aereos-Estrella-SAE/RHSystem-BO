@@ -3,7 +3,7 @@
 
     <Head>
       <Title>
-        {{ $t('Login') }}
+        {{ $t('login') }}
       </Title>
     </Head>
     <NuxtLayout name="guest">
@@ -16,7 +16,7 @@
             <div class="form-container">
               <div class="input-box">
                 <label for="useremail">
-                  {{ $t('Email') }}
+                  {{ $t('email') }}
                 </label>
                 <IconField iconPosition="left">
                   <InputIcon>
@@ -32,24 +32,23 @@
               </div>
               <div class="input-box">
                 <label for="password">
-                  {{ $t('Password') }}
+                  {{ $t('password') }}
                 </label>
                 <Password id="password" v-model="credentials.userPassword" toggleMask :feedback="false"
                   @keyup.enter.prevent="handlerLogin" @keypress="resetInvalidCredentials" />
               </div>
               <Message v-show="invalidCredentials && !credentials.userPassword" severity="warn">
-                {{ $t('Incorrect auth user credentials.') }}
+                {{ $t('incorrect_auth_user_credentials.') }}
                 <br>
-                {{ $t('Try again') }}
+                {{ $t('try_again') }}
               </Message>
-
               <button class="btn btn-primary btn-block btn-block" @click="handlerLogin">
-                {{ $t('Login') }}
+                {{ $t('login') }}
               </button>
 
               <div class="form-bottom">
                 <nuxt-link to="/password-recovery">
-                  {{ $t('Forgot your password? click here to recover') }}
+                  {{ $t('forgot_your_password?_click_here_to_recover') }}
                 </nuxt-link>
               </div>
             </div>

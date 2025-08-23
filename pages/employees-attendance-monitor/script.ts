@@ -149,20 +149,21 @@ export default defineComponent({
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    localeToUse: 'en'
 
   }),
   computed: {
     getStatus() {
       return this.statusList.map(item => ({
         name: item.name,
-        label: this.$t(`status.${item.name}`)
+        label: this.$t(`status_obj.${item.name}`.toString().toLowerCase().replace(' ', '_'))
       }))
     },
     getVisualizationModes() {
       return this.visualizationModeOptions.map(item => ({
         ...item,
-        label: this.$t(`visualizationModes.${item.value}`)
+        label: this.$t(`visualization_modes.${item.value}`.toString().toLowerCase().replace(' ', '_'))
       }))
     },
     weeklyStartDay() {
@@ -265,18 +266,18 @@ export default defineComponent({
     },
     lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `${this.t('Monthly behavior by the year,')} ${date.toFormat('yyyy')}`
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale(this.localeToUse)
+        return `${this.t('monthly_behavior_by_the_year,')} ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'monthly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale(this.localeToUse)
 
-        return `${this.t('Behavior in')} ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
+        return `${this.t('behavior_in')} ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'weekly') {
-        return this.t('Weekly behavior')
+        return this.t('weekly_behavior')
       }
 
       if (this.visualizationMode?.value === 'fourteen') {
@@ -284,7 +285,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale(this.localeToUse);
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -292,15 +293,16 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale(this.localeToUse);
 
-        return `${this.t('Behavior from')}  ${startDate.toFormat('DDD')} ${this.t('to')}  ${endDate.toFormat('DDD')}`
+        return `${this.t('behavior_from')}  ${startDate.toFormat('DDD')} ${this.t('to')}  ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
-        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
-        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
-        return `${this.t('Behavior from')} ${date.toFormat('DDD')} ${this.t('to')} ${dateEnd.toFormat('DDD')}`
+
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale(this.localeToUse)
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale(this.localeToUse)
+        return `${this.t('behavior_from')} ${date.toFormat('DDD')} ${this.t('to')} ${dateEnd.toFormat('DDD')}`
       }
     },
     assistSyncStatusDate() {
@@ -347,6 +349,7 @@ export default defineComponent({
     }
   },
   created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -354,6 +357,7 @@ export default defineComponent({
     this.datesSelected = this.getDefaultDatesRange()
   },
   async mounted() {
+
     this.setAssistSyncStatus()
     this.getNoPaymentDates()
 
@@ -442,16 +446,16 @@ export default defineComponent({
       const fault = Math.round((faults / totalAvailable) * 100)
 
       serieData.push({
-        name: `${this.t('On time')} (${`${qtyOnTime}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: assist, color: '#33D4AD'
+        name: `${this.t('on_time')} (${`${qtyOnTime}`.padStart(2, '0')} ${this.t('arrivals')})`, y: assist, color: '#33D4AD'
       })
       serieData.push({
-        name: `${this.t('Tolerances')}(${`${qtyOnTolerance}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: tolerance, color: '#3CB4E5'
+        name: `${this.t('tolerances')}(${`${qtyOnTolerance}`.padStart(2, '0')} ${this.t('arrivals')})`, y: tolerance, color: '#3CB4E5'
       })
       serieData.push({
-        name: `${this.t('Delays')} (${`${qtyOnDelay}`.padStart(2, '0')} ${this.t('Arrivals')})`, y: delay, color: '#FF993A'
+        name: `${this.t('delays')} (${`${qtyOnDelay}`.padStart(2, '0')} ${this.t('arrivals')})`, y: delay, color: '#FF993A'
       })
       serieData.push({
-        name: `${this.t('Faults')}(${`${qtyOnFault}`.padStart(2, '0')} ${this.t('Absences')})`, y: fault, color: '#d45633'
+        name: `${this.t('faults')}(${`${qtyOnFault}`.padStart(2, '0')} ${this.t('absences')})`, y: fault, color: '#d45633'
       })
 
       this.generalData.series[0].data = serieData
@@ -594,10 +598,16 @@ export default defineComponent({
 
         const serieData = []
 
-        serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
-        serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
-        serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
-        serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
+        serieData.push({
+          name: `${this.t('on_time')}`, data: assistSerie, color: '#33D4AD'
+        })
+        serieData.push({
+          name: `${this.t('tolerances')}`, data: toleranceSerie, color: '#3CB4E5'
+        })
+        serieData.push({ name: `${this.t('delays')}`, data: delaySerie, color: '#FF993A' })
+        serieData.push({
+          name: `${this.t('faults')}`, data: faultSerie, color: '#d45633'
+        })
 
         this.periodData.series = serieData
         this.setPeriodCategories()
@@ -605,16 +615,15 @@ export default defineComponent({
     },
     setPeriodCategories() {
       if (this.visualizationMode?.value === 'custom') {
-        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected, this.localeToUse)
       } else {
-        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected, this.localeToUse)
       }
     },
     async setDepartmentPositionEmployeeList() {
       const departmentId = null
       const positionId = null
       const empsLimit = this.$config.public.ENVIRONMENT === 'production' ? 99999999999 : 99999999999
-      const myGeneralStore = useMyGeneralStore()
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, empsLimit, false, null)
       const employeeDepartmentPositionList = (response.status === 200 ? response._data.data.employees.data : []) as EmployeeInterface[]
       this.employeeDepartmentPositionList = employeeDepartmentPositionList.map((employee) => ({ employee, assistStatistics: new AssistStatistic().toModelObject(), calendar: [] }))
@@ -1023,7 +1032,7 @@ export default defineComponent({
           for (const calendar of assist.calendar) {
             if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
-                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+                day: DateTime.fromISO(calendar.day).setLocale(this.localeToUse).toFormat('DDD')
               })
             }
           }
@@ -1057,7 +1066,7 @@ export default defineComponent({
 
             if (noChecks) {
               assist.employee.faultDays.push({
-                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+                day: DateTime.fromISO(calendar.day).setLocale(this.localeToUse).toFormat('DDD')
               })
               noCheckStreak++
               if (noCheckStreak === 3) {

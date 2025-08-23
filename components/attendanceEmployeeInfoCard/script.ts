@@ -9,6 +9,12 @@ export default defineComponent({
   },
   data: () => ({
   }),
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   computed: {
   },
   mounted() {

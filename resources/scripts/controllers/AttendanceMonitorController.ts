@@ -1,14 +1,13 @@
 import type { AttendanceMonitorPeriodType } from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
-import DepartmentService from "../services/DepartmentService";
-import EmployeeService from "../services/EmployeeService";
 
 export default class AttendanceMonitorController {
-  constructor () {
+
+  constructor() {
 
   }
 
-  getDepartmentTotalData (period: keyof typeof AttendanceMonitorPeriodType) {
+  getDepartmentTotalData(period: keyof typeof AttendanceMonitorPeriodType) {
     const min = 1;
     const max = 100;
     const value = Math.floor(Math.random() * (max - min + 1) + min)
@@ -28,14 +27,14 @@ export default class AttendanceMonitorController {
     return serieData
   }
 
-  getDepartmentPeriodCategories (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date): string[] {
+  getDepartmentPeriodCategories(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, localeToUse: string): string[] {
     switch (period) {
       case 'yearly':
         return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1).setLocale('en')
+        const date = DateTime.local(year, month, 1).setLocale(localeToUse)
         const days = date.daysInMonth
         const categories = []
 
@@ -50,14 +49,14 @@ export default class AttendanceMonitorController {
       case 'weekly': {
         const date = DateTime.fromJSDate(periodDate)
         const start = date.startOf('week')
-        const daysList =[]
+        const daysList = []
 
         for (let index = 0; index < 7; index++) {
           const currentDay = start.plus({ days: index })
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day).setLocale('en')
+          const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
           const formatedDay = dayDate.toFormat('DD')
           const daySelected = date.toFormat('yyyy LLL dd') === dayDate.toFormat('yyyy LLL dd')
 
@@ -77,14 +76,14 @@ export default class AttendanceMonitorController {
         const start = date.startOf('week').minus({ days: 1 })
         let thursday = start.plus({ days: 3 })
         let startDate = thursday.minus({ days: 24 })
-        const daysList =[]
+        const daysList = []
 
         for (let index = 0; index < 14; index++) {
           const currentDay = startDate.plus({ days: index })
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day).setLocale('en')
+          const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
           const formatedDay = dayDate.toFormat('DD')
 
           daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -97,18 +96,18 @@ export default class AttendanceMonitorController {
     }
   }
 
-  getCustomPeriodCategories (periodDate: Date[]): string[] {
+  getCustomPeriodCategories(periodDate: Date[], localeToUse: string): string[] {
     const start = DateTime.fromJSDate(periodDate[0]).setZone('UTC-6')
     const date = DateTime.fromJSDate(periodDate[1]).setZone('UTC-6')
     const periodLenght = Math.floor(date.diff(start, 'days').days) + 1
-    const daysList =[]
+    const daysList = []
 
     for (let index = 0; index < periodLenght; index++) {
       const currentDay = start.plus({ days: index })
       const year = parseInt(currentDay.toFormat('yyyy'))
       const month = parseInt(currentDay.toFormat('LL'))
       const day = parseInt(currentDay.toFormat('dd'))
-      const dayDate = DateTime.local(year, month, day).setLocale('en')
+      const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
       const formatedDay = dayDate.toFormat('DD')
 
       daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -117,7 +116,7 @@ export default class AttendanceMonitorController {
     return daysList
   }
 
-  getDepartmentPeriodData (period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null) {
+  getDepartmentPeriodData(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null, localeToUse: string) {
     const assists = []
     const tolerances = []
     const delays = []
@@ -133,7 +132,7 @@ export default class AttendanceMonitorController {
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1).setLocale('en')
+        const date = DateTime.local(year, month, 1).setLocale(localeToUse)
         const days = date.daysInMonth
         periodLenght = days || 0
         break
@@ -142,7 +141,7 @@ export default class AttendanceMonitorController {
         periodLenght = 7
         break
       case 'custom':
-        if(datesSelected) {
+        if (datesSelected) {
           if (datesSelected.length === 2) {
             const startDate = DateTime.fromJSDate(datesSelected[0])  // Fecha de inicio del rango
             const endDate = DateTime.fromJSDate(datesSelected[1])    // Fecha de fin del rango
@@ -186,7 +185,7 @@ export default class AttendanceMonitorController {
     return series
   }
 
-  async getDepartmentPositionEmployees () {
+  async getDepartmentPositionEmployees() {
     return []
   }
 }

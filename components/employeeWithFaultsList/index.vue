@@ -1,6 +1,6 @@
 <template>
   <div v-if="isReady" class="employee-with-fault-list">
-    <h4>Employees with consecutive faults</h4>
+    <h4>{{ $t('employees_with_consecutive_faults') }}</h4>
     <div v-if="employeesWithFaults.length > 0" class="with-fault-wrapper">
       <div v-for="(employee, index) in employeesWithFaults" :key="`employee-${employee.employeeId}-${index}`">
         <employeeWithFaultInfoCard :employee="employee" />
@@ -8,7 +8,7 @@
     </div>
     <div v-else class="employee-card-wrapper">
       <div class="empty-data">
-        There are no employees
+        {{ $t('there_are_no_employees') }}
       </div>
     </div>
 
