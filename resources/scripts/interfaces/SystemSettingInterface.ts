@@ -11,6 +11,7 @@ interface SystemSettingInterface {
   systemSettingBusinessUnits: string | null,
   systemSettingActive: number | null,
   systemSettingToleranceCountPerAbsence: number | null,
+  systemSettingRestrictFutureVacation: number | null,
   systemSettingCreatedAt: Date | string | null,
   systemSettingUpdatedAt: Date | string | null,
   systemSettingDeletedAt: Date | string | null,

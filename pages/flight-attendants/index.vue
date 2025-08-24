@@ -20,7 +20,8 @@
             </div>
             <div class="input-box">
               <br />
-              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary" @click="addNew" />
+              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
+                @click="addNew" />
             </div>
           </div>
           <div>
@@ -28,23 +29,23 @@
               Flight Attendants
             </h2>
             <div class="flight-attendant-card-wrapper">
-              <div v-for="(flightAttendant, index) in filteredFlightAttendants" :key="`flight-attendant-${flightAttendant.flightAttendantId}-${index}`">
-                <FlightAttendantInfoCard :click-on-photo="() => { onPhoto(flightAttendant) }" :flightAttendant="flightAttendant"
-                  :click-on-edit="() => { onEdit(flightAttendant) }" :click-on-delete="() => { onDelete(flightAttendant) }"
-                  :can-update="canUpdate" :can-delete="canDelete" />
+              <div v-for="(flightAttendant, index) in filteredFlightAttendants"
+                :key="`flight-attendant-${flightAttendant.flightAttendantId}-${index}`">
+                <FlightAttendantInfoCard :click-on-photo="() => { onPhoto(flightAttendant) }"
+                  :flightAttendant="flightAttendant" :click-on-edit="() => { onEdit(flightAttendant) }"
+                  :click-on-delete="() => { onDelete(flightAttendant) }" :canUpdate="canUpdate"
+                  :can-delete="canDelete" />
               </div>
             </div>
             <div></div>
-            <Paginator
-              :alwaysShow="false"
-              class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
-              @page="onPageChange"
-            />
+            <Paginator :alwaysShow="false" class="paginator" :first="first" :rows="rowsPerPage"
+              :totalRecords="totalRecords" @page="onPageChange" />
             <!-- Form -->
             <div class="card flex justify-content-center">
               <Sidebar v-model:visible="drawerFlightAttendantForm" header="Flight attendant form" position="right"
                 class="flight-attendant-form-sidebar" :showCloseIcon="true">
-                <employeeInfoForm employeeType='pilot' :flightAttendant="flightAttendant" :employee="flightAttendant.employee" @save="onSave" />
+                <employeeInfoForm employeeType='pilot' :flightAttendant="flightAttendant"
+                  :employee="flightAttendant.employee" @save="onSave" :canUpdate="canUpdate" />
               </Sidebar>
             </div>
           </div>
@@ -85,4 +86,3 @@
     }
   }
 </style>
-

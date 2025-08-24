@@ -29,6 +29,7 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     insuranceCoverageTypeList: [] as InsuranceCoverageTypeInterface[],
@@ -91,7 +92,10 @@ export default defineComponent({
     let hasAccess = false
     const fullPath = this.$route.path;
     const firstSegment = fullPath.split('/')[1]
-    const systemModuleSlug = firstSegment
+    let systemModuleSlug = firstSegment
+    if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
+      systemModuleSlug = 'employees'
+    }
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     this.insuranceCoverageTypeList = await this.getInsuranceCoverageTypes(exceptionType)

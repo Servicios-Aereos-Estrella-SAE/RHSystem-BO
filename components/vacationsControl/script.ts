@@ -21,6 +21,7 @@ export default defineComponent({
     vacationPeriodAvailableDays: { type: Number, required: true },
     canManageException: { type: Boolean, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     shiftExceptionsDate: '',
@@ -100,23 +101,28 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.canManageToPreviousDays = false
-      if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
+      if (myGeneralStore.isRoot) {
         this.canManageToPreviousDays = true
       } else {
-        if (myGeneralStore.isRh) {
-          this.canManageToPreviousDays = true
-        } else {
-          if (this.shiftException.shiftExceptionsDate) {
-            if (this.isDateGreaterOrEqualToToday(this.shiftException.shiftExceptionsDate.toString())) {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+            const shiftExceptionsDate = DateTime
+              .fromFormat(this.shiftExceptionsDate, 'LLLL dd, yyyy')
+              .startOf('day');
+
+            const limitDate = DateTime
+              .fromJSDate(startDateLimit)
+              .startOf('day')
+
+            if (shiftExceptionsDate.toMillis() >= limitDate.toMillis()) {
               this.canManageToPreviousDays = true
             }
-          }
-        }
-        if (myGeneralStore.isRh) {
-          if (this.isDateAfterOrEqualToFirstDayPeriod()) {
-            this.canManageToPreviousDays = true
           } else {
-            this.canManageToPreviousDays = false
+            this.canManageToPreviousDays = true
           }
         }
       }

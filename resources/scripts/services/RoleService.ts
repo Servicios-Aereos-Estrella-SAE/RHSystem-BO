@@ -1,5 +1,6 @@
 
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+import type { RoleInterface } from "../interfaces/RoleInterface"
 
 export default class RoleService {
   protected API_PATH: string
@@ -32,10 +33,11 @@ export default class RoleService {
     return responseRequest
   }
 
-  async assign(roleId: number, permissions: Array<any>) {
+  async assign(roleId: number, permissions: Array<any>, roleManagementDays: number | null) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const formData = new FormData()
+    formData.append('roleManagementDays', roleManagementDays !== null ? roleManagementDays.toString() : '');
     permissions.forEach((systemPermissionId) => {
       formData.append('permissions[]', systemPermissionId);
     })
@@ -52,6 +54,48 @@ export default class RoleService {
     return responseRequest
   }
 
+  async store(role: RoleInterface) {
+    let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS }
+
+    try {
+      await $fetch(`${this.API_PATH}/roles`, {
+        headers,
+        method: 'POST',
+        body: role,
+        onResponse({ response }) {
+          responseRequest = response;
+        },
+        onRequestError({ response }) {
+          responseRequest = response;
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    return responseRequest;
+  }
+
+  async update(role: RoleInterface) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null;
+    try {
+      await $fetch(`${this.API_PATH}/roles/${role.roleId}`, {
+        headers,
+        method: 'PUT',
+        body: role,
+        onResponse({ response }) {
+          responseRequest = response;
+        },
+        onRequestError({ response }) {
+          responseRequest = response;
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    return responseRequest;
+  }
 
   async show(roleId: number) {
     const headers = { ...this.GENERAL_HEADERS }
@@ -74,6 +118,20 @@ export default class RoleService {
       }
     } catch (error) {
     }
+  }
+
+  async delete(role: RoleInterface) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/roles/${role.roleId}`, {
+      headers,
+      method: 'DELETE',
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
   }
 
   async hasAccess(roleId: number, systemModuleSlug: string, systemPermissionSlug: string) {
@@ -170,5 +228,13 @@ export default class RoleService {
       }
     } catch (error) {
     }
+  }
+
+  validateInfo(role: RoleInterface): boolean {
+    if (!role.roleName) {
+      console.error('Wrong name');
+      return false;
+    }
+    return true;
   }
 }

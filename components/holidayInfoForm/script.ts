@@ -1,5 +1,6 @@
 import HolidayService from "~/resources/scripts/services/HolidayService"
 import type { IConInterface } from '~/resources/scripts/interfaces/IconInterface'
+import { useMyGeneralStore } from "~/store/general";
 
 export default defineComponent({
 
@@ -48,6 +49,8 @@ export default defineComponent({
       this.submitted = true;
       let holidayResponse = null
       if (this.validForm()) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
         const response = this.holiday.holidayId ? await this.holidayService.update(this.holiday) : await this.holidayService.store(this.holiday);
         if (response.status === 200 || response.status === 201) {
           this.$toast.add({
@@ -70,6 +73,7 @@ export default defineComponent({
           });
           this.$emit('save');
         }
+        myGeneralStore.setFullLoader(false)
       }
     },
     validForm() {
@@ -84,10 +88,10 @@ export default defineComponent({
       this.isVisibleIcons = true
       this.submitted = false
     },
-    handlerSetDelete () {
+    handlerSetDelete() {
       this.alertConfirmDelete = true
     },
-    handlerConfirmDelete () {
+    handlerConfirmDelete() {
       this.alertConfirmDelete = false
       this.$emit('confirmDelete', JSON.parse(JSON.stringify(this.holiday)) as HolidayInterface)
     }
@@ -95,8 +99,8 @@ export default defineComponent({
   computed: {
     iconsComputed: function () {
       return this.icons.map((_icon: IConInterface) => ({
-          ..._icon,
-          iconLabel: _icon.iconName + ' ' + _icon.iconSvg
+        ..._icon,
+        iconLabel: _icon.iconName + ' ' + _icon.iconSvg
       }));
     }
   },

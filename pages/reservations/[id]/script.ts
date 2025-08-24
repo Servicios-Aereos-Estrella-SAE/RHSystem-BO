@@ -52,7 +52,7 @@ export default defineComponent({
       return this.pilots.map((pilot: PilotInterface) => {
         return {
           ...pilot,
-          pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
+          pilotName: `${pilot.employee?.person?.personFirstname} ${pilot.employee?.person?.personLastname} ${pilot.employee?.person?.personSecondLastname}`
         } as PilotInterface
       })
     },
@@ -60,7 +60,7 @@ export default defineComponent({
       return this.flightAttendants.map((flightAttendant: FlightAttendantInterface) => {
         return {
           flightAttendantId: flightAttendant.flightAttendantId,
-          flightAttendantName: flightAttendant.employee?.employeeFirstName + ' ' + flightAttendant.employee?.employeeLastName
+          flightAttendantName: `${flightAttendant.employee?.person?.personFirstname} ${flightAttendant.employee?.person?.personLastname} ${flightAttendant.employee?.person?.personSecondLastname}`
         }
       })
     }

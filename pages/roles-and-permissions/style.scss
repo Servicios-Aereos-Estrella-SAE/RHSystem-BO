@@ -163,5 +163,48 @@
         }
       }
     }
+
+    .form-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.status {
+      label {
+        margin-bottom: 0.4rem;
+      }
+
+      width: 20%;
+    }
+
+    .form-group.name {
+      label {
+        margin-bottom: 0.4rem;
+      }
+
+      width: 35%;
+    }
+
+    .form-group.description {
+      label {
+        margin-bottom: 0.4rem;
+      }
+
+      width: 45%;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   }
 }
