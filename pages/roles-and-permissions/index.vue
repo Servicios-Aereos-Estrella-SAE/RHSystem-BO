@@ -20,6 +20,13 @@
                 {{ rol.roleName }}
               </div>
               <div class="buttons">
+                <button v-if="!activeEdit" class="btn btn-to-edit" @click="onDelete(rol)">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1Zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648Zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648ZM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5Z"
+                      fill="#88a4bf" class="fill-212121"></path>
+                  </svg>
+                </button>
                 <button v-if="!activeEdit" class="btn btn-to-edit" @click="activeEdit = true">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -43,7 +50,7 @@
                 </button>
               </div>
             </div>
-            <button v-if="!activeEdit" class="btn btn-block">
+            <button v-if="!activeEdit && canCreate" class="btn btn-block" @click="addNew">
               <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -58,6 +65,33 @@
             <h2>
               Modules
             </h2>
+            <div class="form-row">
+              <div class="form-group status">
+                <label for="activeSwicht">Status</label>
+                <div class="checkbox-wrapper">
+                  <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true"
+                    :disabled="!canUpdate || !activeEdit" />
+                  <label for="activeSwicht">{{ activeSwicht ? 'Active' : 'Inactive' }}</label>
+                </div>
+              </div>
+
+              <div class="form-group name">
+                <label for="roleName">Name</label>
+                <InputText id="roleName" v-model="role.roleName" :invalid="submitted && !role.roleName"
+                  :disabled="!canUpdate || !activeEdit" />
+                <small class="p-error" v-if="submitted && !role.roleName">Name is required.</small>
+              </div>
+
+              <div class="form-group description">
+                <label for="roleDescription">Description</label>
+                <Textarea id="roleDescription" v-model="role.roleDescription" rows="3"
+                  :disabled="!canUpdate || !activeEdit" />
+
+              </div>
+            </div>
+
+
+            <br>
             <div class="modules-wrapper">
               <div class="input-box module">
                 <label for="userActive">
@@ -97,6 +131,17 @@
 
         </div>
       </div>
+      <!-- Form role -->
+      <div class="card flex justify-content-center">
+        <Sidebar v-model:visible="drawerRoleForm" position="right" header="Roles" class="role-form-sidebar"
+          :showCloseIcon="true">
+          <roleInfoForm :role="newRole" @onRoleSave="onSaveRole" />
+        </Sidebar>
+      </div>
+      <transition name="page">
+        <confirmDelete v-if="drawerRoleDelete" @confirmDelete="confirmDelete"
+          @cancelDelete="drawerRoleDelete = false" />
+      </transition>
     </NuxtLayout>
   </div>
 </template>
@@ -106,6 +151,15 @@
   export default Script
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import './style';
+
+  .role-form-sidebar {
+    width: 100% !important;
+    max-width: 40rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>
