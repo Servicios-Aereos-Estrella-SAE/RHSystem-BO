@@ -71,14 +71,15 @@
             Employee To
           </label>
           <AutoComplete v-if="isNewEmployeeShiftChange" v-model="selectedEmployee"
-            :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+            :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
             :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeToSelect"
             class="uppercase" :disabled="!canManageUserResponsible">
             <template #option="employee">
               <div class="item-employee-filter-attendance-monitor">
                 <div class="name uppercase">
-                  {{ employee.option.employeeFirstName }}
-                  {{ employee.option.employeeLastName }}
+                  {{ employee.option.person?.personFirstname }}
+                  {{ employee.option.person?.personLastname }}
+                  {{ employee.option.person?.personSecondLastname }}
                 </div>
                 <div class="position-department">
                   {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
@@ -108,6 +109,17 @@
             :disabled="!employeeShiftChange.employeeShiftChangeChangeThisShift || !isNewEmployeeShiftChange || !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !employeeShiftChange.shiftIdTo">Shift to is required.</small>
         </div>
+        <div v-if="isNewEmployeeShiftChange" class="input-box">
+          <button v-if="canCreateShift" class="btn" @click="addNewShift">
+            <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+            Create Shift
+          </button>
+        </div>
         <div class="input-box">
           <label for="employeeShiftChangeNote">Note</label>
           <Textarea id="employeeShiftChangeNote" v-model="employeeShiftChange.employeeShiftChangeNote" rows="3"
@@ -124,6 +136,10 @@
     <div v-else class="loader">
       <ProgressSpinner />
     </div>
+    <Sidebar v-model:visible="drawerShiftForm" header="Shift form" position="right" class="shift-form-sidebar"
+      :showCloseIcon="true">
+      <shiftInfoForm :shift="shiftTemp" @onShiftSave="onSaveShift" />
+    </Sidebar>
   </div>
 </template>
 
@@ -134,4 +150,13 @@
 
 <style lang="scss">
   @import './style';
+
+  .shift-form-sidebar {
+    width: 100% !important;
+    max-width: 25rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>

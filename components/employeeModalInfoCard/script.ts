@@ -11,7 +11,7 @@ export default defineComponent({
   data: () => ({
   }),
   computed: {
-    getEmployeePhoto () {
+    getEmployeePhoto() {
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${this.employee.employeePhoto}`
@@ -21,6 +21,9 @@ export default defineComponent({
       const name = this.employee.employeeFirstName.trim()
       const first = name.charAt(0)
       return first.toUpperCase()
+    },
+    getName() {
+      return `${this.employee?.person?.personFirstname} ${this.employee?.person?.personLastname} ${this.employee?.person?.personSecondLastname}`
     }
   },
   async mounted() {

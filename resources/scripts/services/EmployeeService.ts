@@ -198,7 +198,10 @@ export default class EmployeeService {
       console.error('Wrong employee last name');
       return false;
     }
-
+    if (!employee.employeeSecondLastName) {
+      console.error('Wrong employee second last name');
+      return false;
+    }
     if (!employee.employeeTypeId) {
       console.error('Wrong employee type id');
       return false;
@@ -512,6 +515,74 @@ export default class EmployeeService {
       await $fetch(`${this.API_PATH}/employees/get-days-work-disability-all`, {
         headers,
         query,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getVacationsSummaryExcel(searchText: string, departmentId: number | null, positionId: number | null,
+    startDate: string | Date,
+    endDate: string | Date,
+    onlyInactive: boolean,
+    onlyOneYear: boolean
+  ) {
+    let responseRequest: any = null
+    try {
+      const query = {
+        search: searchText,
+        startDate: startDate,
+        endDate: endDate,
+        departmentId: departmentId,
+        positionId: positionId,
+        onlyInactive: onlyInactive,
+        onlyOneYear: onlyOneYear
+      }
+      await $fetch(`${this.API_PATH}/employees-vacations/get-vacations-summary-excel`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          ...this.GENERAL_HEADERS,
+        },
+        query,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response?.json() }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+  async getBiometrics() {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/employees/get-biometrics`, {
+        method: 'GET',
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
+
+  async synchronizationBySelection(employees: Array<any>) {
+    const formData = new FormData()
+    const headers = { ...this.GENERAL_HEADERS }
+    employees.forEach((employeeCode) => {
+      formData.append('employees[]', employeeCode)
+    })
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/synchronization/by-selection/employees`, {
+        headers,
+        method: 'POST',
+        body: formData,
         onResponse({ response }) { responseRequest = response },
         onRequestError({ response }) { responseRequest = response }
       })

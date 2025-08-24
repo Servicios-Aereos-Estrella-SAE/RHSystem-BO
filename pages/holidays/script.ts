@@ -43,7 +43,7 @@ export default defineComponent({
     this.isReady = true
   },
   methods: {
-    async verifyPermissions () {
+    async verifyPermissions() {
       const myGeneralStore = useMyGeneralStore()
       const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
       const permissions = await myGeneralStore.getAccess(systemModuleSlug)
@@ -204,6 +204,8 @@ export default defineComponent({
     },
     async confirmDelete(holiday: HolidayInterface) {
       if (this.holiday) {
+        const myGeneralStore = useMyGeneralStore()
+        myGeneralStore.setFullLoader(true)
         const holidayResponse = await this.holidayService.delete(this.holiday)
         if (holidayResponse.status === 201 || holidayResponse.status === 200) {
           const holidayIdToDelete = this.holiday.holidayId
@@ -234,6 +236,7 @@ export default defineComponent({
             life: 5000,
           })
         }
+        myGeneralStore.setFullLoader(false)
       }
     }
   }

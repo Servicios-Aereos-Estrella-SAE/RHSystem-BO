@@ -6,6 +6,15 @@
     </h4>
     <div v-if="isReady" class="employee-proceeding-file-form">
       <div class="form-container">
+        <div class="checkbox-item">
+          <label for="proceeding-file-status">
+            Status
+          </label>
+          <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
+          <label for="activeSwicht">
+            {{ activeSwicht ? 'Active' : 'Inactive' }}
+          </label>
+        </div>
         <div v-if="!employeeProceedingFile.proceedingFile?.proceedingFileTypeId" class="input-box">
           <label for="proceeding-file">
             Type
