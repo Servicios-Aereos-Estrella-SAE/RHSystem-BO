@@ -106,7 +106,8 @@ export default defineComponent({
         shiftCreatedAt: null,
         shiftUpdatedAt: null,
         shiftDeletedAt: null,
-        employee_count: undefined
+        employee_count: undefined,
+        shiftTemp: 0,
       }
       this.shift = newShift
       this.drawerShiftForm = true

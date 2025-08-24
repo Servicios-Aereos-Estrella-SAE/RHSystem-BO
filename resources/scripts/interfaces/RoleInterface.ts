@@ -7,11 +7,12 @@ interface RoleInterface {
   roleDescription: string,
   roleSlug: string,
   roleActive: number,
-  roleCreatedAt?: string,
-  roleUpdatedAt?: string,
-  roleDeletedAt?: string | null
-  roleSystemPermissions?: [RoleSystemPermissionInterface]
-  roleDepartments?: [RoleDepartmentInterface]
+  roleManagementDays: number | null,
+  roleCreatedAt: string,
+  roleUpdatedAt: string,
+  roleDeletedAt: string | null
+  roleSystemPermissions: [RoleSystemPermissionInterface]
+  roleDepartments: [RoleDepartmentInterface]
 }
 
 export type { RoleInterface }

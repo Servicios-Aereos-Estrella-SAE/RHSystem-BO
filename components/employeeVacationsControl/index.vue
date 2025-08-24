@@ -29,7 +29,7 @@
             @onShiftExceptionCancel="onCancel(index)"
             :vacationPeriodAvailableDays="currentVacationPeriod.vacationPeriodAvailableDays"
             :can-manage-vacation="canManageVacation" :canManageException="canManageException" :employee="employee"
-            :index-card="index" :canManageUserResponsible="canManageUserResponsible" />
+            :index-card="index" :canManageUserResponsible="canManageUserResponsible" :startDateLimit="startDateLimit" />
         </div>
       </div>
       <transition name="page">

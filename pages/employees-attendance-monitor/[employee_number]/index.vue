@@ -19,13 +19,14 @@
                   Search employee
                 </label>
                 <AutoComplete v-model="selectedEmployee"
-                  :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+                  :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
                   :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
                   <template #option="employee">
                     <div class="item-employee-filter-attendance-monitor">
                       <div class="name">
-                        {{ employee.option.employeeFirstName }}
-                        {{ employee.option.employeeLastName }}
+                        {{ employee.option.person?.personFirstname }}
+                        {{ employee.option.person?.personLastname }}
+                        {{ employee.option.person?.personSecondLastname }}
                       </div>
                       <div class="position-department">
                         {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
@@ -60,7 +61,7 @@
                 Period
               </label>
               <Calendar
-                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
+                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
                 v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
                 :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" :showWeek="false"
                 @update:modelValue="handlerPeriodChange" />
@@ -71,7 +72,7 @@
                 selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
                 @update:modelValue="handlerPeriodChange" :showWeek="false" />
               <Calendar
-                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+                v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Payroll'"
                 v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
                 :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
                 :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
@@ -82,6 +83,12 @@
         </div>
 
         <div class="employee-attendance-head-tools">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <div v-if="visualizationMode">
             <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
               Vacations
@@ -121,6 +128,15 @@
               </svg>
             </Button>
           </div>
+          <div v-if="visualizationMode && isRangeAtLeast7Days && canManageShifts">
+            <Button class="btn" severity="success" @click="drawerShifts = true">
+              <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M15.25 13.5h-4a.75.75 0 0 1-.75-.75v-6a.75.75 0 0 1 1.5 0V12h3.25a.75.75 0 0 1 0 1.5ZM12 2C6.478 2 2 6.478 2 12s4.478 10 10 10 10-4.478 10-10S17.522 2 12 2Z"
+                  fill="#88a4bf" class="fill-212121"></path>
+              </svg>
+            </Button>
+          </div>
         </div>
 
         <div class="employee-attendance-head-tools excel-reports-wrapper">
@@ -140,7 +156,7 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+          <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcelIncidentSummaryPayRoll">
             Payroll
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -168,7 +184,7 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </Button>
-          <Button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+          <Button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcel('Incident Summary Payroll')">
             Payroll API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -261,7 +277,8 @@
                   :key="`key-calendar-day-${Math.random()}-${index}`">
                   <attendanceCalendarDay :checkAssist="calendarDay"
                     :discriminated="!!(employee.employeeAssistDiscriminator === 1)" :employee="employee"
-                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist" />
+                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist"
+                    :startDateLimit="startDateLimit" />
                 </div>
               </div>
             </div>
@@ -282,6 +299,13 @@
           :showCloseIcon="true">
           <employeeVacationsList :dateStart="vacationDateStart" :dateEnd="vacationDateEnd"
             :employeeCode="employeeCode" />
+        </Sidebar>
+        <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
+          @hide="onSidebarShiftsClose" header="Employee shifts calendar" position="right" class="sidebar-shifts">
+          <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"
+            :can-manage-exception-request="canManageExceptionRequest"
+            :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
+            :canManageWorkDisabilities="canManageWorkDisabilities" :can-update="canUpdate" />
         </Sidebar>
       </div>
     </NuxtLayout>
@@ -312,6 +336,15 @@
   .vacation-form-sidebar {
     width: 35rem !important;
     max-width: 80rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .sidebar-shifts {
+    width: 90% !important;
+    max-width: 120rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

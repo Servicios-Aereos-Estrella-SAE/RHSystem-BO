@@ -110,7 +110,7 @@ export default defineComponent({
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -126,8 +126,8 @@ export default defineComponent({
     statusInfo: null as AssistSyncStatus | null
   }),
   computed: {
-    weeklyStartDay () {
-      const daysList =[]
+    weeklyStartDay() {
+      const daysList = []
 
       if (!this.periodSelected && !this.datesSelected.length) {
         return []
@@ -171,7 +171,7 @@ export default defineComponent({
           }
           break;
         }
-          case 'custom': {
+        case 'custom': {
           if (this.datesSelected.length === 2) {
             const startDate = DateTime.fromJSDate(this.datesSelected[0]) // Fecha de inicio
             const endDate = DateTime.fromJSDate(this.datesSelected[1])   // Fecha de fin
@@ -193,7 +193,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
 
@@ -223,7 +223,7 @@ export default defineComponent({
 
       return daysList
     },
-    lineChartTitle () {
+    lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
         const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
         return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
@@ -238,7 +238,7 @@ export default defineComponent({
         return 'Weekly behavior'
       }
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         // Convertimos la fecha inicio desde weeklyStartDay[0]
         const startDate = DateTime.fromObject({
           year: this.weeklyStartDay[0].year,
@@ -257,7 +257,7 @@ export default defineComponent({
         return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
       }
     },
-    assistSyncStatusDate () {
+    assistSyncStatusDate() {
       if (this.statusInfo) {
         const dateTime = DateTime.fromISO(`${this.statusInfo.assistStatusSyncs.updatedAt}`, { setZone: true }).setZone('UTC-6')
         const dateTimeFormat = dateTime.toFormat('ff')
@@ -267,7 +267,7 @@ export default defineComponent({
       return ''
     }
   },
-  created () {
+  created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -289,7 +289,7 @@ export default defineComponent({
     myGeneralStore.setFullLoader(false)
   },
   methods: {
-    async setDefaultVisualizationMode () {
+    async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 
       if (index >= 0) {
@@ -311,20 +311,20 @@ export default defineComponent({
       return [previousDay, currentDay];
     },
     isValidPeriodSelected() {
-      if(this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+      if (this.visualizationMode?.value === 'payroll' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Invalid Date',
           detail: 'You should select a valid date. Only Thursdays are valid',
-            life: 5000,
+          life: 5000,
         })
         return false;
       } else {
         return (this.visualizationMode?.value === 'custom' && this.datesSelected[0] && this.datesSelected[1]) || this.visualizationMode?.value !== 'custom';
       }
     },
-      isValidFourteen() {
-      if (this.visualizationMode?.value === 'fourteen') {
+    isValidFourteen() {
+      if (this.visualizationMode?.value === 'payroll') {
         // valid if period selected is a thursday periodSelected
         const stringDate = DateTime.fromJSDate(this.periodSelected).toFormat('yyyy-LL-dd')
         const dateObject = {
@@ -333,17 +333,16 @@ export default defineComponent({
           day: parseInt(stringDate.split('-')[2])
         }
         return this.isThursday(dateObject, false)
-        console.log(dateObject);
       }
       return true
     },
     isThursday(dateObject: any, addOneMonth = true) {
-      const month =  addOneMonth ? dateObject.month + 1 : dateObject.month
-      const mydate = dateObject.year + '-' + (month < 10 ? '0'+month : month) + '-' + (dateObject.day < 10 ? '0'+dateObject.day : dateObject.day) + "T00:00:00";
+      const month = addOneMonth ? dateObject.month + 1 : dateObject.month
+      const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
     },
-    setGeneralData () {
+    setGeneralData() {
       const assists = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTimePercentage, 0)
       const tolerances = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onTolerancePercentage, 0)
       const delays = this.employeeDepartmentPositionList.reduce((acc, val) => acc + val.assistStatistics.onDelayPercentage, 0)
@@ -363,7 +362,7 @@ export default defineComponent({
 
       this.generalData.series[0].data = serieData
     },
-    setPeriodData () {
+    setPeriodData() {
       let periodLenght = 12
 
       const monthPerdiod = parseInt(DateTime.fromJSDate(this.periodSelected).toFormat('LL'))
@@ -397,15 +396,15 @@ export default defineComponent({
             periodLenght = 0
           }
           break
-        case 'fourteen': {
-            const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
-            const startOfWeek = date.startOf('week')
-            // Encontrar el jueves de la semana seleccionada
-            let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
-            // Establecer el inicio del periodo como el jueves de dos semanas atrás
-            start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
-            // El periodo es de 14 días (dos semanas completas)
-            periodLenght = 14
+        case 'payroll': {
+          const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
+          const startOfWeek = date.startOf('week')
+          // Encontrar el jueves de la semana seleccionada
+          let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
+          // Establecer el inicio del periodo como el jueves de dos semanas atrás
+          start = thursday.minus({ days: 24 }) // El jueves dos semanas atrás
+          // El periodo es de 14 días (dos semanas completas)
+          periodLenght = 14
           break
         }
         default:
@@ -472,21 +471,21 @@ export default defineComponent({
         this.setPeriodCategories()
       }
     },
-    setPeriodCategories () {
+    setPeriodCategories() {
       this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
     },
-    async setDepartment () {
+    async setDepartment() {
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
       const response = await new DepartmentService().show(departmentId)
       this.department = response.status === 200 ? response._data.data.department : null
     },
-    async setPositionDepartment () {
+    async setPositionDepartment() {
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
       const positionId = parseInt(`${this.$route.params.position || 0}`)
       const response = await new PositionService().show(positionId)
       this.position = response.status === 200 ? response._data.data.position : null
     },
-    async setDepartmentPositionEmployeeList () {
+    async setDepartmentPositionEmployeeList() {
       const departmentId = parseInt(`${this.$route.params.department || 0}`)
       const positionId = parseInt(`${this.$route.params.position || 0}`)
       const response = await new EmployeeService().getFilteredList('', departmentId, positionId, null, 1, 99999999999, false, null)
@@ -498,7 +497,7 @@ export default defineComponent({
       await Promise.all(this.employeeDepartmentPositionList.map(emp => this.getEmployeeAssistCalendar(emp)))
     },
     filtersEmployeesByStatus(employees: Array<EmployeeAssistStatisticInterface> | null) {
-      if(!employees) {
+      if (!employees) {
         return []
       }
       return employees.filter(employee => this.isShowEmployeeByStatusSelected(employee))
@@ -517,7 +516,7 @@ export default defineComponent({
       }
       return true
     },
-    async getEmployeeAssistCalendar (employee: EmployeeAssistStatisticInterface) {
+    async getEmployeeAssistCalendar(employee: EmployeeAssistStatisticInterface) {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
@@ -532,7 +531,7 @@ export default defineComponent({
       } catch (error) {
       }
     },
-    setGeneralStatisticsData (employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
+    setGeneralStatisticsData(employee: EmployeeAssistStatisticInterface, employeeCalendar: AssistDayInterface[]) {
       const assists = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'ontime').length
       const tolerances = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'tolerance').length
       const delays = employeeCalendar.filter((assistDate) => assistDate.assist.checkInStatus === 'delay').length
@@ -553,17 +552,17 @@ export default defineComponent({
 
       employee.assistStatistics = assistStatistics
     },
-    async handlerVisualizationModeChange () {
+    async handlerVisualizationModeChange() {
       const idx = this.visualizationModeOptions.findIndex(mode => mode.value === this.visualizationMode?.value)
       this.visualizationModeOptions.forEach(mode => mode.selected = false)
 
       if (idx >= 0) {
-        this.visualizationModeOptions[idx].selected =  true
+        this.visualizationModeOptions[idx].selected = true
       }
 
       this.periodSelected = new Date()
     },
-    async onInputVisualizationModeChange () {
+    async onInputVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
@@ -589,7 +588,7 @@ export default defineComponent({
         this.filteredEmployees = list
       }
     },
-    onEmployeeSelect () {
+    onEmployeeSelect() {
       if (this.selectedEmployee && this.selectedEmployee.employeeCode) {
         this.$router.push(`/employees-attendance-monitor/${this.selectedEmployee.employeeCode}`)
       }
@@ -619,7 +618,7 @@ export default defineComponent({
           severity: 'success',
           summary: 'Excel assist',
           detail: 'Excel was created successfully',
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       } else {
@@ -628,17 +627,17 @@ export default defineComponent({
           severity: 'error',
           summary: 'Excel assist',
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
         myGeneralStore.setFullLoader(false)
       }
     },
-    async setAssistSyncStatus () {
+    async setAssistSyncStatus() {
       try {
         const res = await new AssistService().syncStatus()
         const statusInfo: AssistSyncStatus = res.status === 200 ? res._data : null
         this.statusInfo = statusInfo
-      } catch (error) {}
+      } catch (error) { }
     }
   }
 })

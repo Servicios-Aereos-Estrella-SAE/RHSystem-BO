@@ -27,13 +27,14 @@
                 Search employee
               </label>
               <AutoComplete v-model="selectedEmployee"
-                :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+                :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
                 :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
                 <template #option="employee">
                   <div class="item-employee-filter-attendance-monitor">
                     <div class="name">
-                      {{ employee.option.employeeFirstName }}
-                      {{ employee.option.employeeLastName }}
+                      {{ employee.option.person?.personFirstname }}
+                      {{ employee.option.person?.personLastname }}
+                      {{ employee.option.person?.personSecondLastname }}
                     </div>
                     <div class="position-department">
                       {{ employee?.option?.department?.departmentName || '' }}
@@ -73,7 +74,7 @@
               Period
             </label>
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" :showWeek="false"
               @update:modelValue="handlerPeriodChange" />
@@ -84,7 +85,7 @@
               selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange" :showWeek="false" />
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
@@ -94,6 +95,12 @@
         </div>
 
         <div class="btns-group">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
             :class="{ 'btn-info': employeesWithFaults.length > 0 }" severity="success"
             @click="drawerEmployeeWithFaults = true">
@@ -146,7 +153,8 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcelIncidentSummaryPayRoll">
+          <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
+            @click="getExcelIncidentSummaryPayRoll">
             Payroll
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -173,7 +181,8 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </Button>
-          <Button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success" @click="getExcel('Incident Summary Payroll')">
+          <Button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
+            @click="getExcel('Incident Summary Payroll')">
             Payroll API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path

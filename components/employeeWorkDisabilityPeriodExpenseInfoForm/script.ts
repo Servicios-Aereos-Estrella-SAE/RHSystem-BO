@@ -25,6 +25,7 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     submitted: false,
@@ -46,6 +47,21 @@ export default defineComponent({
       this.isDeleted = true
     }
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
+    if (this.canManageCurrentPeriod) {
+      const workDisabilityPeriodStartDate = DateTime
+        .fromISO(this.workDisabilityPeriod.workDisabilityPeriodStartDate)
+        .startOf('day')
+
+      const limitDate = DateTime
+        .fromJSDate(this.startDateLimit)
+        .startOf('day')
+      if (workDisabilityPeriodStartDate.toMillis() >= limitDate.toMillis()) {
+        this.canManageCurrentPeriod = true
+      } else {
+        this.canManageCurrentPeriod = false
+      }
+    }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 

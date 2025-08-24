@@ -42,6 +42,7 @@ export default defineComponent({
     systemModules: [] as number[][],
     canUpdate: true,
     tardinessToleranceId: null,
+    restrictFutureVacationSwicht: false,
   }),
   computed: {
     isRoot() {
@@ -66,9 +67,14 @@ export default defineComponent({
     isActive = this.systemSetting.systemSettingActive
       ? this.systemSetting.systemSettingActive
       : 0;
+    let isRestrictFutureVacationActive: number = 0;
+    isRestrictFutureVacationActive = this.systemSetting.systemSettingRestrictFutureVacation
+      ? this.systemSetting.systemSettingRestrictFutureVacation
+      : 0;
     this.systemSetting.systemSettingSidebarColor =
       "#" + this.systemSetting.systemSettingSidebarColor;
     this.activeSwicht = isActive === 1 ? true : false;
+    this.restrictFutureVacationSwicht = isRestrictFutureVacationActive === 1 ? true : false;
     await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
@@ -383,6 +389,7 @@ export default defineComponent({
       }
       if (this.systemSetting) {
         this.systemSetting.systemSettingActive = this.activeSwicht ? 1 : 0;
+        this.systemSetting.systemSettingRestrictFutureVacation = this.restrictFutureVacationSwicht ? 1 : 0;
         let systemSettingResponse = null;
         const systemSettingLogo = this.files.length > 0 ? this.files[0] : null;
         const systemSettingBanner = this.bannerFiles.length > 0 ? this.bannerFiles[0] : null;

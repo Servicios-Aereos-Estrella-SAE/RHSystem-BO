@@ -25,6 +25,8 @@ export default defineComponent({
     drawerRoleDelete: false,
     activeSwicht: false,
     submitted: false,
+    roleManagementDays: 0 as number | null,
+    roleManagementWithOutLimit: false
   }),
   computed: {
   },
@@ -32,6 +34,11 @@ export default defineComponent({
     'activeSwicht': function () {
       if (this.role) {
         this.role.roleActive = this.activeSwicht ? 1 : 0
+      }
+    },
+    'roleManagementWithOutLimit'(val: Boolean) {
+      if (val) {
+        this.roleManagementDays = null
       }
     },
   },
@@ -109,7 +116,6 @@ export default defineComponent({
           }
         }
         roleModules.push(roleModule)
-
       }
 
       const permissions = [] as number[][]
@@ -125,6 +131,9 @@ export default defineComponent({
       }
 
       this.permissions = permissions
+      if (this.roleList.length > 0) {
+        this.setManagementDays()
+      }
     },
     async onSave() {
       const myGeneralStore = useMyGeneralStore()
@@ -175,6 +184,14 @@ export default defineComponent({
         }
       }
 
+      const role = this.roleList[this.roleSelected]
+      if (role) {
+        if (this.roleManagementWithOutLimit) {
+          role.roleManagementDays = null
+        } else {
+          role.roleManagementDays = this.roleManagementDays
+        }
+      }
       try {
         const promises = this.roleList.map(async (role, index) => {
           const permissions = []
@@ -182,12 +199,11 @@ export default defineComponent({
             permissions.push(permissionId)
           }
           if (role.roleId) {
-            const response = await new RoleService().assign(role.roleId, permissions)
+            const response = await new RoleService().assign(role.roleId, permissions, role.roleManagementDays)
             if (response.status !== 201) {
               throw new Error(response._data.message || 'Failed to assign role')
             }
           }
-
         })
 
         await Promise.all(promises)
@@ -240,6 +256,10 @@ export default defineComponent({
         roleActive: 1,
         roleDescription: '',
         roleSlug: '',
+        roleManagementDays: null,
+        roleCreatedAt: '',
+        roleUpdatedAt: '',
+        roleDeletedAt: null
       }
       this.newRole = newRole
       this.drawerRoleForm = true
@@ -298,6 +318,21 @@ export default defineComponent({
           })
         }
       }
+      this.setManagementDays()
+
+    },
+    setManagementDays() {
+      const role = this.roleList[this.roleSelected]
+      if (role) {
+        if (!role.roleManagementDays) {
+          this.roleManagementDays = null
+          this.roleManagementWithOutLimit = true
+        } else {
+          this.roleManagementDays = role.roleManagementDays
+          this.roleManagementWithOutLimit = false
+        }
+      }
     }
+
   }
 })

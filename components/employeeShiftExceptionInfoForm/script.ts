@@ -27,6 +27,7 @@ export default defineComponent({
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
     canManageUserResponsible: { type: Boolean, required: true },
+    canManageToPreviousDays: { type: Boolean, required: true },
   },
   data: () => ({
     exceptionTypeList: [] as ExceptionTypeInterface[],
@@ -124,18 +125,13 @@ export default defineComponent({
     let hasAccess = false
     const fullPath = this.$route.path;
     const firstSegment = fullPath.split('/')[1]
-    const systemModuleSlug = firstSegment
+    let systemModuleSlug = firstSegment
+    if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
+      systemModuleSlug = 'employees'
+    }
     hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception')
     const exceptionType = hasAccess || this.employee.employeeTypeOfContract === 'External' ? '' : 'rest-day'
     this.exceptionTypeList = await this.getExceptionTypes(exceptionType, true)
-    if (!myGeneralStore.isRoot && !myGeneralStore.isAdmin && !myGeneralStore.isRh && (this.shift.shiftRestDays !== "0" || this.shift.shiftCalculateFlag)) {
-      const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'rest-day')
-      if (existRestDayIndex >= 0) {
-        if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.shiftException.exceptionTypeId) {
-          this.exceptionTypeList.splice(existRestDayIndex, 1)
-        }
-      }
-    }
     const existRestDayIndex = this.exceptionTypeList.findIndex(a => a.exceptionTypeSlug === 'falta-por-incapacidad')
     if (existRestDayIndex >= 0) {
       if (this.exceptionTypeList[existRestDayIndex].exceptionTypeId !== this.shiftException.exceptionTypeId) {

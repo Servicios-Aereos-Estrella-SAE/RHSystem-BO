@@ -12,9 +12,16 @@ export default defineComponent({
   }),
   computed: {
     getName() {
-      const person = this.document.employeeProceedingFile?.employee?.person
-      return person ? `${person.personFirstname} ${person.personLastname} ${person.personSecondLastname}` : ''
+      const person =
+        this.document.employeeProceedingFile?.employee?.person ||
+        this.document.person;
+
+      if (!person) return '';
+
+      const { personFirstname = '', personLastname = '', personSecondLastname = '' } = person;
+      return `${personFirstname} ${personLastname} ${personSecondLastname}`.trim();
     },
+
     isExpired() {
       const expirationDate = new Date(this.document.proceedingFileExpirationAt);
       const currentDate = new Date();
@@ -30,8 +37,8 @@ export default defineComponent({
     openFile() {
       window.open(this.document.proceedingFilePath)
     },
-    expireDateFormat (date: string) {
-      const toDate = DateTime.fromISO(date, { setZone: true}).setZone('UTC-6').setLocale('en')
+    expireDateFormat(date: string) {
+      const toDate = DateTime.fromISO(date, { setZone: true }).setZone('UTC-6').setLocale('en')
       return toDate.toFormat('LLLL dd, yyyy')
     }
   },
