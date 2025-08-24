@@ -9,6 +9,7 @@ import { useMyGeneralStore } from '~/store/general'
 import { DateTime } from 'luxon'
 import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/ExceptionRequestInterface'
 import type { ExceptionRequestErrorInterface } from '~/resources/scripts/interfaces/ExceptionRequestErrorInterface'
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 
 export default defineComponent({
   components: {
@@ -35,6 +36,7 @@ export default defineComponent({
     drawerExceptionRequestDelete: false,
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
   }),
   computed: {
     selectedExceptionDate() {
@@ -54,11 +56,29 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
+    this.getStartPeriodDay()
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
   },
   methods: {
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
+    },
     async getExceptionRequestEmployee() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)

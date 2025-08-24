@@ -15,6 +15,9 @@ import type { RoleSystemPermissionInterface } from '~/resources/scripts/interfac
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface'
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService'
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService'
+import HolidayService from '~/resources/scripts/services/HolidayService'
 
 export default defineComponent({
   name: 'AttendanceMonitorByEmployee',
@@ -98,7 +101,7 @@ export default defineComponent({
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -126,6 +129,7 @@ export default defineComponent({
     canReadTimeWorked: false,
     canAddAssistManual: false,
     canDeleteCheckAssist: false,
+    canSeeSwitchOptionGetAssist: false,
     earlyOuts: 0,
     faultsEarlyOuts: 0,
     onEarlyOutPercentage: 0,
@@ -141,7 +145,16 @@ export default defineComponent({
     endDay: '',
     canSync: false,
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    canManageShifts: false,
+    drawerShifts: false as boolean,
+    canManageVacation: false as boolean,
+    canManageExceptionRequest: false as boolean,
+    canReadOnlyWorkDisabilities: false as boolean,
+    canManageWorkDisabilities: false as boolean,
+    canUpdate: false as boolean,
+    canSeePayroll: false,
+    getAssistFromSaveCalendarSwicht: false,
   }),
   computed: {
     isRoot() {
@@ -214,7 +227,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
 
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
@@ -254,7 +267,7 @@ export default defineComponent({
         return `Check in & Check out on ${text}`
       }
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         // Convertimos la fecha inicio desde weeklyStartDay[0]
         const startDate = DateTime.fromObject({
           year: this.weeklyStartDay[0].year,
@@ -319,6 +332,11 @@ export default defineComponent({
       return photoPath
     }
   },
+  watch: {
+    getAssistFromSaveCalendarSwicht() {
+      this.handlerPeriodChange()
+    },
+  },
   created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
@@ -339,37 +357,61 @@ export default defineComponent({
     this.canSync = false
     const systemModuleSlug = firstSegment
     this.canSync = await myGeneralStore.hasAccess(systemModuleSlug, 'sync-assist')
+
     if (myGeneralStore.isRoot) {
       this.canReadTimeWorked = true
       this.canAddAssistManual = true
       this.canDeleteCheckAssist = true
+      this.canSeeSwitchOptionGetAssist = true
     } else {
       this.canReadTimeWorked = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'read-time-worked') ? true : false
       this.canAddAssistManual = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'add-assist-manual') ? true : false
       this.canDeleteCheckAssist = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'delete-check-assist') ? true : false
-    }
+      this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
 
+    }
     this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange()
 
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
-
+    this.canManageShifts = await myGeneralStore.hasAccess('employees', 'manage-shift')
+    this.canManageVacation = await myGeneralStore.hasAccess('employees', 'manage-vacation')
+    this.canManageExceptionRequest = await myGeneralStore.hasAccess('employees', 'exception-request')
+    this.canReadOnlyWorkDisabilities = await myGeneralStore.hasAccess('employees', 'read-work-disabilities')
+    this.canManageWorkDisabilities = await myGeneralStore.hasAccess('employees', 'manage-work-disabilities')
+    this.canUpdate = await myGeneralStore.hasAccess('employees', 'update')
+    this.canSeePayroll = await myGeneralStore.hasAccess(systemModuleSlug, 'see-payroll')
+    if (!this.canSeePayroll) {
+      const payrollIndex = this.visualizationModeOptions.findIndex(a => a.value === 'payroll')
+      if (payrollIndex >= 0) {
+        this.visualizationModeOptions.splice(payrollIndex, 1)
+      }
+    }
     myGeneralStore.setFullLoader(false)
   },
   methods: {
     getStartPeriodDay() {
-      const datePay = this.getNextPayThursday()
-      const payDate = DateTime.fromJSDate(datePay).startOf('day')
-      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
-      const thursday = startOfWeek.plus({ days: 3 })
-      const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-      this.startDateLimit = startLimit.toJSDate()
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
     },
     async getEmployee() {
       const employeCode = this.$route.params.employee_number
       if (employeCode) {
-        const employeeResponse = await new EmployeeService().getByCode(parseInt(employeCode.toString()))
+        const employeeResponse = await new EmployeeService().getByCode(employeCode.toString())
         if (employeeResponse?.status === 200) {
           const employee = employeeResponse._data.data.employee
           this.employee = employee
@@ -488,7 +530,7 @@ export default defineComponent({
           this.visualizationModeOptions[idx].selected = true
         }
 
-        if (this.visualizationMode?.value === 'fourteen') {
+        if (this.visualizationMode?.value === 'payroll') {
           this.periodSelected = this.getNextPayThursday()
         } else {
           this.periodSelected = new Date()
@@ -541,7 +583,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -569,9 +611,21 @@ export default defineComponent({
       }
 
       const employeeID = this.employee?.employeeId || 0
-      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-      this.employeeCalendar = employeeCalendar
+      if (this.getAssistFromSaveCalendarSwicht) {
+        const newEmployeeCalendar = [] as AssistDayInterface[]
+        const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+        const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+        for await (let calendar of calendars) {
+          newEmployeeCalendar.push(calendar)
+        }
+
+        this.employeeCalendar = newEmployeeCalendar
+      } else {
+        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        this.employeeCalendar = employeeCalendar
+      }
       if (this.employeeCalendar.length > 0) {
         this.employeeCalendar.pop()
       }
@@ -813,7 +867,7 @@ export default defineComponent({
       let endDay = ''
       this.datePay = ''
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -965,7 +1019,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const startOfWeek = date.startOf('week')
           let thursday = startOfWeek.plus({ days: 3 })
@@ -982,7 +1036,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1090,7 +1144,7 @@ export default defineComponent({
       let startDay = ''
       let endDay = ''
       this.datePay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1125,7 +1179,7 @@ export default defineComponent({
       return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         this.getWorkDisabilities()
       }
       const now = new Date()
@@ -1154,6 +1208,9 @@ export default defineComponent({
       }
     },
     async onRefresh() {
+      await this.handlerPeriodChange()
+    },
+    async onSidebarShiftsClose() {
       await this.handlerPeriodChange()
     }
   }

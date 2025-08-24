@@ -145,7 +145,6 @@ export default defineComponent({
     async handlerFetchNotifications() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-
       try {
         const response = await new ShiftExceptionRequestService().getFilteredList({
           search: '',
@@ -157,14 +156,13 @@ export default defineComponent({
         })
 
         this.notifications = response.data
-
         const rawNotifications = response.data.map((item: any) => ({
           exceptionRequestId: item.exceptionRequestId,
           type: item.exceptionType?.exceptionTypeTypeName || 'Unknown',
           department: item.employee?.department?.departmentName || 'Unknown',
           handling: item.employee?.department?.departmentAlias || 'N/A',
           position: item.employee?.position?.positionName || 'Unknown',
-          employeeName: `${item.employee?.employeeFirstName || ''} ${item.employee?.employeeLastName || ''}`.trim(),
+          employeeName: `${item.employee?.person?.personFirstname || ''} ${item.employee?.person?.personLastname || ''} ${item.employee?.person?.personSecondLastname || ''}`.trim(),
           dateRequested: item.requestedDate,
           description: item.exceptionRequestDescription || '',
           status: item.exceptionRequestStatus || 'unknown',
@@ -172,7 +170,6 @@ export default defineComponent({
           readGerencial: item.exceptionRequestGerencialRead || 0,
           personWhoCreatesIt: `${item.user.person.personFirstname || ''} ${item.user.person.personLastname || ''} ${item.user.person.personSecondLastname || ''}`.trim(),
         }))
-
         this.notifications = rawNotifications.filter((item: { readGerencial: number }) => {
           const excludeByManager = this.authUser?.roleId !== 2 && item.readGerencial === 1
           const excludeByRH = this.authUser?.roleId === 2 && item.readGerencial === 0

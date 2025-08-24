@@ -34,12 +34,12 @@ export default defineComponent({
       }
     },
     formatPilots() {
-        return this.pilots.map((pilot: PilotInterface) => {
-            return {
-                pilotId: pilot.pilotId,
-                pilotName: pilot.employee?.employeeFirstName + ' ' + pilot.employee?.employeeLastName
-            }
-        })
+      return this.pilots.map((pilot: PilotInterface) => {
+        return {
+          pilotId: pilot.pilotId,
+          pilotName: `${pilot.employee?.person?.personFirstname} ${pilot.employee?.person?.personLastname} ${pilot.employee?.person?.personSecondLastname}`
+        }
+      })
     },
   },
   async mounted() {
@@ -60,9 +60,9 @@ export default defineComponent({
       }
     },
     async handlerSearchPilot() {
-        const response = await new PilotService().getFilteredList('', 1, 999999999);
-        const list = response.status === 200 ? response._data.data.pilots.data : [];
-        this.pilots = list;
+      const response = await new PilotService().getFilteredList('', 1, 999999999);
+      const list = response.status === 200 ? response._data.data.pilots.data : [];
+      this.pilots = list;
     },
     async handlerSearchAircraftOperator() {
       const response = await new AircraftOperatorService().getFilteredList('', 1, 999999999);
@@ -72,7 +72,7 @@ export default defineComponent({
     async loadAirportOptions() {
       try {
         const airportService = new AirportService();
-        const response = await airportService.getFilteredList(''); 
+        const response = await airportService.getFilteredList('');
         if (response.status === 200) {
           this.airportOptions = response._data.data.data.map((airport: any) => ({
             name: airport.airportIcaoCode,
@@ -98,7 +98,7 @@ export default defineComponent({
     async loadAircraftPropertiesOptions() {
       try {
         const aircraftPropertiesService = new AircraftPropertiesService();
-        const response = await aircraftPropertiesService.getFilteredList(''); 
+        const response = await aircraftPropertiesService.getFilteredList('');
         if (response.status === 200) {
           this.aircraftPropertiesOptions = response._data.data.data.map((property: any) => ({
             name: property.aircraftPropertiesName,
@@ -160,7 +160,7 @@ export default defineComponent({
           this.$toast.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'There was an error saving the aircraf12t' + error,
+            detail: 'There was an error saving the aircraft' + error,
             life: 5000
           });
           this.$emit('save-error');

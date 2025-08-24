@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
@@ -25,7 +26,8 @@ export default defineComponent({
     isDeleted: false,
     drawerWorkDisabilityForm: false,
     drawerWorkDisabilityDelete: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
   }),
   watch: {
     async 'statusForm'(value) {
@@ -67,9 +69,27 @@ export default defineComponent({
       }
       myGeneralStore.workDisabilityId = null
     }
+    this.getStartPeriodDay()
     this.isReady = true
   },
   methods: {
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
+    },
     async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()

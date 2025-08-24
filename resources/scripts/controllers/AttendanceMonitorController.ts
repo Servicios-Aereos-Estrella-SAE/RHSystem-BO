@@ -71,7 +71,7 @@ export default class AttendanceMonitorController {
 
         return daysList
       }
-      case 'fourteen': {
+      case 'payroll': {
         const date = DateTime.fromJSDate(periodDate)
         const start = date.startOf('week').minus({ days: 1 })
         let thursday = start.plus({ days: 3 })

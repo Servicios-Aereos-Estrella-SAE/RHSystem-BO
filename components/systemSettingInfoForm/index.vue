@@ -164,7 +164,12 @@
             </div>
           </div>
         </div>
-
+        <div class="input-box">
+          <label for="userActive">
+            {{ restrictFutureVacationSwicht ? 'Active Restrict Future Vacation' : 'Inactive Restrict Future Vacation'
+            }}</label>
+          <InputSwitch v-model="restrictFutureVacationSwicht" />
+        </div>
 
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />

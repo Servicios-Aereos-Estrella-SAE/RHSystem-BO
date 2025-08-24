@@ -2,11 +2,12 @@ import type { RoleDepartmentInterface } from "./RoleDepartmentsInterface"
 import type { RoleSystemPermissionInterface } from "./RoleSystemPermissionInterface"
 
 interface RoleInterface {
-  roleId: number,
+  roleId: number | null,
   roleName: string,
   roleDescription: string,
   roleSlug: string,
   roleActive: number,
+  roleManagementDays: number | null,
   roleCreatedAt: string,
   roleUpdatedAt: string,
   roleDeletedAt: string | null
