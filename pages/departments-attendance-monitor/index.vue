@@ -68,7 +68,7 @@
               Period
             </label>
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" :showWeek="false"
               @update:modelValue="handlerPeriodChange" />
@@ -79,7 +79,7 @@
               selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange" :showWeek="false" />
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange"
@@ -145,7 +145,7 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+          <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcelIncidentSummaryPayRoll">
             Payroll
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -174,7 +174,7 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-          <button v-if="visualizationMode && visualizationMode?.name === 'Fourteen'" class="btn" severity="success"
+          <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcel('Incident Summary Payroll')">
             Payroll API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">

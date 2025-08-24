@@ -101,7 +101,7 @@ export default defineComponent({
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -146,6 +146,7 @@ export default defineComponent({
     canSync: false,
     searchTime: null as null | Date,
     employeeWorkDisabilities: [] as EmployeeInterface[],
+    canSeePayroll: false,
     getAssistFromSaveCalendarSwicht: true,
   }),
   computed: {
@@ -219,7 +220,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
 
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
@@ -259,7 +260,7 @@ export default defineComponent({
         return `Check in & Check out on ${text}`
       }
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         // Convertimos la fecha inicio desde weeklyStartDay[0]
         const startDate = DateTime.fromObject({
           year: this.weeklyStartDay[0].year,
@@ -367,7 +368,13 @@ export default defineComponent({
 
     await this.getEmployee()
     await this.setDefaultVisualizationMode()
-
+    this.canSeePayroll = await myGeneralStore.hasAccess(systemModuleSlug, 'see-payroll')
+    if (!this.canSeePayroll) {
+      const payrollIndex = this.visualizationModeOptions.findIndex(a => a.value === 'payroll')
+      if (payrollIndex >= 0) {
+        this.visualizationModeOptions.splice(payrollIndex, 1)
+      }
+    }
     myGeneralStore.setFullLoader(false)
   },
   methods: {
@@ -510,7 +517,7 @@ export default defineComponent({
           this.visualizationModeOptions[idx].selected = true
         }
 
-        if (this.visualizationMode?.value === 'fourteen') {
+        if (this.visualizationMode?.value === 'payroll') {
           this.periodSelected = this.getNextPayThursday()
         } else {
           this.periodSelected = new Date()
@@ -563,7 +570,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -847,7 +854,7 @@ export default defineComponent({
       let endDay = ''
       this.datePay = ''
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -999,7 +1006,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const startOfWeek = date.startOf('week')
           let thursday = startOfWeek.plus({ days: 3 })
@@ -1016,7 +1023,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1124,7 +1131,7 @@ export default defineComponent({
       let startDay = ''
       let endDay = ''
       this.datePay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1159,7 +1166,7 @@ export default defineComponent({
       return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         this.getWorkDisabilities()
       }
       const now = new Date()

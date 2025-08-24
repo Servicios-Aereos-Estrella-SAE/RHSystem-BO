@@ -61,7 +61,7 @@
               Period
             </label>
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate"
               @update:modelValue="handlerPeriodChange" showWeek />
@@ -72,7 +72,7 @@
               selectionMode="range" :numberOfMonths="visualizationMode?.number_months"
               @update:modelValue="handlerPeriodChange" showWeek />
             <Calendar
-              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Fourteen'"
+              v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name === 'Payroll'"
               v-model="periodSelected" :view="visualizationMode.calendar_format.mode"
               :dateFormat="visualizationMode.calendar_format.format" :minDate="minDate" hideOnRangeSelection
               :numberOfMonths="visualizationMode?.number_months" @update:modelValue="handlerPeriodChange" showWeek>
