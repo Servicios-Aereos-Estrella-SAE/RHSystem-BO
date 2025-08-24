@@ -139,7 +139,10 @@ export default defineComponent({
       this.canManageShiftChanges = true
       this.canRemoveShiftAssigned = true
     } else {
-      const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      let systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
+        systemModuleSlug = 'employees'
+      }
       this.canManageShiftChanges = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift-change')
       this.canRemoveShiftAssigned = await myGeneralStore.hasAccess(systemModuleSlug, 'remove-shift-assigned-to-the-day')
     }
