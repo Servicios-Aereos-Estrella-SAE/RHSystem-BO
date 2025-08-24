@@ -24,6 +24,7 @@ export default defineComponent({
     canRemoveShiftAssigned: { type: Boolean, required: true },
     startDateLimit: { type: Date, required: true },
     clickOnDelete: { type: Function, default: null },
+    withOutLimitDays: { type: Boolean, required: true },
   },
   data: () => ({
     employeeCalendar: null as AssistDayInterface | null,
@@ -60,13 +61,11 @@ export default defineComponent({
       if (!this.canManageShiftChanges) {
         return false
       }
-
       if (!this.displayAcceptEditShiftButton && !this.displayCancelEditShiftButton) {
         if (!this.employeeCalendar?.assist.hasExceptions && !this.employeeCalendar?.assist.isVacationDate && !this.employeeCalendar?.assist.isWorkDisabilityDate) {
           return true
         }
       }
-
       return false
     },
     displayAcceptEditShiftButton() {
@@ -109,7 +108,7 @@ export default defineComponent({
     },
     validateAccess() {
       const myGeneralStore = useMyGeneralStore()
-      if (myGeneralStore.isRoot) {
+      if (myGeneralStore.isRoot || this.withOutLimitDays) {
         this.canManagementShift = true
       } else {
         this.validateCanUpdateShift()
@@ -124,14 +123,13 @@ export default defineComponent({
         return
       }
 
-      const selectedDate = DateTime.fromISO(this.employeeCalendarAssist.day, { zone: 'utc' }).startOf('day')
+      const selectedDate = DateTime.fromISO(this.employeeCalendarAssist.day).startOf('day')
 
       if (!selectedDate.isValid) {
         return
       }
 
-      const startLimit = DateTime.fromJSDate(this.startDateLimit, { zone: 'utc' }).startOf('day')
-
+      const startLimit = DateTime.fromJSDate(this.startDateLimit).startOf('day')
       if (selectedDate < startLimit) {
         this.canManagementShift = false
         return
@@ -139,6 +137,7 @@ export default defineComponent({
 
       if ((this.employee.employeeId === this.sessionUser.person?.employee?.employeeId) && this.sessionUser.role?.roleSlug !== 'admin' && this.sessionUser.role?.roleSlug !== 'root') {
         this.canManagementShift = false
+
         return
       }
 

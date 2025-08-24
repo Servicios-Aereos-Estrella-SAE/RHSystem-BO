@@ -21,6 +21,8 @@ import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/As
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
+import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
+import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService';
 
 export default defineComponent({
   components: {
@@ -112,7 +114,7 @@ export default defineComponent({
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
-      { name: 'Fourteen', value: 'fourteen', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -134,12 +136,15 @@ export default defineComponent({
     employeesWithOutShift: [] as EmployeeInterface[],
     drawerEmployeeWithOutShift: false,
     canSeeConsecutiveFaults: false,
+    canSeeSwitchOptionGetAssist: false,
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     isReady: false,
     searchTime: null as null | Date,
-    employeeWorkDisabilities: [] as EmployeeInterface[]
+    employeeWorkDisabilities: [] as EmployeeInterface[],
+    canSeePayroll: false,
+    getAssistFromSaveCalendarSwicht: true
   }),
   computed: {
     isRootUser() {
@@ -218,7 +223,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
           const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
 
@@ -263,7 +268,7 @@ export default defineComponent({
         return 'Weekly behavior'
       }
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         // Convertimos la fecha inicio desde weeklyStartDay[0]
         const startDate = DateTime.fromObject({
           year: this.weeklyStartDay[0].year,
@@ -325,6 +330,11 @@ export default defineComponent({
       return false
     },
   },
+  watch: {
+    getAssistFromSaveCalendarSwicht() {
+      this.handlerPeriodChange()
+    },
+  },
   created() {
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
@@ -352,6 +362,14 @@ export default defineComponent({
     await this.setDepartmentPositionEmployeeList()
     this.setGraphsData()
     this.canSeeConsecutiveFaults = await myGeneralStore.hasAccess(systemModuleSlug, 'consecutive-faults')
+    this.canSeePayroll = await myGeneralStore.hasAccess(systemModuleSlug, 'see-payroll')
+    if (!this.canSeePayroll) {
+      const payrollIndex = this.visualizationModeOptions.findIndex(a => a.value === 'payroll')
+      if (payrollIndex >= 0) {
+        this.visualizationModeOptions.splice(payrollIndex, 1)
+      }
+    }
+    this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -414,7 +432,7 @@ export default defineComponent({
       }
     },
     isValidPeriodSelected() {
-      if (this.visualizationMode?.value === 'fourteen' && !this.isValidFourteen()) {
+      if (this.visualizationMode?.value === 'payroll' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
           summary: 'Invalid Date',
@@ -482,7 +500,7 @@ export default defineComponent({
             periodLenght = 0
           }
           break
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
           const startOfWeek = date.startOf('week')
           // Encontrar el jueves de la semana seleccionada
@@ -504,7 +522,7 @@ export default defineComponent({
         for (let index = 0; index < periodLenght; index++) {
           let currentDay = start.plus({ days: index })
           switch (this.visualizationMode?.value) {
-            case 'fourteen':
+            case 'payroll':
               currentDay = currentDay.minus({ days: 1 })
           }
           const year = parseInt(currentDay.toFormat('yyyy'))
@@ -587,7 +605,7 @@ export default defineComponent({
       }
     },
     isValidFourteen() {
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         // valid if period selected is a thursday periodSelected
         const stringDate = DateTime.fromJSDate(this.periodSelected).toFormat('yyyy-LL-dd')
         const dateObject = {
@@ -604,7 +622,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true)
       this.handlerVisualizationModeChange()
 
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         this.periodSelected = this.getNextPayThursday()
       }
 
@@ -641,7 +659,7 @@ export default defineComponent({
       let endDay = ''
       let endDayFourteen = ''
       this.employeesWithOutShift = []
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -667,15 +685,32 @@ export default defineComponent({
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
-        if (this.visualizationMode?.value === 'fourteen') {
+        let employeeAssistCalendarReq
+        if (this.getAssistFromSaveCalendarSwicht) {
+          const newEmployeeCalendar = [] as AssistDayInterface[]
+          employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+          const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+          for await (const calendar of calendars) {
+            newEmployeeCalendar.push(calendar)
+          }
+
+          employee.calendar = newEmployeeCalendar
+        } else {
+          const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
+          const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+          employee.calendar = employeeCalendar
+        }
+
+        if (this.visualizationMode?.value === 'payroll') {
           employee.calendar = employee.calendar.filter(a => a.day <= endDayFourteen)
         }
         this.setGeneralStatisticsData(employee, employee.calendar)
-        if (assistReq.status === 400) {
+        if (employeeAssistCalendarReq.status === 400) {
           const employeeNoShift = employee?.employee || null
 
           if (employeeNoShift) {
-            const employeeNoShiftName = `${employeeNoShift.employeeFirstName} ${employeeNoShift.employeeLastName}`
+            const employeeNoShiftName = `${employeeNoShift.person?.personFirstname} ${employeeNoShift.person?.personLastname} ${employeeNoShift.person?.personSecondLastname}`
             const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
             console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
             this.employeesWithOutShift.push(employeeNoShift)
@@ -795,7 +830,7 @@ export default defineComponent({
       let startDay = ''
       let endDay = ''
       this.datePay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -903,7 +938,7 @@ export default defineComponent({
           }
           break;
         }
-        case 'fourteen': {
+        case 'payroll': {
           const date = DateTime.fromJSDate(this.periodSelected)
           const startOfWeek = date.startOf('week')
           let thursday = startOfWeek.plus({ days: 3 })
@@ -920,7 +955,7 @@ export default defineComponent({
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
       let startDay = ''
       let endDay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1076,7 +1111,7 @@ export default defineComponent({
       let startDay = ''
       let endDay = ''
       this.datePay = ''
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         const startDate = DateTime.fromObject({
           year: firstDay.year,
           month: firstDay.month,
@@ -1111,7 +1146,7 @@ export default defineComponent({
       return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
-      if (this.visualizationMode?.value === 'fourteen') {
+      if (this.visualizationMode?.value === 'payroll') {
         this.getWorkDisabilities()
       }
       const now = new Date()

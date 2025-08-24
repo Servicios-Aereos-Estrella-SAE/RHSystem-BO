@@ -2,7 +2,7 @@ const enum AttendanceMonitorPeriodType {
   yearly,
   monthly,
   weekly,
-  fourteen,
+  payroll,
   custom
 }
 

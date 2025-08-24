@@ -38,7 +38,8 @@ export default defineComponent({
     countsNewVacation: 0,
     isDeleted: false,
     sessionUser: null as UserInterface | null,
-    restrictFutureVacations: false
+    restrictFutureVacations: false,
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
   }),
   computed: {
     displayAddButton() {
@@ -76,9 +77,27 @@ export default defineComponent({
         : 0;
       this.restrictFutureVacations = isRestrictFutureVacationActive === 1 ? true : false
     }
+    this.getStartPeriodDay()
     this.isReady = true
   },
   methods: {
+    getStartPeriodDay() {
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
+    },
     async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()

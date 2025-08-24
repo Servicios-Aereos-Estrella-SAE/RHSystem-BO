@@ -1,3 +1,5 @@
+import type { PeopleInterface } from "./PeopleInterface"
+
 interface ProceedingFileInterface {
   [key: string]: any
   proceedingFileId: number | null
@@ -10,6 +12,8 @@ interface ProceedingFileInterface {
   proceedingFileCreatedAt: Date | string | null
   proceedingFileUpdatedAt: Date | string | null
   proceedingFileDeletedAt: Date | string | null
+  isContract?: boolean
+  person?: PeopleInterface
 }
 
 export type { ProceedingFileInterface }

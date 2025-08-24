@@ -1,7 +1,8 @@
 <template>
   <div :class="['user-info-card', { 'hide-bottom-line': hideBottomLine }]">
     <div class="avatar">
-      <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo" class="employee-photo" @click="onClickPhoto" />
+      <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo" class="employee-photo"
+        @click="onClickPhoto" />
       <div v-else class="username-initial">
         {{ employeeInitial }}
       </div>
@@ -14,9 +15,7 @@
     <div class="employee-info">
       <div>
         <div class="name">
-          {{
-            `${employee.employeeFirstName || ''}` }} {{ `${employee.employeeLastName || ''}`
-          }}
+          {{ getName }}
         </div>
         <div class="employee-number">
           {{ `Emp. ID: ${employee.employeeCode}` }}
