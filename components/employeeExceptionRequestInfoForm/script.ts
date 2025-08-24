@@ -27,6 +27,7 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false },
     canDelete: { type: Boolean, default: false },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     exceptionTypeList: [] as ExceptionTypeInterface[],
@@ -54,7 +55,8 @@ export default defineComponent({
     currentAction: '' as string,
     description: '' as string,
     applyToMoreThanOneDay: false,
-    ExceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>
+    ExceptionRequestsError: [] as Array<ExceptionRequestErrorInterface>,
+    canManageCurrentDay: false
   }),
 
   computed: {
@@ -142,12 +144,30 @@ export default defineComponent({
       }
     }
 
+
     this.setMinDate(isVacation)
+    if (this.exceptionRequest.exceptionRequestId) {
+      const requestedDate = DateTime
+        .fromISO(this.exceptionRequest.requestedDate)
+        .startOf('day')
+
+      const limitDate = DateTime
+        .fromJSDate(this.startDateLimit)
+        .startOf('day')
+
+      if (requestedDate.toMillis() >= limitDate.toMillis()) {
+        this.canManageCurrentDay = true
+      }
+    } else {
+      this.canManageCurrentDay = true
+    }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
     if (this.exceptionRequest.exceptionRequestId) {
       this.handleTypeChange()
     }
+
   },
   methods: {
     async getExceptionTypes(search: string, onlyActive: boolean) {

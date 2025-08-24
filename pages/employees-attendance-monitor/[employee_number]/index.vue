@@ -268,7 +268,8 @@
                   :key="`key-calendar-day-${Math.random()}-${index}`">
                   <attendanceCalendarDay :checkAssist="calendarDay"
                     :discriminated="!!(employee.employeeAssistDiscriminator === 1)" :employee="employee"
-                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist" />
+                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist"
+                    :startDateLimit="startDateLimit" />
                 </div>
               </div>
             </div>

@@ -29,6 +29,7 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageWorkDisabilities: { type: Boolean, default: false, required: true },
     canManageUserResponsible: { type: Boolean, required: true },
+    startDateLimit: { type: Date, required: true }
   },
   data: () => ({
     insuranceCoverageTypeList: [] as InsuranceCoverageTypeInterface[],

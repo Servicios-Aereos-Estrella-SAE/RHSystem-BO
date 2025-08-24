@@ -39,8 +39,8 @@
         class="work-disability-form-sidebar" :showCloseIcon="true">
         <employeeWorkDisabilityInfoForm :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
           :canManageWorkDisabilities="canManageWorkDisabilities" :workDisability="workDisability"
-          :canManageUserResponsible="canManageUserResponsible" :employee="employee" @onWorkDisabilitySave="onSave"
-          @save="onSave" />
+          :startDateLimit="startDateLimit" :canManageUserResponsible="canManageUserResponsible" :employee="employee"
+          @onWorkDisabilitySave="onSave" @save="onSave" />
       </Sidebar>
     </div>
     <ProgressSpinner v-else />

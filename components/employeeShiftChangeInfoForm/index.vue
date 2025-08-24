@@ -32,7 +32,8 @@
           <div class="date-box-container">
             <label>Date to</label>
             <div v-if="!isNewEmployeeShiftChange" class="date-box">
-              <InputText v-model="dateTo" readonly class="capitalize" :disabled="!canManageUserResponsible" />
+              <InputText v-model="dateTo" class="capitalize"
+                :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
             </div>
             <div v-if="!displayDateToCalendar && isNewEmployeeShiftChange" class="date-box">
               <InputText :value="getDate(employeeShiftChange.employeeShiftChangeDateTo)" readonly class="capitalize"
@@ -89,14 +90,15 @@
             </template>
           </AutoComplete>
           <InputText v-else v-model="employeeToSelectedName" readonly class="uppercase"
-            :disabled="!canManageUserResponsible" />
+            :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !employeeShiftChange.employeeIdTo">Employee to is required.</small>
         </div>
         <div class="input-box">
           <label for="shift">
             Day to
           </label>
-          <InputText :value="dateRestDayTo" readonly class="capitalize" :disabled="!canManageUserResponsible" />
+          <InputText :value="dateRestDayTo" class="capitalize"
+            :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
         </div>
         <div class="input-box">
           <label for="shift">

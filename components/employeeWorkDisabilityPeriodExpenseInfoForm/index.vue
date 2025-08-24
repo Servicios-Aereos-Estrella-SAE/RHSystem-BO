@@ -4,7 +4,7 @@
     <workDisabilityPeriodInfoCard :isDeleted="true" :work-disability-period="workDisabilityPeriod"
       :click-on-edit="() => { }" :click-on-delete="() => { }" :canReadOnlyWorkDisabilities="false"
       :canManageWorkDisabilities="false" :onlySeeInfo="true" :employee="employee"
-      :canManageUserResponsible="canManageUserResponsible" />
+      :canManageUserResponsible="canManageUserResponsible" :startDateLimit="startDateLimit" />
     <h1>
       {{ isNewWorkDisabilityPeriodExpense ?
       'Add work disability period expense'

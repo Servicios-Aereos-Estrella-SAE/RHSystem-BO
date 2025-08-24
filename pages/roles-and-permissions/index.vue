@@ -59,6 +59,23 @@
               Modules
             </h2>
             <div class="modules-wrapper">
+              <div class="input-box module">
+                <label for="userActive">
+                  Status
+                  ( {{ roleManagementWithOutLimit ? 'With Out Limit' : 'With Limit' }} )
+                </label>
+                <InputSwitch v-model="roleManagementWithOutLimit" :disabled="!canUpdate || !activeEdit" />
+              </div>
+              <div class="input-box module">
+                <label for="roleManagementDays">Management Previous Days</label>
+                <InputNumber id="roleManagementDays" v-model="roleManagementDays"
+                  :disabled="roleManagementWithOutLimit || !canUpdate || !activeEdit" :min="0" />
+              </div>
+            </div>
+            <br>
+
+            <div class="modules-wrapper">
+
               <div v-for="(sModule,  smIndex) in systemModulesList"
                 :key="`system-module-${smIndex}-${sModule.systemModuleId}`" class="module">
                 <h3>

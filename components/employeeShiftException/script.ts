@@ -62,7 +62,6 @@ export default defineComponent({
       if (!this.isDeleted && this.canManageToPreviousDays && this.canManageException) {
         return true
       }
-
       return false
     }
   },
@@ -80,23 +79,11 @@ export default defineComponent({
     if (this.employee.deletedAt) {
       this.isDeleted = true
     }
-
-    if (myGeneralStore.isRoot || myGeneralStore.isAdmin) {
+    if (myGeneralStore.isRoot) {
       this.canManageToPreviousDays = true
     } else {
-      if (myGeneralStore.isRh) {
+      if (this.isDateAfterOrEqualToStartDay()) {
         this.canManageToPreviousDays = true
-      } else {
-        if (this.isDateGreaterOrEqualToToday(this.date.toString())) {
-          this.canManageToPreviousDays = true
-        }
-      }
-      if (myGeneralStore.isRh) {
-        if (this.isDateAfterOrEqualToFirstDayPeriod()) {
-          this.canManageToPreviousDays = true
-        } else {
-          this.canManageToPreviousDays = false
-        }
       }
     }
 
@@ -105,6 +92,21 @@ export default defineComponent({
 
   },
   methods: {
+    isDateAfterOrEqualToStartDay() {
+      const { data } = useAuth()
+
+      const authUser = data.value as unknown as UserInterface
+      if (authUser.role) {
+        if (authUser.role.roleManagementDays) {
+          const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          const inputDate = new Date(this.date.toString())
+          startDateLimit.setHours(0, 0, 0, 0)
+          return inputDate >= startDateLimit
+        } else {
+          return true
+        }
+      }
+    },
     async setSessionUser() {
       const { getSession } = useAuth()
       const session: unknown = await getSession()

@@ -64,6 +64,7 @@ export default defineComponent({
     canRemoveShiftAssigned: false,
     drawerCalendarShiftDelete: false,
     employeeCalendarAssist: null as AssistDayInterface | null,
+    withOutLimitDays: false
   }),
   setup() {
     const router = useRouter()
@@ -107,6 +108,8 @@ export default defineComponent({
   created() {
   },
   async mounted() {
+
+
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -360,16 +363,16 @@ export default defineComponent({
       return nextPayDate.toJSDate()
     },
     getStartPeriodDay() {
-      const myGeneralStore = useMyGeneralStore()
-      if (myGeneralStore.isRh || myGeneralStore.isAdmin) {
-        const datePay = this.getNextPayThursday()
-        const payDate = DateTime.fromJSDate(datePay).startOf('day')
-        const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
-        const thursday = startOfWeek.plus({ days: 3 })
-        const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-        this.startDateLimit = startLimit.toJSDate()
-      } else {
-        this.startDateLimit = DateTime.now().minus({ days: 1 }).toJSDate()
+      const { data } = useAuth()
+
+      const authUser = data.value as unknown as UserInterface
+      if (authUser.role) {
+        this.withOutLimitDays = false
+        if (authUser.role.roleManagementDays) {
+          this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+        } else {
+          this.withOutLimitDays = true
+        }
       }
     },
     onDeleteShift(employeeCalendarAssist: AssistDayInterface) {
