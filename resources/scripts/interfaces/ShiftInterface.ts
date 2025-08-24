@@ -10,6 +10,7 @@ interface ShiftInterface {
   shiftAccumulatedFault: number
   employee_count: any
   shiftIsChange?: boolean
+  shiftTemp: number
   shiftCreatedAt: Date | string | null
   shiftUpdatedAt: Date | string | null
   shiftDeletedAt: Date | string | null

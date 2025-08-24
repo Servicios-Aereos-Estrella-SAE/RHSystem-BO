@@ -71,7 +71,7 @@ export default defineComponent({
       }
       const list = response.status === 200 ? response._data.data.employees.data : []
       for await (const employee of list) {
-        employee.label = `${employee.employeeFirstName} ${employee.employeeLastName}`
+        employee.label = `${employee.person?.personFirstname} ${employee.person?.personLastname} ${employee.person?.personSecondLastname}`
       }
       this.employees = list
     },
@@ -171,7 +171,7 @@ export default defineComponent({
       this.user.userPassword = password
       this.passwordConfirm = password
     },
-    onEmployeeSelect () {
+    onEmployeeSelect() {
       if (this.user.personId) {
         const employee = this.employees.find(emp => emp.personId === this.user.personId)
         this.user.userEmail = employee ? employee.employeeBusinessEmail : ''

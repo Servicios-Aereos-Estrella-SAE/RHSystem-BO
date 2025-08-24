@@ -52,7 +52,6 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.pilots.meta.total : 0;
       this.first = response.status === 200 ? response._data.data.pilots.meta.first_page : 0;
       this.filteredPilots = list;
-      console.log(this.filteredPilots, 'this filter pilots')
       myGeneralStore.setFullLoader(false)
     },
     onPhoto(pilot: PilotInterface) {

@@ -187,7 +187,14 @@ export default defineComponent({
           this.positions.push(this.employee.position)
         }
       }
+      const myGeneralStore = useMyGeneralStore()
+      const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
+      this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
+      if (this.canManageUserResponsible && !this.canUpdate) {
+        this.canManageUserResponsible = false
+      }
     } else {
+      this.canManageUserResponsible = true
       this.employee.employeeAssistDiscriminator = 0
       this.employee.employeeIgnoreConsecutiveAbsences = 0
       const employeeType = this.employeeTypes.find(type => type.employeeTypeSlug === 'employee')
@@ -200,18 +207,13 @@ export default defineComponent({
         this.employee.businessUnitId = this.businessUnits[0].businessUnitId
       }
     }
-    const myGeneralStore = useMyGeneralStore()
-    const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
-    this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(employeeId)
-    if (this.canManageUserResponsible && !this.canUpdate) {
-      this.canManageUserResponsible = false
-    }
+
     this.isReady = true
   },
   methods: {
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
-      this.positions = await positionService.getPositionsDepartment(departmentId)
+      this.positions = await positionService.getPositionsDepartment(departmentId, true)
     },
     async getDepartments() {
       let response = null
@@ -398,15 +400,16 @@ export default defineComponent({
       }
 
 
-      // convert employee last name to last name and second last name
-      const lastnames = this.employee.employeeLastName.split(' ')
+
+      const lastname = this.employee.employeeLastName
+      const secondLastname = this.employee.employeeSecondLastName
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
 
       const person: PeopleInterface = {
         personId: this.employee.person?.personId ?? null,
         personFirstname: this.employee.employeeFirstName,
-        personLastname: lastnames[0],
-        personSecondLastname: lastnames.length > 1 ? lastnames[1] : '',
+        personLastname: lastname,
+        personSecondLastname: secondLastname,
         personGender: this.employee.person?.personGender ?? null,
         personBirthday: this.convertToDateTime(personBirthday),
         personPhone: this.employee.person?.personPhone ?? null,

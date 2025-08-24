@@ -7,6 +7,15 @@
 
     <div v-if="isReady" class="employee-contract-form">
       <div class="form-container">
+        <div class="checkbox-item">
+          <label for="employee-contract-status">
+            Status
+          </label>
+          <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
+          <label for="activeSwicht">
+            {{ activeSwicht ? 'Active' : 'Inactive' }}
+          </label>
+        </div>
         <div class="input-box">
 
           <FileUpload ref="fileUpload" v-model="files" name="demo[]" url="/api/upload" accept="image/*,.doc,.docx"

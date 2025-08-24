@@ -34,7 +34,8 @@
           </label>
           <Dropdown v-model="shiftException.exceptionTypeId" :options="exceptionTypeList"
             optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
-            class="w-full md:w-14rem" @update:model-value="handleTypeChange" :disabled="!canManageUserResponsible" />
+            class="w-full md:w-14rem" @update:model-value="handleTypeChange"
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
         </div>
         <div class="input-box">
@@ -42,7 +43,7 @@
             Reason
           </label>
           <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30"
-            :disabled="!canManageUserResponsible" />
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && needReason && !shiftException.shiftExceptionsDescription">
             Reason is required.
           </small>
@@ -51,7 +52,8 @@
           <label for="check-in-time">
             {{ needPeriodHours ? 'From' : 'Check in time' }}
           </label>
-          <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly :disabled="!canManageUserResponsible" />
+          <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckInTime">
             {{ needPeriodHours ? 'From' : 'Check in time' }} is required
           </small>
@@ -61,7 +63,7 @@
             {{ needPeriodHours ? 'To' : 'Check out time' }}
           </label>
           <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly
-            :disabled="!canManageUserResponsible" />
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
             {{ needPeriodHours ? 'To' : 'Check out time' }} is required
           </small>
@@ -72,7 +74,7 @@
           </label>
           <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label"
             optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem"
-            :disabled="!canManageUserResponsible" />
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
             Salary enjoyment is required.
           </small>
@@ -80,15 +82,16 @@
         <div v-if="(needTimeByTime) && !isDisabilityLeave" class="input-box">
           <label for="timeByTime">
             Time by Time</label>
-          <InputSwitch v-model="activeSwichtTimeByTime" />
+          <InputSwitch v-model="activeSwichtTimeByTime"
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
         </div>
-        <div class="input-box">
+        <div v-if="canManageUserResponsible && canManageToPreviousDays" class="input-box">
           <label for="evidence-file">
             Evidence files
           </label>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" :custom-upload="true" :maxFileSize="1000000"
             chooseLabel="Click to select files" :multiple="true" :show-upload-button="false" @select="validateFiles"
-            :showCancelButton="false" :disabled="!canManageUserResponsible">
+            :showCancelButton="false" :disabled="!canManageUserResponsible || !canManageToPreviousDays">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -137,7 +140,7 @@
                 </template>
               </Column>
 
-              <Column header="Actions" style="width: 100px;">
+              <Column v-if="canManageUserResponsible && canManageToPreviousDays" header="Actions" style="width: 100px;">
                 <template #body="slotProps">
                   <Button class="p-ml-auto p-button-text p-button-rounded p-button-danger"
                     @click="deleteEvidence(slotProps.data)">
@@ -158,7 +161,8 @@
           </div>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageUserResponsible" class="btn btn-block btn-primary" @click="onSave">
+          <Button v-if="canManageUserResponsible && canManageToPreviousDays" class="btn btn-block btn-primary"
+            @click="onSave">
             Save exception
           </Button>
         </div>

@@ -18,6 +18,8 @@ import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/Exce
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
 
 export default defineComponent({
   components: {
@@ -64,6 +66,8 @@ export default defineComponent({
     canRemoveShiftAssigned: false,
     drawerCalendarShiftDelete: false,
     employeeCalendarAssist: null as AssistDayInterface | null,
+    canSeeReportAssist: false,
+    withOutLimitDays: false
   }),
   setup() {
     const router = useRouter()
@@ -107,6 +111,8 @@ export default defineComponent({
   created() {
   },
   async mounted() {
+
+
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -142,10 +148,12 @@ export default defineComponent({
     }
     if (this.employee.employeeId) {
       this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(this.employee.employeeId)
+      this.canSeeReportReportAssist(this.employee.employeeId)
     }
     if (this.canManageUserResponsible && !this.canUpdate) {
       this.canManageUserResponsible = false
     }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -363,16 +371,16 @@ export default defineComponent({
       return nextPayDate.toJSDate()
     },
     getStartPeriodDay() {
-      const myGeneralStore = useMyGeneralStore()
-      if (myGeneralStore.isRh || myGeneralStore.isAdmin) {
-        const datePay = this.getNextPayThursday()
-        const payDate = DateTime.fromJSDate(datePay).startOf('day')
-        const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
-        const thursday = startOfWeek.plus({ days: 3 })
-        const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-        this.startDateLimit = startLimit.toJSDate()
-      } else {
-        this.startDateLimit = DateTime.now().minus({ days: 1 }).toJSDate()
+      const { data } = useAuth()
+
+      const authUser = data.value as unknown as UserInterface
+      if (authUser.role) {
+        this.withOutLimitDays = false
+        if (authUser.role.roleManagementDays) {
+          this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+        } else {
+          this.withOutLimitDays = true
+        }
       }
     },
     onDeleteShift(employeeCalendarAssist: AssistDayInterface) {
@@ -410,6 +418,28 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
 
+    },
+    async canSeeReportReportAssist(employeeId: number,) {
+      let userResponsibleEmployeesList = [] as Array<UserResponsibleEmployeeInterface>
+      this.canSeeReportAssist = false
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        myGeneralStore.setFullLoader(true)
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+
+        userResponsibleEmployeesList = []
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
+        userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+        if (userResponsibleEmployeesList.length > 0) {
+          this.canSeeReportAssist = true
+        }
+        myGeneralStore.setFullLoader(false)
+      } else {
+        this.canSeeReportAssist = true
+      }
     }
   }
 })

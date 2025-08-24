@@ -59,6 +59,7 @@
         </small>
       </div>
 
+
       <div v-if="employeeContract.employeeContractStartDate" class="period-applied">
         <div class="period-applied-date">
           <div class="icon">
@@ -81,6 +82,10 @@
           {{ employeeContract.employeeContractEndDate ? getDate(employeeContract.employeeContractEndDate) : '---' }}
         </div>
       </div>
+    </div>
+    <div class="status capitalize">
+      <div class="dot" :class="{ active: !!employeeContract.employeeContractActive }"></div>
+      {{ employeeContract.employeeContractActive ? 'Active' : 'Inactive' }}
     </div>
 
     <div v-if="!isDeleted" class="box-tools-footer">

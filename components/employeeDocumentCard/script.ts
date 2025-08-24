@@ -50,6 +50,10 @@ export default defineComponent({
       this.proceedingFilesExpiredCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpired.length
       this.proceedingFilesExpiringCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.proceedingFilesExpiring.length
       this.allFilesCount = employeeProceedingFileResponse._data.data.employeeProceedingFiles.quantityFiles
+
+      this.proceedingFilesExpiredCount += employeeProceedingFileResponse._data.data.employeeProceedingFiles.contractsExpired.length
+      this.proceedingFilesExpiringCount += employeeProceedingFileResponse._data.data.employeeProceedingFiles.contractsExpiring.length
+      this.allFilesCount += employeeProceedingFileResponse._data.data.employeeProceedingFiles.quantityContracts
     } else {
       this.$toast.add({
         severity: 'error',
