@@ -154,7 +154,7 @@ export default defineComponent({
     canManageWorkDisabilities: false as boolean,
     canUpdate: false as boolean,
     canSeePayroll: false,
-    getAssistFromSaveCalendarSwicht: true,
+    getAssistFromSaveCalendarSwicht: false,
   }),
   computed: {
     isRoot() {

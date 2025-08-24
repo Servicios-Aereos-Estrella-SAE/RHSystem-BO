@@ -146,7 +146,7 @@ export default defineComponent({
     searchTime: null as null | Date,
     employeeWorkDisabilities: [] as EmployeeInterface[],
     canSeePayroll: false,
-    getAssistFromSaveCalendarSwicht: true,
+    getAssistFromSaveCalendarSwicht: false,
 
   }),
   computed: {
