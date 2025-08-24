@@ -56,6 +56,13 @@
                 :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && !employee.employeeLastName">Last Name is required.</small>
             </div>
+            <div class="input-box">
+              <label for="employeeSecondLastName">Second Last Name</label>
+              <InputText v-model="employee.employeeSecondLastName" placeholder="Enter Second Last Name"
+                :disabled="isDeleted || !canManageUserResponsible" />
+              <small class="p-error" v-if="submitted && !employee.employeeSecondLastName">Second Last Name is
+                required.</small>
+            </div>
           </div>
           <div class="input-box">
             <label for="useremail">
@@ -121,21 +128,21 @@
         <div class="inputs-group group-emp-fiscal">
           <div class="group-3">
             <div class="input-box">
-              <label for="employeeLastName">CURP</label>
+              <label for="employeeCURP">CURP</label>
               <InputText v-model="employee.person.personCurp" placeholder="Enter employee CURP"
                 :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && employee.person.personCurp && !isValidCURP">Personal
                 identification is not valid.</small>
             </div>
             <div class="input-box">
-              <label for="employeeLastName">RFC</label>
+              <label for="employeeRFC">RFC</label>
               <InputText v-model="employee.person.personRfc" placeholder="Enter employee RFC"
                 :disabled="isDeleted || !canManageUserResponsible" />
               <small class="p-error" v-if="submitted && employee.person.personRfc && !isValidRFC">RFC is not
                 valid.</small>
             </div>
             <div class="input-box">
-              <label for="employeeLastName">Employee NSS</label>
+              <label for="employeeNSS">Employee NSS</label>
               <InputText v-model="employee.person.personImssNss" placeholder="Enter employee NSS"
                 :disabled="isDeleted || !canManageUserResponsible" />
             </div>

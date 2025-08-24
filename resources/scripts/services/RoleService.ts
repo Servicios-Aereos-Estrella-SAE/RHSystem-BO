@@ -32,10 +32,11 @@ export default class RoleService {
     return responseRequest
   }
 
-  async assign(roleId: number, permissions: Array<any>) {
+  async assign(roleId: number, permissions: Array<any>, roleManagementDays: number | null) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     const formData = new FormData()
+    formData.append('roleManagementDays', roleManagementDays !== null ? roleManagementDays.toString() : '');
     permissions.forEach((systemPermissionId) => {
       formData.append('permissions[]', systemPermissionId);
     })

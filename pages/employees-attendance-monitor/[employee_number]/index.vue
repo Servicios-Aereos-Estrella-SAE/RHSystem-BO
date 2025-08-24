@@ -19,13 +19,14 @@
                   Search employee
                 </label>
                 <AutoComplete v-model="selectedEmployee"
-                  :optionLabel="() => `${selectedEmployee.employeeFirstName} ${selectedEmployee.employeeLastName}`"
+                  :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
                   :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
                   <template #option="employee">
                     <div class="item-employee-filter-attendance-monitor">
                       <div class="name">
-                        {{ employee.option.employeeFirstName }}
-                        {{ employee.option.employeeLastName }}
+                        {{ employee.option.person?.personFirstname }}
+                        {{ employee.option.person?.personLastname }}
+                        {{ employee.option.person?.personSecondLastname }}
                       </div>
                       <div class="position-department">
                         {{ employee.option.department.departmentAlias || employee.option.department.departmentName }}
@@ -82,6 +83,12 @@
         </div>
 
         <div class="employee-attendance-head-tools">
+          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
+            <label for="getAssistFromSaveCalendarSwicht">
+              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+            </label>
+            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
+          </div>
           <div v-if="visualizationMode">
             <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
               Vacations
@@ -261,7 +268,8 @@
                   :key="`key-calendar-day-${Math.random()}-${index}`">
                   <attendanceCalendarDay :checkAssist="calendarDay"
                     :discriminated="!!(employee.employeeAssistDiscriminator === 1)" :employee="employee"
-                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist" />
+                    :onRefresh="() => { onRefresh() }" :canDeleteCheckAssist="canDeleteCheckAssist"
+                    :startDateLimit="startDateLimit" />
                 </div>
               </div>
             </div>

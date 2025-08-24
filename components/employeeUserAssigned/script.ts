@@ -175,20 +175,24 @@ export default defineComponent({
     async setEmployeeInUsers() {
       const employeeService = new EmployeeService()
       const personService = new PersonService()
-      for await (const userAssigned of this.userAssignedEmployeesList) {
-        if (userAssigned.employeeId) {
-          const employeeResponse = await employeeService.show(userAssigned.employeeId)
-          if (employeeResponse) {
-            if (employeeResponse._data.data.employee) {
-              userAssigned.employeeAssigned = employeeResponse._data.data.employee
-              if (userAssigned.employeeAssigned?.personId) {
-                const personResponse = await personService.show(userAssigned.employeeAssigned?.personId)
-                userAssigned.employeeAssigned.person = personResponse._data.data.person
-              }
-            }
+
+      const userPromises = this.userAssignedEmployeesList.map(async (userAssigned) => {
+        if (!userAssigned.employeeId) return
+
+        const employeeResponse = await employeeService.show(userAssigned.employeeId)
+        const employee = employeeResponse?._data?.data?.employee
+
+        if (employee) {
+          userAssigned.employeeAssigned = employee
+
+          if (employee.personId && userAssigned.employeeAssigned) {
+            const personResponse = await personService.show(employee.personId)
+            userAssigned.employeeAssigned.person = personResponse?._data?.data?.person
           }
         }
-      }
+      })
+
+      await Promise.all(userPromises)
     },
     async onSaveSelection() {
       const myGeneralStore = useMyGeneralStore()

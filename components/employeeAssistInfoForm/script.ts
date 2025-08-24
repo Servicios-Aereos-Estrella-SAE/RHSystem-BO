@@ -7,6 +7,7 @@ import type { AssistInterface } from '~/resources/scripts/interfaces/AssistInter
 import AssistService from '~/resources/scripts/services/AssistService';
 import { DateTime } from 'luxon';
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface';
+import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 
 export default defineComponent({
   components: {
@@ -48,12 +49,21 @@ export default defineComponent({
   },
   methods: {
     getStartPeriodDay() {
-      const datePay = this.getNextPayThursday()
-      const payDate = DateTime.fromJSDate(datePay).startOf('day')
-      const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
-      const thursday = startOfWeek.plus({ days: 3 })
-      const startLimit = thursday.minus({ days: 24 }).startOf('day').setZone('local')
-      this.startDateLimit = startLimit.toJSDate()
+      const myGeneralStore = useMyGeneralStore()
+      if (myGeneralStore.isRoot) {
+        this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+      } else {
+        const { data } = useAuth()
+
+        const authUser = data.value as unknown as UserInterface
+        if (authUser.role) {
+          if (authUser.role.roleManagementDays) {
+            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+          } else {
+            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          }
+        }
+      }
     },
     async onSave() {
       this.submitted = true
@@ -166,7 +176,7 @@ export default defineComponent({
       }
       this.dateInvalid = false
     },
-    setSelectedDate () {
+    setSelectedDate() {
       this.displayDateCalendar = false
     }
   }
