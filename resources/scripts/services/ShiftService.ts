@@ -88,4 +88,27 @@ export default class ShiftService {
     }
     return responseRequest
   }
+
+  async show(shiftId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/shift/${shiftId}`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const shift = responseRequest.status === 200 ? responseRequest._data.data : null
+
+      return {
+        status: responseRequest.status,
+        _data: {
+          data: {
+            shift: shift
+          }
+        }
+      }
+    } catch (error) {
+    }
+  }
 }

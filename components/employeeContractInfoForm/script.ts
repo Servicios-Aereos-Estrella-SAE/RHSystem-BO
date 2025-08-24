@@ -49,6 +49,7 @@ export default defineComponent({
     departments: [] as DepartmentInterface[],
     businessUnits: [] as BusinessUnitInterface[],
     maxDate: new Date() as Date,
+    activeSwicht: true,
   }),
   computed: {
   },
@@ -109,6 +110,10 @@ export default defineComponent({
         }
       }
     }
+
+    let isActive: number = 1
+    isActive = this.employeeContract.employeeContractActive
+    this.activeSwicht = isActive === 1 ? true : false
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
@@ -258,6 +263,7 @@ export default defineComponent({
         this.employeeContract.employeeContractEndDate = DateTime.fromJSDate(new Date(this.employeeContract.employeeContractEndDate))
           .toFormat('yyyy-MM-dd');
       }
+      this.employeeContract.employeeContractActive = this.activeSwicht ? 1 : 0
       if (!this.employeeContract.employeeContractId) {
         employeeContractResponse = await employeeContractService.store(this.employeeContract, files)
       } else {

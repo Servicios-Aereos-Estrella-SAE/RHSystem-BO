@@ -7,6 +7,7 @@ interface RoleInterface {
   roleDescription: string,
   roleSlug: string,
   roleActive: number,
+  roleManagementDays: number | null,
   roleCreatedAt: string,
   roleUpdatedAt: string,
   roleDeletedAt: string | null

@@ -107,7 +107,7 @@
         @successShiftAssigned="onSuccessShiftAssigned" @clickExceptions="onClickExceptions"
         @clickShiftChanges="onClickShiftChanges" :click-on-delete="() => { onDeleteShift(item) }"
         :canManageShiftChanges="canManageShiftChanges" :canManageUserResponsible="canManageUserResponsible"
-        :canRemoveShiftAssigned="canRemoveShiftAssigned" />
+        :canRemoveShiftAssigned="canRemoveShiftAssigned" :withOutLimitDays="withOutLimitDays" />
     </div>
     <div v-else class="no-shifts">
       This employee has no shifts assigned to this month

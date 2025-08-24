@@ -19,9 +19,18 @@ export default defineComponent({
     roleSelected: 0,
     canUpdate: false,
     canRead: false,
-    activeEdit: false
+    activeEdit: false,
+    roleManagementDays: 0 as number | null,
+    roleManagementWithOutLimit: false
   }),
   computed: {
+  },
+  watch: {
+    'roleManagementWithOutLimit'(val: Boolean) {
+      if (val) {
+        this.roleManagementDays = null
+      }
+    },
   },
   created() { },
   async mounted() {
@@ -94,7 +103,6 @@ export default defineComponent({
           }
         }
         roleModules.push(roleModule)
-
       }
 
       const permissions = [] as number[][]
@@ -110,17 +118,29 @@ export default defineComponent({
       }
 
       this.permissions = permissions
+      if (this.roleList.length > 0) {
+        this.setManagementDays()
+      }
     },
     async onSave() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+      const role = this.roleList[this.roleSelected]
+      if (role) {
+        if (this.roleManagementWithOutLimit) {
+          role.roleManagementDays = null
+        } else {
+          role.roleManagementDays = this.roleManagementDays
+        }
+      }
       try {
         const promises = this.roleList.map(async (role, index) => {
           const permissions = []
           for (const permissionId of this.permissions[index]) {
             permissions.push(permissionId)
           }
-          const response = await new RoleService().assign(role.roleId, permissions)
+
+          const response = await new RoleService().assign(role.roleId, permissions, role.roleManagementDays)
           if (response.status !== 201) {
             throw new Error(response._data.message || 'Failed to assign role')
           }
@@ -160,6 +180,21 @@ export default defineComponent({
       }
 
       this.roleSelected = index
+      this.setManagementDays()
+
+    },
+    setManagementDays() {
+      const role = this.roleList[this.roleSelected]
+      if (role) {
+        if (!role.roleManagementDays) {
+          this.roleManagementDays = null
+          this.roleManagementWithOutLimit = true
+        } else {
+          this.roleManagementDays = role.roleManagementDays
+          this.roleManagementWithOutLimit = false
+        }
+      }
     }
+
   }
 })

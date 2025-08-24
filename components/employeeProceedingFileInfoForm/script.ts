@@ -45,6 +45,7 @@ export default defineComponent({
     drawerProceedingFileTypePropertyValueDelete: false,
     proceedingFileTypePropertyValue: null as ProceedingFileTypePropertyValueInterface | null,
     proceedingFileTypeProperty: null as ProceedingFileTypePropertyInterface | null,
+    activeSwicht: true,
   }),
   computed: {
   },
@@ -71,6 +72,9 @@ export default defineComponent({
       this.proceedingFile.proceedingFileExpirationAt = expirationAt
       this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
     }
+    let isActive: number = 1
+    isActive = this.proceedingFile.proceedingFileActive
+    this.activeSwicht = isActive === 1 ? true : false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
@@ -143,8 +147,10 @@ export default defineComponent({
       }
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
+
       const proceedingFileService = new ProceedingFileService()
       if (this.proceedingFile) {
+        this.proceedingFile.proceedingFileActive = this.activeSwicht ? 1 : 0
         const files = this.files.length > 0 ? this.files[0] : null
         const proceedingFileExpirationAtTemp = this.proceedingFile.proceedingFileExpirationAt
         let proceedingFileResponse = null

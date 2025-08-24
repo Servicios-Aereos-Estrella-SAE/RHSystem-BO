@@ -430,7 +430,7 @@ export default class AssistExcelService {
 
         rows.push({
           code: employee.employeeCode.toString(),
-          name: `${employee.employeeFirstName} ${employee.employeeLastName}`,
+          name: `${employee.person?.personFirstname} ${employee.person?.personLastname} ${employee.person?.personSecondLastname}`,
           department: department,
           position: position,
           date: calendarDay,
@@ -829,7 +829,7 @@ export default class AssistExcelService {
     earlyOutsFaults = this.getFaultsFromDelays(earlyOuts, filters.tardies)
     rows.push({
       employeeId: filters.employee.employeeCode.toString(),
-      employeeName: `${filters.employee.employeeFirstName} ${filters.employee.employeeLastName}`,
+      employeeName: `${filters.employee.person?.personFirstname} ${filters.employee.person?.personLastname} ${filters.employee.person?.personSecondLastname}`,
       department: department,
       daysWorked: daysWorked,
       daysOnTime: daysOnTime,
@@ -1482,7 +1482,7 @@ export default class AssistExcelService {
       }
     }
     rows.push({
-      employeeName: `${filters.employee.employeeFirstName} ${filters.employee.employeeLastName}`,
+      employeeName: `${filters.employee.person?.personFirstname} ${filters.employee.person?.personLastname} ${filters.employee.person?.personSecondLastname}`,
       employeeId: filters.employee.employeeCode.toString(),
       department: department,
       company: company,

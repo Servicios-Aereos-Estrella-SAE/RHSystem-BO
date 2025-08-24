@@ -28,7 +28,7 @@
           <div v-for="(exceptionRequest, index) in exceptionRequestsList" :key="`exception-${index}`">
             <employeeExceptionRequestCard :exceptionRequest="exceptionRequest" :isDeleted="isDeleted"
               :canManageException="canManageException" :canManageUserResponsible="canManageUserResponsible"
-              :click-on-edit-exception="() => { onEdit(exceptionRequest) }"
+              :startDateLimit="startDateLimit" :click-on-edit-exception="() => { onEdit(exceptionRequest) }"
               :click-on-delete-exception="() => { onDelete(exceptionRequest) }" />
           </div>
         </div>
@@ -43,8 +43,8 @@
     <Sidebar v-model:visible="drawerExceptionRequestForm" header="form" position="right"
       class="exception-request-form-sidebar" :showCloseIcon="true">
       <employeeExceptionRequestInfoForm :exception-request="exceptionRequest" :employee="employee" :date="date"
-        :canManageUserResponsible="canManageUserResponsible" @onExceptionRequestSave="onSave"
-        @onExceptionRequestSaveAll="onSaveAll" />
+        :canManageUserResponsible="canManageUserResponsible" :startDateLimit="startDateLimit"
+        @onExceptionRequestSave="onSave" @onExceptionRequestSaveAll="onSaveAll" />
     </Sidebar>
 
     <transition name="page">

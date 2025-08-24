@@ -77,7 +77,8 @@
                 :click-on-delete="() => { onDeletePeriod(workDisabilityPeriod) }"
                 :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
                 :canManageWorkDisabilities="canManageWorkDisabilities"
-                :canManageUserResponsible="canManageUserResponsible" :employee="employee" />
+                :canManageUserResponsible="canManageUserResponsible" :startDateLimit="startDateLimit"
+                :employee="employee" />
             </div>
           </div>
 
@@ -101,7 +102,7 @@
         <employeeWorkDisabilityPeriodInfoForm :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
           :canManageWorkDisabilities="canManageWorkDisabilities" :workDisabilityPeriod="workDisabilityPeriod"
           :employee="employee" :workDisability="workDisability" :canManageUserResponsible="canManageUserResponsible"
-          @onWorkDisabilityPeriodSave="onSavePeriod" />
+          :startDateLimit="startDateLimit" @onWorkDisabilityPeriodSave="onSavePeriod" />
       </Sidebar>
       <Sidebar v-model:visible="drawerWorkDisabilityNoteForm" header="form" position="right"
         class="work-disability-note-form-sidebar" :showCloseIcon="true">
