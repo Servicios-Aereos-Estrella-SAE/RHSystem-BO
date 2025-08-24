@@ -18,6 +18,8 @@ import type { ExceptionTypeInterface } from '~/resources/scripts/interfaces/Exce
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftService';
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
+import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
+import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
 
 export default defineComponent({
   components: {
@@ -64,6 +66,7 @@ export default defineComponent({
     canRemoveShiftAssigned: false,
     drawerCalendarShiftDelete: false,
     employeeCalendarAssist: null as AssistDayInterface | null,
+    canSeeReportAssist: false,
     withOutLimitDays: false
   }),
   setup() {
@@ -142,10 +145,12 @@ export default defineComponent({
     }
     if (this.employee.employeeId) {
       this.canManageUserResponsible = await myGeneralStore.canManageUserResponsibleEmployee(this.employee.employeeId)
+      this.canSeeReportReportAssist(this.employee.employeeId)
     }
     if (this.canManageUserResponsible && !this.canUpdate) {
       this.canManageUserResponsible = false
     }
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
   },
@@ -410,6 +415,28 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
 
+    },
+    async canSeeReportReportAssist(employeeId: number,) {
+      let userResponsibleEmployeesList = [] as Array<UserResponsibleEmployeeInterface>
+      this.canSeeReportAssist = false
+      const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        myGeneralStore.setFullLoader(true)
+        const { data } = useAuth()
+        const session: unknown = data.value as unknown as UserInterface
+        const authUser = session as UserInterface
+
+        userResponsibleEmployeesList = []
+        const userResponsibleEmployeeService = new UserResponsibleEmployeeService()
+        const userResponsibleEmployeeResponse = await userResponsibleEmployeeService.getByEmployee(employeeId, authUser.userId)
+        userResponsibleEmployeesList = userResponsibleEmployeeResponse.data.data
+        if (userResponsibleEmployeesList.length > 0) {
+          this.canSeeReportAssist = true
+        }
+        myGeneralStore.setFullLoader(false)
+      } else {
+        this.canSeeReportAssist = true
+      }
     }
   }
 })
