@@ -96,7 +96,8 @@
         <div class="head-ea-bts-group">
           <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
             <label for="getAssistFromSaveCalendarSwicht">
-              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+              {{ $t('get_assist') }} {{ getAssistFromSaveCalendarSwicht ? $t('from_save_calendar') :
+              $t('from_api_calculate_calendar') }}
             </label>
             <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
           </div>

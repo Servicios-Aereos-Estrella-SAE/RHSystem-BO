@@ -1122,7 +1122,7 @@ export default defineComponent({
     },
     async getExcelAllAssistance() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const range = this.getRange()
       const title = `${range.title}`
@@ -1130,19 +1130,19 @@ export default defineComponent({
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const range = this.getRange()
-      const title = `Summary Report  ${range.title}`
+      const title = `${this.t('incident_summary')}  ${range.title}`
       await assistExcelService.getExcelIncidentSummary(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
       const range = this.getRange()
-      const title = `Incidencias ${tradeName} ${range.title}`
+      const title = `${this.t('incidents')} ${tradeName} ${range.title}`
       const filters = {
         assists: assists,
         title: title ? title : '',
@@ -1179,7 +1179,7 @@ export default defineComponent({
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
 
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const dayStart = assistExcelService.dateDay(startDay)
       const monthStart = assistExcelService.dateMonth(startDay)
       const yearStart = assistExcelService.dateYear(startDay)
@@ -1189,7 +1189,7 @@ export default defineComponent({
       const yearEnd = assistExcelService.dateYear(endDay)
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
-      return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
+      return { title: `${this.capitalizeFirstLetter(this.$t('from'))} ${calendarDayStart} ${this.capitalizeFirstLetter(this.$t('to'))} ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
       if (this.visualizationMode?.value === 'payroll') {
@@ -1217,6 +1217,10 @@ export default defineComponent({
       if (employeeResponse.status === 200) {
         this.employeeWorkDisabilities = employeeResponse._data.data.data
       }
+    },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
     }
   }
 })

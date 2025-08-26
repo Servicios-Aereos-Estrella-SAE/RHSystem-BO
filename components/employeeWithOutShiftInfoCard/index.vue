@@ -15,14 +15,14 @@
           {{ `Emp. ID: ${employee.employeeCode}` }}
         </div>
         <div class="employee-email">
-          {{ `${ $t('email') }: ${employee.employeeBusinessEmail || 'Not assigned'}` }}
+          {{ `${ $t('email') }: ${employee.employeeBusinessEmail || $t('not_assigned')} `}}
         </div>
       </div>
     </div>
 
     <div class="info">
       <div class="business-unit">
-        {{ `${ $t('business_unit') }: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
+        {{ `${ $t('business_unit') }: ${employee.businessUnit?.businessUnitName || $t('not_assigned')} `}}
       </div>
       <div class="capitalize">
         {{ `${employee.department.departmentName || ''}`}}
