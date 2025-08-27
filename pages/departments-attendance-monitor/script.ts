@@ -2,7 +2,6 @@ import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
 import moment from 'moment';
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
-
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
@@ -18,10 +17,8 @@ import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSync
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 import type { AssistStatisticInterface } from '~/resources/scripts/interfaces/AssistStatisticInterface';
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
 import AssistExcelService from '~/resources/scripts/services/AssistExcelService';
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
-import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
 import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService';
 
 export default defineComponent({
@@ -30,6 +27,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'DepartmentsAttendanceMonitor',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
   },
   data: () => ({
@@ -108,12 +112,12 @@ export default defineComponent({
     },
     departmentList: [] as DepartmentInterface[],
     departmenSelected: null as DepartmentInterface | null,
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<{ name: string }>,
     statusSelected: null as string | null,
     visualizationModeOptions: [
-      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
-      { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false },
-      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
+      { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
+      { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1 },
+      { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
       { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
     visualizationMode: null as VisualizationModeOptionInterface | null,
@@ -144,9 +148,22 @@ export default defineComponent({
     searchTime: null as null | Date,
     employeeWorkDisabilities: [] as EmployeeInterface[],
     canSeePayroll: false,
-    getAssistFromSaveCalendarSwicht: false
+    getAssistFromSaveCalendarSwicht: false,
+    localeToUse: 'en',
   }),
   computed: {
+    getStatus() {
+      return this.statusList.map(item => ({
+        name: item.name,
+        label: this.$t(`status_obj.${item.name}`.toString().toLowerCase().replace(' ', '_'))
+      }))
+    },
+    getVisualizationModes() {
+      return this.visualizationModeOptions.map(item => ({
+        ...item,
+        label: this.$t(`visualization_modes.${item.value}`.toString().toLowerCase().replace(' ', '_'))
+      }))
+    },
     isRootUser() {
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
@@ -255,17 +272,17 @@ export default defineComponent({
     },
     lineChartTitle() {
       if (this.visualizationMode?.value === 'yearly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Monthly behavior by the year, ${date.toFormat('yyyy')}`
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale(this.localeToUse)
+        return `${this.t('monthly_behavior_by_the_year,')}, ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'monthly') {
-        const date = DateTime.fromJSDate(this.periodSelected).setLocale('en')
-        return `Behavior in ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
+        const date = DateTime.fromJSDate(this.periodSelected).setLocale(this.localeToUse)
+        return `${this.t('behavior_in')} ${date.toFormat('MMMM')}, ${date.toFormat('yyyy')}`
       }
 
       if (this.visualizationMode?.value === 'weekly') {
-        return 'Weekly behavior'
+        return this.t('weekly_behavior')
       }
 
       if (this.visualizationMode?.value === 'payroll') {
@@ -274,7 +291,7 @@ export default defineComponent({
           year: this.weeklyStartDay[0].year,
           month: this.weeklyStartDay[0].month,
           day: this.weeklyStartDay[0].day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale(this.localeToUse);
 
         // Convertimos la fecha fin desde weeklyStartDay[1]
         const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -282,15 +299,15 @@ export default defineComponent({
           year: endDateObject.year,
           month: endDateObject.month,
           day: endDateObject.day
-        }).minus({ days: 1 }).setLocale('en');
+        }).minus({ days: 1 }).setLocale(this.localeToUse);
 
-        return `Behavior from ${startDate.toFormat('DDD')} to ${endDate.toFormat('DDD')}`
+        return `${this.t('behavior_from')} ${startDate.toFormat('DDD')} ${this.t('to')} ${endDate.toFormat('DDD')}`
       }
 
       if (this.visualizationMode?.value === 'custom') {
-        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale('en')
-        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale('en')
-        return `Behavior from ${date.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+        const date = DateTime.fromJSDate(this.datesSelected[0]).setLocale(this.localeToUse)
+        const dateEnd = DateTime.fromJSDate(this.datesSelected[1]).setLocale(this.localeToUse)
+        return `${this.t('behavior_from')} ${date.toFormat('DDD')} ${this.t(this.localeToUse)} ${dateEnd.toFormat('DDD')}`
       }
     },
     departmentCollection(): DepartmentInterface[] {
@@ -336,6 +353,7 @@ export default defineComponent({
     },
   },
   created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
     const minDateString = '2024-05-01T00:00:00'
     const minDate = new Date(minDateString)
     this.minDate = minDate
@@ -426,17 +444,17 @@ export default defineComponent({
     },
     setPeriodCategories() {
       if (this.visualizationMode?.value === 'custom') {
-        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected)
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected, this.localeToUse)
       } else {
-        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected)
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected, this.localeToUse)
       }
     },
     isValidPeriodSelected() {
       if (this.visualizationMode?.value === 'payroll' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Invalid Date',
-          detail: 'You should select a valid date. Only Thursdays are valid',
+          summary: this.$t('invalid_date'),
+          detail: this.$t('you_should_select_a_valid_date_only_thursdays_are_valid'),
           life: 5000,
         })
         return false;
@@ -457,10 +475,10 @@ export default defineComponent({
       const delay = Math.round((delays / totalAvailable) * 100)
       const fault = Math.round((faults / totalAvailable) * 100)
 
-      serieData.push({ name: 'On time', y: assist, color: '#33D4AD' })
-      serieData.push({ name: 'Tolerances', y: tolerance, color: '#3CB4E5' })
-      serieData.push({ name: 'Delays', y: delay, color: '#FF993A' })
-      serieData.push({ name: 'Faults', y: fault, color: '#d45633' })
+      serieData.push({ name: this.t('on_time'), y: assist, color: '#33D4AD' })
+      serieData.push({ name: this.t('tolerances'), y: tolerance, color: '#3CB4E5' })
+      serieData.push({ name: this.t('delays'), y: delay, color: '#FF993A' })
+      serieData.push({ name: this.t('faults'), y: fault, color: '#d45633' })
 
       this.generalData.series[0].data = serieData
     },
@@ -569,10 +587,12 @@ export default defineComponent({
 
         const serieData = []
 
-        serieData.push({ name: 'On time', data: assistSerie, color: '#33D4AD' })
-        serieData.push({ name: 'Tolerances', data: toleranceSerie, color: '#3CB4E5' })
-        serieData.push({ name: 'Delays', data: delaySerie, color: '#FF993A' })
-        serieData.push({ name: 'Faults', data: faultSerie, color: '#d45633' })
+        serieData.push({ name: this.$t('on_time'), data: assistSerie, color: '#33D4AD' })
+        serieData.push({ name: this.$t('tolerances'), data: toleranceSerie, color: '#3CB4E5' })
+        serieData.push({ name: this.$t('delays'), data: delaySerie, color: '#FF993A' })
+        serieData.push({
+          name: this.$t('faults'), data: faultSerie, color: '#d45633'
+        })
         this.periodData.series = serieData
         this.setPeriodCategories()
       }
@@ -858,14 +878,14 @@ export default defineComponent({
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `All Department ${reportType}.xlsx`)
+        link.setAttribute('download', `${this.t('all_departments')} ${reportType}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',
-          summary: 'Excel assist',
-          detail: 'Excel was created successfully',
+          summary: this.t('excel_assist'),
+          detail: this.t('excel_was_created_successfully'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -873,7 +893,7 @@ export default defineComponent({
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel assist',
+          summary: this.t('excel_assist'),
           detail: msgError,
           life: 5000,
         })
@@ -1021,7 +1041,7 @@ export default defineComponent({
           for (const calendar of assist.calendar) {
             if (calendar.assist.checkInStatus === 'fault' && !calendar.assist.isRestDay && !calendar.assist.isFutureDay && !calendar.assist.isWorkDisabilityDate && !calendar.assist.isVacationDate && !calendar.assist.isHoliday) {
               assist.employee.faultDays.push({
-                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+                day: DateTime.fromISO(calendar.day).setLocale(this.localeToUse).toFormat('DDD')
               })
             }
           }
@@ -1056,7 +1076,7 @@ export default defineComponent({
 
             if (noChecks) {
               assist.employee.faultDays.push({
-                day: DateTime.fromISO(calendar.day).setLocale('en').toFormat('DDD')
+                day: DateTime.fromISO(calendar.day).setLocale(this.localeToUse).toFormat('DDD')
               })
               noCheckStreak++
               if (noCheckStreak === 3) {
@@ -1075,7 +1095,7 @@ export default defineComponent({
     },
     async getExcelAllAssistance() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const range = this.getRange()
       const title = `${range.title}`
@@ -1084,19 +1104,19 @@ export default defineComponent({
     },
     async getExcelIncidentSummary() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const range = this.getRange()
-      const title = `Summary Report  ${range.title}`
+      const title = `${this.t('incident_summary')} ${range.title}`
       await assistExcelService.getExcelIncidentSummary(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummaryPayRoll() {
       await this.verifiySearchTime()
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const tradeName = await assistExcelService.getTradeName()
       const range = this.getRange()
-      const title = `Incidencias ${tradeName} ${range.title}`
+      const title = `${this.t('incidents')} ${tradeName} ${range.title}`
       const filters = {
         assists: assists,
         title: title ? title : '',
@@ -1133,7 +1153,7 @@ export default defineComponent({
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
 
-      const assistExcelService = new AssistExcelService()
+      const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const dayStart = assistExcelService.dateDay(startDay)
       const monthStart = assistExcelService.dateMonth(startDay)
       const yearStart = assistExcelService.dateYear(startDay)
@@ -1143,7 +1163,7 @@ export default defineComponent({
       const yearEnd = assistExcelService.dateYear(endDay)
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
-      return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
+      return { title: `${this.capitalizeFirstLetter(this.t('from'))} ${calendarDayStart} ${this.t('to')} ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
       if (this.visualizationMode?.value === 'payroll') {
@@ -1172,5 +1192,9 @@ export default defineComponent({
         this.employeeWorkDisabilities = employeeResponse._data.data.data
       }
     },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
+    }
   }
 })

@@ -60,9 +60,6 @@
             <label for="departments">
               {{ $t('visualization_mode') }}
             </label>
-            <!--  <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
-              optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
-              @change="onInputVisualizationModeChange" /> -->
             <SelectButton v-model="visualizationMode" :options="getVisualizationModes" dataKey="value"
               optionLabel="label" aria-labelledby="basic" optionDisabled="selected"
               @change="onInputVisualizationModeChange" />

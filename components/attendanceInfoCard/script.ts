@@ -6,6 +6,12 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 
 export default defineComponent({
   name: 'attendanceInfoCard',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: false },
     position: { type: Object as PropType<PositionInterface>, required: false },

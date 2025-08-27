@@ -428,10 +428,10 @@ export default class AssistExcelService {
           hoursWorked += timeInDecimal
         }
 
-        const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
-        const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-        const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-        const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
+        const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('ff').toString() : ''
+        const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('ff') : ''
 
         rows.push({
           code: employee.employeeCode.toString(),
@@ -507,7 +507,7 @@ export default class AssistExcelService {
     const timeCheckIn = DateTime.fromISO(
       checkAssist.assist.checkIn.assistPunchTimeUtc.toString(),
       { setZone: true }
-    ).setZone('UTC-6')
+    ).setZone('UTC-6').setLocale(this.localeToUse)
     return timeCheckIn.toFormat('MMM d, yyyy, h:mm:ss a')
   }
 
@@ -520,7 +520,7 @@ export default class AssistExcelService {
     const timeCheckOut = DateTime.fromISO(
       checkAssist.assist.checkOut.assistPunchTimeUtc.toString(),
       { setZone: true }
-    ).setZone('UTC-6')
+    ).setZone('UTC-6').setLocale(this.localeToUse)
     if (timeCheckOut.toFormat('yyyy-LL-dd') === now) {
       checkAssist.assist.checkOutStatus = ''
       return ''
@@ -1230,7 +1230,7 @@ export default class AssistExcelService {
       this.t('leaves'),
       this.t('double_overtime_hours'),
       this.t('triple_overtime_hours'),
-      this.t('sunday_bonus'),
+      this.t('sunday_bonus_abb'),
       this.t('rest_day_worked'),
       this.t('vacation_bonus'),
       this.t('leveling'),

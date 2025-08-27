@@ -2,10 +2,8 @@ import { defineComponent } from 'vue'
 import { DateTime } from 'luxon'
 import { useMyGeneralStore } from '~/store/general'
 import moment from 'moment';
-
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
-
 import type { VisualizationModeOptionInterface } from '~/resources/scripts/interfaces/VisualizationModeOptionInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import type { DepartmentInterface } from '~/resources/scripts/interfaces/DepartmentInterface'
@@ -13,7 +11,6 @@ import type { PositionInterface } from '~/resources/scripts/interfaces/PositionI
 import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/interfaces/EmployeeAssistStatisticInterface'
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface'
 import type { AssistSyncStatus } from '~/resources/scripts/interfaces/AssistSyncStatus'
-
 import AttendanceMonitorController from '~/resources/scripts/controllers/AttendanceMonitorController'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
@@ -23,13 +20,13 @@ import AssistExcelService from '~/resources/scripts/services/AssistExcelService'
 import type { AssistExcelFilterIncidentSummaryPayRollInterface } from '~/resources/scripts/interfaces/AssistExcelFilterIncidentSummaryPayRollInterface';
 import { useI18n } from 'vue-i18n'
 import EmployeeAssistCalendarService from '~/resources/scripts/services/EmployeeAssistCalendarService';
-import ShiftExceptionService from '~/resources/scripts/services/ShiftExceptionService';
 
 export default defineComponent({
   components: {
     Toast,
     ToastService,
   },
+  name: 'EmployeesMonitorPosition',
   setup() {
     const { t, locale } = useI18n()
     return {
@@ -37,7 +34,6 @@ export default defineComponent({
       locale
     }
   },
-  name: 'EmployeesMonitorPosition',
   props: {
   },
   data: () => ({
@@ -823,8 +819,8 @@ export default defineComponent({
       if (this.visualizationMode?.value === 'payroll' && !this.isValidFourteen()) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Invalid Date',
-          detail: 'You should select a valid date. Only Thursdays are valid',
+          summary: this.$t('invalid_date'),
+          detail: this.$t('you_should_select_a_valid_date_only_thursdays_are_valid'),
           life: 5000,
         })
         return false;
@@ -899,8 +895,8 @@ export default defineComponent({
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',
-          summary: 'Excel assist',
-          detail: 'Excel was created successfully',
+          summary: this.t('excel_assist'),
+          detail: this.t('excel_was_created_successfully'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -908,7 +904,7 @@ export default defineComponent({
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel assist',
+          summary: this.t('excel_assist'),
           detail: msgError,
           life: 5000,
         })
@@ -1133,7 +1129,7 @@ export default defineComponent({
       const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const assists = this.getDepartmentPositionAssistStatistics()
       const range = this.getRange()
-      const title = `${this.t('incident_summary')}  ${range.title}`
+      const title = `${this.t('incident_summary')} ${range.title}`
       await assistExcelService.getExcelIncidentSummary(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummaryPayRoll() {

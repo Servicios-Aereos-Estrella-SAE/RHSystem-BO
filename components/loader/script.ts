@@ -5,15 +5,21 @@ export default defineComponent({
   name: 'loader',
   props: {
   },
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   data: () => ({
   }),
   computed: {
-    getFavicon () {
+    getFavicon() {
       const myGeneralStore = useMyGeneralStore()
       const businessFavicon = ref(myGeneralStore.favicon)
       return businessFavicon.value
     },
-    zIndexValue () {
+    zIndexValue() {
       const from = document.getElementsByTagName('body')[0] as HTMLElement
       let max = 0
       const elementsCollection = from.querySelectorAll('*')

@@ -4,17 +4,17 @@ import type { EmployeeAssistStatisticInterface } from '~/resources/scripts/inter
 
 export default defineComponent({
   name: 'attendanceEmployeeInfoCard',
-  props: {
-    employee: { type: Object as PropType<EmployeeAssistStatisticInterface> | null | undefined, required: false },
-  },
-  data: () => ({
-  }),
   setup() {
     const { t } = useI18n()
     return {
       t
     }
   },
+  props: {
+    employee: { type: Object as PropType<EmployeeAssistStatisticInterface> | null | undefined, required: false },
+  },
+  data: () => ({
+  }),
   computed: {
   },
   mounted() {

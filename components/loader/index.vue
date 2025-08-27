@@ -3,7 +3,7 @@
     <div>
       <img :src="getFavicon" alt="">
       <div class="loader-text">
-        Loading content....
+        {{ $t('loading_content') }}....
       </div>
     </div>
   </div>
@@ -15,5 +15,5 @@
 </script>
 
 <style lang="scss">
-@import './style';
+  @import './style';
 </style>
