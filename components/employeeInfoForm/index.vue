@@ -123,6 +123,12 @@
               </div>
             </div>
           </div>
+          <div class="input-box">
+            <label for="daily-salary">
+              ($) Daily Salary
+            </label>
+            <InputText id="daily-salary" v-model="employee.dailySalary" type="number" :disabled="isDeleted || !canManageUserResponsible" />
+          </div>
         </div>
 
         <div class="inputs-group group-emp-fiscal">
