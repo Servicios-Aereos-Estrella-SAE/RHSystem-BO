@@ -17,6 +17,7 @@ interface EmployeeInterface {
   employeeSecondLastName: string,
   employeePayrollNum: string | null,
   employeeHireDate: Date | string | null,
+  dailySalary: number,
   companyId: number,
   departmentId: number,
   positionId: number,
