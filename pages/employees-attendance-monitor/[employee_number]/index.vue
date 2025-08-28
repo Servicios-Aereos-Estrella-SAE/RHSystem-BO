@@ -3,7 +3,7 @@
 
     <Head>
       <Title>
-        Employee Attendance Monitor
+        {{ $t('employee_attendance_monitor') }}
       </Title>
     </Head>
     <NuxtLayout name="backoffice">
@@ -16,7 +16,7 @@
             <div class="input-search">
               <div class="input-box">
                 <label for="search">
-                  Search employee
+                  {{ $t('search_employee') }}
                 </label>
                 <AutoComplete v-model="selectedEmployee"
                   :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
@@ -50,15 +50,16 @@
           <div class="employee-period-filter">
             <div v-if="visualizationMode" class="input-box">
               <label>
-                Visualization mode
+                {{ $t('visualization_mode') }}
               </label>
-              <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
-                optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
+
+              <SelectButton v-model="visualizationMode" :options="getVisualizationModes" dataKey="value"
+                optionLabel="label" aria-labelledby="basic" optionDisabled="selected"
                 @change="onHandlerVisualizationModeChange" />
             </div>
             <div v-if="visualizationMode" class="input-box">
               <label>
-                Period
+                {{ $t('period') }}
               </label>
               <Calendar
                 v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
@@ -85,13 +86,14 @@
         <div class="employee-attendance-head-tools">
           <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
             <label for="getAssistFromSaveCalendarSwicht">
-              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+              {{ $t('get_assist') }} {{ getAssistFromSaveCalendarSwicht ? $t('from_save_calendar') :
+              $t('from_api_calculate_calendar') }}
             </label>
             <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
           </div>
           <div v-if="visualizationMode">
             <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
-              Vacations
+              {{ $t('vacations') }}
               <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
                 enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15"
                 data-v-6de6f350="">
@@ -141,7 +143,7 @@
 
         <div class="employee-attendance-head-tools excel-reports-wrapper">
           <Button class="btn" severity="success" @click="getExcelAllAssistance">
-            Detailed
+            {{ $t('detailed') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -149,7 +151,7 @@
             </svg>
           </Button>
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelIncidentSummary">
-            Summary
+            {{ $t('summary') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -158,7 +160,7 @@
           </button>
           <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcelIncidentSummaryPayRoll">
-            Payroll
+            {{ $t('payroll') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -169,7 +171,7 @@
 
         <div v-if="canDisplayAPIExcel" class="employee-attendance-head-tools excel-reports-wrapper from-api">
           <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
-            Detailed API
+            {{ $t('detailed') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -177,7 +179,7 @@
             </svg>
           </Button>
           <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Incident Summary')">
-            Summary API
+            {{ $t('summary') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -186,7 +188,7 @@
           </Button>
           <Button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcel('Incident Summary Payroll')">
-            Payroll API
+            {{ $t('payroll') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -196,15 +198,15 @@
         </div>
 
         <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
-          Last attendance recorded at
+          {{ $t('last_attendance_recorded_at') }}
           {{ assistSyncStatusDate }}
           <br>
-          ( Checking every 5 minutes )
+          ( {{ $t('checking_every_5_minutes') }} )
         </Message>
 
         <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
-            No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
+            {{ $t('the_date_and_time_of_the_last_synchronization_of_attendance_information_could_not_be_obtained.') }}
           </div>
         </Message>
 
@@ -214,7 +216,7 @@
             <div v-if="employee.employeeAssistDiscriminator !== 1" class="box">
               <div class="pay-chart">
                 <h2>
-                  General behavior into period
+                  {{ $t('general_behavior_into_period') }}
                 </h2>
                 <highchart v-if="hasGeneralData" :options="generalData" style="width: 100%;" />
                 <div class="no-pie-chart" v-else>
@@ -227,8 +229,7 @@
                             fill="#88a4bf" class="fill-212121"></path>
                         </svg>
                       </div>
-                      There is no attendance data available
-                      to generate statistics.
+                      {{ $t('there_is_no_attendance_data_available_to_generate_statistics') }}
                     </div>
                   </span>
                 </div>
@@ -243,7 +244,7 @@
                       {{ `${faultsDelays}`.padStart(2, '0') }}
                     </span>
                     <span class="prop-label">
-                      Faults from delays
+                      {{ $t('faults_from_delays') }}
                     </span>
                   </div>
                   <div class="indicator-prop-val">
@@ -251,11 +252,11 @@
                       {{ `${faultsEarlyOuts}`.padStart(2, '0') }}
                     </span>
                     <span class="prop-label">
-                      Faults from early out
+                      {{ $t('faults_from_early_out') }}
                     </span>
                   </div>
                   <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
-                    {{ workedTime }} worked
+                    {{ workedTime }} {{ $t('worked') }}
                   </div>
                   <!-- <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
                     {{ workedProductiveTime }} worked productive
@@ -285,9 +286,9 @@
           </div>
           <div v-else class="box">
             <div class="empty">
-              Empty assist list to display data.
+              {{ $t('empty_assist_list_to_display_data') }}
               <br>
-              Select other date range in Weekly visualization mode
+              {{ $t('select_other_date_range_in_weekly_visualization_mode') }}
             </div>
           </div>
         </div>

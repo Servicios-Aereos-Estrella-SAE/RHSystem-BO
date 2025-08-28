@@ -112,7 +112,7 @@ export default defineComponent({
       { name: 'Weekly', value: 'weekly', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false },
       { name: 'Payroll', value: 'payroll', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: false, number_months: 1 },
     ] as VisualizationModeOptionInterface[],
-    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<Object>,
+    statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<{ name: string }>,
     statusSelected: null as string | null,
     visualizationMode: null as VisualizationModeOptionInterface | null,
     periodSelected: new Date() as Date,
@@ -148,6 +148,18 @@ export default defineComponent({
     localeToUse: 'en',
   }),
   computed: {
+    getStatus() {
+      return this.statusList.map(item => ({
+        name: item.name,
+        label: this.$t(`status_obj.${item.name}`.toString().toLowerCase().replace(' ', '_'))
+      }))
+    },
+    getVisualizationModes() {
+      return this.visualizationModeOptions.map(item => ({
+        ...item,
+        label: this.$t(`visualization_modes.${item.value}`.toString().toLowerCase().replace(' ', '_'))
+      }))
+    },
     weeklyStartDay() {
       const daysList = []
 
@@ -1189,7 +1201,7 @@ export default defineComponent({
       const yearEnd = assistExcelService.dateYear(endDay)
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
-      return { title: `From ${calendarDayStart} to ${calendarDayEnd}`, dateEnd: endDay }
+      return { title: `${this.capitalizeFirstLetter(this.$t('from'))} ${calendarDayStart} ${this.capitalizeFirstLetter(this.$t('to'))} ${calendarDayEnd}`, dateEnd: endDay }
     },
     setSearchTime() {
       if (this.visualizationMode?.value === 'payroll') {
@@ -1221,5 +1233,9 @@ export default defineComponent({
         }
       }
     },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
+    }
   }
 })

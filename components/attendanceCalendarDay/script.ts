@@ -12,6 +12,13 @@ import AssistService from '~/resources/scripts/services/AssistService';
 
 export default defineComponent({
   name: 'attendanceCalendarDay',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   directives: {
     tooltip: Tooltip
   },
@@ -31,7 +38,8 @@ export default defineComponent({
     showChecksList: false,
     drawerCheckAssistDelete: false as boolean,
     assistId: null as number | null,
-    canDeletePreviousAssist: false
+    canDeletePreviousAssist: false,
+    localeToUse: 'en',
   }),
   computed: {
     dateYear() {
@@ -60,12 +68,12 @@ export default defineComponent({
     },
     weekDayName() {
       const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.setLocale('en').toFormat('cccc')
+      const day = date.setLocale(this.localeToUse).toFormat('cccc')
       return day
     },
     calendarDay() {
       const date = DateTime.local(this.dateYear, this.dateMonth, this.dateDay, 0)
-      const day = date.setLocale('en').toFormat('DD')
+      const day = date.setLocale(this.localeToUse).toFormat('DD')
       return day
     },
     chekInTime() {
@@ -75,7 +83,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-6')
-      return timeCST.setLocale('en').toFormat('TT')
+      return timeCST.setLocale(this.localeToUse).toFormat('TT')
     },
     chekEatInTime() {
       if (!this.checkAssist?.assist?.checkEatIn?.assistPunchTimeUtc) {
@@ -84,7 +92,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-6')
-      return timeCST.setLocale('en').toFormat('TT')
+      return timeCST.setLocale(this.localeToUse).toFormat('TT')
     },
     chekEatOutTime() {
       if (!this.checkAssist?.assist?.checkEatOut?.assistPunchTimeUtc) {
@@ -93,7 +101,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-6')
-      return timeCST.setLocale('en').toFormat('TT')
+      return timeCST.setLocale(this.localeToUse).toFormat('TT')
     },
     chekOutTime() {
       const now = DateTime.now().setZone('UTC-6')
@@ -110,7 +118,7 @@ export default defineComponent({
 
       const time = DateTime.fromISO(this.checkAssist.assist.checkOut.assistPunchTimeUtc.toString(), { setZone: true })
       const timeCST = time.setZone('UTC-6')
-      const timeFormatted = timeCST.setLocale('en').toFormat('TT')
+      const timeFormatted = timeCST.setLocale(this.localeToUse).toFormat('TT')
       return timeFormatted
     },
     headIconIsException() {
@@ -176,6 +184,9 @@ export default defineComponent({
       return valid
     }
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
     if (this.checkAssist.assist.dateShift?.shiftIsChange) {
       const employeeId = this.employee.employeeId ? this.employee.employeeId : 0
@@ -224,7 +235,7 @@ export default defineComponent({
       }
     },
     getFileName(url: string) {
-      if (!url) return 'Unknown file'
+      if (!url) return this.t('unknown_file')
       try {
         let lastPart = url.split('/').pop() || ''
         lastPart = lastPart.split('?')[0].split('#')[0]
@@ -234,7 +245,7 @@ export default defineComponent({
           ? '...' + decoded.slice(-40)
           : decoded
       } catch {
-        return 'Unknown File'
+        return this.t('unknown_file')
       }
     },
     isImage(url?: string): boolean {
@@ -269,7 +280,7 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete assist',
+            summary: this.t('delete_assist'),
             detail: assistResponse._data.message,
             life: 5000,
           })
@@ -280,7 +291,7 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete assist',
+            summary: this.t('delete_assist'),
             detail: assistResponse._data.message,
             life: 5000,
           })

@@ -58,15 +58,15 @@
             <label for="parentDepartmentId">
               {{ $t('status') }}
             </label>
-            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
-              placeholder="Select a Status" filter class="w-full md:w-14rem" />
+            <Dropdown v-model="statusSelected" :options="getStatus" optionLabel="label" optionValue="name"
+              :placeholder="$t('select_a_status')" filter class="w-full md:w-14rem" />
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">
               {{ $t('visualization_mode') }}
             </label>
-            <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
-              optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
+            <SelectButton v-model="visualizationMode" :options="getVisualizationModes" dataKey="value"
+              optionLabel="label" aria-labelledby="basic" optionDisabled="selected"
               @change="onInputVisualizationModeChange" />
           </div>
           <div v-if="visualizationMode" class="input-box">
@@ -214,34 +214,34 @@
             <highchart :options="generalData" style="width: 100%;" />
             <div v-if="isRootUser">
               <Button v-if="rotationIndex === null" class="btn btn-block" @click="getRotation">
-                Obtener índice de rotación
+                {{ $t('get_turnover_rate') }}
               </Button>
               <div v-else class="rotation-info">
                 <div class="value">
                   {{ rotationIndex }}%
                   <label>
-                    Índice de Rotación
+                    {{ $t('turnover_rate') }}
                   </label>
                 </div>
                 <Message class="sync" :closable="false" style="width: 100%;" icon="'aa'" severity="info">
                   <strong>
-                    ¿Cómo se calcula?
+                    {{ $t('how_is_it_calculated') }}
                   </strong>
                   <br>
                   <br>
-                  Índice = S ÷ ((I + F) ÷ 2)
+                  {{ $t('index') }} = S ÷ ((I + F) ÷ 2)
                   <br><br>
                   <div>
                     <strong>S:</strong>
-                    No. de bajas durante el periodo.
+                    {{ $t('number_of_departures_during_period') }}
                   </div>
                   <div>
                     <strong>I:</strong>
-                    Personal al inicio del periodo.
+                    {{ $t('staff_at_start_of_period') }}
                   </div>
                   <div>
                     <strong>F:</strong>
-                    Personal al final del periodo.
+                    {{ $t('staff_at_end_of_period') }}
                   </div>
                 </Message>
               </div>
@@ -255,7 +255,7 @@
           </div>
         </div>
         <h2>
-          Department positions
+          {{ $t('department_positions') }}
         </h2>
         <div class="department-positions-wrapper">
           <div v-for="(item, index) in getDepartmentPositionAssistStatistics()"
@@ -268,7 +268,7 @@
           </div>
         </div>
         <h2>
-          All Department Employees
+          {{ $t('all_department_employees') }}
         </h2>
         <div v-if="filtersEmployeesByStatus(employeeDepartmentList).length > 0" class="department-positions-wrapper">
           <div v-for="(employeeAssist, index) in filtersEmployeesByStatus(employeeDepartmentList)"
@@ -287,9 +287,9 @@
                     fill="#88a4bf" class="fill-212121"></path>
                 </svg>
               </div>
-              No employees to display.
+              {{ $t('no_employees_to_display') }}
               <br>
-              Existing employees may be discriminated
+              {{ $t('existing_employees_may_be_discriminated') }}
             </div>
           </div>
         </div>
