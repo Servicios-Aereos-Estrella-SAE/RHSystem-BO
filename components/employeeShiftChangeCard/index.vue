@@ -4,14 +4,14 @@
       <div class="employee-shift-change-name">
         <div v-if="employeeShiftChange.employeeIdFrom === employeeShiftChange.employeeIdTo">
           <div v-if="employeeShiftChange.employeeShiftChangeChangeThisShift === 1">
-            Cover shift
+            {{ $t('cover_shift') }}
           </div>
           <div v-else>
-            Shift change personal
+            {{ $t('shift_change_personal') }}
           </div>
         </div>
         <div v-else>
-          Shift change with employee
+          {{ $t('shift_change_with_employee') }}
         </div>
       </div>
 
@@ -20,7 +20,7 @@
         <div
           v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)"
           class="employee">
-          Change with
+          {{ $t('change_with') }}
           {{ employeeShiftChange.employeeTo.person?.personFirstname }}
           {{ employeeShiftChange.employeeTo.person?.personLastname }}
           {{ employeeShiftChange.employeeTo.person?.personSecondLastname }}
@@ -58,7 +58,7 @@
         <div v-if="employeeShiftChange.employeeShiftChangeNote" class="notes">
           <p>
             <b>
-              Notes:
+              {{ $t('notes') }}:
             </b>
             {{ employeeShiftChange.employeeShiftChangeNote }}
           </p>

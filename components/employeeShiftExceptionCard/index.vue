@@ -23,10 +23,10 @@
           {{ shiftException.exceptionRequestStatus }}
         </div>
         <div v-if="shiftException.shiftExceptionCheckInTime" class="time">
-          Check In Time: {{ shiftException.shiftExceptionCheckInTime }}
+          {{ $t('check_in_time') }} {{ shiftException.shiftExceptionCheckInTime }}
         </div>
         <div v-if="shiftException.shiftExceptionCheckOutTime" class="time">
-          Check Out Time: {{ shiftException.shiftExceptionCheckOutTime }}
+          {{ $t('check_out_time') }} {{ shiftException.shiftExceptionCheckOutTime }}
         </div>
       </div>
     </div>

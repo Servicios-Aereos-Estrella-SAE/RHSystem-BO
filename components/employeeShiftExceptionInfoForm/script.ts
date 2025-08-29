@@ -20,6 +20,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'shiftExceptionForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -60,11 +67,18 @@ export default defineComponent({
     shiftExceptionEvidences: [] as Array<ShiftExceptionEvidenceInterface>,
     shiftExceptionEvidence: null as ShiftExceptionEvidenceInterface | null,
     drawerShiftExceptionEvidenceDelete: false,
+    localeToUse: 'en',
   }),
   computed: {
     selectedExceptionDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
+    },
+    getOptions() {
+      return [
+        { label: this.$t('yes'), value: 1 },
+        { label: this.$t('no'), value: 0 }
+      ];
     }
   },
   watch: {
@@ -90,6 +104,9 @@ export default defineComponent({
        }
  
      } */
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -182,8 +199,8 @@ export default defineComponent({
       if (!shiftExceptionService.validateInfo(this.shiftException)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -192,8 +209,8 @@ export default defineComponent({
       if (this.needReason && !this.shiftException.shiftExceptionsDescription) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -202,8 +219,8 @@ export default defineComponent({
       if ((this.needCheckInTime || this.needPeriodHours) && !this.shiftException.shiftExceptionCheckInTime) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -212,8 +229,8 @@ export default defineComponent({
       if ((this.needCheckOutTime || this.needPeriodHours) && !this.shiftException.shiftExceptionCheckOutTime) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -222,8 +239,8 @@ export default defineComponent({
       if (this.needEnjoymentOfSalary && this.shiftException.shiftExceptionEnjoymentOfSalary === null) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -232,8 +249,8 @@ export default defineComponent({
       if (this.applyToMoreThanOneDay && !this.shiftException.daysToApply) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -302,7 +319,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
+            summary: `Shift exception ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -323,7 +340,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'update' : 'create'}`,
+            summary: `Shift exception ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -504,5 +521,9 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
     },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
+    }
   }
 })

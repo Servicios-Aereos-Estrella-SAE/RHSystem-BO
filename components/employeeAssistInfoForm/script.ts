@@ -15,6 +15,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeeAssistInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     assist: { type: Object as PropType<AssistInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
@@ -26,7 +33,8 @@ export default defineComponent({
     assistPunchTime: '' as string,
     displayDateCalendar: false as boolean,
     dateInvalid: false,
-    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    localeToUse: 'en',
   }),
   watch: {
     'assist.assistPunchTime'(val: Date) {
@@ -35,6 +43,9 @@ export default defineComponent({
     },
   },
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -71,8 +82,8 @@ export default defineComponent({
       if (!this.assist.assistEmpId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Employee is not selected',
+          summary: this.t('validation_data'),
+          detail: this.t('employee_is_not_selected'),
           life: 5000,
         })
         return
@@ -80,8 +91,8 @@ export default defineComponent({
       if (!this.assist.assistPunchTime) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -89,8 +100,8 @@ export default defineComponent({
       if (this.dateInvalid) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Date selected is invalid',
+          summary: this.t('validation_data'),
+          detail: this.t('date_selected_is_invalid'),
           life: 5000,
         })
         return
@@ -104,7 +115,7 @@ export default defineComponent({
       if (assistResponse.status === 201) {
         this.$toast.add({
           severity: 'success',
-          summary: 'Employee assist created',
+          summary: this.t('employee_assist_created'),
           detail: assistResponse._data.message,
           life: 5000,
         })
@@ -115,7 +126,7 @@ export default defineComponent({
         const severityType = assistResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: 'Employee assist created',
+          summary: this.t('employee_assist'),
           detail: msgError,
           life: 5000,
         })
@@ -130,7 +141,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('MMMM dd, yyyy HH:mm')
     },
     handlerDisplayDate() {
@@ -159,15 +170,15 @@ export default defineComponent({
       const monthPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('LL'))
       const yearPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('yyyy'))
       const dayPeriod = parseInt(DateTime.fromJSDate(datePay).toFormat('dd'))
-      const payDate = DateTime.local(yearPeriod, monthPeriod, dayPeriod).setZone('utc').startOf('day')
+      const payDate = DateTime.local(yearPeriod, monthPeriod, dayPeriod).setZone('utc').setLocale(this.localeToUse).startOf('day')
       const startOfWeek = payDate.minus({ days: payDate.weekday % 7 })
       const thursday = startOfWeek.plus({ days: 3 })
       const startLimit = thursday.minus({ days: 24 }).startOf('day')
       if (selectedDate < startLimit) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: `The selected date cannot be earlier than the first day of the period, which is ${startLimit
+          summary: this.t('validation_data'),
+          detail: `${this.t('the_selected_date_cannot_be_earlier_than_the_first_day_of_the_period_which_is')} ${startLimit
             .toFormat('MMMM dd, yyyy')}`,
           life: 5000,
         })
