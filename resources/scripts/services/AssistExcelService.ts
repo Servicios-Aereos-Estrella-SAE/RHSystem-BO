@@ -692,6 +692,7 @@ export default class AssistExcelService {
     totalRowIncident.earlyOutsFaults = 0
     totalRowIncident.totalFaults = 0
     totalRowIncident.hoursWorked = 0
+    totalRowIncident.discountFaults = 0
   }
 
   async addRowIncidentCalendar(
@@ -847,6 +848,7 @@ export default class AssistExcelService {
       earlyOutsFaults: earlyOutsFaults,
       totalFaults: faults + delayFaults + earlyOutsFaults,
       hoursWorked: hoursWorked,
+      discountFaults: (filters.employee.dailySalary || 0) * (faults + delayFaults + earlyOutsFaults),
     })
     return rows
   }
@@ -872,6 +874,7 @@ export default class AssistExcelService {
       earlyOutsFaults: 0,
       totalFaults: 0,
       hoursWorked: 0,
+      discountFaults: 0,
     })
   }
 
@@ -896,6 +899,7 @@ export default class AssistExcelService {
       earlyOutsFaults: 0,
       totalFaults: 0,
       hoursWorked: 0,
+      discountFaults: 0,
     })
   }
 
@@ -946,10 +950,11 @@ export default class AssistExcelService {
           rowData.earlyOutsFaults,
           rowData.totalFaults,
           this.decimalToTimeString(rowData.hoursWorked),
+          rowData.discountFaults,
         ])
         if (!rowData.employeeName && rowData.employeeId === '') {
           const color = '93CDDC'
-          for (let col = 1; col <= 19; col++) {
+          for (let col = 1; col <= 20; col++) {
             const cell = worksheet.getCell(rowCount - 1, col)
             cell.fill = {
               type: 'pattern',
@@ -961,7 +966,7 @@ export default class AssistExcelService {
         }
         if (rowData.department === 'TOTALS') {
           const color = '30869C'
-          for (let col = 1; col <= 19; col++) {
+          for (let col = 1; col <= 20; col++) {
             const cell = worksheet.getCell(rowCount - 1, col)
             const row = worksheet.getRow(rowCount - 1)
             row.height = 30
@@ -1030,6 +1035,7 @@ export default class AssistExcelService {
     totalRowIncident.earlyOutsFaults += row.earlyOutsFaults
     totalRowIncident.totalFaults += row.totalFaults
     totalRowIncident.hoursWorked += row.hoursWorked
+    totalRowIncident.discountFaults += row.discountFaults
   }
 
   addTotalRow(
@@ -1054,6 +1060,7 @@ export default class AssistExcelService {
     totalRowIncident.earlyOutsFaults += rowByDepartment.earlyOutsFaults
     totalRowIncident.totalFaults += rowByDepartment.totalFaults
     totalRowIncident.hoursWorked += rowByDepartment.hoursWorked
+    totalRowIncident.discountFaults += rowByDepartment.discountFaults
   }
 
   async getTardiesTolerance() {
@@ -1097,10 +1104,11 @@ export default class AssistExcelService {
       'Early Outs Faults',
       'Total Faults',
       'Total Hours Worked',
+      'Discount',
     ])
     let fgColor = 'FFFFFFF'
     let color = '30869C'
-    for (let col = 1; col <= 19; col++) {
+    for (let col = 1; col <= 20; col++) {
       const cell = worksheet.getCell(3, col)
       cell.fill = {
         type: 'pattern',
@@ -1167,6 +1175,9 @@ export default class AssistExcelService {
     const columnS = worksheet.getColumn(19)
     columnS.width = 16
     columnS.alignment = { vertical: 'middle', horizontal: 'center' }
+    const columnT = worksheet.getColumn(20)
+    columnT.width = 16
+    columnT.alignment = { vertical: 'middle', horizontal: 'center' }
   }
 
   async addTitleIncidentPayrollToWorkSheet(
