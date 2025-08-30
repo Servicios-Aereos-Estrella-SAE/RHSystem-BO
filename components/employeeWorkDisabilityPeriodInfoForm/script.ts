@@ -20,6 +20,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'WorkDisabilityPeriodInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisability: { type: Object as PropType<WorkDisabilityInterface>, required: true },
@@ -46,6 +53,7 @@ export default defineComponent({
     drawerWorkDisabilityPeriodExpenseForm: false,
     drawerWorkDisabilityPeriodExpenseDelete: false,
     workDisabilityPeriodExpense: null as WorkDisabilityPeriodExpenseInterface | null,
+    localeToUse: 'en',
   }),
   computed: {
   },
@@ -56,6 +64,9 @@ export default defineComponent({
       },
       immediate: true
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
 
@@ -119,7 +130,7 @@ export default defineComponent({
   methods: {
     getDate(date: string) {
       const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+      return dateWorDisabilityPeriod.setLocale(this.localeToUse).toFormat('DDDD')
     },
     async getWorkDisabilityTypes() {
       const response = await new WorkDisabilityTypeService().getFilteredList('', 1, 100)
@@ -132,8 +143,8 @@ export default defineComponent({
       if (!this.workDisabilityPeriod.workDisabilityPeriodStartDate) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -143,8 +154,8 @@ export default defineComponent({
         if (!this.daysToApply) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Missing data',
+            summary: this.t('validation_data'),
+            detail: this.t('missing_data'),
             life: 5000,
           })
           return
@@ -158,8 +169,8 @@ export default defineComponent({
       if (!this.workDisabilityPeriod.workDisabilityTypeId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -168,8 +179,8 @@ export default defineComponent({
       if (!this.isInternalDisability && !this.workDisabilityPeriod.workDisabilityPeriodTicketFolio) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -178,8 +189,8 @@ export default defineComponent({
       if (!this.workDisabilityPeriod.workDisabilityPeriodEndDate) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -188,8 +199,8 @@ export default defineComponent({
       if (this.workDisabilityPeriod.workDisabilityPeriodTicketFolio && !this.isValidFolio(this.workDisabilityPeriod.workDisabilityPeriodTicketFolio)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -202,8 +213,8 @@ export default defineComponent({
           if (isAudioOrVideo) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'File invalid',
-              detail: 'Audio or video files are not allowed.',
+              summary: this.t('file_invalid'),
+              detail: this.t('audio_or_video_files_are_not_allowed'),
               life: 5000,
             })
             return
@@ -246,7 +257,7 @@ export default defineComponent({
         const severityType = workDisabilityPeriodResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Work disability period ${this.workDisabilityPeriod.workDisabilityPeriodId ? 'update' : 'create'}`,
+          summary: `${this.t('work_disability_period')} ${this.workDisabilityPeriod.workDisabilityPeriodId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -302,7 +313,7 @@ export default defineComponent({
       const endDate = DateTime.fromISO(endDateISO, { zone: 'utc' }).startOf('day');
 
       if (!currentDate.isValid || !endDate.isValid || !normalizedCurrentDay.isValid) {
-        console.error('Date invalid', {
+        console.error(this.t('date_invalid'), {
           currentDate: currentDate.invalidExplanation,
           endDate: endDate.invalidExplanation,
           currentDay: normalizedCurrentDay.invalidExplanation,
@@ -381,7 +392,7 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete work disability period expense',
+            summary: this.t('delete_work_disability_period_expense'),
             detail: workDisabilityPeriodExpenseResponse._data.message,
             life: 5000,
           })

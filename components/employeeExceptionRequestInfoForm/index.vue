@@ -2,7 +2,7 @@
   <div class="exception-request-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewExceptionRequest ? 'Add exception request' : 'Update exception request' }}
+      {{ isNewExceptionRequest ? $t('add_exception_request') : $t('update_exception_request') }}
     </h1>
 
     <div v-if="isReady" class="exception-request-form">
@@ -13,86 +13,86 @@
           <div class="checkbox-item">
             <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay" name="applyToMoreThanOneDay"
               :binary="true" />
-            <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+            <label for="applyToMoreThanOneDay" class="ml-2"> {{ $t('apply_to_more_than_one_day') }} </label>
           </div>
         </div>
         <div v-if="applyToMoreThanOneDay" class="input-box">
           <label for="description">
-            Days to apply
+            {{ $t('days_to_apply') }}
           </label>
           <InputNumber v-model="exceptionRequest.daysToApply" inputId="daysToApply" />
           <small class="p-error" v-if="submitted && !exceptionRequest.daysToApply">
-            Days to apply is required.
+            {{ $t('days_to_apply') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="input-box">
           <label for="exception-type">
-            Status
+            {{ $t('status') }}
           </label>
-          <Dropdown v-model="exceptionRequest.exceptionRequestStatus" :options="statusOptions" optionLabel="label"
+          <Dropdown v-model="exceptionRequest.exceptionRequestStatus" :options="getStatusOptions" optionLabel="label"
             optionValue="value" placeholder="Select Status" class="w-full md:w-14rem" :disabled="true" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestStatus">
-            Status is required.
+            {{ $t('status') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="input-box">
           <label for="exception-type">
-            Type
+            {{ $t('type') }}
           </label>
           <Dropdown v-model="exceptionRequest.exceptionTypeId" :options="exceptionTypeList"
             optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
             class="w-full md:w-14rem" @update:model-value="handleTypeChange"
             :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
-          <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">Type is
-            required.</small>
+          <small class="p-error" v-if="submitted && !exceptionRequest.exceptionTypeId">{{ $t('type') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <label for="description">
-            Description
+            {{ $t('description') }}
           </label>
           <Textarea v-model="exceptionRequest.exceptionRequestDescription" rows="5" cols="30"
             :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestDescription">
-            Description is required.
+            {{ $t('description') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="input-box">
           <label for="requested-date">
-            Requested Date
+            {{ $t('requested_date') }}
           </label>
           <Calendar v-model="exceptionRequest.requestedDate" dateFormat="yy-mm-dd" placeholder="Select date"
             class="w-full md:w-14rem"
             :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay"
             :minDate="startDateLimit" />
           <small class="p-error" v-if="submitted && !exceptionRequest.requestedDate">
-            Requested date is required.
+            {{ $t('requested_date') }} {{ $t('is_required') }}
           </small>
         </div>
         <div v-if="needCheckInTime" class="input-box">
           <label for="check-in-time">
-            Check in time
+            {{ $t('check_in_time') }}
           </label>
           <Calendar v-model="exceptionRequest.exceptionRequestCheckInTime" timeOnly
             :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckInTime">
-            Check in time is required.
+            {{ $t('check_in_time') }} {{ $t('is_required') }}
           </small>
         </div>
         <div v-if="needCheckOutTime" class="input-box">
           <label for="check-out-time">
-            Check out time
+            {{ $t('check_out_time') }}
           </label>
           <Calendar v-model="exceptionRequest.exceptionRequestCheckOutTime" timeOnly
             :disabled="changeStatus || exceptionRequest.exceptionRequestStatus !== 'pending' || !canManageUserResponsible || !canManageCurrentDay" />
           <small class="p-error" v-if="submitted && !exceptionRequest.exceptionRequestCheckOutTime">
-            Check out time is required.
+            {{ $t('check_out_time') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="box-tools-footer">
           <Button
             v-if="!changeStatus && exceptionRequest.exceptionRequestStatus === 'pending' && canManageUserResponsible && canManageCurrentDay"
             class="btn btn-block btn-primary" @click="onSave">
-            Save
+            {{ $t('save') }}
           </Button>
           <Button v-if="changeStatus && canUpdate" icon="pi pi-check" class="box-btn" @click="handlerClickOnEdit()" />
           <Button v-if="changeStatus && canDelete" icon="pi pi-times" class="box-btn"
@@ -107,10 +107,10 @@
     <transition name="page">
       <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
         <div class="modal-content">
-          <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
-          <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
-          <textarea v-if="currentAction === 'refuse'" v-model="description" placeholder="Enter the reason for refuse..."
-            class="textarea"></textarea>
+          <h3>{{ currentAction === 'refuse' ? $t('refuse_exception_request') : $t('accept_exception_request') }}</h3>
+          <p v-if="currentAction === 'refuse'">{{ $t('please_provide_a_reason_for_refuse') }}</p>
+          <textarea v-if="currentAction === 'refuse'" v-model="description"
+            :placeholder="$t('enter_the_reason_for_refuse')" class="textarea"></textarea>
           <div class="modal-actions">
             <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
             <Button label="Confirm" class="btn btn-confirm"

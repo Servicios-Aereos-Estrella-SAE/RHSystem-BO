@@ -2,24 +2,24 @@
   <div class="work-disability-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewWorkDisabilityNote ? 'Add work disability note' : 'Update work disability note' }}
+      {{ isNewWorkDisabilityNote ? $t('add_work_disability_note') : $t('update_work_disability_note') }}
     </h1>
 
     <div v-if="isReady" class="work-disability-note-form">
       <div class="form-container">
         <div class="input-box">
           <label for="folio">
-            Description note / comments
+            {{ $t('description_note_comments') }}
           </label>
           <Textarea id="proceedingFileObservations" v-model="workDisabilityNote.workDisabilityNoteDescription"
             autoResize rows="8" :disabled="!canManageWorkDisabilities || !canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !workDisabilityNote.workDisabilityNoteDescription">Description is
-            required.</small>
+          <small class="p-error" v-if="submitted && !workDisabilityNote.workDisabilityNoteDescription">{{
+            $t('description') }} {{ $t('is_required') }}</small>
         </div>
         <div class="box-tools-footer">
           <Button v-if="canManageWorkDisabilities && canManageUserResponsible" class="btn btn-block btn-primary"
             @click="onSave">
-            Save work disability note
+            {{ $t('save') }}
           </Button>
         </div>
       </div>

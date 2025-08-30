@@ -14,6 +14,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'WorkDisabilityNoteInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
@@ -57,8 +63,8 @@ export default defineComponent({
       if (!this.workDisabilityNote.workDisabilityNoteDescription) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -90,7 +96,7 @@ export default defineComponent({
         const severityType = workDisabilityNoteResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Work disability ${this.workDisabilityNote.workDisabilityNoteId ? 'update' : 'create'}`,
+          summary: `${this.t('work_disability')} ${this.workDisabilityNote.workDisabilityNoteId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })

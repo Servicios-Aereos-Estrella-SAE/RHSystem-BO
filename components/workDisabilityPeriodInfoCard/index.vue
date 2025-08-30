@@ -1,7 +1,7 @@
 <template>
   <div class="work-disability-period-info-card">
     <div>
-      <h4 v-if="onlySeeInfo">Period</h4>
+      <h4 v-if="onlySeeInfo">{{ $t('period') }}</h4>
       <div class="work-disability-period-type">
         <div v-if="workDisabilityPeriod.workDisabilityType">
           {{ workDisabilityPeriod.workDisabilityType.workDisabilityTypeName }}
@@ -9,7 +9,7 @@
       </div>
       <div class="work-disability-period-folio">
         <div>
-          Document folio:
+          {{ $t('document_folio') }}
           {{ workDisabilityPeriod.workDisabilityPeriodTicketFolio }}
         </div>
       </div>
@@ -24,7 +24,7 @@
           </svg>
         </div>
         <small>
-          {{ workDisabilityPeriod.workDisabilityPeriodFile ? 'See attached file' : 'Not file attached' }}
+          {{ workDisabilityPeriod.workDisabilityPeriodFile ? $t('open_attached_file') : $t('not_file_attached') }}
         </small>
       </div>
 

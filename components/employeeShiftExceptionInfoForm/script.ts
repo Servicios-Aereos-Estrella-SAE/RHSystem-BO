@@ -76,8 +76,8 @@ export default defineComponent({
     },
     getOptions() {
       return [
-        { label: this.$t('yes'), value: 1 },
-        { label: this.$t('no'), value: 0 }
+        { label: this.t('yes'), value: 1 },
+        { label: this.t('no'), value: 0 }
       ];
     }
   },
@@ -319,7 +319,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
+            summary: `${this.t('shift_exception')} ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -327,7 +327,6 @@ export default defineComponent({
       } else {
         if (shiftExceptionResponse.status === 201 || shiftExceptionResponse.status === 200) {
           wasSavedCorrectly = true
-
           shiftExceptionsSaved.push(shiftExceptionResponse._data.data.shiftException)
           shiftExceptionResponse = await shiftExceptionService.show(shiftExceptionResponse._data.data.shiftException.shiftExceptionId)
 
@@ -340,7 +339,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
+            summary: `${this.t('shift_exception')} ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -366,12 +365,12 @@ export default defineComponent({
         for (const result of results) {
           if (!(result.status === 'fulfilled' && (result.value.status === 201 || result.value.status === 200))) {
             const err = result.status === 'rejected' ? result.reason : result.value;
-            const msgError = err._data?.message || 'Upload failed';
+            const msgError = err._data?.message || this.t('upload_failed');
             const severityType = err.status === 500 ? 'error' : 'warn';
 
             this.$toast.add({
               severity: severityType,
-              summary: 'Some evidence files failed',
+              summary: this.t('some_evidence_files_failed'),
               detail: msgError,
               life: 5000,
             });
@@ -433,8 +432,8 @@ export default defineComponent({
                 this.shiftException.shiftExceptionsDate = null
                 this.$toast.add({
                   severity: 'warn',
-                  summary: 'Date invalid',
-                  detail: `When on vacation, the selected date cannot be earlier than ${dateNew.toFormat('DD')}`,
+                  summary: this.t('date_invalid'),
+                  detail: `${this.t('when_on_vacation_the_selected_date_cannot_be_earlier_than')} ${dateNew.toFormat('DD')}`,
                   life: 5000,
                 })
               }
@@ -476,7 +475,7 @@ export default defineComponent({
       return URL.createObjectURL(file);
     },
     getFileName(url: string) {
-      if (!url) return 'Unknown file'
+      if (!url) return this.t('unknown_file')
       try {
         let lastPart = url.split('/').pop() || ''
         lastPart = lastPart.split('?')[0].split('#')[0]
@@ -486,7 +485,7 @@ export default defineComponent({
           ? '...' + decoded.slice(-40)
           : decoded
       } catch {
-        return 'Unknown File'
+        return this.t('unknown_file')
       }
     },
     isImage(url?: string): boolean {
@@ -513,7 +512,7 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete evidence employee',
+            summary: this.t('delete_evidence_employee'),
             detail: employeeShiftExceptionEvidenceResponse._data.message,
             life: 5000,
           })

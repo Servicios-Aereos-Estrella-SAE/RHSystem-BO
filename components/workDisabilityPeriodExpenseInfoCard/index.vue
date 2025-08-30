@@ -12,13 +12,14 @@
           </svg>
         </div>
         <small>
-          {{ workDisabilityPeriodExpense.workDisabilityPeriodExpenseFile ? 'See attached file' : 'Not file attached' }}
+          {{ workDisabilityPeriodExpense.workDisabilityPeriodExpenseFile ? $t('open_attached_file') :
+          $t('not_file_attached') }}
         </small>
       </div>
 
       <div class="work-disability-period-expense-amount">
         <div>
-          Amount:
+          {{ $t('amount') }}:
           {{ formatCurrency(workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount) }}
         </div>
       </div>

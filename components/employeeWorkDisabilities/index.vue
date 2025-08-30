@@ -3,7 +3,7 @@
     <employeeModalInfoCard :employee="employee" />
 
     <h1>
-      Employee Work Disabilities
+      {{ $t('employee_work_disabilities') }}
     </h1>
     <div class="work-disabilities-wrapper">
       <div class="head-page">
@@ -15,7 +15,7 @@
                 d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
-            Add work disability
+            {{ $t('add_work_disability') }}
           </Button>
         </div>
       </div>
@@ -32,7 +32,7 @@
       </div>
       <div v-else class="work-disabilities-wrapper">
         <div class="empty-data">
-          No work disabilities
+          {{ $t('no_work_disabilities') }}
         </div>
       </div>
       <Sidebar v-model:visible="drawerWorkDisabilityForm" header="form" position="right"

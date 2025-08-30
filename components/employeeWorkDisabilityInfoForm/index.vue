@@ -2,22 +2,21 @@
   <div class="work-disability-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewWorkDisability ? 'Add work disability' : 'Update work disability' }}
+      {{ isNewWorkDisability ? $t('add_work_disability') : $t('update_work_disability') }}
     </h1>
 
     <div v-if="isReady" class="shift-exception-form">
       <div class="form-container">
         <div class="input-box">
           <label for="exception-type">
-            Insurance coverage type
+            {{ $t('insurance_coverage_type') }}
           </label>
           <Dropdown v-model="workDisability.insuranceCoverageTypeId" :options="insuranceCoverageTypeList"
             optionLabel="insuranceCoverageTypeName" optionValue="insuranceCoverageTypeId" placeholder="" filter
             class="w-full md:w-14rem"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
           <small class="p-error" v-if="submitted && !workDisability.insuranceCoverageTypeId">
-            Insurance coverage type is
-            required.
+            {{ $t('insurance_coverage_type') }} {{ $t('is_required') }}
           </small>
         </div>
         <div v-if="!isNewWorkDisability" class="input-box uuid">
@@ -36,7 +35,7 @@
                 d="M21 8.5v9.25A3.25 3.25 0 0 1 17.75 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM7.25 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5ZM12 15a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm-4.75-4.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm4.75 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm1-7.5A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5Z"
                 fill="#88a4bf" class="fill-212121"></path>
             </svg>
-            Add period
+            {{ $t('add_period') }}
           </Button>
           <Button v-if="!isNewWorkDisability && canManageWorkDisabilities && canManageUserResponsible"
             class="btn btn-block" @click="addNewNote">
@@ -50,7 +49,7 @@
               <path d="m20.56 14.5-6.06 6.06v-4.31c0-.966.784-1.75 1.75-1.75h4.31Z" fill="#88a4bf" class="fill-212121">
               </path>
             </svg>
-            Add note
+            {{ $t('add_note') }}
           </Button>
           <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
             class="btn btn-block btn-primary" @click="onSave">
@@ -60,14 +59,14 @@
                 d="M10 18c-.5 0-1-.2-1.4-.6l-4-4c-.8-.8-.8-2 0-2.8.8-.8 2.1-.8 2.8 0l2.6 2.6 6.6-6.6c.8-.8 2-.8 2.8 0 .8.8.8 2 0 2.8l-8 8c-.4.4-.9.6-1.4.6z"
                 fill="#fff" class="fill-000000"></path>
             </svg>
-            {{ isNewWorkDisability ? 'Save' : 'Update' }}
+            {{ isNewWorkDisability ? $t('save') : $t('update') }}
           </Button>
         </div>
 
         <div>
           <div v-if="workDisabilityPeriodsList.length > 0">
             <h2>
-              Periods for shift exceptions
+              {{ $t('periods_for_shift_exceptions') }}
             </h2>
             <div class="work-disability-periods-wrapper">
               <workDisabilityPeriodInfoCard v-for="(workDisabilityPeriod, index) in workDisabilityPeriodsList"
@@ -84,7 +83,7 @@
 
           <div v-if="workDisabilityNotesList.length > 0">
             <h2>
-              Notes
+              {{ $t('notes') }}
             </h2>
             <div v-for="(workDisabilityNote, index) in workDisabilityNotesList" :key="`work-disability-note-${index}`">
               <workDisabilityNoteInfoCard :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"

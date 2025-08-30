@@ -20,13 +20,13 @@
           {{ calendarDay }}
         </div>
         <div v-if="exceptionRequest.exceptionRequestStatus">
-          {{ exceptionRequest.exceptionRequestStatus }}
+          {{ $t(exceptionRequest.exceptionRequestStatus) }}
         </div>
         <div v-if="exceptionRequest.exceptionRequestCheckInTime" class="time">
-          Check In Time: {{ exceptionRequest.exceptionRequestCheckInTime }}
+          {{ $t('check_in_time') }} {{ exceptionRequest.exceptionRequestCheckInTime }}
         </div>
         <div v-if="exceptionRequest.exceptionRequestCheckOutTime" class="time">
-          Check Out Time: {{ exceptionRequest.exceptionRequestCheckOutTime }}
+          {{ $t('check_out_time') }} {{ exceptionRequest.exceptionRequestCheckOutTime }}
         </div>
       </div>
     </div>

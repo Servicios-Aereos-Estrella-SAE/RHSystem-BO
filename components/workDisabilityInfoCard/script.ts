@@ -7,6 +7,13 @@ import type { WorkDisabilityInterface } from '~/resources/scripts/interfaces/Wor
 
 export default defineComponent({
   name: 'workDisabilityInfoCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisability: { type: Object as PropType<WorkDisabilityInterface>, required: true },
@@ -22,7 +29,8 @@ export default defineComponent({
   data: () => ({
     isReady: false,
     canManageCurrentPeriod: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    localeToUse: 'en',
   }),
   computed: {
     displayDestroyButton() {
@@ -40,6 +48,9 @@ export default defineComponent({
 
       return false
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     await this.setSessionUser()
@@ -140,7 +151,7 @@ export default defineComponent({
     },
     getDate(date: string) {
       const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorDisabilityPeriod.setLocale('en').toFormat('DDDD')
+      return dateWorDisabilityPeriod.setLocale(this.localeToUse).toFormat('DDDD')
     },
   }
 })

@@ -9,7 +9,6 @@ import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterfa
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
 import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
 import EmployeeService from '~/resources/scripts/services/EmployeeService';
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
@@ -96,7 +95,7 @@ export default defineComponent({
       if (newValue !== oldValue) {
         if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
           this.displayDateToCalendar = false
-          this.changeType = this.t('shift_change_personal')
+          this.changeType = 'shift change personal'
           this.employeeShiftChange.employeeShiftChangeDateTo = this.date
           this.employeeShiftChange.employeeIdTo = this.employee.employeeId
           this.selectedEmployee = this.employee
@@ -110,6 +109,7 @@ export default defineComponent({
   },
   created() {
     this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+    this.dateRestDayFrom = this.t('rest_day')
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -222,7 +222,7 @@ export default defineComponent({
       }
 
       if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
-        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo && this.dateRestDayFrom !== 'Rest day') {
+        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo && this.dateRestDayFrom !== this.t('rest_day')) {
           this.$toast.add({
             severity: 'warn',
             summary: this.t('validation_data'),
@@ -276,7 +276,7 @@ export default defineComponent({
     },
     handleTypeChange() {
       if (this.isReady) {
-        if (this.changeType === this.t('shift_change_personal')) {
+        if (this.changeType === 'shift change personal') {
           this.isPersonal = true
           this.employeeShiftChange.employeeIdTo = this.employee.employeeId
           this.setShiftTo()
