@@ -18,5 +18,6 @@ interface AssistIncidentExcelRowInterface {
   earlyOutsFaults: number
   totalFaults: number
   hoursWorked: number
+  discountFaults: number
 }
 export type { AssistIncidentExcelRowInterface }

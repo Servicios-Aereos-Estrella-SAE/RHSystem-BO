@@ -1106,16 +1106,19 @@ export default defineComponent({
       await this.verifiySearchTime()
       const assistExcelService = new AssistExcelService(this.$t, this.localeToUse)
       const employee = this.employee
+
       if (employee) {
         employee.calendar = this.employeeCalendar
-
       }
+
       const assists = [{
         department: this.employee?.department,
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
+
       const range = this.getRange()
       const title = `${range.title}`
+
       await assistExcelService.getExcelAllAssistance(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummary() {
@@ -1124,14 +1127,17 @@ export default defineComponent({
       const range = this.getRange()
       const title = `${this.t('incident_summary')} ${range.title}`
       const employee = this.employee
+
       if (employee) {
         employee.calendar = this.employeeCalendar
 
       }
+
       const assists = [{
         department: this.employee?.department,
         employees: [{ employee: this.employee, calendar: this.employeeCalendar }],
       }]
+
       await assistExcelService.getExcelIncidentSummary(assists, title ? title : '', range.dateEnd)
     },
     async getExcelIncidentSummaryPayRoll() {
