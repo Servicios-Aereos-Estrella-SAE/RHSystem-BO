@@ -6,6 +6,13 @@ import EmployeeService from '~/resources/scripts/services/EmployeeService'
 export default defineComponent({
   components: {
   },
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   name: 'employeeVacationsList',
   props: {
     employeeCode: { type: String, required: false },
@@ -17,20 +24,22 @@ export default defineComponent({
     filteredEmployees: [] as EmployeeInterface[],
     filteredEmployeesVacation: [] as VacationCalendarInterface[],
     currentVacation: '',
-    isReady: false
+    isReady: false,
+    localeToUse: 'en'
   }),
   computed: {
   },
   async mounted() {
     this.isReady = false
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
     await this.getVacations()
     this.isReady = true
   },
   methods: {
     async getVacations() {
-      const dateStart = DateTime.fromISO(this.dateStart, { zone: 'UTC-6' }).startOf('day').setLocale('en')
-      const dateEnd = DateTime.fromISO(this.dateEnd, { zone: 'UTC-6' }).endOf('day').setLocale('en')
-      this.currentVacation = `Period from ${dateStart.toFormat('DDD')} to ${dateEnd.toFormat('DDD')}`
+      const dateStart = DateTime.fromISO(this.dateStart, { zone: 'UTC-6' }).startOf('day').setLocale(this.localeToUse)
+      const dateEnd = DateTime.fromISO(this.dateEnd, { zone: 'UTC-6' }).endOf('day').setLocale(this.localeToUse)
+      this.currentVacation = `${this.t('period')} ${this.t('from')} ${dateStart.toFormat('DDD')} ${this.t('to')} ${dateEnd.toFormat('DDD')}`
       const employeeService = new EmployeeService()
       const employeCode = this.employeeCode ? this.employeeCode.trim() : ''
       const departmentId = this.departmentId ? this.departmentId : null
@@ -57,7 +66,7 @@ export default defineComponent({
       }
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
   }

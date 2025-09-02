@@ -3,7 +3,7 @@
     <employeeModalInfoCard :employee="employee" />
 
     <h1>
-      Employee Vacations
+      {{ $t('employee_vacations') }}
     </h1>
 
     <div v-if="isReady">

@@ -33,16 +33,16 @@
       </div>
       <div class="status">
         <span v-if="!employeeCalendar.assist.dateShift" class="no-shift">
-          Shift not assigned
+          {{ $t('shift_not_assigned') }}
         </span>
         <span v-else-if="employeeCalendar?.assist?.dateShift?.shiftIsChange">
-          Changed day
+          {{ $t('changed_day') }}
         </span>
         <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isRestDay">
-          Rest day
+          {{ $t('rest_day') }}
         </span>
         <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isVacationDate">
-          Vacation day
+          {{ $t('vacation_day') }}
         </span>
         <span v-else-if="employeeCalendar.assist.dateShift && employeeCalendar.assist.isWorkDisabilityDate"
           class="label-icon">
@@ -59,13 +59,13 @@
               </g>
             </svg>
           </div>
-          Disability day
+          {{ $t('disability_day') }}
         </span>
         <span v-else-if="employeeCalendar.assist.isHoliday && employeeCalendar.assist.holiday">
           {{ employeeCalendar.assist.holiday.holidayName }}
         </span>
         <span v-else>
-          Work day
+          {{ $t('work_day') }}
         </span>
       </div>
       <div class="tools">

@@ -7,6 +7,13 @@ import type { WorkDisabilityPeriodInterface } from '~/resources/scripts/interfac
 
 export default defineComponent({
   name: 'workDisabilityPeriodInfoCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     workDisabilityPeriod: { type: Object as PropType<WorkDisabilityPeriodInterface>, required: true },
@@ -22,7 +29,8 @@ export default defineComponent({
   data: () => ({
     isReady: false,
     canManageCurrentPeriod: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    localeToUse: 'en',
   }),
   computed: {
     displayPeriodActions() {
@@ -40,6 +48,9 @@ export default defineComponent({
 
       return true
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.canManageCurrentPeriod = this.canManageWorkDisabilities
@@ -71,7 +82,7 @@ export default defineComponent({
     },
     getDate(date: string) {
       const dateWorkDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
-      return dateWorkDisabilityPeriod.setLocale('en').toFormat('DDDD')
+      return dateWorkDisabilityPeriod.setLocale(this.localeToUse).toFormat('DDDD')
     },
     handlerClickOnEdit() {
       if (this.clickOnEdit) {
@@ -123,7 +134,7 @@ export default defineComponent({
       const endDate = DateTime.fromISO(endDateISO, { zone: 'utc' }).startOf('day')
 
       if (!currentDate.isValid || !endDate.isValid || !normalizedCurrentDay.isValid) {
-        console.error('Date invalid', {
+        console.error(this.t('date_invalid'), {
           currentDate: currentDate.invalidExplanation,
           endDate: endDate.invalidExplanation,
           currentDay: normalizedCurrentDay.invalidExplanation,

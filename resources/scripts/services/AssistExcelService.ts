@@ -18,24 +18,29 @@ import type { AssistExcelFilterIncidentSummaryPayRollInterface } from "../interf
 import type { SystemSettingInterface } from "../interfaces/SystemSettingInterface"
 import type { AssistIncidentPayrollCalendarExcelFilterInterface } from "../interfaces/AssistIncidentPayrollCalendarExcelFilterInterface"
 import type { AssistIncidentSummaryCalendarExcelFilterInterface } from "../interfaces/AssistIncidentSummaryCalendarExcelFilterInterface"
-
+import type { ComposerTranslation } from 'vue-i18n'
 export default class AssistExcelService {
   protected businessUnits: Array<BusinessUnitInterface>
+  private t: ComposerTranslation
+  private localeToUse = ''
+  constructor(t: ComposerTranslation, localeToUse: string) {
 
-  constructor() {
+    this.t = t
+    this.localeToUse = localeToUse
     this.businessUnits = []
   }
 
   async getExcelAllAssistance(assists: any[], title: string, dateEnd: string) {
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     const rows = [] as AssistExcelRowInterface[]
     const workbook = new ExcelJS.Workbook()
-    let worksheet = workbook.addWorksheet('Assistance Report')
+    let worksheet = workbook.addWorksheet(this.t('assistance_report'))
     await this.addImageLogo(workbook, worksheet, 'assist')
     worksheet.getRow(1).height = 60
     worksheet.mergeCells('A1:Q1')
-    const titleRow = worksheet.addRow(['Assistance Report'])
+    const titleRow = worksheet.addRow([this.t('assistance_report')])
     let color = '244062'
     let fgColor = 'FFFFFFF'
     worksheet.getCell('A' + 2).fill = {
@@ -80,7 +85,7 @@ export default class AssistExcelService {
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    saveAs(blob, 'Assistance Report.xlsx')
+    saveAs(blob, `${this.t('assistance_report')}.xlsx`)
     myGeneralStore.setFullLoader(false)
   }
 
@@ -90,7 +95,7 @@ export default class AssistExcelService {
     // Crear un nuevo libro de Excel
     const workbook = new ExcelJS.Workbook()
     // hasta aquí era lo de asistencia
-    const worksheet = workbook.addWorksheet('Incident Summary')
+    const worksheet = workbook.addWorksheet(this.t('incident_summary'))
     await this.addTitleIncidentToWorkSheet(workbook, worksheet, title)
     this.addHeadRowIncident(worksheet)
     const tardies = await this.getTardiesTolerance()
@@ -141,7 +146,7 @@ export default class AssistExcelService {
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    saveAs(blob, 'Incident summary Report.xlsx')
+    saveAs(blob, `${this.t('incident_summary')}.xlsx`)
     myGeneralStore.setFullLoader(false)
   }
 
@@ -151,7 +156,7 @@ export default class AssistExcelService {
     await this.getBusinessUnits()
     const workbook = new ExcelJS.Workbook()
     const rowsIncidentPayroll = [] as AssistIncidentPayrollExcelRowInterface[]
-    const worksheet = workbook.addWorksheet('Incident Summary Payroll')
+    const worksheet = workbook.addWorksheet(this.t('incident_summary_payroll'))
     await this.addTitleIncidentPayrollToWorkSheet(workbook, worksheet, filters.title)
     this.addHeadRowIncidentPayroll(worksheet)
     const tardies = await this.getTardiesTolerance()
@@ -186,7 +191,7 @@ export default class AssistExcelService {
     // Convertir a blob y guardar
     const buffer = await workbook.xlsx.writeBuffer()
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    saveAs(blob, 'Incident summary payroll Report.xlsx')
+    saveAs(blob, `${this.t('incident_summary_payroll_report')}.xlsx`)
     myGeneralStore.setFullLoader(false)
   }
 
@@ -247,23 +252,23 @@ export default class AssistExcelService {
 
   addHeadRow(worksheet: ExcelJS.Worksheet) {
     const headerRow = worksheet.addRow([
-      'Employee ID',
-      'Employee Name',
-      'Department',
-      'Position',
-      'Date',
+      `${this.t('employee')} ID`,
+      `${this.t('employee')} ${this.t('name')}`,
+      this.t('department'),
+      this.t('position'),
+      this.t('date'),
       '',
-      'Shift Assigned',
-      'Shift Start Date',
-      'Shift Ends Date',
+      this.t('shift_assigned'),
+      this.t('shift_start_date'),
+      this.t('shift_ends_date'),
       '',
-      'Check-in',
-      'Check go Eat',
-      'Check back from Eat',
-      'Check-out',
-      'Hours worked',
-      'Status',
-      'Exception Notes',
+      this.t('check_in'),
+      this.t('check_go_eat'),
+      this.t('check_back_from_eat'),
+      this.t('check_out'),
+      this.t('hours_worked'),
+      this.t('status'),
+      this.t('exception_notes')
     ])
     let fgColor = 'FFFFFFF'
     let color = '538DD5'
@@ -374,7 +379,7 @@ export default class AssistExcelService {
           status = 'NEXT'
         } else if (calendar.assist.isRestDay && !firstCheck) {
           status = 'REST'
-        } else if (calendar.assist.isVacationDate && status !== 'ONTIME') {
+        } else if (calendar.assist.isVacationDate && status !== 'ONTIME' && status !== 'A TIEMPO') {
           status = 'VACATIONS'
         } else if (calendar.assist.isHoliday) {
           status = 'HOLIDAY'
@@ -423,10 +428,10 @@ export default class AssistExcelService {
           hoursWorked += timeInDecimal
         }
 
-        const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
-        const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-        const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
-        const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setZone('UTC-6').toFormat('ff') : ''
+        const rowCheckInTime = calendar.assist.checkIn?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkIn.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('ff').toString() : ''
+        const rowLunchTime = calendar.assist?.checkEatIn?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatIn.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowReturnLunchTime = calendar?.assist?.checkEatOut?.assistPunchTimeUtc ? DateTime.fromISO(calendar.assist.checkEatOut.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('MMM d, yyyy, h:mm:ss a') : ''
+        const rowCheckOutTime = calendar.assist.checkOut?.assistPunchTimeUtc && !calendar.assist.isFutureDay ? DateTime.fromISO(calendar.assist.checkOut?.assistPunchTimeUtc.toString(), { setZone: true }).setLocale(this.localeToUse).setZone('UTC-6').toFormat('ff') : ''
 
         rows.push({
           code: employee.employeeCode.toString(),
@@ -444,7 +449,7 @@ export default class AssistExcelService {
           checkOutTime: rowCheckOutTime,
           lastCheck: lastCheck,
           hoursWorked: hoursWorked,
-          incidents: status,
+          incidents: this.t(status.toString().toLowerCase()).toUpperCase(),
           notes: '',
           sundayPremium: '',
           checkOutStatus: calendar.assist.checkOutStatus,
@@ -484,13 +489,13 @@ export default class AssistExcelService {
   }
 
   calendarDay(dateYear: number, dateMonth: number, dateDay: number) {
-    const date = DateTime.local(dateYear, dateMonth, dateDay, 0).setLocale('en')
+    const date = DateTime.local(dateYear, dateMonth, dateDay, 0).setLocale(this.localeToUse)
     const day = date.toFormat('DDD')
     return day
   }
 
   calendarDayMonth(dateYear: number, dateMonth: number, dateDay: number) {
-    const date = DateTime.local(dateYear, dateMonth, dateDay, 0)
+    const date = DateTime.local(dateYear, dateMonth, dateDay, 0).setLocale(this.localeToUse)
     const day = date.toFormat('dd/MMMM')
     return day
   }
@@ -502,7 +507,7 @@ export default class AssistExcelService {
     const timeCheckIn = DateTime.fromISO(
       checkAssist.assist.checkIn.assistPunchTimeUtc.toString(),
       { setZone: true }
-    ).setZone('UTC-6')
+    ).setZone('UTC-6').setLocale(this.localeToUse)
     return timeCheckIn.toFormat('MMM d, yyyy, h:mm:ss a')
   }
 
@@ -515,7 +520,7 @@ export default class AssistExcelService {
     const timeCheckOut = DateTime.fromISO(
       checkAssist.assist.checkOut.assistPunchTimeUtc.toString(),
       { setZone: true }
-    ).setZone('UTC-6')
+    ).setZone('UTC-6').setLocale(this.localeToUse)
     if (timeCheckOut.toFormat('yyyy-LL-dd') === now) {
       checkAssist.assist.checkOutStatus = ''
       return ''
@@ -531,7 +536,7 @@ export default class AssistExcelService {
     let rowCount = 5
     let faultsTotal = 0
     for await (const rowData of rows) {
-      if (rowData.incidents.toString().toUpperCase() === 'FAULT') {
+      if (rowData.incidents.toString().toUpperCase() === this.t('fault').toUpperCase()) {
         faultsTotal += 1
       }
       let incidents =
@@ -594,29 +599,29 @@ export default class AssistExcelService {
   paintIncidents(worksheet: ExcelJS.Worksheet, row: number, value: string) {
     let color = 'FFFFFFF'
     let fgColor = 'FFFFFFF'
-    if (value === 'FAULT') {
+    if (value === this.t('fault').toUpperCase()) {
       color = 'FFD45633'
       fgColor = 'FFFFFFF'
-    } else if (value === 'ONTIME') {
+    } else if (value === this.t('ontime').toUpperCase()) {
       color = 'FF33D4AD'
       fgColor = 'FFFFFFF'
-    } else if (value === 'NEXT') {
+    } else if (value === this.t('next').toUpperCase()) {
       color = 'E4E4E4'
       fgColor = '000000'
-    } else if (value === 'REST') {
+    } else if (value === this.t('rest').toUpperCase()) {
       color = 'E4E4E4'
       fgColor = '000000'
-    } else if (value === 'VACATIONS') {
+    } else if (value === this.t('vacations').toUpperCase()) {
       color = 'FFFFFFF'
       fgColor = '000000'
-    } else if (value === 'HOLIDAY') {
+    } else if (value === this.t('holiday').toUpperCase()) {
       color = 'FFFFFFF'
       fgColor = '000000'
-    } else if (value === 'DELAY') {
+    } else if (value === this.t('delay').toUpperCase()) {
       color = 'FF993A'
-    } else if (value === 'TOLERANCE') {
+    } else if (value === this.t('tolerance').toUpperCase()) {
       color = '3CB4E5'
-    } else if (value === 'EXCEPTION') {
+    } else if (value === this.t('exception').toUpperCase()) {
       fgColor = '000000'
     }
     worksheet.getCell('P' + row).fill = {
@@ -795,7 +800,7 @@ export default class AssistExcelService {
               vacations += 1
             }
             if (
-              calendar.assist.checkInStatus === 'fault' &&
+              (calendar.assist.checkInStatus === 'fault') &&
               !calendar.assist.isRestDay &&
               !faultProcessed
             ) {
@@ -964,7 +969,7 @@ export default class AssistExcelService {
             cell.font = { color: { argb: 'FFFFFF' } }
           }
         }
-        if (rowData.department === 'TOTALS') {
+        if (rowData.department === this.t('totals').toUpperCase()) {
           const color = '30869C'
           for (let col = 1; col <= 20; col++) {
             const cell = worksheet.getCell(rowCount - 1, col)
@@ -1044,7 +1049,7 @@ export default class AssistExcelService {
   ) {
     totalRowIncident.employeeId = ''
     totalRowIncident.employeeName = ''
-    totalRowIncident.department = 'TOTALS'
+    totalRowIncident.department = this.t('totals').toUpperCase()
     totalRowIncident.daysOnTime += rowByDepartment.daysOnTime
     totalRowIncident.tolerances += rowByDepartment.tolerances
     totalRowIncident.delays += rowByDepartment.delays
@@ -1085,26 +1090,25 @@ export default class AssistExcelService {
 
   addHeadRowIncident(worksheet: ExcelJS.Worksheet) {
     const headerRow = worksheet.addRow([
-      'Department',
-      'Employee ID',
-      'Employee Name',
-      'Days Worked',
-      'On Time',
-      'Tolerances',
-      'Delays',
-      'Early Outs',
-      'Rests',
-      'Sunday Bonus',
-      'Vacations',
-      'Exceptions',
-      'Holidays Worked',
-      'Rest Worked',
-      'Faults',
-      'Delays Faults',
-      'Early Outs Faults',
-      'Total Faults',
-      'Total Hours Worked',
-      'Discount',
+      this.t('department'),
+      `${this.t('employee')} ID`,
+      `${this.t('employee')} ${this.t('name')}`,
+      this.t('days_worked'),
+      this.t('on_time'),
+      this.t('tolerances'),
+      this.t('delays'),
+      this.t('early_outs'),
+      this.t('rests'),
+      this.t('sunday_bonus'),
+      this.t('vacations'),
+      this.t('exceptions'),
+      this.t('holidays_worked'),
+      this.t('rest_worked'),
+      this.t('faults'),
+      this.t('delays_faults'),
+      this.t('early_outs_faults'),
+      this.t('total_faults'),
+      this.t('total_hours_worked')
     ])
     let fgColor = 'FFFFFFF'
     let color = '30869C'
@@ -1227,21 +1231,21 @@ export default class AssistExcelService {
 
   addHeadRowIncidentPayroll(worksheet: ExcelJS.Worksheet) {
     const headerRow = worksheet.addRow([
-      'NOMBRE COMPLETO',
-      'ID',
-      'DEPARTAMENTO',
-      'EMPRESA',
-      'FALTA',
-      'RETARDO',
-      'INC',
-      'HRS EX. DOB.',
-      'HRS EX. TRI.',
-      'P. DOM.',
-      'DESC. LAB.',
-      'P. VAC.',
-      'NIVELACION',
-      'BONO',
-      'OTROS',
+      `${this.t('employee')} ${this.t('name')}`,
+      `${this.t('employee')} ID`,
+      this.t('department'),
+      this.t('company'),
+      this.t('fault'),
+      this.t('delay'),
+      this.t('leaves'),
+      this.t('double_overtime_hours'),
+      this.t('triple_overtime_hours'),
+      this.t('sunday_bonus_abb'),
+      this.t('rest_day_worked'),
+      this.t('vacation_bonus'),
+      this.t('leveling'),
+      this.t('bonus'),
+      this.t('others')
     ])
     let fgColor = '000000'
     let color = 'C9C9C9'

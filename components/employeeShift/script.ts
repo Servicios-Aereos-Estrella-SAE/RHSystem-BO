@@ -28,6 +28,15 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeShift',
+  setup() {
+    const router = useRouter()
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale,
+      router
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canManageVacation: { type: Boolean, required: true },
@@ -67,19 +76,16 @@ export default defineComponent({
     drawerCalendarShiftDelete: false,
     employeeCalendarAssist: null as AssistDayInterface | null,
     canSeeReportAssist: false,
-    withOutLimitDays: false
+    withOutLimitDays: false,
+    localeToUse: 'en',
   }),
-  setup() {
-    const router = useRouter()
-    return { router }
-  },
   computed: {
     isRoot() {
       const myGeneralStore = useMyGeneralStore()
       return myGeneralStore.isRoot
     },
     monthName() {
-      const calendarDate = this.selectedDate.setZone('UTC-6').setLocale('en')
+      const calendarDate = this.selectedDate.setZone('UTC-6').setLocale(this.localeToUse)
       return calendarDate.toFormat('LLLL, y')
     },
     period() {
@@ -109,6 +115,7 @@ export default defineComponent({
     }
   },
   created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
 
@@ -171,7 +178,7 @@ export default defineComponent({
 
       this.$toast.add({
         severity: 'success',
-        summary: 'Employee shift assigned',
+        summary: this.t('employee_shift_assigned'),
         detail: employeeShiftResponse._data.message,
         life: 5000,
       })
@@ -217,7 +224,7 @@ export default defineComponent({
       return exceptionTypeList.length > 0 ? exceptionTypeList[0].exceptionTypeId : null
     },
     async handlerCalendarChange() {
-      const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('UTC-6').setLocale('en')
+      const calendarDate = DateTime.fromJSDate(this.inputSelectedDate).setZone('UTC-6').setLocale(this.localeToUse)
 
       if (calendarDate.toFormat('LLLL').toLocaleLowerCase() !== this.selectedDate.toFormat('LLLL').toLocaleLowerCase()) {
         this.selectedDate = calendarDate
@@ -231,14 +238,14 @@ export default defineComponent({
     async handlerLastMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('UTC-6').setLocale('en')
+      this.selectedDate = this.selectedDate.plus({ month: -1 }).setZone('UTC-6').setLocale(this.localeToUse)
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },
     async handlerNextMonth() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('UTC-6').setLocale('en')
+      this.selectedDate = this.selectedDate.plus({ month: 1 }).setZone('UTC-6').setLocale(this.localeToUse)
       await this.getEmployeeCalendar()
       myGeneralStore.setFullLoader(false)
     },

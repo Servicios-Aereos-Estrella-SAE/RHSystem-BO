@@ -44,16 +44,16 @@
         <div class="checkbox-item">
           <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay" name="applyToMoreThanOneDay"
             :binary="true" />
-          <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+          <label for="applyToMoreThanOneDay" class="ml-2"> {{ $t('apply_to_more_than_one_day') }} </label>
         </div>
       </div>
       <div v-if="applyToMoreThanOneDay" class="input-box small-box">
         <label for="description">
-          Days to apply
+          {{ $t('days_to_apply') }}
         </label>
         <InputNumber v-model="shiftException.daysToApply" inputId="daysToApply" />
         <small class="p-error" v-if="submitted && !shiftException.daysToApply">
-          Days is required.
+          {{ $t('days') }} {{ $t('is_required') }}
         </small>
       </div>
     </div>

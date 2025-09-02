@@ -7,19 +7,19 @@
       :canManageUserResponsible="canManageUserResponsible" :startDateLimit="startDateLimit" />
     <h1>
       {{ isNewWorkDisabilityPeriodExpense ?
-      'Add work disability period expense'
-      : 'Update work disability period expense' }}
+      $t('add_work_disability_period_expense')
+      : $t('update_work_disability_period_expense') }}
     </h1>
 
     <div v-if="isReady" class="work-disability-period-expense-form">
       <div class="form-container">
         <div class="input-box">
           <label for="work-disability-period-expense-file">
-            Expense document
+            {{ $t('expense_document') }}
           </label>
 
           <FileUpload v-if="canManageWorkDisabilities && canManageCurrentPeriod" ref="fileUpload" v-model="files"
-            name="demo[]" url="/api/upload" accept="image/*,application/pdf" chooseLabel="Click to select file"
+            name="demo[]" url="/api/upload" accept="image/*,application/pdf" :chooseLabel="$t('click_to_select_files')"
             :showUploadButton="false" :showCancelButton="false" :custom-upload="true" :fileLimit="1"
             @select="validateFiles" @upload="onAdvancedUpload($event)" :disabled="!canManageUserResponsible">
             <template #content="{ files, removeFileCallback }">
@@ -49,13 +49,13 @@
             </template>
             <template #empty>
               <div class="empty-file-uploader">
-                Drag and drop file to here to upload.
+                {{ $t('drag_and_drop_files_here_or_click_to_select') }}
               </div>
             </template>
           </FileUpload>
           <small class="p-error"
-            v-if="submitted && !workDisabilityPeriodExpense.workDisabilityPeriodExpenseId && files.length === 0">File
-            is required.
+            v-if="submitted && !workDisabilityPeriodExpense.workDisabilityPeriodExpenseId && files.length === 0">{{
+            $t('file') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="input-box">
@@ -66,25 +66,24 @@
                 d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z"
                 fill="#88a4bf" class="fill-212121"></path>
             </svg>
-            Open attached file
+            {{ $t('open_attached_file') }}
           </button>
         </div>
         <div class="input-box">
           <label for="folio">
-            Amount
+            {{ $t('amount') }}
           </label>
           <InputNumber v-model="workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible"
             mode="currency" currency="MXN" fluid />
-          <small class="p-error"
-            v-if="submitted && !workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount">Amount
-            is required.
+          <small class="p-error" v-if="submitted && !workDisabilityPeriodExpense.workDisabilityPeriodExpenseAmount">{{
+            $t('amount') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="box-tools-footer">
           <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
             class="btn btn-block btn-primary" @click="onSave">
-            Save work disability period expense
+            {{ $t('save') }}
           </Button>
         </div>
       </div>

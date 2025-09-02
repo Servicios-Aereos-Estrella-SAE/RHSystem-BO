@@ -1,9 +1,8 @@
 import type { AttendanceMonitorPeriodType } from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
-import DepartmentService from "../services/DepartmentService";
-import EmployeeService from "../services/EmployeeService";
 
 export default class AttendanceMonitorController {
+
   constructor() {
 
   }
@@ -28,14 +27,14 @@ export default class AttendanceMonitorController {
     return serieData
   }
 
-  getDepartmentPeriodCategories(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date): string[] {
+  getDepartmentPeriodCategories(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, localeToUse: string): string[] {
     switch (period) {
       case 'yearly':
         return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1).setLocale('en')
+        const date = DateTime.local(year, month, 1).setLocale(localeToUse)
         const days = date.daysInMonth
         const categories = []
 
@@ -57,7 +56,7 @@ export default class AttendanceMonitorController {
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day).setLocale('en')
+          const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
           const formatedDay = dayDate.toFormat('DD')
           const daySelected = date.toFormat('yyyy LLL dd') === dayDate.toFormat('yyyy LLL dd')
 
@@ -84,7 +83,7 @@ export default class AttendanceMonitorController {
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day).setLocale('en')
+          const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
           const formatedDay = dayDate.toFormat('DD')
 
           daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -97,7 +96,7 @@ export default class AttendanceMonitorController {
     }
   }
 
-  getCustomPeriodCategories(periodDate: Date[]): string[] {
+  getCustomPeriodCategories(periodDate: Date[], localeToUse: string): string[] {
     const start = DateTime.fromJSDate(periodDate[0]).setZone('UTC-6')
     const date = DateTime.fromJSDate(periodDate[1]).setZone('UTC-6')
     const periodLenght = Math.floor(date.diff(start, 'days').days) + 1
@@ -108,7 +107,7 @@ export default class AttendanceMonitorController {
       const year = parseInt(currentDay.toFormat('yyyy'))
       const month = parseInt(currentDay.toFormat('LL'))
       const day = parseInt(currentDay.toFormat('dd'))
-      const dayDate = DateTime.local(year, month, day).setLocale('en')
+      const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
       const formatedDay = dayDate.toFormat('DD')
 
       daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
@@ -117,7 +116,7 @@ export default class AttendanceMonitorController {
     return daysList
   }
 
-  getDepartmentPeriodData(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null) {
+  getDepartmentPeriodData(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, datesSelected: Date[] | null = null, localeToUse: string) {
     const assists = []
     const tolerances = []
     const delays = []
@@ -133,7 +132,7 @@ export default class AttendanceMonitorController {
       case 'monthly': {
         const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
         const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
-        const date = DateTime.local(year, month, 1).setLocale('en')
+        const date = DateTime.local(year, month, 1).setLocale(localeToUse)
         const days = date.daysInMonth
         periodLenght = days || 0
         break

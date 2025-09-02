@@ -2,7 +2,7 @@
   <div class="employee-shift-change-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewEmployeeShiftChange ? 'Add shift change' : 'Update shift change' }}
+      {{ isNewEmployeeShiftChange ? $t('add_shift_change') : $t('update_shift_change') }}
     </h1>
     <div class="selected-day">
       <span class="selected-day-date">{{ selectedDate }}</span>
@@ -16,21 +16,21 @@
           <Checkbox v-model="employeeShiftChange.employeeShiftChangeChangeThisShift" binary
             :disabled="!isNewEmployeeShiftChange || !canManageUserResponsible" />
           <label>
-            Cover shift
+            {{ $t('cover_shift') }}
           </label>
         </div>
         <div v-if="isNewEmployeeShiftChange" class="input-box">
           <label for="change-type">
-            Type
+            {{ $t('type') }}
           </label>
-          <Dropdown v-model="changeType" :options="changeTypesList" optionLabel="label" optionValue="value"
+          <Dropdown v-model="changeType" :options="getChangeTypesList" optionLabel="label" optionValue="value"
             placeholder="" filter class="w-full md:w-14rem" @update:model-value="handleTypeChange"
             :disabled="!canManageUserResponsible" />
-          <small class=" p-error" v-if="submitted && !changeType">Change type is required.</small>
+          <small class=" p-error" v-if="submitted && !changeType">{{ $t('type') }} {{ $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <div class="date-box-container">
-            <label>Date to</label>
+            <label>{{ $t('date_to') }}</label>
             <div v-if="!isNewEmployeeShiftChange" class="date-box">
               <InputText v-model="dateTo" class="capitalize"
                 :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
@@ -49,7 +49,7 @@
             </div>
             <div v-if="displayDateToCalendar && isNewEmployeeShiftChange" class="date-box-controller">
               <Calendar v-if="displayDateToCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="employeeShiftChange.employeeShiftChangeDateTo" placeholder="Select start date"
+                v-model.lazy="employeeShiftChange.employeeShiftChangeDateTo" :placeholder="$t('select_start_date')"
                 :invalid="submitted && !employeeShiftChange.employeeShiftChangeDateTo" :minDate="startDateLimit"
                 :disabled="employeeShiftChange.employeeShiftChangeChangeThisShift || !canManageUserResponsible" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
@@ -61,14 +61,15 @@
                 </svg>
               </Button>
             </div>
-            <small class="p-error" v-if="submitted && !employeeShiftChange.employeeShiftChangeDateTo">Date to
-              is required.
+            <small class="p-error" v-if="submitted && !employeeShiftChange.employeeShiftChangeDateTo">{{ $t('date_to')
+              }}
+              {{ $t('is_required') }}
             </small>
           </div>
         </div>
         <div v-if="!isPersonal" class="input-box">
           <label for="search">
-            Employee To
+            {{ $t('employee_to') }}
           </label>
           <AutoComplete v-if="isNewEmployeeShiftChange" v-model="selectedEmployee"
             :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
@@ -91,23 +92,26 @@
           </AutoComplete>
           <InputText v-else v-model="employeeToSelectedName" readonly class="uppercase"
             :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !employeeShiftChange.employeeIdTo">Employee to is required.</small>
+          <small class="p-error" v-if="submitted && !employeeShiftChange.employeeIdTo">{{ $t('employee_to') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <label for="shift">
-            Day to
+            {{ $t('day_to') }}
           </label>
           <InputText :value="dateRestDayTo" class="capitalize"
             :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
         </div>
         <div class="input-box">
           <label for="shift">
-            Shift
+            {{ $t('shift_to') }}
           </label>
           <Dropdown v-model="employeeShiftChange.shiftIdTo" :options="shiftList" optionLabel="shiftName"
             optionValue="shiftId" placeholder="" filter class="w-full md:w-14rem" readonly
             :disabled="!employeeShiftChange.employeeShiftChangeChangeThisShift || !isNewEmployeeShiftChange || !canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !employeeShiftChange.shiftIdTo">Shift to is required.</small>
+          <small class="p-error" v-if="submitted && !employeeShiftChange.shiftIdTo">{{ $t('shift_to') }} {{
+            $t('is_required')
+            }}</small>
         </div>
         <div v-if="isNewEmployeeShiftChange" class="input-box">
           <button v-if="canCreateShift" class="btn" @click="addNewShift">
@@ -117,17 +121,17 @@
                 d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
-            Create Shift
+            {{ $t('create_shift') }}
           </button>
         </div>
         <div class="input-box">
-          <label for="employeeShiftChangeNote">Note</label>
+          <label for="employeeShiftChangeNote">{{ $t('note') }}</label>
           <Textarea id="employeeShiftChangeNote" v-model="employeeShiftChange.employeeShiftChangeNote" rows="3"
             :disabled="!isNewEmployeeShiftChange|| !canManageUserResponsible" />
         </div>
         <div v-if="isNewEmployeeShiftChange && canManageUserResponsible" class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
-            Save
+            {{ $t('save') }}
           </Button>
         </div>
       </div>

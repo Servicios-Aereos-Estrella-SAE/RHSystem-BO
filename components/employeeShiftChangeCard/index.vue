@@ -4,14 +4,14 @@
       <div class="employee-shift-change-name">
         <div v-if="employeeShiftChange.employeeIdFrom === employeeShiftChange.employeeIdTo">
           <div v-if="employeeShiftChange.employeeShiftChangeChangeThisShift === 1">
-            Cover shift
+            {{ $t('cover_shift') }}
           </div>
           <div v-else>
-            Shift change personal
+            {{ $t('shift_change_personal') }}
           </div>
         </div>
         <div v-else>
-          Shift change with employee
+          {{ $t('shift_change_with_employee') }}
         </div>
       </div>
 
@@ -20,7 +20,7 @@
         <div
           v-if="employeeShiftChange.employeeTo && employeeShiftChange.employeeShiftChangeChangeThisShift === 0 && (employeeShiftChange.employeeIdFrom !== employeeShiftChange.employeeIdTo)"
           class="employee">
-          Change with
+          {{ $t('change_with') }}
           {{ employeeShiftChange.employeeTo.person?.personFirstname }}
           {{ employeeShiftChange.employeeTo.person?.personLastname }}
           {{ employeeShiftChange.employeeTo.person?.personSecondLastname }}
@@ -34,7 +34,7 @@
         <div class="new-shift-tag">
           <Tag v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 0"
             :value="employeeShiftChange.shiftFrom.shiftName" severity="secondary" />
-          <Tag v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1" :value="'Rest Day'"
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1" :value="$t('rest_day')"
             severity="secondary" />
           <br v-if="!employeeShiftChange.shiftFrom.shiftName">
           <br v-if="!employeeShiftChange.shiftFrom.shiftName">
@@ -46,7 +46,7 @@
         <div class="new-shift-tag" v-if="employeeShiftChange.employeeTo">
           <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 0"
             :value="employeeShiftChange.shiftTo.shiftName" severity="success" />
-          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="'Rest Day'"
+          <Tag v-if="employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1" :value="$t('rest_day')"
             severity="info" />
           <br v-if="!employeeShiftChange.shiftTo.shiftName">
           <br v-if="!employeeShiftChange.shiftTo.shiftName">
@@ -58,7 +58,7 @@
         <div v-if="employeeShiftChange.employeeShiftChangeNote" class="notes">
           <p>
             <b>
-              Notes:
+              {{ $t('notes') }}:
             </b>
             {{ employeeShiftChange.employeeShiftChangeNote }}
           </p>

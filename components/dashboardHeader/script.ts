@@ -9,6 +9,25 @@ export default defineComponent({
   name: 'dashboardHeader',
   props: {
   },
+  setup() {
+    const { locales, t, locale, setLocale } = useI18n()
+    watch(locale, (newLocale, oldLocale) => {
+
+      if (newLocale !== oldLocale) {
+        const { status } = useAuth()
+        if (status.value !== 'unauthenticated') {
+          localStorage.setItem('rh-language', newLocale)
+        }
+
+      }
+    })
+    return {
+      t,
+      locale,
+      locales,
+      setLocale
+    }
+  },
   data: () => ({
     socketIO: null as any,
     authUser: null as UserInterface | null,
@@ -21,6 +40,7 @@ export default defineComponent({
     currentPage: 1,
     rowsPerPage: 10,
     notificationAudio: null as HTMLAudioElement | null,
+    currentLocale: ''
   }),
   computed: {
     getBusinessName() {
@@ -55,9 +75,26 @@ export default defineComponent({
       return photoPath
     }
   },
+  watch: {
+
+  },
   created() {
   },
   mounted() {
+    const availableLocales = this.locales.map((l) =>
+      typeof l === 'string' ? l : l.code
+    )
+    const savedLang = localStorage.getItem('rh-language') as 'en' | 'es' | null
+
+    if (savedLang && availableLocales.includes(savedLang)) {
+      this.setLocale(savedLang)
+    } else {
+      const browserLang = navigator.language.split('-')[0] as 'en' | 'es'
+      const defaultLang = availableLocales.includes(browserLang) ? browserLang : 'en'
+      this.setLocale(defaultLang)
+      localStorage.setItem('rh-language', defaultLang)
+    }
+    this.currentLocale = this.locale
     // this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()

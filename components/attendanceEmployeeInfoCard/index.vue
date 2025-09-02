@@ -7,10 +7,10 @@
       <div class="percentage assist">
         {{employee.assistStatistics.onTimePercentage || 0}}%
         <small>
-          On Time
+          {{ $t('on_time') }}
           <br>
           <span>
-            ( {{ `${employee.assistStatistics.assists || 0}`.padStart(2, '0') }} Arrivals )
+            ( {{ `${employee.assistStatistics.assists || 0}`.padStart(2, '0') }} {{ $t('arrivals') }} )
           </span>
         </small>
       </div>
@@ -18,30 +18,30 @@
         <div class="percentage tolerance">
           {{employee.assistStatistics.onTolerancePercentage || 0}}%
           <small>
-            Tolerances
+            {{ $t('tolerances') }}
             <br>
             <span>
-              ( {{ `${employee.assistStatistics.tolerances || 0}`.padStart(2, '0') }} Arrivals )
+              ( {{ `${employee.assistStatistics.tolerances || 0}`.padStart(2, '0') }} {{ $t('arrivals') }} )
             </span>
           </small>
         </div>
         <div class="percentage delay">
           {{employee.assistStatistics.onDelayPercentage || 0}}%
           <small>
-            Delays
+            {{ $t('delays') }}
             <br>
             <span>
-              ( {{ `${employee.assistStatistics.delays || 0}`.padStart(2, '0') }} Arrivals )
+              ( {{ `${employee.assistStatistics.delays || 0}`.padStart(2, '0') }} {{ $t('arrivals') }} )
             </span>
           </small>
         </div>
         <div class="percentage fault">
           {{employee.assistStatistics.onFaultPercentage || 0}}%
           <small>
-            Faults
+            {{ $t('faults') }}
             <br>
             <span>
-              ( {{ `${employee.assistStatistics.faults || 0}`.padStart(2, '0') }} Absences )
+              ( {{ `${employee.assistStatistics.faults || 0}`.padStart(2, '0') }} {{ $t('absences') }} )
             </span>
           </small>
         </div>
@@ -49,13 +49,16 @@
       <div class="percentage early-out">
         {{employee.assistStatistics.onEarlyOutPercentage || 0}}%
         <small>
-          Early outs
+          {{ $t('early_outs') }}
         </small>
       </div>
       <div class="box-tools-footer">
         <nuxt-link :to="`/employees-attendance-monitor/${employee.employee.employeeCode}`" class="box-button block">
-          See details
-          <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
+          {{ $t('see_details') }}
+          <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round"
+            stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
         </nuxt-link>
       </div>
     </div>
@@ -68,5 +71,5 @@
 </script>
 
 <style lang="scss">
-@import './style';
+  @import './style';
 </style>

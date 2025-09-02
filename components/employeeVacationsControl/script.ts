@@ -17,6 +17,13 @@ export default defineComponent({
   components: {
   },
   name: 'employeeVacationsControl',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     vacationPeriod: { type: Object as PropType<VacationPeriodInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
@@ -39,7 +46,8 @@ export default defineComponent({
     isDeleted: false,
     sessionUser: null as UserInterface | null,
     restrictFutureVacations: false,
-    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    localeToUse: 'en',
   }),
   computed: {
     displayAddButton() {
@@ -57,6 +65,9 @@ export default defineComponent({
 
       return false
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     await this.setSessionUser()
@@ -120,8 +131,8 @@ export default defineComponent({
       if (!this.canManageVacation) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'You do not have permission to manage vacations',
+          summary: this.t('validation_data'),
+          detail: this.t('you_do_not_have_permission_to_manage_vacations'),
           life: 5000,
         })
         return
@@ -131,8 +142,8 @@ export default defineComponent({
         if (this.vacationPeriod.vacationPreviousAvailableDays > 0) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'You cannot add vacation in this period because there is still available vacation in previous periods',
+            summary: this.t('validation_data'),
+            detail: this.t('you_cannot_add_vacation_in_this_period_because_there_is_still_available_vacation_in_previous_periods'),
             life: 5000,
           })
           return
@@ -144,8 +155,8 @@ export default defineComponent({
         if (availableDays <= 0) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'There are no more days available',
+            summary: this.t('validation_data'),
+            detail: this.t('there_are_no_more_days_available'),
             life: 5000,
           })
           return
@@ -154,8 +165,8 @@ export default defineComponent({
           if (!shiftException.shiftExceptionId) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'Validation data',
-              detail: 'Cannot add another. Save first.',
+              summary: this.t('validation_data'),
+              detail: this.t('cannot_add_another_save_first'),
               life: 5000,
             })
             return
@@ -173,8 +184,8 @@ export default defineComponent({
         if (!exceptionTypeId) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Exception type vacation not found',
+            summary: this.t('validation_data'),
+            detail: this.t('exception_type_vacation_not_found'),
             life: 5000,
           })
           return
@@ -221,7 +232,7 @@ export default defineComponent({
             wasDeleteSuccessfully = true
             this.$toast.add({
               severity: 'success',
-              summary: 'Delete vacation',
+              summary: this.t('delete_vacation'),
               detail: aircraftProceedingFileResponse._data.message,
               life: 5000,
             })
@@ -229,7 +240,7 @@ export default defineComponent({
           } else {
             this.$toast.add({
               severity: 'error',
-              summary: 'Delete vacation',
+              summary: this.t('delete_vacation'),
               detail: aircraftProceedingFileResponse._data.message,
               life: 5000,
             })
@@ -238,8 +249,8 @@ export default defineComponent({
           wasDeleteSuccessfully = true
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete vacation',
-            detail: 'Vacation was deleted successfully',
+            summary: this.t('delete_vacation'),
+            detail: this.t('vacation_was_deleted_successfully'),
             life: 5000,
           })
         }

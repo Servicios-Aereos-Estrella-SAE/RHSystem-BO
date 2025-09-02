@@ -19,6 +19,13 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeShiftChange',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -45,11 +52,12 @@ export default defineComponent({
     isDeleted: false,
     drawerEmployeeShiftChangesError: false,
     canManageToPreviousDays: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    localeToUse: 'en',
   }),
   computed: {
     selectedChangeDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
     },
     displayAddButton() {
@@ -70,7 +78,22 @@ export default defineComponent({
       }
 
       return false
+    },
+    getChangeTypesList() {
+      return [
+        {
+          label: this.$t('shift_change_with_employee'),
+          value: 'shift change with employee'
+        },
+        {
+          label: this.$t('shift_change_personal'),
+          value: 'shift change personal'
+        }
+      ];
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
@@ -78,7 +101,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDate = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDate = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
 
     await this.getShiftChangeEmployee()
     if (this.employee.deletedAt) {
@@ -262,7 +285,7 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete shift change',
+            summary: this.t('delete_shift_change'),
             detail: employeeShiftChangeResponse._data.message,
             life: 5000,
           })

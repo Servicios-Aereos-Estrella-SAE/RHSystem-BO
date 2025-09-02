@@ -4,6 +4,15 @@ import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
   name: "Login",
+  setup() {
+    const { locales, t, locale, setLocale } = useI18n()
+    return {
+      locales,
+      t,
+      locale,
+      setLocale
+    }
+  },
   props: {
   },
   data: () => ({
@@ -15,7 +24,7 @@ export default defineComponent({
     isGuest: false,
   }),
   computed: {
-    getBackgroundImageLogo(){
+    getBackgroundImageLogo() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage
@@ -30,6 +39,19 @@ export default defineComponent({
     }
   },
   async mounted() {
+    const availableLocales = this.locales.map((l) =>
+      typeof l === 'string' ? l : l.code
+    )
+    const savedLang = localStorage.getItem('rh-language') as 'en' | 'es' | null
+
+    if (savedLang && availableLocales.includes(savedLang)) {
+      this.setLocale(savedLang)
+    } else {
+      const browserLang = navigator.language.split('-')[0] as 'en' | 'es'
+      const defaultLang = availableLocales.includes(browserLang) ? browserLang : 'en'
+      this.setLocale(defaultLang)
+      localStorage.setItem('rh-language', defaultLang)
+    }
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()
   },

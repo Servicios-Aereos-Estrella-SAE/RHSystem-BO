@@ -9,7 +9,6 @@ import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterfa
 import type { EmployeeShiftChangeInterface } from '~/resources/scripts/interfaces/EmployeeShiftChangeInterface';
 import EmployeeShiftChangeService from '~/resources/scripts/services/EmployeeShiftChangeService';
 import EmployeeService from '~/resources/scripts/services/EmployeeService';
-import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 import ShiftService from '~/resources/scripts/services/ShiftService';
 import AssistService from '~/resources/scripts/services/AssistService';
 import type { AssistDayInterface } from '~/resources/scripts/interfaces/AssistDayInterface';
@@ -22,6 +21,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeeShiftChangeForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -57,11 +63,24 @@ export default defineComponent({
     shiftTemp: null as ShiftInterface | null,
     drawerShiftForm: false,
     canCreateShift: false,
+    localeToUse: 'en',
   }),
   computed: {
     selectedDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
+    },
+    getChangeTypesList() {
+      return [
+        {
+          label: this.$t('shift_change_with_employee'),
+          value: 'shift change with employee'
+        },
+        {
+          label: this.$t('shift_change_personal'),
+          value: 'shift change personal'
+        }
+      ];
     }
   },
   watch: {
@@ -88,6 +107,10 @@ export default defineComponent({
       }
     },
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+    this.dateRestDayFrom = this.t('rest_day')
+  },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -97,7 +120,7 @@ export default defineComponent({
     }
     this.isNewEmployeeShiftChange = !this.employeeShiftChange.employeeShiftChangeId ? true : false
     if (this.employeeShiftChange.employeeShiftChangeDateFromIsRestDay === 1) {
-      this.dateRestDayFrom = 'Rest day'
+      this.dateRestDayFrom = this.t('rest_day')
     }
     if (this.employeeShiftChange.employeeShiftChangeId) {
       const employeeShiftChangeService = new EmployeeShiftChangeService()
@@ -107,20 +130,20 @@ export default defineComponent({
         this.currentEmployeeShiftChange = employeeShiftChangeResponse._data.data.employeeShiftChange.employeeShiftChange
       }
       if (this.currentEmployeeShiftChange && this.currentEmployeeShiftChange.employeeShiftChangeDateTo) {
-        const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+        const newDate = DateTime.fromISO(this.currentEmployeeShiftChange.employeeShiftChangeDateTo.toString(), { setZone: true }).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
         this.dateTo = newDate
       }
       this.employeeToSelectedName = `${this.employeeShiftChange.employeeTo.person?.personFirstname} ${this.employeeShiftChange.employeeTo.person?.personLastname} ${this.employeeShiftChange.employeeTo.person?.personSecondLastname}`
       if (this.employeeShiftChange.employeeShiftChangeDateToIsRestDay === 1) {
-        this.dateRestDayTo = 'Rest day'
+        this.dateRestDayTo = this.t('rest_day')
       } else {
-        this.dateRestDayTo = 'Work day'
+        this.dateRestDayTo = this.t('work_day')
       }
       if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
         this.employeeShiftChange.employeeShiftChangeChangeThisShift = true
       }
     } else {
-      this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-MM-dd')
+      this.employeeShiftChange.employeeShiftChangeDateFrom = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-MM-dd')
       this.currentDate = DateTime.fromJSDate(this.date).setZone('UTC-6').toISO()
       this.employeeShiftChange.employeeIdTo = this.employee.employeeId
     }
@@ -191,19 +214,19 @@ export default defineComponent({
       if (!employeeShiftChangeService.validateInfo(this.employeeShiftChange)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
       }
 
       if (this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
-        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo && this.dateRestDayFrom !== 'Rest day') {
+        if (this.employeeShiftChange.shiftIdFrom === this.employeeShiftChange.shiftIdTo && this.dateRestDayFrom !== this.t('rest_day')) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: `If the change is for the same day and it's a rest day, the shift must be different.`,
+            summary: this.t('validation_data'),
+            detail: this.t('if_the_change_is_for_the_same_day_and_its_a_rest_day_the_shift_must_be_different'),
             life: 5000,
           })
           return
@@ -235,7 +258,7 @@ export default defineComponent({
         const severityType = employeeShiftChangeResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Shift change ${this.employeeShiftChange.employeeShiftChangeId ? 'update' : 'create'}`,
+          summary: `${this.t('shift_change')} ${this.employeeShiftChange.employeeShiftChangeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -271,7 +294,7 @@ export default defineComponent({
       }
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerDisplayDateTo() {
@@ -290,7 +313,7 @@ export default defineComponent({
     async setShiftTo() {
       this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 0
       this.employeeShiftChange.shiftIdTo = null
-      this.dateRestDayTo = 'Work day'
+      this.dateRestDayTo = this.t('work_day')
       if (this.employeeShiftChange.employeeIdTo && this.employeeShiftChange.employeeShiftChangeDateTo) {
         const fullDate = new Date(this.employeeShiftChange.employeeShiftChangeDateTo);
 
@@ -304,28 +327,28 @@ export default defineComponent({
         if (employeeCalendar.length > 0) {
           if (employeeCalendar[0].assist) {
             if (employeeCalendar[0].assist.isVacationDate) {
-              this.dateRestDayTo = 'Vacation day'
+              this.dateRestDayTo = this.t('vacation_day')
               this.$toast.add({
                 severity: 'warn',
-                summary: 'Vacation day',
-                detail: 'The date to is vacation day',
+                summary: this.t('vacation_day'),
+                detail: this.t('the_date_to_is_vacation_day'),
                 life: 5000,
               })
               return
             }
             if (employeeCalendar[0].assist.hasExceptions) {
-              this.dateRestDayTo = 'Exception day'
+              this.dateRestDayTo = this.t('exception_day')
               this.$toast.add({
                 severity: 'warn',
-                summary: 'Shift exception day',
-                detail: 'The date to has shift exception',
+                summary: this.t('shift_exception_day'),
+                detail: this.t('the_date_to_has_shift_exception'),
                 life: 5000,
               })
               return
             }
             if (employeeCalendar[0].assist.isRestDay && !this.employeeShiftChange.employeeShiftChangeChangeThisShift) {
               this.employeeShiftChange.employeeShiftChangeDateToIsRestDay = 1
-              this.dateRestDayTo = 'Rest day'
+              this.dateRestDayTo = this.t('rest_day')
             }
           }
           if (employeeCalendar[0].assist.dateShift?.shiftId) {
@@ -334,8 +357,8 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Shift not found',
-            detail: 'The shift was not found with the date',
+            summary: this.t('shift_not_found'),
+            detail: this.t('the_shift_was_not_found_with_the_date'),
             life: 5000,
           })
           return

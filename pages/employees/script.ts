@@ -9,19 +9,22 @@ import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfac
 import AddressTypeService from '~/resources/scripts/services/AddressTypeService'
 import DepartmentService from '~/resources/scripts/services/DepartmentService'
 import EmployeeService from "~/resources/scripts/services/EmployeeService"
-import EmployeeTypeService from '~/resources/scripts/services/EmployeeTypeService'
 import PositionService from '~/resources/scripts/services/PositionService'
 import { useMyGeneralStore } from "~/store/general"
 import EmployeeAddressService from '~/resources/scripts/services/EmployeeAddressService'
 import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/EmployeeAddressInterface'
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
-import { DateTime } from 'luxon'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
 
 export default defineComponent({
   name: 'Employees',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     search: '' as string,
@@ -74,6 +77,11 @@ export default defineComponent({
     employeesSync: [] as EmployeeSyncInterface[],
   }),
   computed: {
+    getStatus() {
+      return this.optionsActive.map(status =>
+        this.$t(`${status.toLowerCase()}`)
+      )
+    },
     isRootUser() {
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
@@ -117,6 +125,7 @@ export default defineComponent({
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    this.status = this.capitalizeFirstLetter(this.t('active'))
     const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
@@ -171,7 +180,8 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
-      const onlyInactive = this.status === 'Terminated' ? true : false
+      this.capitalizeFirstLetter(this.t('active'))
+      const onlyInactive = this.status === this.capitalizeFirstLetter(this.t('terminated')) ? true : false
       const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId)
       const list = response.status === 200 ? response._data.data.employees.data : []
       this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
@@ -566,6 +576,10 @@ export default defineComponent({
     },
     onSaveSync() {
       this.drawerEmployeeSync = false
+    },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
     }
   },
 })
