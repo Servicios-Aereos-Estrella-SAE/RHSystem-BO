@@ -1,7 +1,7 @@
 <template>
   <Sidebar v-model:visible="visible" dismissable>
     <template #container>
-      <div v-if="isReady" class="aside-menu" :style="{ backgroundColor: getBackgroundColor }">
+      <div v-if="isReady" class="aside-menu">
         <div class="header-menu-box">
           <Button type="button" class="btn btn-block" @click="closeCallback">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 6a1 1 0 0 1 1-1h15a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1ZM9 18a1 1 0 0 1 1-1h11a1 1 0 1 1 0 2H10a1 1 0 0 1-1-1ZM3 11a1 1 0 1 0 0 2h18a1 1 0 1 0 0-2H3Z" fill="#88a4bf" class="fill-212121"></path></svg>
@@ -10,7 +10,7 @@
             <img :src="getBackgroundImage" class="sidebar-logo">
           </div>
         </div>
-        <div class="menu" :style="{ backgroundColor: getBackgroundColor }">
+        <div class="menu">
           <PanelMenu :model="menu">
             <template #item="{ item }">
                 <nuxt-link
@@ -18,13 +18,12 @@
                   :to="item.path"
                   class="menu-link"
                   :class="{ 'active': setLinkActive(item) }"
-                  :style="{ backgroundColor: getBackgroundColorDark }"
                   @click="closeCallback"
                 >
                   <div class="icon" v-html="item.icon"></div>
                   {{ item.label }}
                 </nuxt-link>
-                <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }" :style="{ backgroundColor: getBackgroundColor }">
+                <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }">
                   <div class="icon">
                     <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>
                   </div>
@@ -66,6 +65,9 @@
 
           svg {
             width: 1.25rem;
+            path {
+              fill: $text;
+            }
 
             @media screen and (max-width: $desktop) {
               width: 1rem;

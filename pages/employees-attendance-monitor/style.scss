@@ -35,19 +35,55 @@
 
     .head-ea-page {
       display: grid;
-      grid-template-columns: 30rem auto 13rem 24.1rem 10rem;
+      grid-template-columns: 30rem auto;
       gap: 0.5rem;
 
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: 20rem auto 13rem 24.1rem 10rem;
+      .head-ea-page-controls-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        align-items: center;
       }
 
-      @media screen and (max-width: $ipad) {
-        grid-template-columns: 1fr;
+      .input-search {
+        width: 100%;
+        max-width: 30rem;
       }
+
+      .status-input-box {
+        width: 100%;
+        max-width: 10rem;
+      }
+
+      .period-input-box {
+        width: 100%;
+        max-width: 12rem;
+      }
+
+      // @media screen and (max-width: $desktop) {
+      //   grid-template-columns: 20rem auto 13rem 24.1rem 10rem;
+      // }
+
+      // @media screen and (max-width: $ipad) {
+      //   grid-template-columns: 1fr;
+      // }
 
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;
+
+        .input-search {
+          max-width: 100% !important;
+        }
+
+        .head-ea-page-controls-wrapper {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+
+          .input-box {
+            max-width: 100% !important;
+          }
+        }
       }
     }
 
@@ -58,6 +94,17 @@
       align-items: center;
       padding: 1rem;
       border-radius: $radius;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      .dot-indicator {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background-color: $warning;
+        display: inline-block;
+        box-shadow: 0rem 0rem 0.2rem $warning;
+      }
     }
 
     .head-ea-bts-group {
