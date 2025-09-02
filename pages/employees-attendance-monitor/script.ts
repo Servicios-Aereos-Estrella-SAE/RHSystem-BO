@@ -111,7 +111,7 @@ export default defineComponent({
       series: [] as Array<Object>
     },
     statusList: [{ name: 'All' }, { name: 'Faults' }, { name: 'Delays' }, { name: 'Tolerances' }, { name: 'On time' }, { name: 'Early outs' }] as Array<{ name: string }>,
-    statusSelected: null as string | null,
+    statusSelected: 'All' as string | null,
     visualizationModeOptions: [
       { name: 'Custom', value: 'custom', calendar_format: { mode: 'date', format: 'dd/mm/yy' }, selected: true, number_months: 1 },
       { name: 'Monthly', value: 'monthly', calendar_format: { mode: 'month', format: 'mm/yy' }, selected: false, number_months: 1 },
@@ -152,7 +152,7 @@ export default defineComponent({
     localeToUse: 'en',
     canSeePayroll: false,
     getAssistFromSaveCalendarSwicht: false,
-
+    developerActionsActiveIndex: null,
   }),
   computed: {
     getStatus() {

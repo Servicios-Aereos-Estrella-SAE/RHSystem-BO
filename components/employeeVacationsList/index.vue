@@ -1,6 +1,12 @@
 <template>
   <div v-if="isReady" class="employee-vacations-list">
-    <h4>{{ $t('vacation') }} {{ currentVacation }}</h4>
+    <h4>
+      {{ $t('vacation') }}
+      <br>
+      <small style="font-weight: 400;">
+        {{ currentVacation }}
+      </small>
+    </h4>
     <div v-if="filteredEmployees.length > 0" class="vacations-wrapper">
       <div v-for="(employee, index) in filteredEmployees" :key="`employee-${employee.employeeId}-${index}`">
         <EmployeeVacationInfoCard :employee="employee" :showDays="true" />
