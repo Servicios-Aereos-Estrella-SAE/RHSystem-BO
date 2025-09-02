@@ -21,9 +21,6 @@ import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/Fl
 import UserService from '~/resources/scripts/services/UserService';
 import type { EmployeeTypeInterface } from '~/resources/scripts/interfaces/EmployeeTypeInterface';
 import { useMyGeneralStore } from '~/store/general';
-import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
-import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -31,6 +28,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeeInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
@@ -82,8 +86,33 @@ export default defineComponent({
       { label: 'Do not ignore consecutive absences report', value: 0 },
       { label: 'Yes, ignore consecutive absences report', value: 1 }
     ],
+    localeToUse: 'en',
   }),
   computed: {
+    getTypesOfContract() {
+      return this.typesOfContract.map(option => ({
+        label: this.$t(`contractTypes.${option.value.toLowerCase()}`),
+        value: option.value
+      }))
+    },
+    getWorkModalityOptions() {
+      return [
+        { label: this.$t('work_modality_option.onsite'), value: true },
+        { label: this.$t('work_modality_option.home_office'), value: false }
+      ];
+    },
+    getAssistDiscriminatorOptions() {
+      return this.assistDiscriminatorOptions.map(option => ({
+        label: this.$t(`assistance.discriminate.${option.value}`),
+        value: option.value
+      }))
+    },
+    getIgnoreConsecutiveAbsenceOptions() {
+      return this.ignoreConsecutiveAbsenceOptions.map(option => ({
+        label: this.$t(`absence.ignore.${option.value}`),
+        value: option.value
+      }))
+    },
     displayEmployeeTypeFilter() {
       let display = false
 
@@ -113,6 +142,9 @@ export default defineComponent({
       this.personBirthday = this.getBirthdayFormatted(val)
     }
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee?.employeeId ? true : false
@@ -138,7 +170,7 @@ export default defineComponent({
       if (this.employee.employeeHireDate) {
         const hireDate = DateTime.fromISO(`${this.employee.employeeHireDate}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employee.employeeHireDate = hireDate
@@ -148,7 +180,7 @@ export default defineComponent({
       if (this.employee.employeeTerminatedDate) {
         const terminatedDate = DateTime.fromISO(`${this.employee.employeeTerminatedDate.toString().split('T')[0] + 'T00:00:00.000-06:00'}`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
         this.employee.employeeTerminatedDate = terminatedDate
         this.employeeTerminatedDate = this.getTerminatedDateFormatted(this.employee.employeeTerminatedDate as Date)
@@ -161,7 +193,7 @@ export default defineComponent({
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employee.person.personBirthday = birthDay
@@ -579,7 +611,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getTerminatedDateFormatted(date: Date) {
@@ -589,7 +621,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getBirthdayFormatted(date: Date) {
@@ -599,7 +631,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerDisplayHireDate() {

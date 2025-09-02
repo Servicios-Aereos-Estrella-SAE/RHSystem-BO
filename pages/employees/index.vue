@@ -14,9 +14,9 @@
               <div class="input-search">
                 <div class="input-box">
                   <label for="search">
-                    Search employee
+                    {{ $t('search_employee') }}
                   </label>
-                  <InputText v-model="search" placeholder="Employee name or id"
+                  <InputText v-model="search" :placeholder="$t('employee_name_or_id')"
                     @keypress.enter="handlerSearchEmployee" />
                 </div>
                 <button class="btn btn-block" @click="handlerSearchEmployee">
@@ -29,19 +29,20 @@
               </div>
               <div class="input-box">
                 <label for="role">
-                  Department
+                  {{ $t('department') }}
                 </label>
                 <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
-                  optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-                  showClear />
+                  optionValue="departmentId" :placeholder="$t('select_a_department')" filter class="w-full md:w-14rem"
+                  showClear :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div class="input-box">
-                <label for="positionId">Position</label>
+                <label for="positionId">{{ $t('position') }}</label>
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
-                  placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
+                  :placeholder="$t('select_a_position')" filter class="w-full md:w-14rem" showClear
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div class="input-box">
-                <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="optionsActive"
+                <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="getStatus"
                   aria-labelledby="basic" class="emp-status-control" />
               </div>
 
@@ -56,7 +57,7 @@
                     d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
-                Employee
+                {{ $t('employee') }}
               </Button>
               <Button v-if="canManageBiotime" class="btn" @click="syncEmployees">
                 <span>
@@ -82,7 +83,7 @@
 
           <div>
             <h2>
-              Employees
+              {{ $t('employees') }}
             </h2>
             <div v-if="filteredEmployees.length > 0" class="shift-card-wrapper">
               <div v-for="(employee, index) in filteredEmployees" :key="`employee-${employee.employeeId}-${index}`">
@@ -102,7 +103,7 @@
                       fill="#88a4bf" class="fill-212121"></path>
                   </svg>
                 </div>
-                No employee results
+                {{ $t('no_employees_to_display') }}
               </div>
             </div>
 
@@ -115,7 +116,7 @@
         </div>
 
         <Sidebar v-model:visible="drawerEmployeeForm" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee form" position="right" class="employee-sidebar-forms" :showCloseIcon="true"
+          :header="$t('employee_form')" position="right" class="employee-sidebar-forms" :showCloseIcon="true"
           @hide="onSidebarInfoHide">
           <div v-if="employee && employee.employeeId > 0" class="employee-info">
             <employeeModalInfoCard :employee="employee" />
@@ -128,7 +129,7 @@
                   d="M13.821 6.5h5.929a2.25 2.25 0 0 1 2.229 1.938l.016.158.005.154v9a2.25 2.25 0 0 1-2.096 2.245L19.75 20H4.25a2.25 2.25 0 0 1-2.245-2.096L2 17.75v-7.251l6.207.001.196-.009a2.25 2.25 0 0 0 1.088-.393l.156-.12L13.821 6.5ZM8.207 4c.46 0 .908.141 1.284.402l.156.12 2.103 1.751-3.063 2.553-.085.061a.75.75 0 0 1-.29.106L8.206 9 2 8.999V6.25a2.25 2.25 0 0 1 2.096-2.245L4.25 4h3.957Z"
                   fill="#ffffff" class="fill-212121"></path>
               </svg>
-              Work
+              {{ $t('work') }}
             </Button>
             <Button :class="{ 'btn-active': isActive('person') }" class="btn" @click="onEditPerson">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +137,7 @@
                   d="M11 15c0-.35.06-.687.17-1H4.253a2.249 2.249 0 0 0-2.249 2.249v.92c0 .572.179 1.13.51 1.596C4.057 20.929 6.58 22 10 22c.397 0 .783-.014 1.156-.043A2.997 2.997 0 0 1 11 21v-6ZM10 2.005a5 5 0 1 1 0 10 5 5 0 0 1 0-10ZM12 15a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-6Zm2.5 1a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-6Zm0 3a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1h-6Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Personal
+              {{ $t('personal') }}
             </Button>
             <Button :class="{ 'btn-active': isActive('address') }" class="btn" @click="onEditAddress">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -144,7 +145,7 @@
                   d="M10.55 2.533a2.25 2.25 0 0 1 2.9 0l6.75 5.695c.508.427.8 1.056.8 1.72v9.802a1.75 1.75 0 0 1-1.75 1.75h-3a1.75 1.75 0 0 1-1.75-1.75v-5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0-.75.75v5a1.75 1.75 0 0 1-1.75 1.75h-3A1.75 1.75 0 0 1 3 19.75V9.947c0-.663.292-1.292.8-1.72l6.75-5.694Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Address
+              {{ $t('address') }}
             </Button>
             <Button :class="{ 'btn-active': isActive('records') }" class="btn" @click="onEditRecords">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -152,7 +153,7 @@
                   d="M17.002 15.244 17 21.245a.75.75 0 0 1-1.182.613l-3.818-2.687-3.817 2.687a.75.75 0 0 1-1.181-.613l-.002-6A7.966 7.966 0 0 0 12 17a7.966 7.966 0 0 0 5.002-1.756ZM12 2a7 7 0 1 1 0 14 7 7 0 0 1 0-14Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Records
+              {{ $t('records') }}
             </Button>
             <Button :class="{ 'btn-active': isActive('banks') }" class="btn" @click="onEditBanks">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -160,7 +161,7 @@
                   d="M10.968 2.325a1.75 1.75 0 0 1 2.064 0l7.421 5.416c.977.712.474 2.257-.734 2.26H4.28c-1.208-.003-1.71-1.548-.734-2.26l7.421-5.416ZM13 6.25a1 1 0 1 0-2 0 1 1 0 0 0 2 0ZM11.25 16h-2v-5h2v5ZM14.75 16h-2v-5h2v5ZM18.5 16h-2.25v-5h2.25v5ZM18.75 17H5.25A2.25 2.25 0 0 0 3 19.25v.5c0 .415.336.75.75.75h16.5a.75.75 0 0 0 .75-.75v-.5A2.25 2.25 0 0 0 18.75 17ZM7.75 16H5.5v-5h2.25v5Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Banks
+              {{ $t('banks') }}
             </Button>
             <Button v-if="displayResponsibleSection" :class="{ 'btn-active': isActive('responsible') }" class="btn"
               @click="onEditResponsible">
@@ -169,7 +170,7 @@
                   d="M7.998 5.75A3.752 3.752 0 1 1 12.5 9.427V11.5h3.25A2.25 2.25 0 0 1 18 13.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a.75.75 0 0 0-.75-.75h-8a.75.75 0 0 0-.75.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a2.25 2.25 0 0 1 2.25-2.25H11V9.427A3.754 3.754 0 0 1 7.998 5.75Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Responsible
+              {{ $t('responsible') }}
             </Button>
             <Button v-if="displayAssignedSection && currentEmployeeIsUser"
               :class="{ 'btn-active': isActive('assigned') }" class="btn" @click="onEditAssigned">
@@ -178,7 +179,7 @@
                   d="M7.998 5.75A3.752 3.752 0 1 1 12.5 9.427V11.5h3.25A2.25 2.25 0 0 1 18 13.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a.75.75 0 0 0-.75-.75h-8a.75.75 0 0 0-.75.75v.824a3.754 3.754 0 0 1-.748 7.43 3.752 3.752 0 0 1-.752-7.429v-.825a2.25 2.25 0 0 1 2.25-2.25H11V9.427A3.754 3.754 0 0 1 7.998 5.75Z"
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
-              Assigned
+              {{ $t('assigned') }}
             </Button>
           </div>
 
@@ -197,13 +198,13 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerEmployeePhotoForm" :blockScroll="true" :closeOnEscape="false"
-          :dismissable="false" header="Employee photo" position="right" class="employee-sidebar-photo-form"
+          :dismissable="false" :header="$t('employee_photo')" position="right" class="employee-sidebar-photo-form"
           :showCloseIcon="true">
           <employeePhotoForm :employee="employee" @save="onSave" />
         </Sidebar>
 
         <Sidebar v-model:visible="drawerShifts" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee shifts calendar" position="right" class="sidebar-shifts">
+          :header="$t('employee_shifts_calendar')" position="right" class="sidebar-shifts">
           <employeeShift :employee="employee" :can-manage-vacation="canManageVacation"
             :can-manage-exception-request="canManageExceptionRequest"
             :canReadOnlyWorkDisabilities="canReadOnlyWorkDisabilities"
@@ -211,12 +212,12 @@
         </Sidebar>
 
         <Sidebar v-model:visible="drawerProceedingFiles" :blockScroll="true" :closeOnEscape="false" :dismissable="false"
-          header="Employee proceeding files" position="right" class="employee-proceeding-file-sidebar">
+          :header="$t('employee_proceeding_files')" position="right" class="employee-proceeding-file-sidebar">
           <proceedingFiles :employee="employee" :canReadOnlyFiles="canReadOnlyFiles" :canManageFiles="canManageFiles"
             @onEmployeeContractSave="onEmployeeContractSave" />
         </Sidebar>
-        <Sidebar v-model:visible="drawerEmployeeSync" :closeOnEscape="true" header="Employee sync" position="right"
-          class="employees-sync" :showCloseIcon="true">
+        <Sidebar v-model:visible="drawerEmployeeSync" :closeOnEscape="true" :header="$t('employee_sync')"
+          position="right" class="employees-sync" :showCloseIcon="true">
           <employeeSyncList :employeesSync="employeesSync" @onSaveSync="onSaveSync" />
         </Sidebar>
         <transition name="page">
