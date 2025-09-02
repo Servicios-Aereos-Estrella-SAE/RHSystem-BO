@@ -31,6 +31,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeePersonInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
@@ -99,13 +106,20 @@ export default defineComponent({
     genders: [
       { label: 'Male', value: 'Hombre' },
       { label: 'Female', value: 'Mujer' },
-      { label: 'Not specified', value: 'Otro' }
+      { label: 'Not_specified', value: 'Otro' }
     ],
     employeeEmergencyContact: null as EmployeeEmergencyContactInterface | null,
     emergencyContactIsRequired: false,
-    canManageUserResponsible: false
+    canManageUserResponsible: false,
+    localeToUse: 'en',
   }),
   computed: {
+    getGenders() {
+      return this.genders.map(gender => ({
+        label: this.$t(`genders.${gender.label.toLowerCase()}`),
+        value: gender.value
+      }));
+    },
     getAge() {
       if (this.employee.person?.personBirthday) {
         const birthday = (this.employee.person?.personBirthday instanceof Date)
@@ -125,6 +139,9 @@ export default defineComponent({
     'employeeSpouse.employeeSpouseBirthday'(val: Date) {
       this.spouseBirthday = this.getBirthdayFormatted(val)
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
@@ -165,7 +182,7 @@ export default defineComponent({
 
           const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
             .setZone('UTC-6')
-            .setLocale('en')
+            .setLocale(this.lo)
             .toJSDate()
 
           this.employee.person.personBirthday = birthDay
@@ -220,7 +237,7 @@ export default defineComponent({
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employeeSpouse.employeeSpouseBirthday = birthDay
@@ -320,8 +337,8 @@ export default defineComponent({
       if (this.pilot !== null && this.files.length > 1) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Image invalid',
-          detail: 'Only one image is allowed',
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_is_allowed'),
           life: 5000,
         })
         return
@@ -333,8 +350,8 @@ export default defineComponent({
             if (!isAudioOrVideo) {
               this.$toast.add({
                 severity: 'warn',
-                summary: 'Image invalid',
-                detail: 'Only select image.',
+                summary: this.t('image_invalid'),
+                detail: this.t('only_select_image'),
                 life: 5000,
               })
               return
@@ -348,8 +365,8 @@ export default defineComponent({
           this.isEmailInvalid = true
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Email not valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('email')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -361,8 +378,8 @@ export default defineComponent({
           if (!employeeSpouseService.validateInfo(this.employeeSpouse)) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'Validation data',
-              detail: 'Missing data',
+              summary: this.t('validation_data'),
+              detail: this.t('missing_data'),
               life: 5000,
             })
             return
@@ -376,8 +393,8 @@ export default defineComponent({
         if (this.emergencyContactIsRequired && !employeeEmergencyContactService.validateInfo(this.employeeEmergencyContact)) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Missing data',
+            summary: this.t('validation_data'),
+            detail: this.t('missing_data'),
             life: 5000,
           })
           return
@@ -398,7 +415,7 @@ export default defineComponent({
           if (employeeSpouseResponse.status === 201 || employeeSpouseResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
-              summary: `Employee spouse ${this.employeeSpouse.employeeSpouseId ? 'updated' : 'created'}`,
+              summary: `${this.t('employee_spouse')} ${this.employeeSpouse.employeeSpouseId ? this.t('updated') : this.t('created')}`,
               detail: employeeSpouseResponse._data.message,
               life: 5000,
             })
@@ -413,7 +430,7 @@ export default defineComponent({
             const msgError = employeeSpouseResponse._data.error ? employeeSpouseResponse._data.error : employeeSpouseResponse._data.message
             this.$toast.add({
               severity: 'error',
-              summary: `Employee spouse ${this.employeeSpouse.employeeSpouseId ? 'updated' : 'created'}`,
+              summary: `${this.t('employee_spouse')} ${this.employeeSpouse.employeeSpouseId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
             })
@@ -432,7 +449,7 @@ export default defineComponent({
         if (employeeEmergencyContactResponse.status === 201 || employeeEmergencyContactResponse.status === 200) {
           this.$toast.add({
             severity: 'success',
-            summary: `Employee emergency contact ${this.employeeEmergencyContact.employeeEmergencyContactId ? 'updated' : 'created'}`,
+            summary: `${this.t('employee_emergency_contact')} ${this.employeeEmergencyContact.employeeEmergencyContactId ? this.t('updated') : this.t('created')}`,
             detail: employeeEmergencyContactResponse._data.message,
             life: 5000,
           })
@@ -446,7 +463,7 @@ export default defineComponent({
           const msgError = employeeEmergencyContactResponse._data.error ? employeeEmergencyContactResponse._data.error : employeeEmergencyContactResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Employee emergency contact ${this.employeeEmergencyContact.employeeEmergencyContactId ? 'updated' : 'created'}`,
+            summary: `${this.t('employee_emergency_contact')} ${this.employeeEmergencyContact.employeeEmergencyContactId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -503,7 +520,7 @@ export default defineComponent({
         this.$emit('savePerson', person as PeopleInterface)
         this.$toast.add({
           severity: 'success',
-          summary: `Person ${person.personId ? 'updated' : 'created'}`,
+          summary: `${this.t('person')} ${person.personId ? this.t('updated') : this.t('created')}`,
           detail: personResponse._data.message,
           life: 5000,
         })
@@ -511,7 +528,7 @@ export default defineComponent({
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -540,7 +557,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getTerminatedDateFormatted(date: Date) {
@@ -550,13 +567,13 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getBirthdayFormatted(date: Date) {
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     handlerDisplayHireDate() {
@@ -634,14 +651,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete employee children',
+            summary: this.t('delete_employee_children'),
             detail: employeeChildrenResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete employee children',
+            summary: this.t('delete_employee_children'),
             detail: employeeChildrenResponse._data.message,
             life: 5000,
           })

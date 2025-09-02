@@ -28,8 +28,8 @@
         <div class="inputs-group">
           <div class="input-box">
             <label for="personGender">{{ $t('gender') }}</label>
-            <Dropdown v-model="employee.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-              :placeholder="`${$t('select')} ${$t('gender')}`" class="w-full md:w-14rem"
+            <Dropdown v-model="employee.person.personGender" :options="getGenders" optionLabel="label"
+              optionValue="value" :placeholder="`${$t('select')} ${$t('gender')}`" class="w-full md:w-14rem"
               :disabled="isDeleted || !canManageUserResponsible" :emptyMessage="$t('no_available_options')"
               :emptyFilterMessage="$t('no_results_found')" />
           </div>

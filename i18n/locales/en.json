@@ -440,5 +440,23 @@
   "internal_number": "Internal Number",
   "between_street": "Between Street",
   "address_type": "Address Type",
-  "neighborhood": "Neighborhood"
+  "neighborhood": "Neighborhood",
+  "genders": {
+    "male": "Male",
+    "female": "Female",
+    "not_specified": "Not specified"
+  },
+  "personal_identification": "Personal identification",
+  "image_invalid": "Image invalid",
+  "only_one_image_is_allowed": "Only one image is allowed",
+  "only_select_image": "Only select image",
+  "pilot": "Pilot",
+  "employee_reactivate": "Employee Reactivate",
+  "employee_spouse": "Employee spouse",
+  "employee_emergency_contact": "Employee emergency contact",
+  "delete_employee_children": "Delete employee children",
+  "person": "Person",
+  "new_children": "New children",
+  "update_children": "Update children",
+  "employee_children": "Employee children"
 }

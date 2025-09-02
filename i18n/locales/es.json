@@ -440,5 +440,23 @@
   "internal_number": "Número interior",
   "between_street": "Entre calle",
   "address_type": "Tipo de dirección",
-  "neighborhood": "Colonia"
+  "neighborhood": "Colonia",
+  "genders": {
+    "male": "Hombre",
+    "female": "Mujer",
+    "not_specified": "Otro"
+  },
+  "personal_identification": "Identificación personal",
+  "image_invalid": "Imagen no válida",
+  "only_one_image_is_allowed": "Solo se permite una imagen",
+  "only_select_image": "Solo seleccionar imagen",
+  "pilot": "Piloto",
+  "employee_reactivate": "Reactivar empleado",
+  "employee_spouse": "Cónyuge del empleado",
+  "employee_emergency_contact": "Contacto de emergencia del empleado",
+  "delete_employee_children": "Eliminar hijos del empleado",
+  "person": "Persona",
+  "new_children": "Nuevo hijo",
+  "update_children": "Actualizar hijo",
+  "employee_children": "Hijo del empleado"
 }

@@ -6,11 +6,11 @@
       {{ `${employeeChildren.employeeChildrenSecondLastname || ''}` }}
     </div>
     <div class="child-gender">
-      {{ `Gender: ${employeeChildren.employeeChildrenGender}` }}
+      {{ `${$t('gender')}: ${employeeChildren.employeeChildrenGender}` }}
     </div>
 
     <div class="birthday">
-      {{ `Birthday: ${getDate(employeeChildren.employeeChildrenBirthday)}` }}
+      {{ `${$t('birthday')}: ${getDate(employeeChildren.employeeChildrenBirthday)}` }}
     </div>
 
     <div class="box-tools-footer">

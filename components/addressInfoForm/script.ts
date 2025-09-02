@@ -11,6 +11,12 @@ import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
 
   name: 'AddressInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     address: { type: Object as PropType<AddressInterface>, required: true },
@@ -92,8 +98,8 @@ export default defineComponent({
       if (!this.address.addressCountry || !this.address.addressState || !this.address.addressCity || !this.address.addressTownship || !this.address.addressZipcode || !this.address.addressSettlement || !this.address.addressStreet || !this.address.addressTypeId || !this.address.addressExternalNumber) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -104,8 +110,8 @@ export default defineComponent({
       if (response.status === 200 || response.status === 201) {
         this.$toast.add({
           severity: 'success',
-          summary: 'Success',
-          detail: 'Address saved successfully',
+          summary: `${this.t('address')} ${this.address.addressId ? this.t('updated') : this.t('created')}`,
+          detail: response._data.message,
           life: 5000
         });
         const address = response._data.data.address
@@ -114,7 +120,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Error',
+          summary: `${this.t('address')} ${this.address.addressId ? this.t('updated') : this.t('created')}`,
           detail: response._data.error,
           life: 5000
         });
