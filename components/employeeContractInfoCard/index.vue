@@ -3,45 +3,45 @@
     <div>
       <div v-if="employeeContract.employeeContractType" class="employee-contract-type">
         <div class="capitalize">
-          Type:
+          {{ $t('type') }}:
           {{ employeeContract.employeeContractType.employeeContractTypeName }}
         </div>
       </div>
       <div v-if="employeeContract.payrollBusinessUnit" class="business-unit">
         <div class="capitalize ellipsis">
-          Payroll Business Unit:
+          {{ $t('payroll_business_unit') }}:
           {{ employeeContract.payrollBusinessUnit.businessUnitName }}
         </div>
       </div>
       <div class="employee-contract-folio">
         <div>
-          Document folio:
+          {{ $t('document_folio') }}:
           {{ employeeContract.employeeContractFolio }}
         </div>
       </div>
       <div v-if="employeeContract.department" class="department">
         <div class="capitalize ellipsis">
-          Department:
+          {{ $t('department') }}:
           {{ employeeContract.department.departmentName }}
         </div>
       </div>
       <div v-if="employeeContract.position" class="position">
         <div class="capitalize ellipsis">
-          Position:
+          {{ $t('position') }}:
           {{ employeeContract.position.positionName }}
         </div>
       </div>
       <div class="employee-contract-salary">
         <div class="capitalize">
-          Monthly salary:
+          {{ $t('monthly_net_salary') }}:
           $ {{ currencyFormat(employeeContract.employeeContractMonthlyNetSalary) }}
         </div>
       </div>
       <br>
       <div class="employee-contract-status">
         <div class="capitalize">
-          Status:
-          {{ employeeContract.employeeContractStatus }}
+          {{ $t('status') }}:
+          {{ $t(employeeContract.employeeContractStatus.toLocaleLowerCase()) }}
         </div>
       </div>
       <br>
@@ -55,7 +55,7 @@
           </svg>
         </div>
         <small>
-          {{ employeeContract.employeeContractFile ? 'See attached file' : 'Not file attached' }}
+          {{ employeeContract.employeeContractFile ? $t('open_attached_file') : $t('not_file_attached') }}
         </small>
       </div>
 
@@ -85,7 +85,7 @@
     </div>
     <div class="status capitalize">
       <div class="dot" :class="{ active: !!employeeContract.employeeContractActive }"></div>
-      {{ employeeContract.employeeContractActive ? 'Active' : 'Inactive' }}
+      {{ employeeContract.employeeContractActive ? $t('active') : $t('inactive')}}
     </div>
 
     <div v-if="!isDeleted" class="box-tools-footer">

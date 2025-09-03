@@ -16,6 +16,12 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeUserResponsibles',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canUpdate: { type: Boolean, default: false, required: true },
@@ -116,14 +122,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete user responsible employee',
+            summary: this.t('delete_user_responsible_employee'),
             detail: userResponsibleEmployeeResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete user responsible employee',
+            summary: this.t('delete_user_responsible_employee'),
             detail: userResponsibleEmployeeResponse._data.message,
             life: 5000,
           })

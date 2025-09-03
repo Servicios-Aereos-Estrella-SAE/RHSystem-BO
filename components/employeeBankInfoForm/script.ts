@@ -16,6 +16,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'EmployeeBankInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     employeeBank: { type: Object as PropType<EmployeeBankInterface>, required: true },
@@ -39,17 +46,22 @@ export default defineComponent({
     isBankPermanent: false,
     isValidAccountClabe: true,
     isValidAccountNumber: false,
-    isValidAccountCardNumber: true
+    isValidAccountCardNumber: true,
+    localeToUse: 'en',
   }),
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
+    this.isNewEmployeeBank = !this.employeeBank.employeeBankId ? true : false
     if (this.employeeBank.employeeBankAccountClabe) {
       const employeeBankService = new EmployeeBankService()
       this.isReady = false
-      this.isNewEmployeeBank = !this.employeeBank.employeeBankId ? true : false
+
       if (this.employee.deletedAt) {
         this.isDeleted = true
       }
@@ -85,7 +97,7 @@ export default defineComponent({
         date = new Date(date)
       }
       const dateEmployeeBank = DateTime.fromJSDate(new Date(date), { zone: 'utc' })
-      return dateEmployeeBank.setLocale('en').toFormat('DDDD')
+      return dateEmployeeBank.setLocale(this.localeToUse).toFormat('DDDD')
     },
     async getBanks() {
       const response = await new BankService().getFilteredList('', 1, 999999)
@@ -101,8 +113,8 @@ export default defineComponent({
       if (!this.employeeBank.bankId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -111,8 +123,8 @@ export default defineComponent({
       if (!this.employeeBank.employeeBankAccountClabe) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -121,8 +133,8 @@ export default defineComponent({
       if (!this.isValidAccountClabe) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Account CLABE is not valid',
+          summary: this.t('validation_data'),
+          detail: `${this.t('account_clabe')} ${this.t('is_not_valid')}`,
           life: 5000,
         })
         return
@@ -132,8 +144,8 @@ export default defineComponent({
           this.isValidAccountNumber = false
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Account number not is valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('account_number')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -144,8 +156,8 @@ export default defineComponent({
         if (!this.isValidAccountCardNumber) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Account card number not is valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('account_card_number')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -154,8 +166,8 @@ export default defineComponent({
       if (!this.employeeBank.employeeBankAccountCurrencyType) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -181,7 +193,7 @@ export default defineComponent({
         const severityType = employeeBankResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Employee bank ${this.employeeBank.employeeBankId ? 'update' : 'create'}`,
+          summary: `${this.t('employee_bank')} ${this.employeeBank.employeeBankId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })

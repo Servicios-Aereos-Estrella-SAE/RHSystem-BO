@@ -99,7 +99,8 @@
                 class="w-full md:w-14rem" :invalid="submitted && !employee.departmentId"
                 :disabled="isDeleted || !canManageUserResponsible" :emptyMessage="$t('no_available_options')"
                 :emptyFilterMessage="$t('no_results_found')" />
-              <small class="p-error" v-if="submitted && !employee.departmentId">Department {{ $t('is_required')
+              <small class="p-error" v-if="submitted && !employee.departmentId">{{ $t('department') }} {{
+                $t('is_required')
                 }}</small>
             </div>
             <div class="input-box">
@@ -109,7 +110,8 @@
                 class="w-full md:w-14rem" :invalid="submitted && !employee.positionId"
                 :disabled="isDeleted || !canManageUserResponsible" :emptyMessage="$t('no_available_options')"
                 :emptyFilterMessage="$t('no_results_found')" />
-              <small class="p-error" v-if="submitted && !employee.positionId">Position {{ $t('is_required') }}</small>
+              <small class="p-error" v-if="submitted && !employee.positionId">{{ $t('position') }} {{ $t('is_required')
+                }}</small>
             </div>
           </div>
           <div class="input-box">
@@ -242,7 +244,7 @@
           </div>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" @upload="onAdvancedUpload($event)"
             :custom-upload="true" :showUploadButton="false" :maxFileSize="6000000" :fileLimit="1"
-            @select="validateFiles">
+            @select="validateFiles" :chooseLabel="$t('click_to_select_files')">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"

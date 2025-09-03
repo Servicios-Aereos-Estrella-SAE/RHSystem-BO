@@ -5,6 +5,13 @@ import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/E
 
 export default defineComponent({
   name: 'employeeContractInfoCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employeeContract: { type: Object as PropType<EmployeeContractInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -13,9 +20,13 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
-    canManageCurrentPeriod: false
+    canManageCurrentPeriod: false,
+    localeToUse: 'en',
   }),
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
   },
@@ -25,7 +36,7 @@ export default defineComponent({
         return ''
       }
       const employeeContractDate = DateTime.fromISO(date, { setZone: true }).setZone('UTC')
-      return employeeContractDate.setLocale('en').toFormat('DDDD')
+      return employeeContractDate.setLocale(this.localeToUse).toFormat('DDDD')
     },
     handlerClickOnEdit() {
       if (this.clickOnEdit) {

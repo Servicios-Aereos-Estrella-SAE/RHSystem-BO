@@ -21,34 +21,38 @@
         <div class="email">
           {{ `${userResponsibleEmployee.user.userEmail}`.toLocaleLowerCase() }}
         </div>
-        <div class="rol capitalize">
+        <div v-if="userResponsibleEmployee.user.role" class="rol capitalize">
           {{ `${userResponsibleEmployee.user.role.roleName || ''}`.toLocaleLowerCase() }}
+        </div>
+        <div v-else class="rol capitalize">
+          {{ $t('role') }} {{ $t('not_assigned') }}
         </div>
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!userResponsibleEmployee.user.userActive }"></div>
-          {{ userResponsibleEmployee.user.userActive ? 'Active' : 'Inactive' }} User Access
+          {{ userResponsibleEmployee.user.userActive ? $t('active') : $t('inactive') }} {{ $t('user_access') }}
         </div>
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!userResponsibleEmployee.userResponsibleEmployeeReadonly }"></div>
-          {{ userResponsibleEmployee.userResponsibleEmployeeReadonly ? 'Is' : 'Not is' }} Readonly
+          {{ userResponsibleEmployee.userResponsibleEmployeeReadonly ? $t('is') : $t('not_is') }} {{ $t('readonly') }}
         </div>
 
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!userResponsibleEmployee.userResponsibleEmployeeDirectBoss }"></div>
-          {{ userResponsibleEmployee.userResponsibleEmployeeDirectBoss ? 'Is' : 'Not is' }} Direct Boss
+          {{ userResponsibleEmployee.userResponsibleEmployeeDirectBoss ? $t('is') : $t('not_is') }} {{ $t('direct_boss')
+          }}
         </div>
       </div>
     </div>
 
     <div class="info">
       <div class="employee-code">
-        {{ `Employee ID ${getEmployeeNumber || 'Not specified'}` }}
+        {{ `${$t('employee')} ID ${getEmployeeNumber || $t('not_specified')}` }}
       </div>
       <div class="department capitalize">
-        {{ getDepartment || 'Department not specified' }}
+        {{ getDepartment || `${$t('department')} ${$t('not_specified')}` }}
       </div>
       <div class="position capitalize">
-        {{ getPosition || 'Position not specified' }}
+        {{ getPosition || `${$t('position')} ${$t('not_specified')}` }}
       </div>
     </div>
     <div v-if="!isDeleted && canManageResponsibleEdit" class="box-tools-footer">
