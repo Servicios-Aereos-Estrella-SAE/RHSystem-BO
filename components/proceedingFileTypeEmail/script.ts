@@ -10,6 +10,12 @@ export default defineComponent({
   components: {
   },
   name: 'proceedingFileTypeEmail',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     proceedingFileType: { type: Object as PropType<ProceedingFileTypeInterface>, required: true }
   },
@@ -72,14 +78,14 @@ export default defineComponent({
             wasDeleteSuccessfully = true
             this.$toast.add({
               severity: 'success',
-              summary: 'Delete email',
+              summary: this.t('delete_email'),
               detail: proceedingFileTypeEmailResponse._data.message,
               life: 5000,
             })
           } else {
             this.$toast.add({
               severity: 'error',
-              summary: 'Delete email',
+              summary: this.t('delete_email'),
               detail: proceedingFileTypeEmailResponse._data.message,
               life: 5000,
             })
@@ -88,8 +94,8 @@ export default defineComponent({
           wasDeleteSuccessfully = true
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete email',
-            detail: 'Email was deleted successfully',
+            summary: this.t('delete_email'),
+            detail: this.t('email_was_deleted_successfully'),
             life: 5000,
           })
         }
@@ -102,6 +108,9 @@ export default defineComponent({
         this.currentIndex = -1
       }
       myGeneralStore.setFullLoader(false)
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   }
 })

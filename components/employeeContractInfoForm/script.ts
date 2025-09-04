@@ -130,6 +130,28 @@ export default defineComponent({
     let isActive: number = 1
     isActive = this.employeeContract.employeeContractActive
     this.activeSwicht = isActive === 1 ? true : false
+
+    const toSnakeCase = (str: string): string =>
+      str
+        .toLowerCase()
+        .replace(/[\s\-]+/g, '_') // espacios o guiones a guion bajo
+        .replace(/[^\w_]/g, '')   // quita caracteres especiales
+
+    const capitalizeFirstLetter = (str: string): string =>
+      str.charAt(0).toUpperCase() + str.slice(1)
+
+    const contractTypesTranslated = this.employeeContractTypeList.map(contract => {
+      const key = toSnakeCase(contract.employeeContractTypeName)
+      const translated = this.t(key)
+
+      return {
+        ...contract,
+        employeeContractTypeName:
+          translated === key ? capitalizeFirstLetter(contract.employeeContractTypeName) : translated
+      }
+    })
+    this.employeeContractTypeList = contractTypesTranslated
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 

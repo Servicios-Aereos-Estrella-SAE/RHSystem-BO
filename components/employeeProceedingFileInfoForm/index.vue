@@ -2,22 +2,22 @@
   <div class="box employee-proceeding-file-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h4>
-      {{ isNewEmployeeProceedingFile ? 'New employee proceeding file' : 'Update employee proceeding file' }}
+      {{ isNewEmployeeProceedingFile ? $t('new_employee_proceeding_file') : $t('update_employee_proceeding_file') }}
     </h4>
     <div v-if="isReady" class="employee-proceeding-file-form">
       <div class="form-container">
         <div class="checkbox-item">
           <label for="proceeding-file-status">
-            Status
+            {{ $t('status') }}
           </label>
           <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
           <label for="activeSwicht">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}
+            {{ activeSwicht ? $t('active') : $t('inactive') }}
           </label>
         </div>
         <div v-if="!employeeProceedingFile.proceedingFile?.proceedingFileTypeId" class="input-box">
           <label for="proceeding-file">
-            Type
+            {{ $t('type') }}
           </label>
           <Dropdown v-model="proceedingFile.proceedingFileTypeId" :options="proceedingFileTypesList"
             optionLabel="proceedingFileTypeName" optionValue="proceedingFileTypeId" placeholder="" filter
@@ -27,12 +27,13 @@
         </div>
         <div class="input-box">
           <label for="proceeding-file">
-            Proceeding file
+            {{ $t('proceeding_file') }}
           </label>
-          <Button v-if="proceedingFile.proceedingFilePath" label="Open file" severity="primary" @click="openFile()" />
+          <Button v-if="proceedingFile.proceedingFilePath" :label="$t('open_attached_file')" severity="primary"
+            @click="openFile()" />
           <FileUpload v-if="canManageFiles" v-model="files" name="demo[]" url="/api/upload"
             @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000" :fileLimit="1"
-            @select="validateFiles" :disabled="!canManageFiles">
+            @select="validateFiles" :disabled="!canManageFiles" :chooseLabel="$t('click_to_select_files')">
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
@@ -45,17 +46,17 @@
               </div>
             </template>
             <template #empty>
-              <p>Drag and drop file to here to upload.</p>
+              <p>{{ $t('drag_and_drop_files_here_or_click_to_select') }}</p>
             </template>
           </FileUpload>
         </div>
         <div class="input-box">
-          <label for="proceedingFileName">Name</label>
+          <label for="proceedingFileName">{{ capitalizeFirstLetter($t('name')) }}</label>
           <InputText id="proceedingFileName" v-model="proceedingFile.proceedingFileName" :disabled="!canManageFiles" />
         </div>
         <div class="input-box">
           <div class="date-box-container">
-            <label>Expiration at</label>
+            <label>{{ $t('expiration_date') }}</label>
             <div v-if="!displayExpirationAtCalendar" class="date-box">
               <InputText v-model="expirationAt" readonly class="capitalize" :disabled="!canManageFiles" />
               <Button v-if="canManageFiles" type="button" class="btn btn-block" id="display-input-expiration-at"
@@ -69,8 +70,8 @@
             </div>
             <div v-if="displayExpirationAtCalendar" class="date-box-controller">
               <Calendar v-if="displayExpirationAtCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="proceedingFile.proceedingFileExpirationAt" placeholder="Select expiration at date"
-                :disabled="!canManageFiles" />
+                v-model.lazy="proceedingFile.proceedingFileExpirationAt"
+                :placeholder="`${$t('select')} ${$t('expiration_date')}`" :disabled="!canManageFiles" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayExpirationAtCalendar = false" :disabled="!canManageFiles">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -83,7 +84,7 @@
           </div>
         </div>
         <div class="input-box">
-          <label for="proceedingFileObservations">Observations</label>
+          <label for="proceedingFileObservations">{{ $t('observations') }}</label>
           <Textarea id="proceedingFileObservations" v-model="proceedingFile.proceedingFileObservations" autoResize
             rows="3" :disabled="!canManageFiles" />
         </div>
@@ -104,13 +105,15 @@
                             v-model="value.proceedingFileTypePropertyValueValue" />
                         </div>
                         <div v-if="property.type === 'File'" class="input-box">
-                          <Button v-if="value.proceedingFileTypePropertyValueValue" label="Open file" severity="primary"
+                          <Button v-if="value.proceedingFileTypePropertyValueValue" :label="$t('open_attached_file')"
+                            severity="primary"
                             @click="openFileProperty(value.proceedingFileTypePropertyValueValue)" /><br
                             v-if="value.proceedingFileTypePropertyValueValue" />
                           <FileUpload v-model="value.files" name="demo[]" url="/api/upload"
                             @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000"
                             :maxFileCount="1" :fileLimit="1" @select="validateFilesProperty($event, value)"
-                            :key="'file-' + indexCategory + '-' + indexProperty" :showUploadButton="false">
+                            :key="'file-' + indexCategory + '-' + indexProperty" :showUploadButton="false"
+                            :chooseLabel="$t('click_to_select_files')">
                             <template #content="{ files, removeFileCallback }">
                               <div v-for="(file, indexFile) in files"
                                 :key="indexFile + '-' + indexCategory + '-' + indexProperty"
@@ -126,7 +129,7 @@
                               </div>
                             </template>
                             <template #empty>
-                              <p>Drag and drop file to here to upload.</p>
+                              <p>{{ $t('drag_and_drop_files_here_or_click_to_select') }}</p>
                             </template>
                           </FileUpload>
                         </div>
@@ -152,7 +155,7 @@
           </div>
         </div>
         <div class="box-tools-footer">
-          <Button v-if="canManageFiles" label="Save" severity="primary" @click="onSave()" />
+          <Button v-if="canManageFiles" :label="$t('save')" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>

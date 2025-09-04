@@ -24,6 +24,13 @@ export default defineComponent({
     localeToUse: 'en',
   }),
   computed: {
+    getTypeName(): string {
+      const name = this.employeeContract.employeeContractType.employeeContractTypeName
+      const key = this.toSnakeCase(name)
+      const translated = this.t(key)
+
+      return translated === key ? this.capitalizeFirstLetter(name) : translated
+    }
   },
   created() {
     this.localeToUse = this.locale === 'en' ? 'en' : 'es'
@@ -57,6 +64,15 @@ export default defineComponent({
       const val = parseFloat(`${value}`)
       const amount = new Intl.NumberFormat().format(val)
       return amount
+    },
+    toSnakeCase(str: string): string {
+      return str
+        .toLowerCase()
+        .replace(/[\s\-]+/g, '_') // espacios o guiones a guion bajo
+        .replace(/[^\w_]/g, '')   // elimina caracteres especiales
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   }
 })

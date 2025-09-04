@@ -24,6 +24,13 @@ export default defineComponent({
     usePrimeVue,
   },
   name: 'employeeProceedingFileForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employeeProceedingFile: { type: Object as PropType<EmployeeProceedingFileInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
@@ -46,6 +53,7 @@ export default defineComponent({
     proceedingFileTypePropertyValue: null as ProceedingFileTypePropertyValueInterface | null,
     proceedingFileTypeProperty: null as ProceedingFileTypePropertyInterface | null,
     activeSwicht: true,
+    localeToUse: 'en',
   }),
   computed: {
   },
@@ -53,6 +61,9 @@ export default defineComponent({
     'proceedingFile.proceedingFileExpirationAt'(val: Date) {
       this.expirationAt = this.getDateFormatted(val)
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.proceedingFile = {
@@ -67,7 +78,7 @@ export default defineComponent({
     if (this.proceedingFile.proceedingFileExpirationAt) {
       const expirationAt = DateTime.fromISO(this.proceedingFile.proceedingFileExpirationAt.toString(), { setZone: true })
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toJSDate()
       this.proceedingFile.proceedingFileExpirationAt = expirationAt
       this.expirationAt = this.getDateFormatted(this.proceedingFile.proceedingFileExpirationAt as Date)
@@ -106,8 +117,8 @@ export default defineComponent({
       if (this.proceedingFile && !this.proceedingFile.proceedingFileTypeId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Wrong proceeding file type',
-          detail: 'You must select a proceeding file type',
+          summary: this.t('wrong_proceeding_file_type'),
+          detail: this.t('you_must_select_a_proceeding_file_type'),
           life: 5000,
         })
         return
@@ -115,8 +126,8 @@ export default defineComponent({
       if (!(this.files.length > 0) && !this.proceedingFile?.proceedingFileId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'File invalid',
-          detail: 'You must select a file',
+          summary: this.t('file_invalid'),
+          detail: this.t('you_must_select_a_file'),
           life: 5000,
         })
         return
@@ -124,8 +135,8 @@ export default defineComponent({
       if (this.files.length > 1) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'File invalid',
-          detail: 'Only one file is allowed',
+          summary: this.t('file_invalid'),
+          detail: this.t('only_one_file_is_allowed'),
           life: 5000,
         })
         return
@@ -137,8 +148,8 @@ export default defineComponent({
           if (isAudioOrVideo) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'File invalid',
-              detail: 'Audio or video files are not allowed.',
+              summary: this.t('file_invalid'),
+              detail: this.t('audio_or_video_files_are_not_allowed'),
               life: 5000,
             })
             return
@@ -167,7 +178,7 @@ export default defineComponent({
           const severityType = proceedingFileResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Proceeding file ${this.proceedingFile.proceedingFileId ? 'updated' : 'created'}`,
+            summary: `${this.t('proceeding_file')} ${this.proceedingFile.proceedingFileId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -179,8 +190,8 @@ export default defineComponent({
       if (!employeeProceedingFileService.validateInfo(this.employeeProceedingFile)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -198,7 +209,7 @@ export default defineComponent({
         if (processCorrect) {
           this.$toast.add({
             severity: 'success',
-            summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
+            summary: `${this.t('employee_proceeding_file')} ${this.employeeProceedingFile.employeeProceedingFileId ? this.t('updated') : this.t('created')}`,
             detail: employeeProceedingFileResponse._data.message,
             life: 5000,
           })
@@ -213,7 +224,7 @@ export default defineComponent({
         const severityType = employeeProceedingFileResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Employee proceeding file ${this.employeeProceedingFile.employeeProceedingFileId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee_proceeding_file')} ${this.employeeProceedingFile.employeeProceedingFileId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -266,7 +277,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerDisplayExpirationAt() {
@@ -325,13 +336,13 @@ export default defineComponent({
                       if (response.status === 201 || response.status === 200) {
                         return {
                           success: true,
-                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                          message: `${this.t('proceeding_file_type_property_value')} ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? this.t('updated') : this.t('created')}`,
                         }
                       } else {
                         const msgError = response._data.error ? response._data.error : response._data.message;
                         return {
                           success: false,
-                          message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
+                          message: `${this.t('proceeding_file_type_property_value')} ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? this.t('updated') : this.t('created')}`,
                           error: msgError
                         }
                       }
@@ -339,8 +350,8 @@ export default defineComponent({
                     .catch((error) => {
                       return {
                         success: false,
-                        message: `Proceeding file type property value ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? 'updated' : 'created'}`,
-                        error: error.message || 'Unknown error'
+                        message: `${this.t('proceeding_file_type_property_value')} ${proceedingFileTypePropertyValue.proceedingFileTypePropertyValueId ? this.t('updated') : this.t('created')}`,
+                        error: error.message || this.t('unknown_file')
                       }
                     })
                 )
@@ -354,7 +365,7 @@ export default defineComponent({
           if (errors.length > 0) {
             this.$toast.add({
               severity: 'error',
-              summary: 'Error saving proceeding file type property value',
+              summary: this.t('error_saving_proceeding_file_type_property_value'),
               detail: errors.map((e) => e.error).join(', '),
               life: 5000,
             })
@@ -364,8 +375,8 @@ export default defineComponent({
         } catch (error: any) {
           this.$toast.add({
             severity: 'error',
-            summary: 'Error saving proceeding file type property values',
-            detail: error.message || 'There was a problem processing the proceeding file type property values.',
+            summary: this.t('error_saving_proceeding_file_type_property_value'),
+            detail: error.message || this.t('there_was_a_problem_processing_the_proceeding_file_type_property_values'),
             life: 5000,
           })
         }
@@ -373,6 +384,9 @@ export default defineComponent({
         await this.getCategoriesEmployee()
       }
       return processCorrect
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   }
 })

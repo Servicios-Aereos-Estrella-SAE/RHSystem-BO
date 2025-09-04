@@ -12,6 +12,7 @@
       grid-template-columns: 1fr 10rem;
       gap: .5rem;
       margin-top: 0.5rem;
+
       @media screen and (max-width: $sm) {
         grid-template-columns: 1fr 8rem;
       }
@@ -26,8 +27,37 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
     margin-top: 0.5rem;
+
     button {
       width: 100%;
     }
+  }
+
+  .status-badge-pending {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 9999px;
+    background-color: orange;
+    color: white;
+  }
+
+  .status-badge-completed {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 9999px;
+    background-color: black;
+    color: greenyellow;
+  }
+
+  .p-fileupload-file .p-fileupload-filename+div {
+    display: none !important;
+  }
+
+  :deep(.p-fileupload-file .p-fileupload-filename + div) {
+    display: none !important;
   }
 }

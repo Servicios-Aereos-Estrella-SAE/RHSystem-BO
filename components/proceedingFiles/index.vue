@@ -28,7 +28,9 @@
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
             </span>
-            {{ folderSelected.proceedingFileTypeName.toLocaleUpperCase() }}
+            {{
+            `${capitalizeFirstLetter($t(folderSelected.proceedingFileTypeName.toLocaleLowerCase()))}`
+            }}
           </span>
         </h1>
       </div>

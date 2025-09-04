@@ -288,14 +288,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete employee',
+            summary: this.t('delete_employee'),
             detail: employeeResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete employee',
+            summary: this.t('delete_employee'),
             detail: employeeResponse._data.message,
             life: 5000,
           })
@@ -359,32 +359,32 @@ export default defineComponent({
           const url = window.URL.createObjectURL(blob)
           const link = document.createElement('a')
           link.href = url
-          link.setAttribute('download', `Employee_Report${reportDesc}.xlsx`)
+          link.setAttribute('download', `${this.t('employee_report')} ${reportDesc}.xlsx`)
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link)
 
           this.$toast.add({
             severity: 'success',
-            summary: 'Excel Report',
-            detail: 'Excel file created successfully',
+            summary: this.t('excel_report'),
+            detail: this.t('excel_file_created_successfully'),
             life: 5000,
           })
         } else {
           const msgError = assistResponse?._data?.error || assistResponse?._data?.message || 'Unknown error'
           this.$toast.add({
             severity: 'error',
-            summary: 'Excel Report',
+            summary: this.t('excel_report'),
             detail: msgError,
             life: 5000,
           })
         }
       } catch (error) {
-        console.error('Error generating Excel file:', error)
+        console.error(this.t('error_generating_excel_file'), error)
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel Report',
-          detail: 'Error generating Excel file',
+          summary: this.t('excel_report'),
+          detail: this.t('error_generating_excel_file'),
           life: 5000,
         })
       } finally {
@@ -462,8 +462,8 @@ export default defineComponent({
       if (!addressTypeId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data address type id residential',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data_address_type_id_residential'),
           life: 5000,
         })
         return
@@ -530,7 +530,7 @@ export default defineComponent({
             this.$toast.add({
               severity: 'error',
               summary: 'Error',
-              detail: 'There was an error saving the relation employee address',
+              detail: this.t('there_was_an_error_saving_the_relation_employee_address'),
               life: 5000
             })
           } else {

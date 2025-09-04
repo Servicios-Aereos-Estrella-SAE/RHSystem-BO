@@ -17,6 +17,12 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeRecords',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     canUpdate: { type: Boolean, default: false, required: true },
@@ -86,13 +92,13 @@ export default defineComponent({
                       if (response.status === 201 || response.status === 200) {
                         return {
                           success: true,
-                          message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                          message: `${this.t('employee_record')} ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
                         }
                       } else {
                         const msgError = response._data.error ? response._data.error : response._data.message;
                         return {
                           success: false,
-                          message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                          message: `${this.t('employee_record')} ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
                           error: msgError
                         }
                       }
@@ -100,7 +106,7 @@ export default defineComponent({
                     .catch((error) => {
                       return {
                         success: false,
-                        message: `Employee record ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
+                        message: `${this.t('employee_record')} ${employeeRecord.employeeRecordId ? 'updated' : 'created'}`,
                         error: error.message || 'Unknown error'
                       }
                     })
@@ -115,23 +121,23 @@ export default defineComponent({
           if (errors.length > 0) {
             this.$toast.add({
               severity: 'error',
-              summary: 'Error saving employee records',
+              summary: this.t('error_saving_employee_records'),
               detail: errors.map((e) => e.error).join(', '),
               life: 5000,
             })
           } else {
             this.$toast.add({
               severity: 'success',
-              summary: 'All employee records were saved successfully',
-              detail: 'The records were created or updated successfully.',
+              summary: this.t('all_employee_records_were_saved_successfully'),
+              detail: this.t('the_records_were_created_or_updated_successfully'),
               life: 5000,
             })
           }
         } catch (error: any) {
           this.$toast.add({
             severity: 'error',
-            summary: 'Error saving employee records',
-            detail: error.message || 'There was a problem processing the employee records.',
+            summary: this.t('error_saving_employee_records'),
+            detail: error.message || this.t('there_was_a_problem_processing_the_employee_records'),
             life: 5000,
           })
         }
@@ -164,14 +170,14 @@ export default defineComponent({
             this.deleteEmployeeRecord()
             this.$toast.add({
               severity: 'success',
-              summary: 'Delete employee record',
+              summary: this.t('delete_employee_record'),
               detail: employeeRecordResponse._data.message,
               life: 5000,
             });
           } else {
             this.$toast.add({
               severity: 'error',
-              summary: 'Delete employee record',
+              summary: this.t('delete_employee_record'),
               detail: employeeRecordResponse._data.message,
               life: 5000,
             });
@@ -180,8 +186,8 @@ export default defineComponent({
           this.deleteEmployeeRecord()
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete employee record',
-            detail: 'Employee record deleted',
+            summary: this.t('delete_employee_record'),
+            detail: this.t('employee_record_deleted'),
             life: 5000,
           });
         }

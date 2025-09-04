@@ -4,7 +4,7 @@
       <div v-if="employeeContract.employeeContractType" class="employee-contract-type">
         <div class="capitalize">
           {{ $t('type') }}:
-          {{ employeeContract.employeeContractType.employeeContractTypeName }}
+          {{ getTypeName }}
         </div>
       </div>
       <div v-if="employeeContract.payrollBusinessUnit" class="business-unit">

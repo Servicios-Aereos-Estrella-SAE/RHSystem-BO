@@ -16,12 +16,14 @@
         <img :src="fileIcon" />
       </div>
       <div class="type">
-        {{ `${employeeProceedingFile.proceedingFile.proceedingFileType.proceedingFileTypeName}` }}
+        {{
+        `${capitalizeFirstLetter($t(employeeProceedingFile.proceedingFile.proceedingFileType.proceedingFileTypeName.toLocaleLowerCase()))}`
+        }}
       </div>
       <div class="file-info">
         <div class="opt-val name">
           <div class="opt">
-            Name
+            {{ capitalizeFirstLetter($t('name')) }}
           </div>
           <div class="val">
             {{ `${employeeProceedingFile.proceedingFile.proceedingFileName}` }}
@@ -29,7 +31,7 @@
         </div>
         <div class="opt-val expiration">
           <div class="opt">
-            Expiration at
+            {{ $t('expiration_at') }}
           </div>
           <div class="val">
             <span v-if="employeeProceedingFile.proceedingFile.proceedingFileExpirationAt">
@@ -42,7 +44,7 @@
         </div>
         <div class="status capitalize">
           <div class="dot" :class="{ active: !!employeeProceedingFile.proceedingFile.proceedingFileActive }"></div>
-          {{ employeeProceedingFile.proceedingFile.proceedingFileActive ? 'Active' : 'Inactive' }}
+          {{ employeeProceedingFile.proceedingFile.proceedingFileActive ? $t('active') : $t('inactive') }}
         </div>
       </div>
     </div>

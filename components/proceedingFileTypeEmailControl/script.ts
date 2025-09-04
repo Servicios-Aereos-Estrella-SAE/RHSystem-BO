@@ -8,6 +8,12 @@ export default defineComponent({
   components: {
   },
   name: 'proceedingFileTypeEmailControl',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     proceedingFileTypeEmail: { type: Object as PropType<ProceedingFileTypeEmailInterface>, required: true },
     clickOnDelete: { type: Function, default: null },
@@ -19,7 +25,7 @@ export default defineComponent({
     isEmailInvalid: false,
   }),
   computed: {
-    getEmail () {
+    getEmail() {
       return this.currentProceedingFileTypeEmail ? this.currentProceedingFileTypeEmail.proceedingFileTypeEmailEmail : ''
     }
   },
@@ -43,8 +49,8 @@ export default defineComponent({
       if (!(this.currentProceedingFileTypeEmail?.proceedingFileTypeEmailEmail)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -55,9 +61,9 @@ export default defineComponent({
           this.isEmailInvalid = true
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Email not valid',
-              life: 5000,
+            summary: this.t('validation_data'),
+            detail: `${this.t('email')} ${this.t('is_not_valid')}`,
+            life: 5000,
           })
           return
         }
@@ -85,7 +91,7 @@ export default defineComponent({
         const severityType = proceedingFileTypeEmailResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Proceeding file type email ${this.currentProceedingFileTypeEmail.proceedingFileTypeEmailId ? 'updated' : 'created'}`,
+          summary: `${this.t('proceeding_file_type_email')} ${this.currentProceedingFileTypeEmail.proceedingFileTypeEmailId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })

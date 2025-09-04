@@ -32,15 +32,16 @@
                     <div v-if="property.type === 'File'" class="input-box">
                       <div>
                         <label for="file">
-                          File
+                          {{ $t('file') }}
                         </label>
-                        <Button v-if="value.employeeRecordValue" label="Open file" severity="primary"
+                        <Button v-if="value.employeeRecordValue" :label="$t('open_attached_file') " severity="primary"
                           @click="openFile(value.employeeRecordValue)" /><br /><br />
                         <FileUpload v-model="value.files" name="demo[]" url="/api/upload"
                           @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000"
                           :maxFileCount="1" :fileLimit="1" @select="validateFiles($event, value)"
                           :key="'file-' + indexCategory + '-' + indexProperty + '-' + indexValue"
-                          :showUploadButton="false" :disabled="!canManageUserResponsible">
+                          :showUploadButton="false" :disabled="!canManageUserResponsible"
+                          :chooseLabel="$t('click_to_select_files')" :cancelLabel="$t('cancel')">
                           <template #content="{ files, removeFileCallback }">
                             <div v-for="(file, indexFile) in files"
                               :key="indexFile + '-' + indexCategory + '-' + indexProperty + '-' + indexValue"
@@ -56,7 +57,7 @@
                             </div>
                           </template>
                           <template #empty>
-                            <p>Drag and drop file to here to upload.</p>
+                            <p>{{ $t('drag_and_drop_files_here_or_click_to_select') }}</p>
                           </template>
                         </FileUpload>
                       </div>
