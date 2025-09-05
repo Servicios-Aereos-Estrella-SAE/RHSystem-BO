@@ -12,7 +12,7 @@
           </svg>
         </Button>
         <h1>
-          Employee proceeding files
+          {{ $t('employee_proceeding_files') }}
           <div class="caret">
             <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -28,7 +28,9 @@
                   fill="#88a4bf" class="fill-212121"></path>
               </svg>
             </span>
-            {{ folderSelected.proceedingFileTypeName.toLocaleUpperCase() }}
+            {{
+            `${capitalizeFirstLetter($t(folderSelected.proceedingFileTypeName.toLocaleLowerCase()))}`
+            }}
           </span>
         </h1>
       </div>
@@ -41,7 +43,7 @@
             <div class="input-search">
               <div class="input-box">
                 <label for="search">
-                  Search
+                  {{ $t('search') }}
                 </label>
                 <InputText v-model="filterFolderText" aria-describedby="search" />
               </div>
@@ -72,7 +74,7 @@
                       d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                       fill="#88a4bf" class="fill-000000"></path>
                   </svg>
-                  Add file
+                  {{ $t('add_file') }}
                 </Button>
                 <Button class="btn btn-block" @click="addEmails">
                   <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
@@ -99,9 +101,9 @@
                 </div>
               </div>
               <div v-else class="empty">
-                Empty file list.
+                {{ $t('empty_file_list') }}
                 <br>
-                Select other folder or add a file
+                {{ $t('select_other_folder_or_add_a_file') }}
               </div>
             </div>
             <div v-else-if="drawerEmployeeContracts">
@@ -125,7 +127,7 @@
           <div class="card flex justify-content-center">
             <Sidebar v-model:visible="drawerProceedingFileTypeEmailForm" position="right"
               class="proceeding-file-type-email-form-sidebar" :blockScroll="true" :closeOnEscape="false"
-              :dismissable="false" :showCloseIcon="true" header="emails">
+              :dismissable="false" :showCloseIcon="true" :header="$t('email')">
               <proceedingFileTypeEmail :proceedingFileType="folderSelected" />
             </Sidebar>
           </div>

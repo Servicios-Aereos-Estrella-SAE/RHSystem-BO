@@ -22,6 +22,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'EmployeeContractInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     employeeContract: { type: Object as PropType<EmployeeContractInterface>, required: true },
@@ -50,8 +56,15 @@ export default defineComponent({
     businessUnits: [] as BusinessUnitInterface[],
     maxDate: new Date() as Date,
     activeSwicht: true,
+    localeToUse: 'en',
   }),
   computed: {
+    getEmployeeContractStatusOptions() {
+      return this.employeeContractStatusOptions.map(option => ({
+        label: this.t(`contract_status.${option.value}`),
+        value: option.value
+      }));
+    }
   },
   watch: {
     dates(newRange) {
@@ -65,6 +78,9 @@ export default defineComponent({
         this.getPositions(newVal);
       }
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -114,6 +130,28 @@ export default defineComponent({
     let isActive: number = 1
     isActive = this.employeeContract.employeeContractActive
     this.activeSwicht = isActive === 1 ? true : false
+
+    const toSnakeCase = (str: string): string =>
+      str
+        .toLowerCase()
+        .replace(/[\s\-]+/g, '_') // espacios o guiones a guion bajo
+        .replace(/[^\w_]/g, '')   // quita caracteres especiales
+
+    const capitalizeFirstLetter = (str: string): string =>
+      str.charAt(0).toUpperCase() + str.slice(1)
+
+    const contractTypesTranslated = this.employeeContractTypeList.map(contract => {
+      const key = toSnakeCase(contract.employeeContractTypeName)
+      const translated = this.t(key)
+
+      return {
+        ...contract,
+        employeeContractTypeName:
+          translated === key ? capitalizeFirstLetter(contract.employeeContractTypeName) : translated
+      }
+    })
+    this.employeeContractTypeList = contractTypesTranslated
+
     myGeneralStore.setFullLoader(false)
     this.isReady = true
 
@@ -142,7 +180,7 @@ export default defineComponent({
         date = new Date(date)
       }
       const dateEmployeeContract = DateTime.fromJSDate(new Date(date), { zone: 'local' })
-      return dateEmployeeContract.setLocale('en').toFormat('DDDD')
+      return dateEmployeeContract.setLocale(this.localeToUse).toFormat('DDDD')
     },
     async getEmployeeContractTypes() {
       const response = await new EmployeeContractTypeService().getFilteredList('', 1, 100)
@@ -155,8 +193,8 @@ export default defineComponent({
       if (!this.employeeContract.departmentId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -164,8 +202,8 @@ export default defineComponent({
       if (!this.employeeContract.positionId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -173,8 +211,8 @@ export default defineComponent({
       if (!this.employeeContract.payrollBusinessUnitId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -182,8 +220,8 @@ export default defineComponent({
       if (!this.employeeContract.employeeContractTypeId) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -191,8 +229,8 @@ export default defineComponent({
       if (!this.employeeContract.employeeContractFolio) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -200,8 +238,8 @@ export default defineComponent({
       if (!this.employeeContract.employeeContractStartDate) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -209,8 +247,8 @@ export default defineComponent({
       if (!this.isContractPermanent && !this.employeeContract.employeeContractEndDate) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         });
         return
@@ -218,8 +256,8 @@ export default defineComponent({
       if (!this.employeeContract.employeeContractStatus) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -227,8 +265,8 @@ export default defineComponent({
       if (!this.employeeContract.employeeContractMonthlyNetSalary || this.employeeContract.employeeContractMonthlyNetSalary === 0) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -240,8 +278,8 @@ export default defineComponent({
           if (isAudioOrVideo) {
             this.$toast.add({
               severity: 'warn',
-              summary: 'File invalid',
-              detail: 'Audio or video files are not allowed.',
+              summary: this.t('file_invalid'),
+              detail: this.t('audio_or_video_files_are_not_allowed'),
               life: 5000,
             })
             return
@@ -281,7 +319,7 @@ export default defineComponent({
         const severityType = employeeContractResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Employee contract ${this.employeeContract.employeeContractId ? 'update' : 'create'}`,
+          summary: `${this.t('employee_contract')} ${this.employeeContract.employeeContractId ? this.t('updated') : this.t('created')}}`,
           detail: msgError,
           life: 5000,
         })
@@ -316,6 +354,10 @@ export default defineComponent({
       if (employeeContractType?.employeeContractTypeSlug === 'permanent') {
         this.isContractPermanent = true
       }
+    },
+    capitalizeFirstLetter(text: string) {
+      if (!text) return ''
+      return text.charAt(0).toUpperCase() + text.slice(1)
     }
   }
 })

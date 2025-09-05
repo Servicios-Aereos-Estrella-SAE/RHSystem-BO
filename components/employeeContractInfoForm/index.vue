@@ -2,25 +2,25 @@
   <div class="employee-contract-info-form">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewEmployeeContract ? 'Add employee contract' : 'Update employee contract' }}
+      {{ isNewEmployeeContract ? $t('add_employee_contract') : $t('update_employee_contract') }}
     </h1>
 
     <div v-if="isReady" class="employee-contract-form">
       <div class="form-container">
         <div class="checkbox-item">
           <label for="employee-contract-status">
-            Status
+            {{ $t('status') }}
           </label>
           <Checkbox v-model="activeSwicht" inputId="activeSwicht" name="activeSwicht" :binary="true" />
           <label for="activeSwicht">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}
+            {{ activeSwicht ? $t('active') : $t('inactive') }}
           </label>
         </div>
         <div class="input-box">
 
           <FileUpload ref="fileUpload" v-model="files" name="demo[]" url="/api/upload" accept="image/*,.doc,.docx"
-            chooseLabel="Click to select file" :showUploadButton="false" :showCancelButton="false" :custom-upload="true"
-            :fileLimit="1" @select="validateFiles" @upload="onAdvancedUpload($event)">
+            :chooseLabel="$t('click_to_select_files')" :showUploadButton="false" :showCancelButton="false"
+            :custom-upload="true" :fileLimit="1" @select="validateFiles" @upload="onAdvancedUpload($event)">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -48,7 +48,7 @@
             </template>
             <template #empty>
               <div class="empty-file-uploader">
-                Drag and drop file to here to upload.
+                {{ $t('drag_and_drop_files_here_or_click_to_select') }}
               </div>
             </template>
           </FileUpload>
@@ -60,7 +60,7 @@
                 d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z"
                 fill="#88a4bf" class="fill-212121"></path>
             </svg>
-            Open attached file
+            {{ $t('open_attached_file') }}
           </button>
         </div>
         <div v-if="!isNewEmployeeContract" class="input-box">
@@ -70,29 +70,30 @@
           <InputText v-model="employeeContract.employeeContractUuid" disabled />
         </div>
         <div class="input-box">
-          <label for="folio">
-            Folio
+          <label for="folio" class="capitalize">
+            {{ $t('folio') }}
           </label>
           <InputText v-model="employeeContract.employeeContractFolio"
             :invalid="submitted && !employeeContract.employeeContractFolio" />
-          <small class="p-error" v-if="submitted && !employeeContract.employeeContractFolio">Folio
-            is required.
+          <small class="p-error" v-if="submitted && !employeeContract.employeeContractFolio">
+            {{ capitalizeFirstLetter($t('folio')) }} {{
+            $t('is_required') }}
           </small>
         </div>
         <div class="input-box">
           <label for="work-disability-type">
-            Employee contract type
+            {{ $t('employee_contract_type') }}
           </label>
           <Dropdown v-model="employeeContract.employeeContractTypeId" :options="employeeContractTypeList"
             optionLabel="employeeContractTypeName" optionValue="employeeContractTypeId" placeholder="" filter
             class="w-full md:w-14rem" @change="verifyContractPermanent"
             :invalid="submitted && !employeeContract.employeeContractTypeId" />
-          <small class="p-error" v-if="submitted && !employeeContract.employeeContractTypeId">Employee contract type is
-            required.</small>
+          <small class="p-error" v-if="submitted && !employeeContract.employeeContractTypeId">{{
+            $t('employee_contract_type') }} {{ $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <div class="date-box-container">
-            <label>Start date</label>
+            <label>{{ $t('start_date') }}</label>
             <div v-if="!displayStartDateCalendar" class="date-box">
               <InputText :value="getDate(employeeContract.employeeContractStartDate)" readonly class="capitalize" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
@@ -106,8 +107,9 @@
             </div>
             <div v-if="displayStartDateCalendar" class="date-box-controller">
               <Calendar v-if="displayStartDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="employeeContract.employeeContractStartDate" placeholder="Select start date"
-                :maxDate="maxDate" :invalid="submitted && !employeeContract.employeeContractStartDate" />
+                v-model.lazy="employeeContract.employeeContractStartDate"
+                :placeholder="`${$t('select')} ${$t('start_date')}`" :maxDate="maxDate"
+                :invalid="submitted && !employeeContract.employeeContractStartDate" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayStartDateCalendar = false">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -117,14 +119,13 @@
                 </svg>
               </Button>
             </div>
-            <small class="p-error" v-if="submitted && !employeeContract.employeeContractStartDate">Date start
-              is required.
-            </small>
+            <small class="p-error" v-if="submitted && !employeeContract.employeeContractStartDate">{{ $t('start_date')
+              }} {{ $t('is_required') }} </small>
           </div>
         </div>
         <div class="input-box">
           <div class="date-box-container">
-            <label>End date</label>
+            <label>{{ $t('end_date') }}</label>
             <div v-if="!displayEndDateCalendar" class="date-box">
               <InputText :value="getDate(employeeContract.employeeContractEndDate)" readonly class="capitalize" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
@@ -138,7 +139,8 @@
             </div>
             <div v-if="displayEndDateCalendar" class="date-box-controller">
               <Calendar v-if="displayEndDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="employeeContract.employeeContractEndDate" placeholder="Select end date"
+                v-model.lazy="employeeContract.employeeContractEndDate"
+                :placeholder="`${$t('select')} ${$t('end_date')}`"
                 :invalid="submitted && !isContractPermanent && !employeeContract.employeeContractEndDate" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="displayEndDateCalendar = false">
@@ -150,57 +152,58 @@
               </Button>
             </div>
             <small class="p-error"
-              v-if="submitted && !isContractPermanent && !employeeContract.employeeContractEndDate">Date end
-              is required.
+              v-if="submitted && !isContractPermanent && !employeeContract.employeeContractEndDate">{{ $t('end_date') }}
+              {{ $t('is_required') }}
             </small>
           </div>
         </div>
         <div class="input-box">
           <label for="status">
-            Status
+            {{ $t('status') }}
           </label>
-          <Dropdown v-model="employeeContract.employeeContractStatus" :options="employeeContractStatusOptions"
-            optionLabel="label" optionValue="value" placeholder="Select Status" class="w-full md:w-14rem"
-            :invalid="submitted && !employeeContract.employeeContractStatus" />
-          <small class="p-error" v-if="submitted && !employeeContract.employeeContractStatus">Status is
-            required.</small>
+          <Dropdown v-model="employeeContract.employeeContractStatus" :options="getEmployeeContractStatusOptions"
+            optionLabel="label" optionValue="value" :placeholder="`${$t('select')} ${$t('status')}`"
+            class="w-full md:w-14rem" :invalid="submitted && !employeeContract.employeeContractStatus" />
+          <small class="p-error" v-if="submitted && !employeeContract.employeeContractStatus">{{ $t('status') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="monthlNetSalary">Monthly net salary</label>
+          <label for="monthlNetSalary">{{ $t('monthly_net_salary') }}</label>
           <InputNumber v-model="employeeContract.employeeContractMonthlyNetSalary" fluid mode="currency" currency="MXN"
             locale="es-MX" :invalid="submitted && !employeeContract.employeeContractMonthlyNetSalary" />
-          <small class="p-error" v-if="submitted && !employeeContract.employeeContractMonthlyNetSalary">Monthly net
-            salary is
-            required.</small>
+          <small class="p-error" v-if="submitted && !employeeContract.employeeContractMonthlyNetSalary">{{
+            $t('monthly_net_salary') }} {{ $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <label for="role">
-            Department
+            {{ $t('department') }}
           </label>
           <Dropdown v-model="employeeContract.departmentId" :options="departments" optionLabel="departmentName"
-            optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-            :invalid="submitted && !employeeContract.departmentId" />
-          <small class="p-error" v-if="submitted && !employeeContract.departmentId">Department is required.</small>
+            optionValue="departmentId" :placeholder="`${$t('select')} ${$t('department')}`" filter
+            class="w-full md:w-14rem" :invalid="submitted && !employeeContract.departmentId" />
+          <small class="p-error" v-if="submitted && !employeeContract.departmentId">{{ $t('department') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="positionId">Position</label>
+          <label for="positionId">{{ $t('position') }}</label>
           <Dropdown v-model="employeeContract.positionId" :options="positions" optionLabel="positionName"
-            optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem"
+            optionValue="positionId" :placeholder="`${$t('select')} ${$t('position')}`" filter class="w-full md:w-14rem"
             :invalid="submitted && !employeeContract.positionId" />
-          <small class="p-error" v-if="submitted && !employeeContract.positionId">Position is required.</small>
+          <small class="p-error" v-if="submitted && !employeeContract.positionId">{{ $t('position') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="personGender">Payroll Business Unit</label>
+          <label for="personGender">{{ $t('payroll_business_unit') }}</label>
           <Dropdown v-model="employeeContract.payrollBusinessUnitId" :options="businessUnits"
-            optionLabel="businessUnitName" optionValue="businessUnitId" placeholder="Select a Payroll Business Unit"
-            class="w-full md:w-14rem" :disabled="isDeleted"
-            :invalid="submitted && !employeeContract.payrollBusinessUnitId" />
-          <small class="p-error" v-if="submitted && !employeeContract.payrollBusinessUnitId">Payroll business unit is
-            required.</small>
+            optionLabel="businessUnitName" optionValue="businessUnitId"
+            :placeholder="`${$t('select')} ${$t('payroll_business_unit')}`" class="w-full md:w-14rem"
+            :disabled="isDeleted" :invalid="submitted && !employeeContract.payrollBusinessUnitId" />
+          <small class="p-error" v-if="submitted && !employeeContract.payrollBusinessUnitId">{{
+            $t('payroll_business_unit') }} {{ $t('is_required') }}</small>
         </div>
         <div class="box-tools-footer">
           <Button class="btn btn-block btn-primary" @click="onSave">
-            Save employee contract
+            {{ $t('save') }}
           </Button>
         </div>
       </div>

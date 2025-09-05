@@ -12,6 +12,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeeChildrenInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employeeChildren: { type: Object as PropType<EmployeeChildrenInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -23,19 +30,29 @@ export default defineComponent({
     genders: [
       { label: 'Male', value: 'Hombre' },
       { label: 'Female', value: 'Mujer' },
-      { label: 'Other', value: 'Otro' }
+      { label: 'Not_specified', value: 'Otro' }
     ],
     isNewChildren: false,
     isReady: false,
     childrenBirthday: '' as string,
     displayChildrenBirthDateCalendar: false as boolean,
+    localeToUse: 'en',
   }),
   computed: {
+    getGenders() {
+      return this.genders.map(gender => ({
+        label: this.$t(`genders.${gender.label.toLowerCase()}`),
+        value: gender.value
+      }));
+    }
   },
   watch: {
     'employeeChildren.employeeChildrenBirthday'(val: Date) {
       this.childrenBirthday = this.getBirthdayFormatted(val)
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
@@ -55,7 +72,7 @@ export default defineComponent({
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employeeChildren.employeeChildrenBirthday = birthDay
@@ -69,8 +86,8 @@ export default defineComponent({
         if (!employeeChildrenService.validateInfo(this.employeeChildren)) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Missing data',
+            summary: this.t('validation_data'),
+            detail: this.t('missing_data'),
             life: 5000,
           })
           return
@@ -86,7 +103,7 @@ export default defineComponent({
         if (employeeChildrenResponse.status === 201 || employeeChildrenResponse.status === 200) {
           this.$toast.add({
             severity: 'success',
-            summary: `Employee children ${this.employeeChildren.employeeChildrenId ? 'updated' : 'created'}`,
+            summary: `${this.t('employee_children')} ${this.employeeChildren.employeeChildrenId ? this.t('updated') : this.t('created')}}`,
             detail: employeeChildrenResponse._data.message,
             life: 5000,
           })
@@ -97,7 +114,7 @@ export default defineComponent({
           const msgError = employeeChildrenResponse._data.error ? employeeChildrenResponse._data.error : employeeChildrenResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Employee children ${this.employeeChildren.employeeChildrenId ? 'updated' : 'created'}`,
+            summary: `${this.t('employee_children')} ${this.employeeChildren.employeeChildrenId ? this.t('updated') : this.t('created')}}`,
             detail: msgError,
             life: 5000,
           })
@@ -123,7 +140,7 @@ export default defineComponent({
     getBirthdayFormatted(date: Date) {
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
   }

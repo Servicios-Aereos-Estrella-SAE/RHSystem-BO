@@ -35,6 +35,12 @@
                       </div>
                     </div>
                   </template>
+                  <template #empty>
+                    <div class="p-2 text-center text-gray-500">
+                      <i class="pi pi-info-circle mr-2" />
+                      {{ $t('no_results_found') }}
+                    </div>
+                  </template>
                 </AutoComplete>
               </div>
               <button class="btn btn-block">

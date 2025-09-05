@@ -13,7 +13,7 @@
                     d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
-                Add contract
+                {{ $t('add_contract') }}
               </Button>
             </div>
           </div>
@@ -27,9 +27,9 @@
           </div>
         </div>
         <div v-else class="empty">
-          Empty file list.
+          {{ $t('empty_file_list') }}
           <br>
-          Select other folder or add a file
+          {{ $t('select_other_folder_or_add_a_file') }}
         </div>
 
         <div class="card flex justify-content-center">

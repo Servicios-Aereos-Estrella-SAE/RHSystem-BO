@@ -4,6 +4,12 @@ import { useMyGeneralStore } from "~/store/general"
 
 export default defineComponent({
   name: 'employeeDocumentCard',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     clickOnCard: { type: Function, default: null },
   },
@@ -57,7 +63,7 @@ export default defineComponent({
     } else {
       this.$toast.add({
         severity: 'error',
-        summary: 'Employee proceeding files',
+        summary: `${this.t('employee')} ${this.t('proceeding_files')}`,
         detail: employeeProceedingFileResponse._data.message,
         life: 5000,
       });

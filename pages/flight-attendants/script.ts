@@ -6,6 +6,12 @@ import FlightAttendantService from "~/resources/scripts/services/FlightAttendant
 import { useMyGeneralStore } from "~/store/general";
 export default defineComponent({
   name: 'FlightAttendants',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     search: '' as string,
@@ -148,14 +154,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete flight attendant',
+            summary: `${this.t('delete')} ${this.t('flight_attendant')}`,
             detail: flightAttendantResponse._data.message,
             life: 5000,
           });
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete light attendant',
+            summary: `${this.t('delete')} ${this.t('flight_attendant')}`,
             detail: flightAttendantResponse._data.message,
             life: 5000,
           });

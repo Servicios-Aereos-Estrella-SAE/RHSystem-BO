@@ -12,7 +12,6 @@
         <div class="department-position">
           <h1>
             {{ $t('general_employees_attendance_monitor') }}
-
           </h1>
         </div>
         <div class="box head-ea-page">
@@ -39,6 +38,12 @@
                       </div>
                     </div>
                   </template>
+                  <template #empty>
+                    <div class="p-2 text-center text-gray-500">
+                      <i class="pi pi-info-circle mr-2" />
+                      {{ $t('no_results_found') }}
+                    </div>
+                  </template>
                 </AutoComplete>
               </div>
               <button class="btn btn-block">
@@ -56,7 +61,8 @@
                 {{ $t('status') }}
               </label>
               <Dropdown v-model="statusSelected" :options="getStatus" optionLabel="label" optionValue="name"
-                :placeholder="$t('select_a_status')" class="w-full md:w-14rem" />
+                :placeholder="$t('select_a_status')" class="w-full md:w-14rem" filter
+                :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
             </div>
             <div class="input-box">
               <label for="departments">
@@ -94,7 +100,8 @@
         </div>
 
         <div class="box employees-excel-report-buttons">
-          <Button v-if="displayConsecutiveFaultsBtn" class="btn" severity="success" @click="drawerEmployeeWithFaults = true">
+          <Button v-if="displayConsecutiveFaultsBtn" class="btn" severity="success"
+            @click="drawerEmployeeWithFaults = true">
             <span v-if="employeesWithFaults.length > 0" class="dot-indicator"></span>
             {{ $t('consecutive_faults') }}
           </Button>
@@ -151,7 +158,7 @@
           </button>
         </div>
 
-        <div v-if="canDisplayFrontExcel" >
+        <div v-if="canDisplayFrontExcel">
           <Accordion :activeIndex="developerActionsActiveIndex">
             <AccordionTab header="Developer Actions">
               <div class="head-ea-bts-group">

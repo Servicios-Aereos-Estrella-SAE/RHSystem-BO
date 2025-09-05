@@ -2,6 +2,13 @@ import { DateTime } from "luxon";
 
 export default defineComponent({
   name: 'employeeDocumentExpireCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     document: { type: Object as PropType<object> as any, required: true },
     clickOnCard: { type: Function, default: null },
@@ -9,6 +16,7 @@ export default defineComponent({
   data: () => ({
     percentage: 0,
     isMenuOpen: false,
+    localeToUse: 'en',
   }),
   computed: {
     getName() {
@@ -28,6 +36,9 @@ export default defineComponent({
       return expirationDate < currentDate;
     },
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
   },
   methods: {
@@ -38,8 +49,11 @@ export default defineComponent({
       window.open(this.document.proceedingFilePath)
     },
     expireDateFormat(date: string) {
-      const toDate = DateTime.fromISO(date, { setZone: true }).setZone('UTC-6').setLocale('en')
+      const toDate = DateTime.fromISO(date, { setZone: true }).setZone('UTC-6').setLocale(this.localeToUse)
       return toDate.toFormat('LLLL dd, yyyy')
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   },
 })

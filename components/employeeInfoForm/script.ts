@@ -366,8 +366,8 @@ export default defineComponent({
       if (!employeeService.validateEmployeeInfo(this.employee)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -378,8 +378,8 @@ export default defineComponent({
           this.isEmailInvalid = true
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Email not valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('email')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -389,8 +389,8 @@ export default defineComponent({
         this.isValidCURP = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Personal identification is not valid',
+          summary: this.t('validation_data'),
+          detail: `${this.t('personal_identification')} ${this.t('is_not_valid')}`,
           life: 5000,
         })
         return
@@ -399,8 +399,8 @@ export default defineComponent({
         this.isValidRFC = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'RFC is not valid',
+          summary: this.t('validation_data'),
+          detail: `RFC ${this.t('is_not_valid')}`,
           life: 5000,
         })
         return
@@ -408,8 +408,8 @@ export default defineComponent({
       if (this.pilot !== null && this.files.length > 1) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Image invalid',
-          detail: 'Only one image is allowed',
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_is_allowed'),
           life: 5000,
         })
         return
@@ -421,8 +421,8 @@ export default defineComponent({
             if (!isAudioOrVideo) {
               this.$toast.add({
                 severity: 'warn',
-                summary: 'Image invalid',
-                detail: 'Only select image.',
+                summary: this.t('image_invalid'),
+                detail: this.t('only_select_image'),
                 life: 5000,
               })
               return
@@ -474,7 +474,7 @@ export default defineComponent({
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -490,7 +490,7 @@ export default defineComponent({
       if (employeeResponse.status === 201) {
         this.$toast.add({
           severity: 'success',
-          summary: `User ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('user')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: employeeResponse._data.message,
           life: 5000,
         })
@@ -516,7 +516,7 @@ export default defineComponent({
           if (pilotResponse.status === 201 || pilotResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.pilot.pilotId ? this.t('updated') : this.t('created')}`,
               detail: pilotResponse._data.message,
               life: 5000,
             })
@@ -529,7 +529,7 @@ export default defineComponent({
             const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
             this.$toast.add({
               severity: 'error',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.pilot.pilotId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
             })
@@ -552,7 +552,7 @@ export default defineComponent({
           if (FlightAttendantResponse.status === 201 || FlightAttendantResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.flightAttendant.flightAttendantId ? this.t('updated') : this.t('created')}`,
               detail: FlightAttendantResponse._data.message,
               life: 5000,
             })
@@ -565,7 +565,7 @@ export default defineComponent({
             const msgError = FlightAttendantResponse._data.error ? FlightAttendantResponse._data.error : FlightAttendantResponse._data.message
             this.$toast.add({
               severity: 'error',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.flightAttendant.flightAttendantId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
             })
@@ -575,7 +575,7 @@ export default defineComponent({
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -652,7 +652,7 @@ export default defineComponent({
       if (employeeResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
-          summary: 'Employee Reactivate',
+          summary: this.t('employee_reactivate'),
           detail: employeeResponse._data.message,
           life: 5000,
         })
@@ -666,7 +666,7 @@ export default defineComponent({
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Employee Reactivate',
+          summary: this.t('employee_reactivate'),
           detail: msgError,
           life: 5000,
         })

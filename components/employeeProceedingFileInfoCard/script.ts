@@ -10,6 +10,12 @@ export default defineComponent({
     Menu,
   },
   name: 'employeeProceedingFileInfoCard',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employeeProceedingFile: { type: Object as PropType<EmployeeProceedingFileInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -84,7 +90,7 @@ export default defineComponent({
     if (this.canReadOnlyFiles || this.canManageFiles) {
       this.items.push(
         {
-          label: 'Open',
+          label: this.t('open'),
           icon: 'pi pi-external-link',
           command: () => {
             if (this.employeeProceedingFile.proceedingFile?.proceedingFilePath) {
@@ -97,7 +103,7 @@ export default defineComponent({
     if (this.canReadOnlyFiles || this.canManageFiles) {
       this.items.push(
         {
-          label: 'Edit',
+          label: this.t('edit'),
           icon: 'pi pi-refresh',
           command: () => {
             if (this.clickOnEdit) {
@@ -110,7 +116,7 @@ export default defineComponent({
     if (this.canManageFiles) {
       this.items.push(
         {
-          label: 'Delete',
+          label: this.t('delete'),
           icon: 'pi pi-trash',
           command: () => {
             if (this.clickOnDelete) {
@@ -135,6 +141,9 @@ export default defineComponent({
       if (this.menuRef && typeof this.menuRef.toggle === 'function') {
         this.menuRef.toggle(event);
       }
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   }
 })

@@ -3,31 +3,36 @@
 
 
     <Head>
-      <Title>Exception Requests</Title>
+      <Title>{{ $t('exception_requests') }}</Title>
     </Head>
     <NuxtLayout name="backoffice">
       <div class="exception-request-wrapper">
         <div class="box head-page">
           <div class="input-box">
             <label for="role">
-              Department
+              {{ $t('department') }}
             </label>
             <Dropdown v-model="selectedDepartmentId" :options="departments" optionLabel="departmentName"
-              optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-              @change="handlerSearchExceptionRequest" />
+              optionValue="departmentId" :placeholder="`${$t('select')} ${$t('department')}`" filter
+              class="w-full md:w-14rem" @change="handlerSearchExceptionRequest"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="positionId">Position</label>
+            <label for="positionId">{{ $t('position') }}</label>
             <Dropdown v-model="selectedPositionId" :options="positions" optionLabel="positionName"
-              optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem" />
+              optionValue="positionId" :placeholder="`${$t('select')} ${$t('position')}`" filter
+              class="w-full md:w-14rem" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="status">Status</label>
+            <label for="status">{{ $t('status') }}</label>
             <Dropdown v-model="selectedStatus" :options="statusOptions" optionLabel="label" optionValue="value"
-              placeholder="Select a Status" filter class="w-full md:w-14rem" @change="handlerSearchExceptionRequest" />
+              :placeholder="`${$t('select')} ${$t('status')}`" filter class="w-full md:w-14rem"
+              @change="handlerSearchExceptionRequest" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="search">Search employee</label>
+            <label for="search">{{ $t('search_employee') }}</label>
             <AutoComplete v-model="selectedEmployee"
               :optionLabel="(employee) => `${employee.person?.personFirstname || ''} ${employee.person?.personLastname || ''} ${employee.person?.personSecondLastname || ''}`"
               :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
@@ -47,6 +52,12 @@
                   </div>
                 </div>
               </template>
+              <template #empty>
+                <div class="p-2 text-center text-gray-500">
+                  <i class="pi pi-info-circle mr-2" />
+                  {{ $t('no_results_found') }}
+                </div>
+              </template>
             </AutoComplete>
           </div>
 
@@ -55,7 +66,7 @@
           </div>
         </div>
         <div>
-          <h2>Exception Requests</h2>
+          <h2>{{ $t('exception_requests') }}</h2>
           <div v-if="filteredExceptionRequests.length > 0" class="exception-request-card-wrapper">
             <div v-for="(exceptionRequest, index) in filteredExceptionRequests"
               :key="`exceptionRequest-${exceptionRequest.id}-${index}`">

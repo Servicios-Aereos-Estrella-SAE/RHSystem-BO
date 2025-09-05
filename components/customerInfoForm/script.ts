@@ -14,6 +14,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'customerInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     customer: { type: Object as PropType<CustomerInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -22,9 +28,9 @@ export default defineComponent({
     activeSwicht: true,
     submitted: false,
     genders: [
-        { label: 'Male', value: 'Hombre' },
-        { label: 'Female', value: 'Mujer' },
-        { label: 'Other', value: 'Otro' }
+      { label: 'Male', value: 'Hombre' },
+      { label: 'Female', value: 'Mujer' },
+      { label: 'Not_specified', value: 'Otro' }
     ],
     currenCustomer: null as CustomerInterface | null,
     isNewCustomer: false,
@@ -35,6 +41,12 @@ export default defineComponent({
     isValidRFC: true,
   }),
   computed: {
+    getGenders() {
+      return this.genders.map(gender => ({
+        label: this.$t(`genders.${gender.label.toLowerCase()}`),
+        value: gender.value
+      }));
+    },
   },
   async mounted() {
     this.isReady = false
@@ -59,9 +71,9 @@ export default defineComponent({
       if (!customerService.validateCustomerInfo(this.customer)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-            life: 5000,
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
+          life: 5000,
         })
         return
       }
@@ -69,9 +81,9 @@ export default defineComponent({
         this.isValidPhone = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Phone number is not valid',
-            life: 5000,
+          summary: this.t('validation_data'),
+          detail: `${this.t('phone')} ${this.t('is_not_valid')}`,
+          life: 5000,
         })
         return
       }
@@ -79,9 +91,9 @@ export default defineComponent({
         this.isValidCURP = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Personal identification is not valid',
-            life: 5000,
+          summary: this.t('validation_data'),
+          detail: `CURP ${this.t('is_not_valid')}`,
+          life: 5000,
         })
         return
       }
@@ -89,9 +101,9 @@ export default defineComponent({
         this.isValidRFC = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'RFC is not valid',
-            life: 5000,
+          summary: this.t('validation_data'),
+          detail: `RFC ${this.t('is_not_valid')}`,
+          life: 5000,
         })
         return
       }
@@ -112,9 +124,9 @@ export default defineComponent({
           const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Customer ${this.customer.customerId ? 'updated' : 'created'}`,
+            summary: `${this.t('customer')} ${this.customer.customerId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
-              life: 5000,
+            life: 5000,
           })
           return
         }
@@ -127,9 +139,9 @@ export default defineComponent({
         if (customerResponse.status === 201 || customerResponse.status === 200) {
           this.$toast.add({
             severity: 'success',
-            summary: `Customer ${this.customer.customerId ? 'updated' : 'created'}`,
+            summary: `${this.t('customer')} ${this.customer.customerId ? this.t('updated') : this.t('created')}`,
             detail: customerResponse._data.message,
-              life: 5000,
+            life: 5000,
           })
           customerResponse = await customerService.show(customerResponse._data.data.customer.customerId)
           if (customerResponse?.status === 200) {
@@ -140,17 +152,17 @@ export default defineComponent({
           const msgError = customerResponse._data.error ? customerResponse._data.error : customerResponse._data.message
           this.$toast.add({
             severity: 'error',
-            summary: `Customer ${this.customer.customerId ? 'updated' : 'created'}`,
+            summary: `${this.t('customer')} ${this.customer.customerId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
-              life: 5000,
+            life: 5000,
           })
         }
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: `Customer ${this.customer.customerId ? 'updated' : 'created'}`,
-          detail: 'Person not found',
-            life: 5000,
+          summary: `${this.t('customer')} ${this.customer.customerId ? this.t('updated') : this.t('created')}`,
+          detail: this.t('person_not_found'),
+          life: 5000,
         })
       }
     },

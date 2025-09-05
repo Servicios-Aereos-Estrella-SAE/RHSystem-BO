@@ -12,6 +12,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'proceedingFileTypeInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     proceedingFileType: { type: Object as PropType<ProceedingFileTypeInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -31,6 +37,12 @@ export default defineComponent({
     ] as Array<ProceedingFileTypeAreaToUseInterface>
   }),
   computed: {
+    getProceedingFileTypeAreaToUseList() {
+      return this.proceedingFileTypeAreaToUseList.map(item => ({
+        ...item,
+        label: this.t(item.proceedingFileTypeAreaToUse.replaceAll('-', '_'))
+      }));
+    }
   },
   async mounted() {
     this.isReady = false
@@ -49,8 +61,8 @@ export default defineComponent({
       if (!proceedingFileTypeService.validateInfo(this.proceedingFileType)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -65,7 +77,7 @@ export default defineComponent({
       if (proceedingFileTypeResponse.status === 201 || proceedingFileTypeResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
-          summary: `Proceeding file type ${this.proceedingFileType.proceedingFileTypeId ? 'updated' : 'created'}`,
+          summary: `${this.t('proceeding_file_type')} ${this.proceedingFileType.proceedingFileTypeId ? this.t('updated') : this.t('created')}`,
           detail: proceedingFileTypeResponse._data.message,
           life: 5000,
         })
@@ -78,11 +90,14 @@ export default defineComponent({
         const msgError = proceedingFileTypeResponse._data.error ? proceedingFileTypeResponse._data.error : proceedingFileTypeResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Proceeding file type ${this.proceedingFileType.proceedingFileTypeId ? 'updated' : 'created'}`,
+          summary: `${this.t('proceeding_file_type')} ${this.proceedingFileType.proceedingFileTypeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
       }
     },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    }
   },
 })

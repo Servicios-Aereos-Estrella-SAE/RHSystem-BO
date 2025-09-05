@@ -19,7 +19,8 @@
               {{ $t('select_department') }}
             </label>
             <Dropdown id="departments" v-model="departmenSelected" optionLabel="label" filter
-              :options="departmentCollection" :highlightOnSelect="false" @change="handlerDeparmentSelect" />
+              :options="departmentCollection" :highlightOnSelect="false" @change="handlerDeparmentSelect"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-search">
             <div class="input-box">
@@ -43,6 +44,12 @@
                     </div>
                   </div>
                 </template>
+                <template #empty>
+                  <div class="p-2 text-center text-gray-500">
+                    <i class="pi pi-info-circle mr-2" />
+                    {{ $t('no_results_found') }}
+                  </div>
+                </template>
               </AutoComplete>
             </div>
             <button class="btn btn-block">
@@ -59,7 +66,8 @@
               {{ $t('status') }}
             </label>
             <Dropdown v-model="statusSelected" :options="getStatus" optionLabel="label" optionValue="name"
-              :placeholder="$t('select_a_status')" filter class="w-full md:w-14rem" />
+              :placeholder="$t('select_a_status')" filter class="w-full md:w-14rem"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">

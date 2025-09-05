@@ -19,8 +19,8 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressCountry">{{ $t('country') }} is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressCountry">{{ $t('country') }} {{
+                $t('is_required') }}</small>
             </div>
             <div class="input-box">
               <label for="search">
@@ -37,7 +37,8 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressState">{{ $t('state') }} is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressState">{{ $t('state') }} {{ $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
               <label for="search">
@@ -54,7 +55,9 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressCity">{{ $t('city') }} is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressCity">{{ $t('city') }} {{
+                $t('is_required')
+                }}</small>
             </div>
           </div>
 
@@ -63,15 +66,17 @@
               <label for="addressZipcode">{{ $t('zipcode') }}</label>
               <InputNumber v-model="address.addressZipcode" :invalid="submitted && !address.addressZipcode"
                 :useGrouping="false" :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressZipcode">{{ $t('zipcode') }} is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressZipcode">{{ $t('zipcode') }} {{
+                $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
               <label for="addressTownship">{{ $t('township') }}</label>
               <InputText v-model="address.addressTownship" :invalid="submitted && !address.addressTownship"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressTownship">{{ $t('township') }} is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressTownship">{{ $t('township') }} {{
+                $t('is_required')
+                }}</small>
             </div>
           </div>
 
@@ -80,8 +85,8 @@
               <label for="addressSettlement">{{ $t('settlement') }}</label>
               <InputText v-model="address.addressSettlement" :invalid="submitted && !address.addressSettlement"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressSettlement">{{ $t('settlement') }} is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressSettlement">{{ $t('settlement') }} {{
+                $t('is_required') }}</small>
             </div>
             <div class="input-box">
               <label for="addressSettlementType">{{ $t('settlement_type') }} ({{ $t('neighborhood') }})</label>
@@ -93,7 +98,9 @@
             <label for="addressStreet">{{ $t('street') }}</label>
             <InputText v-model="address.addressStreet" :invalid="submitted && !address.addressStreet"
               :disabled="!canManageUserResponsible" />
-            <small class="p-error" v-if="submitted && !address.addressStreet">{{ $t('street') }} is required.</small>
+            <small class="p-error" v-if="submitted && !address.addressStreet">{{ $t('street') }} {{
+              $t('is_required')
+              }}</small>
           </div>
 
           <div class="group-2">
@@ -101,8 +108,9 @@
               <label for="addressExternalNumber">{{ $t('external_number') }}</label>
               <InputText v-model="address.addressExternalNumber" :invalid="submitted && !address.addressExternalNumber"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressExternalNumber">{{ $t('external_number') }} is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressExternalNumber">{{ $t('external_number') }} {{
+                $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
               <label for="addressInternalNumber">{{ $t('internal_number') }}</label>
@@ -129,7 +137,9 @@
           <Dropdown v-model="address.addressTypeId" :options="addressTypes" optionLabel="addressTypeName"
             optionValue="addressTypeId" placeholder="Select a Address Type" filter class="w-full md:w-14rem"
             :invalid="submitted && !address.addressTypeId" :disabled="!canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !address.addressTypeId">Address type is required.</small>
+          <small class="p-error" v-if="submitted && !address.addressTypeId">Address type {{
+            $t('is_required')
+            }}</small>
         </div>
         <div class="card flex justify-center"></div>
 

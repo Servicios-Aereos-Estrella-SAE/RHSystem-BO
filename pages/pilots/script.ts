@@ -6,6 +6,12 @@ import type { RoleSystemPermissionInterface } from "~/resources/scripts/interfac
 import type { EmployeeInterface } from "~/resources/scripts/interfaces/EmployeeInterface";
 export default defineComponent({
   name: 'Pilots',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     search: '' as string,
@@ -149,14 +155,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete pilot',
+            summary: `${this.t('delete')} ${this.t('pilot')}`,
             detail: pilotResponse._data.message,
             life: 5000,
           });
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete pilot',
+            summary: `${this.t('delete')} ${this.t('pilot')}`,
             detail: pilotResponse._data.message,
             life: 5000,
           });
