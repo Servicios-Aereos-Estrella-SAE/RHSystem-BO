@@ -11,7 +11,7 @@
           </div>
         </div>
         <div class="menu">
-          <PanelMenu :model="menu">
+          <PanelMenu v-model:expandedKeys="expandedKeys" :model="menu" multiple>
             <template #item="{ item }">
                 <nuxt-link
                   v-if="item.path"
@@ -23,8 +23,8 @@
                   <div class="icon" v-html="item.icon"></div>
                   {{ item.label }}
                 </nuxt-link>
-                <div v-else class="menu-link" :class="{ 'active': setLinkActive(item) }">
-                  <div class="icon">
+                <div v-else class="menu-link group" :class="{ 'active': setLinkActive(item) }">
+                  <div class="icon" :class="{ 'no-collapsed': expandedKeys[item.key] }">
                     <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>
                   </div>
                   {{ item.label }}
@@ -54,6 +54,7 @@
       .menu-link {
         .icon {
           width: 1.25rem;
+          transition: all 0.4s;
           height: 3rem;
           display: flex;
           justify-content: center;
@@ -63,10 +64,21 @@
             width: 2rem;
           }
 
+          &.no-collapsed {
+            transition: all 0.4s;
+
+            svg {
+              transition: all 0.4s;
+              transform: rotate(90deg);
+            }
+          }
+
           svg {
-            width: 1.25rem;
+            width: 1rem;
+            transition: all 0.4s;
+
             path {
-              fill: $text;
+              fill:#808cb1;
             }
 
             @media screen and (max-width: $desktop) {
@@ -88,7 +100,7 @@
       border: none;
 
       .menu-link {
-        padding-left: 2rem;
+        padding-left: 1.5rem;
       }
     }
 

@@ -17,7 +17,7 @@
 
     .sidebar-logo-container {
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
       box-sizing: border-box;
       padding-right: 2rem;
     }
@@ -43,21 +43,29 @@
       align-items: center;
       gap: 0.5rem;
       transition: all 0.4s;
-      opacity: 1;
-      padding-left: 1rem;
+      opacity: 0.7;
       font-size: 0.8rem;
+      margin-right: 1rem;
+      margin-left: 1rem;
 
       @media screen and (max-width: $phone) {
         font-size: 1rem;
       }
 
       &:hover {
-        background-color: $gray;
-        opacity: 1;
+        background-color: #e5edf4;
+        border-radius: $radius;
       }
 
       &.active {
-        background-color: #0d3a68;
+        background-color: #e5edf4;
+        opacity: 1;
+        font-weight: 500;
+        border-radius: $radius;
+      }
+
+      &.group {
+        font-weight: 500;
         opacity: 1;
       }
     }

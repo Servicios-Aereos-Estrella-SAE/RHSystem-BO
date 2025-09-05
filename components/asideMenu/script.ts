@@ -16,7 +16,8 @@ export default defineComponent({
     isReady: false,
     roleSystemPermissions: [] as Array<RoleSystemPermissionInterface>,
     menuGroups: [] as Array<SystemModuleInterface>,
-    menu: [] as Array<MenuGroupInterface>
+    menu: [] as Array<MenuGroupInterface>,
+    expandedKeys: [] as Array<any>
   }),
   computed: {
     getBackgroundColor() {
@@ -45,8 +46,8 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.displayContent = false
 
-      const fullPath = this.$route.path;
-      const firstSegment = fullPath.split('/')[1];
+      const fullPath = this.$route.path
+      const firstSegment = fullPath.split('/')[1]
       const systemModuleSlug = firstSegment
       const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
 
@@ -80,10 +81,11 @@ export default defineComponent({
       const logService = new LogService()
       await logService.store(systemModuleSlug)
       await this.getGroupMenu()
+      this.expandAll()
 
       myGeneralStore.displayContent = true
       this.isReady = true
-    }, 1000);
+    }, 1000)
   },
   methods: {
     async getGroupMenu() {
@@ -100,6 +102,7 @@ export default defineComponent({
       for await (const group of this.menuGroups) {
         this.menu.push(
           {
+            key: Math.random().toString(36).substring(2, 15),
             label: group.systemModuleGroup,
             name: group.systemModuleGroup,
             path: '',
@@ -158,6 +161,7 @@ export default defineComponent({
 
               if ((hasPermission || myGeneralStore.isRoot) && !itemExists) {
                 existGroupMenu.items.push({
+                  key: Math.random().toString(36).substring(2, 15),
                   label: item.systemModuleName,
                   name: item.systemModuleName,
                   path: item.systemModulePath,
@@ -181,13 +185,26 @@ export default defineComponent({
       }
     },
     setLinkActive(link: any) {
-      const path = this.$route.path
-      // return !!path.includes(link.path)
-      return false
+      const browserPath = this.$route.path.split('/')[2]
+      return  link.path === `/${browserPath}`
     },
     async closeCallback() {
       const myGeneralStore = useMyGeneralStore()
       await myGeneralStore.toggleDisplayAside()
-    }
+    },
+
+    expandNode(node: any) {
+      if (node.items && node.items.length) {
+        this.expandedKeys[node.key] = true
+      }
+    },
+
+    expandAll() {
+      for (let node of this.menu) {
+        this.expandNode(node)
+      }
+
+      this.expandedKeys = {...this.expandedKeys}
+    },
   }
 })

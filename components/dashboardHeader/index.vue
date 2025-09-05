@@ -20,7 +20,9 @@
         </Button>
       </div>
       <div class="logo">
-        <img :src="getBackgroundImage" class="img">
+        <nuxt-link to="/">
+          <img :src="getBackgroundImage" class="img">
+        </nuxt-link>
       </div>
       <div class="header-content">
         <!-- <div class="notifications-badge">
