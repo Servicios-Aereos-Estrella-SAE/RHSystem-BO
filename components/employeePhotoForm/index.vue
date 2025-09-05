@@ -11,27 +11,39 @@
           <FileUpload name="photo" accept="image/*" :maxFileSize="maxFileSize" @upload="onUpload" @select="onSelect"
             :chooseLabel="$t('choose_file')" :uploadLabel="$t('upload')" :cancelLabel="$t('cancel')"
             :progressLabel="$t('pending')">
-            <template #content="{ files, uploadedFiles, removeFileCallback }">
-              <div v-for="(file, index) in files" :key="index"
-                class="p-d-flex p-ai-center p-mb-2 p-p-2 border border-gray-200 rounded-md">
-                <i class="pi pi-file mr-2 text-blue-500" />
-
-                <div class="flex-grow">
-                  <div class="font-medium text-gray-800">
-                    {{ file.name }}
-                  </div>
-                  <div class="mt-1">
-                    <span v-if="uploadedFiles && uploadedFiles.some(f => f.name === file.name)"
-                      class="status-badge-completed">
-                      {{ $t('completed') }}
-                    </span>
-                    <span v-else class="status-badge-pending">
-                      {{ $t('pending') }}
-                    </span>
+            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+              <div v-if="files.length > 0">
+                <h5>{{ $t('pending') }}</h5>
+                <div class="flex flex-wrap p-0 sm:p-5 gap-5">
+                  <div v-for="(file, index) of files" :key="file.name + file.type + file.size"
+                    class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3">
+                    <div>
+                      <img role="presentation" :alt="file.name" :src="file.objectURL" width="100" height="50" />
+                    </div>
+                    <span class="font-semibold">{{ file.name }}</span>
+                    <div>{{ formatSize(file.size) }}</div>
+                    <Badge :value="$t('pending')" severity="warning" />
+                    <Button icon="pi pi-times" @click="onRemoveTemplatingFile(file, removeFileCallback, index)" outlined
+                      rounded severity="danger" />
                   </div>
                 </div>
+              </div>
 
-                <Button icon="pi pi-times" class="p-button-text p-ml-2" @click="removeFileCallback(index)" />
+              <div v-if="uploadedFiles.length > 0">
+                <h5>{{ $t('completed') }}</h5>
+                <div class="flex flex-wrap p-0 sm:p-5 gap-5">
+                  <div v-for="(file, index) of uploadedFiles" :key="file.name + file.type + file.size"
+                    class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3">
+                    <div>
+                      <img role="presentation" :alt="file.name" :src="file.objectURL" width="100" height="50" />
+                    </div>
+                    <span class="font-semibold">{{ file.name }}</span>
+                    <div>{{ formatSize(file.size) }}</div>
+                    <Badge :value="$t('completed')" class="mt-3" severity="success" />
+                    <Button icon="pi pi-times" @click="removeUploadedFileCallback(index)" outlined rounded
+                      severity="danger" />
+                  </div>
+                </div>
               </div>
             </template>
           </FileUpload>

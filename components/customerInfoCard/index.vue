@@ -9,14 +9,14 @@
     </div>
     <div class="name">
       {{ `${customer.person.personFirstname || ''}` }} {{ `${customer.person.personLastname ||
-      ''}`  }} {{ `${customer.person.personSecondLastname ||
-        ''}`  }}
+      ''}` }} {{ `${customer.person.personSecondLastname ||
+      ''}` }}
     </div>
     <div class="line">
     </div>
-   
+
     <div class="info phone">
-      <label for="phone">Phone</label>
+      <label for="phone">{{ $t('phone') }}</label>
       <span v-if="customer.person?.personPhone">{{ customer.person.personPhone }}</span>
       <span v-else>
         ---
@@ -31,10 +31,10 @@
     </div>
     <div class="info uuid capitalize">
       {{ customer.customerUuid.toLocaleUpperCase() }}
-     </div>
+    </div>
     <div class="box-tools-footer">
-      <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()"/>
-      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()"/>
+      <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />
+      <Button v-if="canDelete" icon="pi pi-trash" class="box-btn btn-red" @click="handlerClickOnDelete()" />
     </div>
   </div>
 </template>

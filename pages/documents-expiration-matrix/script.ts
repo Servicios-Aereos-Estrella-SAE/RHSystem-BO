@@ -10,6 +10,12 @@ import { useMyGeneralStore } from "~/store/general";
 
 export default defineComponent({
   name: 'DocumentsExpirationMatrix',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     aircraftProceedingFiles: [] as Array<ProceedingFileInterface>,
@@ -93,7 +99,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: 'Aircraft proceeding files',
+          summary: `${this.t('aircraft')} ${this.t('proceeding_files')}`,
           detail: aircraftProceedingFileResponse._data.message,
           life: 5000,
         });
@@ -157,7 +163,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: 'Employee proceeding files',
+          summary: `${this.t('employee')} ${this.t('proceeding_files')}`,
           detail: employeeProceedingFileResponse._data.message,
           life: 5000,
         });
@@ -189,7 +195,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: 'Pilot proceeding files',
+          summary: `${this.t('pilot')} ${this.t('proceeding_files')}`,
           detail: pilotProceedingFileResponse._data.message,
           life: 5000,
         });
@@ -221,7 +227,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: 'Customer proceeding files',
+          summary: `${this.t('customer')} ${this.t('proceeding_files')}`,
           detail: customerProceedingFileResponse._data.message,
           life: 5000,
         });
@@ -253,11 +259,14 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'error',
-          summary: 'Flight attendant proceeding files',
+          summary: `${this.t('flight_attendant')} ${this.t('proceeding_files')}`,
           detail: flightAttendantProceedingFileResponse._data.message,
           life: 5000,
         });
       }
     },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
+    }
   },
 })

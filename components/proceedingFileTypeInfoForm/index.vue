@@ -2,37 +2,42 @@
   <div class="box proceeding-file-type-info-form">
 
     <h4>
-      {{ isNewProceedingFileType ? 'New proceeding file type' : 'Update proceeding file type' }}
+      {{ isNewProceedingFileType ? $t('new_proceeding_file_type') : $t('update_proceeding_file_type') }}
     </h4>
     <div v-if="isReady" class="form">
       <div class="input-box">
         <label for="aircraftActive">
-          {{ activeSwicht ? 'Active' : 'Inactive' }}
+          {{ activeSwicht ? $t('active') : $t('inactive') }}
         </label>
         <InputSwitch v-model="activeSwicht" />
       </div>
       <div class="input-box">
-        <label for="firstName">Name</label>
-        <InputText v-model="proceedingFileType.proceedingFileTypeName" placeholder="Enter Name" />
-        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeName">Name is required.</small>
+        <label for="firstName">{{ capitalizeFirstLetter($t('name')) }}</label>
+        <InputText v-model="proceedingFileType.proceedingFileTypeName"
+          :placeholder="`${$t('enter')} ${capitalizeFirstLetter($t('name'))}`" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeName">{{
+          capitalizeFirstLetter($t('name')) }} {{
+          $t('is_required') }}</small>
       </div>
       <div class="input-box">
-        <label for="firstName">Slug</label>
-        <InputText v-model="proceedingFileType.proceedingFileTypeSlug" placeholder="Enter Slug" />
-        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeSlug">Slug is required.</small>
+        <label for="firstName">{{ $t('slug') }}</label>
+        <InputText v-model="proceedingFileType.proceedingFileTypeSlug" :placeholder="`${$t('enter')} ${$t('slug')}`" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeSlug">{{ $t('slug') }} {{
+          $t('is_required') }}</small>
       </div>
       <div class="input-box">
         <label for="proceeding-file">
-          Area to Use
+          {{ $t('area_to_use') }}
         </label>
-        <Dropdown v-model="proceedingFileType.proceedingFileTypeAreaToUse" :options="proceedingFileTypeAreaToUseList"
-          optionLabel="proceedingFileTypeAreaToUse" optionValue="proceedingFileTypeAreaToUse" placeholder="" filter
-          class="w-full md:w-14rem" :invalid="submitted && !proceedingFileType.proceedingFileTypeAreaToUse" />
-        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeAreaToUse">Area to use is
-          required.</small>
+        <Dropdown v-model="proceedingFileType.proceedingFileTypeAreaToUse" :options="getProceedingFileTypeAreaToUseList"
+          optionLabel="label" optionValue="proceedingFileTypeAreaToUse"
+          :placeholder="`${$t('select')} ${$t('area_to_use')}`" filter class="w-full md:w-14rem"
+          :invalid="submitted && !proceedingFileType.proceedingFileTypeAreaToUse" />
+        <small class="p-error" v-if="submitted && !proceedingFileType.proceedingFileTypeAreaToUse">{{ $t('area_to_use')
+          }} {{ $t('is_required') }}</small>
       </div>
       <div class="box-tools-footer">
-        <Button label="Save" severity="primary" @click="onSave()" />
+        <Button :label="$t('save')" severity="primary" @click="onSave()" />
       </div>
     </div>
   </div>

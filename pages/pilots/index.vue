@@ -47,14 +47,14 @@
             </div>
           </div>
         </div>
-        <Dialog v-model:visible="drawerPilotDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog v-model:visible="drawerPilotDelete" :style="{width: '450px'}" :header="$t('confirm')" :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
             <span v-if="pilot"> {{ $t('are_you_sure_you_want_to_delete') }}</span>
           </div>
           <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="drawerPilotDelete = false" />
-            <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+            <Button :label="$t('no')" icon="pi pi-times" text @click="drawerPilotDelete = false" />
+            <Button :label="$t('yes')" icon="pi pi-check" text @click="confirmDelete()" />
           </template>
         </Dialog>
       </NuxtLayout>

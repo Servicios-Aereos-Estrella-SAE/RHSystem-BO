@@ -64,5 +64,21 @@ export default defineComponent({
       console.info(event)
       // this.employee.employeePhoto = event.files[0];
     },
+    formatSize(bytes: any) {
+      const k = 1024;
+      const dm = 3;
+      const sizes = this.$primevue.config.locale?.fileSizeTypes;
+      if (!sizes) {
+        return '0';
+      }
+      if (sizes && bytes === 0) {
+        return `0 ${sizes[0]}`;
+      }
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+      return `${formattedSize} ${sizes[i]}`;
+    }
   },
 })
