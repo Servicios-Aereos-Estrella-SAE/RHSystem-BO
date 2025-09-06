@@ -20,6 +20,12 @@ interface CalendarMonth {
 
 export default defineComponent({
   name: 'CalendarView',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {
     year: {
       type: Number,
@@ -42,10 +48,11 @@ export default defineComponent({
   emits: ['day-click'],
   data: () => ({
     weekDays: [0, 1, 2, 3, 4, 5, 6],
-    calendarData: [] as CalendarMonth[]
+    calendarData: [] as CalendarMonth[],
+    localeToUse: 'en',
   }),
   watch: {
-    'year': function() {
+    'year': function () {
       this.generateCalendarData()
     },
     'markedDays': {
@@ -54,6 +61,9 @@ export default defineComponent({
       },
       deep: true
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   mounted() {
     this.generateCalendarData()
@@ -66,11 +76,11 @@ export default defineComponent({
         return '';
       }
 
-      const fecha = DateTime.fromObject({ weekday: luxonWeekday as DateObjectUnits['weekday'] }).setLocale('en');
+      const fecha = DateTime.fromObject({ weekday: luxonWeekday as DateObjectUnits['weekday'] }).setLocale(this.localeToUse);
       return fecha.toFormat('EEEE');
     },
     getMonthInfo(month: number = 0) {
-      const monthDate = DateTime.fromObject({ year: this.year, month, day: 1 }).setLocale('en');
+      const monthDate = DateTime.fromObject({ year: this.year, month, day: 1 }).setLocale(this.localeToUse);
       const monthName = monthDate.monthLong || '';
       const daysInMonth = monthDate.daysInMonth;
 
@@ -82,28 +92,28 @@ export default defineComponent({
       return { monthName, daysInMonth, firstWeekDay, weeks };
     },
     monthStatus(month: number = 0) {
-      const monthDate = DateTime.fromObject({ year: this.year, month, day: 1 }).setLocale('en')
+      const monthDate = DateTime.fromObject({ year: this.year, month, day: 1 }).setLocale(this.localeToUse)
       const diff = monthDate.diffNow('months').months
 
-      if (monthDate.toFormat('yyyy-MM') === DateTime.now().setLocale('en').toFormat('yyyy-MM')) {
+      if (monthDate.toFormat('yyyy-MM') === DateTime.now().setLocale(this.localeToUse).toFormat('yyyy-MM')) {
         return 'current'
       }
 
       return diff < 0 ? 'past' : 'future'
     },
     isMarkedDay(month: number = 0, day: number = 0): CalendarDayMarkerInterface | null {
-      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale('en')
+      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale(this.localeToUse)
       const markedDay = this.markedDays.find((day: CalendarDayMarkerInterface) => {
-        const markedDate = DateTime.fromISO(day.date.toString(), { zone: 'UTC' }).setLocale('en')
+        const markedDate = DateTime.fromISO(day.date.toString(), { zone: 'UTC' }).setLocale(this.localeToUse)
         return markedDate.toFormat('MM-dd') === compareDay.toFormat('MM-dd')
       })
 
       return markedDay || null
     },
     getCountMarked(month: number = 0, day: number = 0) {
-      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale('en')
+      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale(this.localeToUse)
       const markedDays = this.markedDays.filter((day: CalendarDayMarkerInterface) => {
-        const markedDate = DateTime.fromISO(day.date.toString(), { zone: 'UTC' }).setLocale('en')
+        const markedDate = DateTime.fromISO(day.date.toString(), { zone: 'UTC' }).setLocale(this.localeToUse)
         return markedDate.toFormat('MM-dd') === compareDay.toFormat('MM-dd')
       })
 
@@ -114,8 +124,8 @@ export default defineComponent({
         return false
       }
 
-      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale('en')
-      const today = DateTime.now().setLocale('en')
+      const compareDay = DateTime.fromObject({ year: this.year, month, day }).setLocale(this.localeToUse)
+      const today = DateTime.now().setLocale(this.localeToUse)
       const isNow = compareDay.toFormat('yyyy-MM-dd') === today.toFormat('yyyy-MM-dd')
       return isNow
     },
@@ -177,6 +187,9 @@ export default defineComponent({
     },
     onDayClick(month: number, day: number) {
       this.$emit('day-click', { year: this.year, month, day })
+    },
+    capitalizeFirstLetter(str: string): string {
+      return str.charAt(0).toUpperCase() + str.slice(1)
     }
   }
 })

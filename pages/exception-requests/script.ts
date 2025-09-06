@@ -13,6 +13,12 @@ import ExceptionRequestService from "~/resources/scripts/services/ExceptionReque
 
 export default defineComponent({
   name: 'ExceptionRequests',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     positions: [] as PositionInterface[],
@@ -76,6 +82,17 @@ export default defineComponent({
       }
     },
   },
+  computed: {
+    getStatusOptions() {
+      return [
+        { label: this.$t('all'), value: 'all' },
+        { label: this.$t('requested'), value: 'requested' },
+        { label: this.$t('pending'), value: 'pending' },
+        { label: this.$t('accepted'), value: 'accepted' },
+        { label: this.$t('refused'), value: 'refused' }
+      ];
+    }
+  },
   methods: {
     async handlerSearchEmployee(event: any) {
       if (event.query.trim().length) {
@@ -137,7 +154,7 @@ export default defineComponent({
         this.$toast.add({
           severity: 'error',
           summary: 'Error',
-          detail: 'Description is required for refuse',
+          detail: this.t('description_is_required_for_refuse'),
           life: 3000,
         });
         return;
@@ -152,8 +169,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: 'info',
-            summary: 'Change Status',
-            detail: 'Refused',
+            summary: this.t('change_status'),
+            detail: this.t('refused'),
             life: 5000,
           })
           this.exceptionRequest.exceptionRequestStatus = 'refused'
@@ -166,7 +183,7 @@ export default defineComponent({
           this.description = ''
           myGeneralStore.setFullLoader(false)
         } else {
-          console.error('Error updating status');
+          console.error(this.t('error_updating_status'));
         }
       }
 
@@ -180,8 +197,8 @@ export default defineComponent({
         if (response) {
           this.$toast.add({
             severity: 'info',
-            summary: 'Change Status',
-            detail: 'Accepted',
+            summary: this.t('change_status'),
+            detail: this.t('accepted'),
             life: 5000,
           });
           this.exceptionRequest.exceptionRequestStatus = 'accepted';
@@ -193,7 +210,7 @@ export default defineComponent({
           }
           myGeneralStore.setFullLoader(false)
         } else {
-          console.error('Error updating status');
+          console.error(this.t('error_updating_status'));
         }
       }
 

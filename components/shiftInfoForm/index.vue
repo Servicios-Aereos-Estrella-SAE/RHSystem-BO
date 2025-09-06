@@ -8,7 +8,7 @@
 
       <div class="form-container">
         <div v-if="shiftName" class="input-box">
-          <label for="shiftName">Shift Name</label>
+          <label for="shiftName">{{ $t('shift_name') }}</label>
           <div class="shift-name">
             {{ shift.shiftName }}
           </div>
@@ -16,53 +16,57 @@
 
         <div class="input-box">
           <label>
-            Shift
+            {{ $t('shift') }}
           </label>
           <Dropdown v-model="shift.shiftCalculateFlag" :options="flags" optionLabel="label" optionValue="value" />
         </div>
 
         <div class="input-box">
-          <label for="shiftTimeStart">Start Time</label>
+          <label for="shiftTimeStart">{{ $t('start_time') }}</label>
           <Calendar id="calendar-timeonly" v-model="timeToStart" timeOnly
             :invalid="submitted && !shift.shiftTimeStart" />
-          <small class="p-error" v-if="submitted && !shift.shiftTimeStart">Start time is required.</small>
+          <small class="p-error" v-if="submitted && !shift.shiftTimeStart">{{ $t('start_time') }} {{ $t('is_required')
+            }}</small>
         </div>
         <div class="input-box">
-          <label for="shiftActiveHours">Active Hours</label>
+          <label for="shiftActiveHours">{{ $t('active_hours') }}</label>
           <InputNumber id="shiftActiveHours" v-model="shiftActiveHours" :invalid="submitted && !shift.shiftActiveHours"
             :min="1" :max="72" />
-          <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
+          <small class="p-error" v-if="submitted && !shift.shiftActiveHours">{{ $t('active_hours') }} {{
+            $t('are_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="shiftActiveHours">Active Minutes on last hour</label>
+          <label for="shiftActiveHours">{{ $t('active_minutes_on_last_hour') }}</label>
           <InputNumber id="shiftActiveHours" v-model="temporalActiveMinutes"
-            :invalid="submitted && !shift.shiftActiveHours" :min="0" :max="60" />
-          <small class="p-error" v-if="submitted && !shift.shiftActiveHours">Active hours are required.</small>
+            :invalid="submitted && !temporalActiveMinutes" :min="0" :max="60" />
+          <small class="p-error" v-if="submitted && !temporalActiveMinutes">{{ $t('active_minutes_on_last_hour') }} {{
+            $t('are_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="shiftTimeStart">End Time</label>
+          <label for="shiftTimeStart">{{ $t('end_time') }}</label>
           <Calendar id="calendar-timeonly" v-model.lazy="timeToEnd" timeOnly readonly />
         </div>
         <div v-if="shift.shiftCalculateFlag === 'estandar'" class="input-box">
           <label for="shiftRestDays">
-            Rest Days
+            {{ $t('rest_days') }}
           </label>
-          <MultiSelect v-model="selectedRestDays" :options="daysOfWeeks" :optionLabel="'name'"
-            :placeholder="'Select Rest Days'" :maxSelectedLabels="2" class="w-full md:w-500" filter />
-          <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">Rest days are required.</small>
+          <MultiSelect v-model="selectedRestDays" :options="getDays" :optionLabel="'name'"
+            :placeholder="`${$t('select')} ${$t('rest_days')}`" :maxSelectedLabels="2" class="w-full md:w-500" filter />
+          <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">{{ $t('rest_days') }} {{
+            $t('are_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="shiftAccumulatedFault">Accumulated Faults</label>
+          <label for="shiftAccumulatedFault">{{ $t('accumulated_faults') }}</label>
           <InputNumber id="shiftActiveHours" v-model="shift.shiftAccumulatedFault"
             :invalid="submitted && !shift.shiftAccumulatedFault" :min="1" />
-          <small class="p-error" v-if="submitted && !shift.shiftAccumulatedFault">Accumulated faults are
-            required.</small>
+          <small class="p-error" v-if="submitted && !shift.shiftAccumulatedFault">{{ $t('accumulated_faults') }} {{
+            $t('are_required') }}</small>
         </div>
 
         <div class="card flex justify-center"></div>
 
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave" />
+          <Button :label="$t('save')" severity="primary" @click="onSave" />
         </div>
       </div>
     </div>

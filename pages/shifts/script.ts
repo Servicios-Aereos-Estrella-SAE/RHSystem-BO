@@ -5,6 +5,12 @@ import { useMyGeneralStore } from "~/store/general"
 
 export default defineComponent({
   name: 'Shifts',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {},
   data: () => ({
     search: '' as string,
@@ -133,14 +139,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete shift',
+            summary: `${this.t('delete')} ${this.t('shift')}`,
             detail: shiftResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete shift',
+            summary: `${this.t('delete')} ${this.t('shift')}`,
             detail: shiftResponse._data.message,
             life: 5000,
           })

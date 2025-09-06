@@ -33,6 +33,12 @@ interface CalendarMonth {
 
 export default defineComponent({
   name: 'Birthday-days',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {},
   data: () => ({
     date: new Date(),
@@ -56,7 +62,8 @@ export default defineComponent({
     filteredEmployeesBirthday: [] as EmployeeInterface[],
     drawerEmployeesBirthday: false,
     currentBirthday: '',
-    calendarData: [] as CalendarMonth[]
+    calendarData: [] as CalendarMonth[],
+    localeToUse: 'en',
   }),
   watch: {
     'departmentId': function (newVal) {
@@ -70,6 +77,9 @@ export default defineComponent({
     'positionId': function () {
       this.handlerSearchEmployee()
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
@@ -151,7 +161,7 @@ export default defineComponent({
     updateBirthdaysQuantity() {
       // Group birthdays by date (MM-DD format)
       const groupedByDate = this.filterBirthdays.reduce((acc, curr) => {
-        const date = DateTime.fromISO(curr.date.toString(), { zone: 'utc' }).setLocale('en').toFormat('MM-dd')
+        const date = DateTime.fromISO(curr.date.toString(), { zone: 'utc' }).setLocale(this.localeToUse).toFormat('MM-dd')
         if (!acc[date]) {
           acc[date] = []
         }
@@ -170,14 +180,14 @@ export default defineComponent({
     },
     onShowCurrentBirthday({ year, month, day }: { year: number, month: number, day: number }) {
       const date = DateTime.fromObject({ year, month, day })
-      this.currentBirthday = date.setLocale('en').toFormat('DDDD')
+      this.currentBirthday = date.setLocale(this.localeToUse).toFormat('DDDD')
       this.filteredEmployeesBirthday = this.getEmployeesWithBirthday(month, day)
       this.drawerEmployeesBirthday = true
     },
     getEmployeesWithBirthday(currentMonth: number, currentDay: number) {
       return this.filteredEmployees.filter(employee => {
         if (employee.person?.personBirthday) {
-          const birthdayDate = DateTime.fromISO(employee.person.personBirthday.toString()).setLocale('en').setZone('UTC')
+          const birthdayDate = DateTime.fromISO(employee.person.personBirthday.toString()).setLocale(this.localeToUse).setZone('UTC')
           return birthdayDate.month === currentMonth && birthdayDate.day === currentDay
         }
         return false

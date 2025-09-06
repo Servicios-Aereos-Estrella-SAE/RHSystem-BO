@@ -4,6 +4,7 @@ import { useMyGeneralStore } from '~/store/general'
 import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService"
 import { io } from 'socket.io-client'
 import type { NotificationInterface } from '~/resources/scripts/interfaces/NotificationInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 export default defineComponent({
   name: 'dashboardHeader',
@@ -72,7 +73,15 @@ export default defineComponent({
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${imagePath}`
-      return photoPath
+      let photoIsValid = false
+      const employeeService = new EmployeeService()
+      employeeService.checkImage(photoPath).then(valid => {
+        photoIsValid = valid
+      });
+      if (photoIsValid) {
+        return photoPath
+      }
+      return imagePath
     }
   },
   watch: {
