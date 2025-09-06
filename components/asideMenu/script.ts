@@ -164,7 +164,7 @@ export default defineComponent({
                   key: Math.random().toString(36).substring(2, 15),
                   label: item.systemModuleName,
                   name: item.systemModuleName,
-                  path: item.systemModulePath,
+                  path: `/${this.$i18n.locale}${item.systemModulePath}`,
                   icon: item.systemModuleIcon,
                   items: []
                 })

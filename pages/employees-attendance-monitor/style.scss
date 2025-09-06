@@ -45,28 +45,20 @@
         align-items: center;
       }
 
-      .input-search {
-        width: 100%;
-        max-width: 30rem;
-      }
-
       .status-input-box {
         width: 100%;
         max-width: 10rem;
+      }
+
+      .input-search {
+        width: 100%;
+        max-width: 30rem;
       }
 
       .period-input-box {
         width: 100%;
         max-width: 12rem;
       }
-
-      // @media screen and (max-width: $desktop) {
-      //   grid-template-columns: 20rem auto 13rem 24.1rem 10rem;
-      // }
-
-      // @media screen and (max-width: $ipad) {
-      //   grid-template-columns: 1fr;
-      // }
 
       @media screen and (max-width: $phone) {
         grid-template-columns: 1fr;

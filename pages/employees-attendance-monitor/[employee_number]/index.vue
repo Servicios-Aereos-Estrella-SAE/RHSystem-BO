@@ -51,19 +51,17 @@
                 </svg>
               </button>
             </div>
-            <div></div>
           </div>
           <div class="employee-period-filter">
             <div v-if="visualizationMode" class="input-box">
               <label>
                 {{ $t('visualization_mode') }}
               </label>
-
               <SelectButton v-model="visualizationMode" :options="getVisualizationModes" dataKey="value"
                 optionLabel="label" aria-labelledby="basic" optionDisabled="selected"
                 @change="onHandlerVisualizationModeChange" />
             </div>
-            <div v-if="visualizationMode" class="input-box">
+            <div v-if="visualizationMode" class="input-box period-input-box">
               <label>
                 {{ $t('period') }}
               </label>
@@ -90,34 +88,6 @@
         </div>
 
         <div class="employee-attendance-head-tools">
-          <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
-            <label for="getAssistFromSaveCalendarSwicht">
-              {{ $t('get_assist') }} {{ getAssistFromSaveCalendarSwicht ? $t('from_save_calendar') :
-              $t('from_api_calculate_calendar') }}
-            </label>
-            <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
-          </div>
-          <div v-if="visualizationMode">
-            <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations()">
-              {{ $t('vacations') }}
-              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
-                enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15"
-                data-v-6de6f350="">
-                <path
-                  d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z"
-                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:96:17"
-                  data-v-6de6f350=""></path>
-                <path
-                  d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z"
-                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:99:17"
-                  data-v-6de6f350=""></path>
-                <path
-                  d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z"
-                  fill="#87a4bf" class="fill-333333"
-                  data-v-inspector="components/attendanceCalendarDay/index.vue:102:17" data-v-6de6f350=""></path>
-              </svg>
-            </button>
-          </div>
           <div v-if="visualizationMode && canAddAssistManual">
             <Button class="btn" severity="success" @click="addNewAssist">
               <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -145,9 +115,26 @@
               </svg>
             </Button>
           </div>
-        </div>
-
-        <div class="employee-attendance-head-tools excel-reports-wrapper">
+          <div v-if="visualizationMode">
+            <button v-if="visualizationMode" class="btn" severity="success" @click="getVacations">
+              <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
+                enable-background="new 0 0 512 512" data-v-inspector="components/attendanceCalendarDay/index.vue:94:15"
+                data-v-6de6f350="">
+                <path
+                  d="M443.9 109.1h-50.8V64.2c8.7-1 15.5-8.3 15.5-17.3 0-9.6-7.8-17.4-17.4-17.4h-87.6c-9.6 0-17.4 7.8-17.4 17.4 0 8.6 6.2 15.7 14.4 17.2v45.1h-55.1c-11.8 0-21.4 9.6-21.4 21.5v24.6h38c12.4 0 23.3 6.7 29.2 16.7h115.9c3.9 0 7 3.1 7 7s-3.1 7-7 7H389v9.9c0 3.9-3.1 7-7 7s-7-3.1-7-7V186h-77.9c-.4 0-.8 0-1.2-.1h-.1c.1 1.1.2 2.2.2 3.3v44.9h48.8c20.9 0 38 17 38 38v186.8c0 9.1-3.2 17.4-8.6 24H444c11.8 0 21.4-9.6 21.4-21.4v-331c-.1-11.8-9.7-21.4-21.5-21.4zm-129.3 0V64.3h64.5v44.8h-64.5zM46.7 271.9v186.8c0 13.3 10.7 24 24 24h33.6V247.9H70.7c-13.3 0-24 10.7-24 24z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:96:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M344.7 247.9h-33.6v234.7h33.6c13.2 0 24-10.7 24-24V271.9c0-13.3-10.8-24-24-24zM176.6 247.9h62.1v234.7h-62.1z"
+                  fill="#87a4bf" class="fill-333333" data-v-inspector="components/attendanceCalendarDay/index.vue:99:17"
+                  data-v-6de6f350=""></path>
+                <path
+                  d="M281.9 247.9V189c0-11-8.9-19.9-19.9-19.9H153.4c-11 0-19.9 8.9-19.9 19.9v58.9h-15.2v234.7h44.3V247.9h-15.2V189c0-3.3 2.6-5.9 5.9-5.9H262c3.3 0 5.9 2.6 5.9 5.9v58.9h-15.2v234.7H297V247.9h-15.1z"
+                  fill="#87a4bf" class="fill-333333"
+                  data-v-inspector="components/attendanceCalendarDay/index.vue:102:17" data-v-6de6f350=""></path>
+              </svg>
+            </button>
+          </div>
           <Button class="btn" severity="success" @click="getExcelAllAssistance">
             {{ $t('detailed') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -173,34 +160,6 @@
                 fill="#88a4bf" class="fill-000000"></path>
             </svg>
           </button>
-        </div>
-
-        <div v-if="canDisplayAPIExcel" class="employee-attendance-head-tools excel-reports-wrapper from-api">
-          <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
-            {{ $t('detailed') }} API
-            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                fill="#88a4bf" class="fill-000000"></path>
-            </svg>
-          </Button>
-          <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Incident Summary')">
-            {{ $t('summary') }} API
-            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                fill="#88a4bf" class="fill-000000"></path>
-            </svg>
-          </Button>
-          <Button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
-            @click="getExcel('Incident Summary Payroll')">
-            {{ $t('payroll') }} API
-            <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
-                fill="#88a4bf" class="fill-000000"></path>
-            </svg>
-          </Button>
         </div>
 
         <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
@@ -264,12 +223,6 @@
                   <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
                     {{ workedTime }} {{ $t('worked') }}
                   </div>
-                  <!-- <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
-                    {{ workedProductiveTime }} worked productive
-                  </div>
-                  <div v-if="canReadTimeWorked" class="indicator-prop-val-work">
-                    {{ workedActiveTime }} to work
-                  </div> -->
                 </div>
               </div>
             </div>
@@ -320,41 +273,41 @@
 </template>
 
 <script>
-  import Script from './script.ts'
-  export default Script
+import Script from './script.ts'
+export default Script
 </script>
 
 <style lang="scss" scoped>
-  @import './style';
+@import './style';
 </style>
 
 <style lang="scss">
-  @import './style';
+@import './style';
 
-  .employee-assist-sidebar {
+.employee-assist-sidebar {
+  width: 100% !important;
+  max-width: 32rem !important;
+
+  @media screen and (max-width: $sm) {
     width: 100% !important;
-    max-width: 32rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
   }
+}
 
-  .vacation-form-sidebar {
-    width: 35rem !important;
-    max-width: 80rem !important;
+.vacation-form-sidebar {
+  width: 35rem !important;
+  max-width: 80rem !important;
 
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
+  @media screen and (max-width: $sm) {
+    width: 100% !important;
   }
+}
 
-  .sidebar-shifts {
-    width: 90% !important;
-    max-width: 120rem !important;
+.sidebar-shifts {
+  width: 90% !important;
+  max-width: 120rem !important;
 
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
+  @media screen and (max-width: $sm) {
+    width: 100% !important;
   }
+}
 </style>

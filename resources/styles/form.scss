@@ -10,7 +10,7 @@
   color: $text;
   border-color: $border-color;
   box-sizing: border-box;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   height: 45.5px;
   align-items: center;
   display: flex;
@@ -85,6 +85,7 @@
 .input-box {
   display: grid;
   grid-template-columns: 1fr;
+  width: 100%;
 
   label {
     display: block;
@@ -92,7 +93,7 @@
     font-size: 0.85rem;
     width: 100%;
     opacity: 0.75;
-    font-weight: normal;
+    font-weight: 400;
     font-size: 0.75rem;
 
     small {
@@ -258,4 +259,16 @@
 
 .p-message-text {
   font-size: 0.8rem;
+}
+
+:deep(.p-button-label) {
+  font-size: 0.75rem !important;
+}
+
+:deep(.p-selectbutton .p-button.p-highlight) {
+  color: white !important;
+}
+
+:deep(.p-selectbutton .p-button) {
+  color: $text !important;
 }
