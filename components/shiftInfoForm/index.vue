@@ -51,7 +51,8 @@
             {{ $t('rest_days') }}
           </label>
           <MultiSelect v-model="selectedRestDays" :options="getDays" :optionLabel="'name'"
-            :placeholder="`${$t('select')} ${$t('rest_days')}`" :maxSelectedLabels="2" class="w-full md:w-500" filter />
+            :placeholder="`${$t('select')} ${$t('rest_days')}`" :maxSelectedLabels="2" class="w-full md:w-500" filter
+            :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           <small class="p-error" v-if="submitted && !shift.shiftRestDays.length">{{ $t('rest_days') }} {{
             $t('are_required') }}</small>
         </div>

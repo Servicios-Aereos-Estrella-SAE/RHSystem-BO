@@ -658,5 +658,16 @@
   "thursday": "Jueves",
   "friday": "Viernes",
   "saturday": "Sábado",
-  "sunday": "Domingo"
+  "sunday": "Domingo",
+  "users": "Usuarios",
+  "search_user": "Buscar usuario",
+  "filter_by_role": "Filtrar por rol",
+  "add_new_user": "Agregar nuevo usuario",
+  "delete_user": "Eliminar usuario",
+  "new_user": "Nuevo usuario",
+  "update_user": "Actualizar usuario",
+  "cancel_change_password": "Cancelar cambio de contraseña",
+  "change_password": "Cambiar contraseña",
+  "passwords_not_is_valid": "Las contraseñas no son válidas",
+  "missing_password": "Falta la contraseña"
 }
