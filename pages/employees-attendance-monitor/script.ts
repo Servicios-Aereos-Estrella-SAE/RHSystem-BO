@@ -675,37 +675,43 @@ export default defineComponent({
         startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
         endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
       }
+
       const employeeID = employee?.employee?.employeeId || 0
+
       try {
         const assistReq = await new AssistService().index(startDay, endDay, employeeID)
         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
         employee.calendar = employeeCalendar
-        /*  const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-         const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[] */
-        let employeeAssistCalendarReq
-        if (this.getAssistFromSaveCalendarSwicht) {
-          const newEmployeeCalendar = [] as AssistDayInterface[]
-          employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
-          const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
 
-          for await (const calendar of calendars) {
-            newEmployeeCalendar.push(calendar)
-          }
-          employee.calendar = newEmployeeCalendar
+        // const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+        // const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
 
-        } else {
-          const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
-          const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-          employee.calendar = employeeCalendar
+        // let employeeAssistCalendarReq
 
-        }
+        // if (this.getAssistFromSaveCalendarSwicht) {
+        //   const newEmployeeCalendar = [] as AssistDayInterface[]
+        //   employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+        //   const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+        //   for await (const calendar of calendars) {
+        //     newEmployeeCalendar.push(calendar)
+        //   }
+        //   employee.calendar = newEmployeeCalendar
+
+        // } else {
+        //   const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
+        //   const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+        //   employee.calendar = employeeCalendar
+
+        // }
 
         if (this.visualizationMode?.value === 'payroll') {
           employee.calendar = employee.calendar.filter(a => a.day <= endDayFourteen)
         }
+
         this.setGeneralStatisticsData(employee, employee.calendar)
 
-        if (employeeAssistCalendarReq.status === 400) {
+        if (assistReq.status === 400) {
           const employeeNoShift = employee?.employee || null
 
           if (employeeNoShift) {

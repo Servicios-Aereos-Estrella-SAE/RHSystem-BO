@@ -630,21 +630,27 @@ export default defineComponent({
       }
 
       const employeeID = this.employee?.employeeId || 0
-      if (this.getAssistFromSaveCalendarSwicht) {
-        const newEmployeeCalendar = [] as AssistDayInterface[]
-        const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
-        const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
 
-        for await (let calendar of calendars) {
-          newEmployeeCalendar.push(calendar)
-        }
+      const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+      const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      this.employeeCalendar = employeeCalendar
 
-        this.employeeCalendar = newEmployeeCalendar
-      } else {
-        const assistReq = await new AssistService().index(startDay, endDay, employeeID)
-        const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
-        this.employeeCalendar = employeeCalendar
-      }
+      // if (this.getAssistFromSaveCalendarSwicht) {
+      //   const newEmployeeCalendar = [] as AssistDayInterface[]
+      //   const employeeAssistCalendarReq = await new EmployeeAssistCalendarService().index(startDay, endDay, employeeID)
+      //   const calendars = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : [])
+
+      //   for await (let calendar of calendars) {
+      //     newEmployeeCalendar.push(calendar)
+      //   }
+
+      //   this.employeeCalendar = newEmployeeCalendar
+      // } else {
+      //   const assistReq = await new AssistService().index(startDay, endDay, employeeID)
+      //   const employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      //   this.employeeCalendar = employeeCalendar
+      // }
+
       if (this.employeeCalendar.length > 0) {
         this.employeeCalendar.pop()
       }
