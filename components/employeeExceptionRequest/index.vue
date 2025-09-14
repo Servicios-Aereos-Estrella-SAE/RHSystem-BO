@@ -2,7 +2,7 @@
   <div v-if="isReady" class="employee-exception-request">
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      Exception requests to
+      {{ $t('exception_requests_to') }}
       {{ selectedExceptionDate }}
     </h1>
 
@@ -19,7 +19,7 @@
                     d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
-                Add exception
+                {{ $t('add_exception') }}
               </Button>
             </div>
           </div>
@@ -34,7 +34,7 @@
         </div>
         <div v-else class="employee-exception-request-wrapper">
           <div class="empty-data">
-            No exceptions
+            {{ $t('no_exceptions') }}
           </div>
         </div>
       </div>

@@ -5,39 +5,41 @@
         <div class="inputs-group">
           <div class="group-2">
             <div class="input-box">
-              <label for="personPhone">Phone</label>
-              <InputMask v-model="employee.person.personPhone" mask="(999) 999 99 99" placeholder="Enter employee phone"
-                :disabled="isDeleted || !canManageUserResponsible" />
+              <label for="personPhone">{{ $t('phone') }}</label>
+              <InputMask v-model="employee.person.personPhone" mask="(999) 999 99 99"
+                :placeholder="`${$t('enter')} ${$t('phone')}`" :disabled="isDeleted || !canManageUserResponsible" />
             </div>
             <div class="input-box">
-              <label for="personPhoneSecondary">Phone secondary</label>
+              <label for="personPhoneSecondary">{{ $t('phone_secondary') }}</label>
               <InputMask v-model="employee.person.personPhoneSecondary" mask="(999) 999 99 99"
-                placeholder="Enter employee phone" :disabled="isDeleted || !canManageUserResponsible" />
+                :placeholder="`${$t('enter')} ${$t('phone')}`" :disabled="isDeleted || !canManageUserResponsible" />
             </div>
           </div>
           <div class="input-box">
             <label for="useremail">
-              Email</label>
+              {{ $t('email') }}</label>
             <InputText id="useremail" v-model="employee.person.personEmail" type="email"
-              :invalid="submitted && isEmailInvalid" :disabled="isDeleted || !canManageUserResponsible" />
-            <small class="p-error" v-if="submitted && isEmailInvalid">Email is not
-              valid.</small>
+              :invalid="submitted && isEmailInvalid" :disabled="isDeleted || !canManageUserResponsible"
+              :placeholder="`${$t('enter')} ${$t('email')}`" />
+            <small class="p-error" v-if="submitted && isEmailInvalid">{{ $t('email') }} {{ $t('is_not_valid') }}</small>
           </div>
         </div>
 
         <div class="inputs-group">
           <div class="input-box">
-            <label for="personGender">Gender</label>
-            <Dropdown v-model="employee.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-              placeholder="Select Gender" class="w-full md:w-14rem"
-              :disabled="isDeleted || !canManageUserResponsible" />
+            <label for="personGender">{{ $t('gender') }}</label>
+            <Dropdown v-model="employee.person.personGender" :options="getGenders" optionLabel="label"
+              optionValue="value" :placeholder="`${$t('select')} ${$t('gender')}`" class="w-full md:w-14rem"
+              :disabled="isDeleted || !canManageUserResponsible" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
             <div class="hire-date-box-container">
-              <label for="employeeBirthDate">Birthday</label>
+              <label for="employeeBirthDate">{{ $t('birthday') }}</label>
               <div v-if="!displayBirthDateCalendar" class="hire-date-box">
                 <InputText v-model="personBirthday" readonly class="capitalize"
-                  :disabled="isDeleted || !canManageUserResponsible" />
+                  :disabled="isDeleted || !canManageUserResponsible"
+                  :placeholder="`${$t('enter')} ${$t('birthday')}`" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate" @click="handlerDisplayBirthDate"
                   :disabled="isDeleted || !canManageUserResponsible">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +50,7 @@
                 </Button>
               </div>
               <div v-if="displayBirthDateCalendar" class="hire-date-box-controller">
-                <Calendar v-model="employee.person.personBirthday" placeholder="Select birthday"
+                <Calendar v-model="employee.person.personBirthday" :placeholder="`${$t('select')} ${$t('birthday')}`"
                   :disabled="isDeleted || !canManageUserResponsible" />
                 <Button type="button" class="btn btn-block" id="display-input-hiredate"
                   @click="displayBirthDateCalendar = false">
@@ -74,14 +76,14 @@
                 </svg>
               </span>
               <span>
-                {{ getAge }} years old
+                {{ getAge }} {{ $t('years_old') }}
               </span>
             </div>
           </div>
           <div class="group-3">
             <div class="input-box">
               <label for="country">
-                Place of birth country
+                {{ $t('place_of_birth_country') }}
               </label>
               <AutoComplete v-model="selectCountry" :suggestions="filteredCountries"
                 :item-value="option => option.personPlaceOfBirthCountry"
@@ -98,7 +100,7 @@
             </div>
             <div class="input-box">
               <label for="state">
-                Place of birth state
+                {{ $t('place_of_birth_state') }}
               </label>
               <AutoComplete v-model="selectState" :suggestions="filteredStates"
                 :optionLabel="option => option.personPlaceOfBirthState" @complete="handlerSearchStates"
@@ -114,7 +116,7 @@
             </div>
             <div class="input-box">
               <label for="city">
-                Place of birth city
+                {{ $t('place_of_birth_city') }}
               </label>
               <AutoComplete v-model="selectCity" :suggestions="filteredCities"
                 :optionLabel="option => option.personPlaceOfBirthCity" @complete="handlerSearchCities"
@@ -133,59 +135,65 @@
 
         <div class="inputs-group">
           <div class="input-box">
-            <label for="personMaritalStatus">Marital status</label>
+            <label for="personMaritalStatus">{{ $t('marital_status') }}</label>
             <Dropdown v-model="employee.person.personMaritalStatus" :options="maritalStatus" optionLabel="label"
-              optionValue="value" placeholder="Select Marital Status" class="w-full md:w-14rem"
-              :disabled="isDeleted || !canManageUserResponsible" />
+              optionValue="value" :placeholder="`${$t('select')} ${$t('marital_status')}`" class="w-full md:w-14rem"
+              :disabled="isDeleted || !canManageUserResponsible" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div
             v-if="employee.person.personMaritalStatus === 'Married' || employee.person.personMaritalStatus === 'Free Union'"
             class="spouse-info">
             <h2>
-              Spouse information
+              {{ $t('spouse_information') }}
             </h2>
 
             <div class="inputs-group">
               <div class="group-3">
                 <div class="input-box">
-                  <label for="employeeSpouseFirstname">First Name</label>
-                  <InputText v-model="employeeSpouse.employeeSpouseFirstname" placeholder="Enter First Name"
+                  <label for="employeeSpouseFirstname">{{ $t('first_name') }}</label>
+                  <InputText v-model="employeeSpouse.employeeSpouseFirstname"
+                    :placeholder="`${$t('enter')} ${$t('first_name')}`"
                     :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseFirstname">First name is
-                    required.</small>
+                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseFirstname">{{ $t('first_name')
+                    }} {{
+                    $t('is_required') }}</small>
                 </div>
                 <div class="input-box">
-                  <label for="employeeSpouseLastname">Last Name</label>
-                  <InputText v-model="employeeSpouse.employeeSpouseLastname" placeholder="Enter Last Name"
+                  <label for="employeeSpouseLastname">{{ $t('last_name') }}</label>
+                  <InputText v-model="employeeSpouse.employeeSpouseLastname"
+                    :placeholder="`${$t('enter')} ${$t('last_name')}`"
                     :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseLastname">Last name is
-                    required.</small>
+                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseLastname">{{ $t('last_name')
+                    }} {{
+                    $t('is_required') }}</small>
                 </div>
                 <div class="input-box">
-                  <label for="employeeSpouseSecondLastName">Second Last Name</label>
-                  <InputText v-model="employeeSpouse.employeeSpouseSecondLastname" placeholder="Enter Second Last Name"
+                  <label for="employeeSpouseSecondLastName">{{ $t('second_last_name') }}</label>
+                  <InputText v-model="employeeSpouse.employeeSpouseSecondLastname"
+                    :placeholder="`${$t('enter')} ${$t('second_last_name')}`"
                     :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">Second last
-                    name
-                    is
-                    required.</small>
+                  <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseSecondLastname">{{
+                    $t('second_last_name') }}
+                    {{ $t('is_required') }}</small>
                 </div>
               </div>
               <div class="input-box">
-                <label for="employeeSpousePhone">Phone</label>
-                <InputMask v-model="employeeSpouse.employeeSpousePhone" mask="(999) 999 99 99" placeholder="Enter phone"
-                  :disabled="isDeleted || !canManageUserResponsible" />
+                <label for="employeeSpousePhone">{{ $t('phone') }}</label>
+                <InputMask v-model="employeeSpouse.employeeSpousePhone" mask="(999) 999 99 99"
+                  :placeholder="`${$t('enter')} ${$t('phone')}`" :disabled="isDeleted || !canManageUserResponsible" />
               </div>
               <div class="input-box">
-                <label for="employeeSpouseOcupation">Ocupation</label>
-                <InputText v-model="employeeSpouse.employeeSpouseOcupation" placeholder="Enter Ocupation"
+                <label for="employeeSpouseOcupation">{{ $t('occupation') }}</label>
+                <InputText v-model="employeeSpouse.employeeSpouseOcupation"
+                  :placeholder="`${$t('enter')} ${$t('ocupation')}`"
                   :disabled="isDeleted || !canManageUserResponsible" />
-                <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseOcupation">Ocupation is
-                  required.</small>
+                <small class="p-error" v-if="submitted && !employeeSpouse.employeeSpouseOcupation">{{ $t('occupation')
+                  }} {{ $t('is_required') }}</small>
               </div>
               <div class="input-box">
                 <div class="hire-date-box-container">
-                  <label for="employeeSpouseBirthDate">Birthday</label>
+                  <label for="employeeSpouseBirthDate">{{ $t('birthday') }}</label>
                   <div v-if="!displaySpouseBirthDateCalendar" class="hire-date-box">
                     <InputText v-model="spouseBirthday" readonly class="capitalize"
                       :disabled="isDeleted || !canManageUserResponsible" />
@@ -199,7 +207,8 @@
                     </Button>
                   </div>
                   <div v-if="displaySpouseBirthDateCalendar" class="hire-date-box-controller">
-                    <Calendar v-model="employeeSpouse.employeeSpouseBirthday" placeholder="Select birthday"
+                    <Calendar v-model="employeeSpouse.employeeSpouseBirthday"
+                      :placeholder="`${$t('select')} ${$t('birthday')}`"
                       :disabled="isDeleted || !canManageUserResponsible" />
                     <Button type="button" class="btn btn-block" id="display-input-hiredate"
                       @click="displaySpouseBirthDateCalendar = false">
@@ -211,7 +220,8 @@
                     </Button>
                   </div><br>
                 </div><small style="position: absolute;" class="p-error"
-                  v-if="submitted && !employeeSpouse.employeeSpouseBirthday">Birthday is required.</small>
+                  v-if="submitted && !employeeSpouse.employeeSpouseBirthday">{{ $t('birthday') }} {{ $t('is_required')
+                  }}</small>
               </div>
 
             </div>
@@ -219,7 +229,7 @@
 
           <div class="children-info">
             <h2>
-              Children information
+              {{ $t('children_information') }}
             </h2>
             <div class="head-page">
               <div></div>
@@ -230,7 +240,7 @@
                     d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
-                Add children
+                {{ $t('add_children') }}
               </Button>
             </div>
             <div v-if="employeeChildrenList.length > 0" class="employee-children-card-wrapper">
@@ -243,64 +253,62 @@
             </div>
             <div v-else class="empty">
               <div>
-                No children registered yet
+                {{ $t('no_children_registered_yet') }}
               </div>
             </div>
           </div>
           <div class="emergency-contact-info">
             <h2>
-              Emergency contact information
+              {{ $t('emergency_contact_information') }}
             </h2>
 
             <div class="inputs-group">
               <div class="group-3">
                 <div class="input-box">
-                  <label for="employeeEmergencyContactFirstname">First Name</label>
+                  <label for="employeeEmergencyContactFirstname">{{ $t('first_name') }}</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactFirstname"
-                    placeholder="Enter First Name" :disabled="isDeleted || !canManageUserResponsible" />
+                    :placeholder="`${$t('enter')} ${$t('first_name')}`"
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactFirstname">First
-                    name is
-                    required.</small>
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactFirstname">{{
+                    $t('first_name') }} {{ $t('is_required') }}</small>
                 </div>
                 <div class="input-box">
-                  <label for="employeeEmergencyContactLastname">Last Name</label>
+                  <label for="employeeEmergencyContactLastname">{{ $t('last_name') }}</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactLastname"
-                    placeholder="Enter Last Name" :disabled="isDeleted || !canManageUserResponsible" />
+                    :placeholder="`${$t('enter')} ${$t('last_name')}`"
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactLastname">Last
-                    name is
-                    required.</small>
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactLastname">{{
+                    $t('last_name') }} {{ $t('is_required') }}</small>
                 </div>
                 <div class="input-box">
-                  <label for="employeeEmergencyContactSecondLastName">Second Last Name</label>
+                  <label for="employeeEmergencyContactSecondLastName">{{ $t('second_last_name') }}</label>
                   <InputText v-model="employeeEmergencyContact.employeeEmergencyContactSecondLastname"
-                    placeholder="Enter Second Last Name" :disabled="isDeleted || !canManageUserResponsible" />
+                    :placeholder="`${$t('enter')} ${$t('second_last_name')}`"
+                    :disabled="isDeleted || !canManageUserResponsible" />
                   <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">Second
-                    last
-                    name
-                    is
-                    required.</small>
+                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">{{
+                    $t('second_last_name') }}
+                    {{ $t('is_required') }}</small>
                 </div>
               </div>
               <div class="input-box">
-                <label for="employeeEmergencyContactPhone">Phone</label>
+                <label for="employeeEmergencyContactPhone">{{ $t('phone') }}</label>
                 <InputMask v-model="employeeEmergencyContact.employeeEmergencyContactPhone" mask="(999) 999 99 99"
-                  placeholder="Enter phone" :disabled="isDeleted || !canManageUserResponsible" />
+                  :placeholder="`${$t('enter')} ${$t('phone')}`" :disabled="isDeleted || !canManageUserResponsible" />
                 <small class="p-error"
-                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactPhone">Phone
-                  is
-                  required.</small>
+                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactPhone">{{
+                  $t('phone') }} {{ $t('is_required') }}</small>
               </div>
               <div class="input-box">
-                <label for="employeeEmergencyContactRelationship">Relationship</label>
+                <label for="employeeEmergencyContactRelationship">{{ $t('relationship') }}</label>
                 <InputText v-model="employeeEmergencyContact.employeeEmergencyContactRelationship"
-                  placeholder="Enter Relationship" :disabled="isDeleted || !canManageUserResponsible" />
+                  :placeholder="`${$t('enter')} ${$t('relationship')}`"
+                  :disabled="isDeleted || !canManageUserResponsible" />
                 <small class="p-error"
-                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactRelationship">Relationship
-                  is
-                  required.</small>
+                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactRelationship">{{
+                  $t('relationship') }}{{ $t('is_required') }}</small>
               </div>
             </div>
           </div>
@@ -313,7 +321,7 @@
                 d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
                 fill="#ffffff" class="fill-212121"></path>
             </svg>
-            Save
+            {{ $t('save') }}
           </button>
         </div>
         <transition name="page">

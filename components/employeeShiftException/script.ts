@@ -21,6 +21,13 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeShiftException',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -43,11 +50,12 @@ export default defineComponent({
     drawershiftExceptionsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
     canManageToPreviousDays: false,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    localeToUse: 'en',
   }),
   computed: {
     selectedExceptionDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
     },
     displayAddButton() {
@@ -65,14 +73,17 @@ export default defineComponent({
       return false
     }
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
     this.isReady = false
     await this.setSessionUser()
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
-    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
+    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
 
     await this.getShiftEmployee()
 

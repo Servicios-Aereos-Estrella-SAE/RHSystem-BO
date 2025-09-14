@@ -18,6 +18,13 @@ export default defineComponent({
     Calendar
   },
   name: 'employeeExceptionRequest',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -36,21 +43,25 @@ export default defineComponent({
     drawerExceptionRequestDelete: false,
     selectedDateTimeDeleted: '' as string | null,
     isDeleted: false,
-    startDateLimit: DateTime.local(1999, 12, 29).toJSDate()
+    startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    localeToUse: 'en',
   }),
   computed: {
     selectedExceptionDate() {
-      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('DDDD')
+      const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
     }
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
-    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+    this.selectedDateStart = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
+    this.selectedDateEnd = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
 
     await this.getExceptionRequestEmployee()
     if (this.employee.deletedAt) {

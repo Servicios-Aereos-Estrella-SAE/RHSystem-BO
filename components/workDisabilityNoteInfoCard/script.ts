@@ -5,6 +5,12 @@ import type { WorkDisabilityNoteInterface } from '~/resources/scripts/interfaces
 
 export default defineComponent({
   name: 'workDisabilityNoteInfoCard',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {
     workDisabilityNote: { type: Object as PropType<WorkDisabilityNoteInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -16,8 +22,12 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
+    localeToUse: 'en',
   }),
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   mounted() {
   },
@@ -35,7 +45,7 @@ export default defineComponent({
     getDate(date: string) {
       const dateWorDisabilityNote = DateTime.fromISO(date, { zone: 'utc' })
       const zone = DateTime.local().zoneName
-      return dateWorDisabilityNote.setLocale('en').setZone(zone).toFormat('FF')
+      return dateWorDisabilityNote.setLocale(this.localeToUse).setZone(zone).toFormat('FF')
     },
   }
 })

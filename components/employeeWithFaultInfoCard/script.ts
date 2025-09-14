@@ -4,6 +4,12 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 
 export default defineComponent({
   name: 'employeeWithFaultInfoCard',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true }
   },

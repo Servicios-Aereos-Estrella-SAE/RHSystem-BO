@@ -7,7 +7,7 @@
     </div>
 
     <div v-if="workDisability.workDisabilityPeriods.length === 0" class="insurance-coverage-period empty-data">
-      No periods to apply
+      {{ $t('no_periods_to_apply') }}
     </div>
 
     <div v-if="workDisability.workDisabilityPeriods.length > 0" class="insurance-coverage-period">

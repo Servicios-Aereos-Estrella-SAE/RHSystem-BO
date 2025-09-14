@@ -10,6 +10,12 @@ export default defineComponent({
   components: {
   },
   name: 'employeeVacations',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     statusForm: { type: Boolean, required: false, default: false },
@@ -18,7 +24,8 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false as boolean,
-    vacationPeriods: [] as Array<VacationPeriodInterface>
+    vacationPeriods: [] as Array<VacationPeriodInterface>,
+    localeToUse: 'en',
   }),
   watch: {
     async 'statusForm'(value) {
@@ -28,6 +35,9 @@ export default defineComponent({
     }
   },
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     this.isReady = false
@@ -74,7 +84,7 @@ export default defineComponent({
       this.$emit('manageVacations', vacationPeriod)
     },
     formatDateWithYearDifference(date: string) {
-      const originalDate = DateTime.fromFormat(date, 'yyyy-MM-dd')
+      const originalDate = DateTime.fromFormat(date, 'yyyy-MM-dd').setLocale(this.localeToUse)
       let nextYearDate = originalDate.plus({ years: 1 })
       nextYearDate = nextYearDate.plus({ days: -1 })
       const formattedOriginalDate = originalDate.toFormat('MMMM dd, yyyy')

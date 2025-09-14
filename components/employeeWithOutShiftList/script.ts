@@ -4,6 +4,12 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 export default defineComponent({
   components: {
   },
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   name: 'employeeWithOutShiftList',
   props: {
     employeesWithOutShift: { type: Array<EmployeeInterface>, required: true },

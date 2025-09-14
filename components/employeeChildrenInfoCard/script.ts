@@ -5,6 +5,12 @@ import type { EmployeeChildrenInterface } from '~/resources/scripts/interfaces/E
 
 export default defineComponent({
   name: 'employeeChildrenInfoCard',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {
     employeeChildren: { type: Object as PropType<EmployeeChildrenInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -14,8 +20,12 @@ export default defineComponent({
     canManageUserResponsible: { type: Boolean, required: true },
   },
   data: () => ({
+    localeToUse: 'en',
   }),
   computed: {
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   mounted() {
   },
@@ -23,7 +33,7 @@ export default defineComponent({
     getDate(date: string) {
       const dateWorDisabilityPeriod = DateTime.fromISO(date, { zone: 'utc' })
       return dateWorDisabilityPeriod
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerClickOnEdit() {

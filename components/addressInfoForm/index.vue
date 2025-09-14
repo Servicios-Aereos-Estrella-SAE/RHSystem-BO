@@ -6,7 +6,7 @@
           <div class="group-3">
             <div class="input-box">
               <label for="search">
-                Country
+                {{ $t('country') }}
               </label>
               <AutoComplete v-model="selectCountry" :suggestions="filteredCountries"
                 :item-value="option => option.addressCountry" :optionLabel="option => option.addressCountry"
@@ -19,11 +19,12 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressCountry">Address country is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressCountry">{{ $t('country') }} {{
+                $t('is_required') }}</small>
             </div>
             <div class="input-box">
               <label for="search">
-                State
+                {{ $t('state') }}
               </label>
               <AutoComplete v-model="selectState" :suggestions="filteredStates"
                 :optionLabel="option => option.addressState" @complete="handlerSearchStates" @change="onStateSelect"
@@ -36,11 +37,12 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressState">Address state is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressState">{{ $t('state') }} {{ $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
               <label for="search">
-                City
+                {{ $t('city') }}
               </label>
               <AutoComplete v-model="selectCity" :suggestions="filteredCities"
                 :optionLabel="option => option.addressCity" @complete="handlerSearchCities" @change="onCitySelect"
@@ -53,67 +55,76 @@
                   </div>
                 </template>
               </AutoComplete>
-              <small class="p-error" v-if="submitted && !address.addressCity">Address city is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressCity">{{ $t('city') }} {{
+                $t('is_required')
+                }}</small>
             </div>
           </div>
 
           <div class="group-2">
             <div class="input-box">
-              <label for="addressZipcode">Zipcode</label>
+              <label for="addressZipcode">{{ $t('zipcode') }}</label>
               <InputNumber v-model="address.addressZipcode" :invalid="submitted && !address.addressZipcode"
                 :useGrouping="false" :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressZipcode">Address zipcode is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressZipcode">{{ $t('zipcode') }} {{
+                $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
-              <label for="addressTownship">Township</label>
+              <label for="addressTownship">{{ $t('township') }}</label>
               <InputText v-model="address.addressTownship" :invalid="submitted && !address.addressTownship"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressTownship">Address township is required.</small>
+              <small class="p-error" v-if="submitted && !address.addressTownship">{{ $t('township') }} {{
+                $t('is_required')
+                }}</small>
             </div>
           </div>
 
           <div class="group-2">
             <div class="input-box">
-              <label for="addressSettlement">Settlement</label>
+              <label for="addressSettlement">{{ $t('settlement') }}</label>
               <InputText v-model="address.addressSettlement" :invalid="submitted && !address.addressSettlement"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressSettlement">Address settlement is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressSettlement">{{ $t('settlement') }} {{
+                $t('is_required') }}</small>
             </div>
             <div class="input-box">
-              <label for="addressSettlementType">Settlement Type (Colonia)</label>
+              <label for="addressSettlementType">{{ $t('settlement_type') }} ({{ $t('neighborhood') }})</label>
               <InputText v-model="address.addressSettlementType" :disabled="!canManageUserResponsible" />
             </div>
           </div>
 
           <div class="input-box">
-            <label for="addressStreet">Street</label>
+            <label for="addressStreet">{{ $t('street') }}</label>
             <InputText v-model="address.addressStreet" :invalid="submitted && !address.addressStreet"
               :disabled="!canManageUserResponsible" />
-            <small class="p-error" v-if="submitted && !address.addressStreet">Address street is required.</small>
+            <small class="p-error" v-if="submitted && !address.addressStreet">{{ $t('street') }} {{
+              $t('is_required')
+              }}</small>
           </div>
 
           <div class="group-2">
             <div class="input-box">
-              <label for="addressExternalNumber">External Number</label>
+              <label for="addressExternalNumber">{{ $t('external_number') }}</label>
               <InputText v-model="address.addressExternalNumber" :invalid="submitted && !address.addressExternalNumber"
                 :disabled="!canManageUserResponsible" />
-              <small class="p-error" v-if="submitted && !address.addressExternalNumber">Address external number is
-                required.</small>
+              <small class="p-error" v-if="submitted && !address.addressExternalNumber">{{ $t('external_number') }} {{
+                $t('is_required')
+                }}</small>
             </div>
             <div class="input-box">
-              <label for="addressInternalNumber">Internal Number</label>
+              <label for="addressInternalNumber">{{ $t('internal_number') }}</label>
               <InputText v-model="address.addressInternalNumber" :disabled="!canManageUserResponsible" />
             </div>
           </div>
 
           <div class="group-2">
             <div class="input-box">
-              <label for="addressBetweenStreet1">Between Street 1</label>
+              <label for="addressBetweenStreet1">{{ $t('between_street') }} 1</label>
               <InputText v-model="address.addressBetweenStreet1" :disabled="!canManageUserResponsible" />
             </div>
             <div class="input-box">
-              <label for="addressBetweenStreet2">Between Street 2</label>
+              <label for="addressBetweenStreet2">{{ $t('between_street') }} 2</label>
               <InputText v-model="address.addressBetweenStreet2" :disabled="!canManageUserResponsible" />
             </div>
           </div>
@@ -121,12 +132,14 @@
 
         <div class="input-box address-type">
           <label for="address-type">
-            Address Type
+            {{ $t('address_type') }}
           </label>
           <Dropdown v-model="address.addressTypeId" :options="addressTypes" optionLabel="addressTypeName"
             optionValue="addressTypeId" placeholder="Select a Address Type" filter class="w-full md:w-14rem"
             :invalid="submitted && !address.addressTypeId" :disabled="!canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !address.addressTypeId">Address type is required.</small>
+          <small class="p-error" v-if="submitted && !address.addressTypeId">Address type {{
+            $t('is_required')
+            }}</small>
         </div>
         <div class="card flex justify-center"></div>
 
@@ -137,7 +150,7 @@
                 d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
                 fill="#ffffff" class="fill-212121"></path>
             </svg>
-            Save
+            {{ $t('save') }}
           </button>
         </div>
       </div>

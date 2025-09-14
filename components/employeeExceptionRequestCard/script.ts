@@ -6,6 +6,13 @@ import ExceptionTypeService from '~/resources/scripts/services/ExceptionTypeServ
 
 export default defineComponent({
   name: 'employeeExceptionRequestCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     exceptionRequest: { type: Object as PropType<ExceptionRequestInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -21,17 +28,21 @@ export default defineComponent({
     exceptionTypeList: [],
     isReady: false,
     canManageCurrentDay: false,
+    localeToUse: 'en',
   }),
   computed: {
     calendarDay() {
       const dateToException = DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
-      return dateToException.setLocale('en').toFormat('DDDD')
+      return dateToException.setLocale(this.localeToUse).toFormat('DDDD')
     },
     formattedRequestedDate() {
       return this.exceptionRequest.requestedDate
         ? DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' }).toFormat('yyyy-MM-dd')
         : ''
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     await this.fetchExceptionTypes()

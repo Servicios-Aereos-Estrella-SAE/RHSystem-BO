@@ -1,6 +1,5 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import Toast from 'primevue/toast';
@@ -12,6 +11,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeePhotoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -32,8 +37,8 @@ export default defineComponent({
     if (!this.isNewEmployee && this.employee.employeePhoto) {
       this.currentPhotoUrl = this.employee.employeePhoto
     }
-      
-      
+
+
     this.isReady = true
   },
   methods: {
@@ -42,11 +47,11 @@ export default defineComponent({
       const employeeService = new EmployeeService();
       const employeeResponse = await employeeService.updatePhoto(this.employee.employeeId ?? 0, this.employee.employeePhoto)
       const employee = employeeResponse._data.employee
-      if(employeeResponse?.status === 200) {
+      if (employeeResponse?.status === 200) {
         this.$toast.add({
           severity: 'success',
-          summary: 'Success',
-          detail: 'Photo saved successfully',
+          summary: this.t('success'),
+          detail: this.t('photo_saved_successfully'),
           life: 5000
         });
         this.currentPhotoUrl = employee.employeePhoto
@@ -59,5 +64,21 @@ export default defineComponent({
       console.info(event)
       // this.employee.employeePhoto = event.files[0];
     },
+    formatSize(bytes: any) {
+      const k = 1024;
+      const dm = 3;
+      const sizes = this.$primevue.config.locale?.fileSizeTypes;
+      if (!sizes) {
+        return '0';
+      }
+      if (sizes && bytes === 0) {
+        return `0 ${sizes[0]}`;
+      }
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+      return `${formattedSize} ${sizes[i]}`;
+    }
   },
 })

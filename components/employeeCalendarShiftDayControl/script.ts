@@ -13,6 +13,13 @@ export default defineComponent({
   components: {
   },
   name: 'employeeCalendarShiftDayControl',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employeeCalendarAssist: { type: Object as PropType<AssistDayInterface>, required: true },
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
@@ -35,6 +42,7 @@ export default defineComponent({
     sessionUser: null as UserInterface | null,
     isReady: false,
     isDirectlyAssignedShift: false,
+    localeToUse: 'en',
   }),
   computed: {
     displayButtonManageShift() {
@@ -88,6 +96,7 @@ export default defineComponent({
     }
   },
   created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
     this.employeeCalendar = JSON.parse(JSON.stringify(this.employeeCalendarAssist)) as AssistDayInterface
   },
   async mounted() {
@@ -195,15 +204,15 @@ export default defineComponent({
       this.shiftEditSelected = null
     },
     isNow(day: string) {
-      const now = DateTime.now().setZone('UTC-6').setLocale('en').toFormat('yyyy-LL-dd')
+      const now = DateTime.now().setZone('UTC-6').setLocale(this.localeToUse).toFormat('yyyy-LL-dd')
       return (day === now)
     },
     getCalendarDayNumber(date: string) {
-      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale('en')
+      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale(this.localeToUse)
       return calendarDate.toFormat('dd')
     },
     getCalendarDayName(date: string) {
-      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale('en')
+      const calendarDate = DateTime.fromISO(`${date}T00:00:00.000-06:00`, { setZone: true }).setZone('UTC-6').setLocale(this.localeToUse)
       return calendarDate.toFormat('cccc')
     },
     getShiftName(shiftName: string) {

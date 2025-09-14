@@ -12,6 +12,12 @@ export default defineComponent({
     Toast,
   },
   name: 'Users',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
   },
   data: () => ({
@@ -34,7 +40,7 @@ export default defineComponent({
   }),
   computed: {
   },
-  created () {
+  created() {
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -56,9 +62,9 @@ export default defineComponent({
   },
   methods: {
     async handlerSearchRole() {
-        const response = await new RoleService().getFilteredList('',1, 100)
-        const list = response.status === 200 ? response._data.data.roles.data : []
-        this.filteredRoles = list.filter((rol: RoleInterface) => rol.roleSlug !== 'root')
+      const response = await new RoleService().getFilteredList('', 1, 100)
+      const list = response.status === 200 ? response._data.data.roles.data : []
+      this.filteredRoles = list.filter((rol: RoleInterface) => rol.roleSlug !== 'root')
     },
     async handlerSearchUser() {
       const response = await new UserService().getFilteredList(this.search, this.selectedRoleId, this.currentPage, this.rowsPerPage)
@@ -68,7 +74,7 @@ export default defineComponent({
       this.last = response.status === 200 ? response._data.data.users.meta.last : 0
 
       this.filteredUsers = list.filter((u: UserInterface) => u.role?.roleSlug !== 'root')
-      for await (const user of  this.filteredUsers) {
+      for await (const user of this.filteredUsers) {
         if (user.personId) {
           const personService = new PersonService()
           const personResponse = await personService.getEmployee(user.personId)
@@ -97,7 +103,7 @@ export default defineComponent({
       this.drawerUserForm = true
     },
     async onSave(user: UserInterface) {
-      this.user = {...user}
+      this.user = { ...user }
       if (user.personId) {
         const personService = new PersonService()
         const personResponse = await personService.getEmployee(user.personId)
@@ -118,11 +124,11 @@ export default defineComponent({
       this.drawerUserForm = false
     },
     onEdit(user: UserInterface) {
-      this.user = {...user}
+      this.user = { ...user }
       this.drawerUserForm = true
     },
     onDelete(user: UserInterface) {
-      this.user = {...user}
+      this.user = { ...user }
       this.drawerUserDelete = true
     },
 
@@ -139,16 +145,16 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete user',
+            summary: this.t('delete_user'),
             detail: userResponse._data.message,
-              life: 5000,
+            life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete user',
+            summary: this.t('delete_user'),
             detail: userResponse._data.message,
-              life: 5000,
+            life: 5000,
           })
         }
       }

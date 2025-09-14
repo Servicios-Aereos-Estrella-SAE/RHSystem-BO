@@ -3,7 +3,7 @@
     <employeeModalInfoCard :employee="employee" />
     <div class="month-year-mobile">
       <span v-show="!displayInputCalendar" class="text">
-        Shifts on
+        {{ $t('shifts_on') }}
         {{ monthName }}
       </span>
       <Calendar v-show="displayInputCalendar" v-model="inputSelectedDate" view="month" dateFormat="MM" />
@@ -25,7 +25,7 @@
       </Button>
       <div class="month-year">
         <span v-show="!displayInputCalendar" class="text">
-          Shifts on
+          {{ $t('shifts_on') }}
           {{ monthName }}
         </span>
         <Calendar v-show="displayInputCalendar" v-model="inputSelectedDate" view="month" dateFormat="MM" />
@@ -46,7 +46,7 @@
         </svg>
       </Button>
       <nuxt-link v-if="!displayInputCalendar && canSeeReportAssist"
-        :to="`/employees-attendance-monitor/${this.employee.employeeCode}`" target="_blank" title="Assist report"
+        :to="`/${$i18n.locale}/employees-attendance-monitor/${this.employee.employeeCode}`" target="_blank" title="Assist report"
         class="btn btn-block">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -73,7 +73,7 @@
             d="M21 8.5v3.522A6.5 6.5 0 0 0 12.022 21H6.25A3.25 3.25 0 0 1 3 17.75V8.5h18ZM17.75 3A3.25 3.25 0 0 1 21 6.25V7H3v-.75A3.25 3.25 0 0 1 6.25 3h11.5ZM12 17.5a5.5 5.5 0 1 0 11 0 5.5 5.5 0 0 0-11 0Zm8.5-3.5a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h1a2.496 2.496 0 0 0-2-1c-.833 0-1.572.407-2.027 1.036a.5.5 0 0 1-.81-.586A3.496 3.496 0 0 1 17.5 14c.98 0 1.865.403 2.5 1.05v-.55a.5.5 0 0 1 .5-.5ZM15 19.95v.55a.5.5 0 0 1-1 0v-2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-1c.456.608 1.183 1 2 1 .766 0 1.452-.344 1.911-.888a.5.5 0 0 1 .764.645A3.493 3.493 0 0 1 17.5 21a3.49 3.49 0 0 1-2.5-1.05Z"
             fill="#88a4bf" class="fill-212121"></path>
         </svg>
-        Exception Requests
+        {{ $t('exception_requests') }}
       </Button>
       <Button v-if="!displayInputCalendar" title="Vacations" class="btn" @click="onClickVacations">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -81,7 +81,7 @@
             d="M15.25 3a.75.75 0 0 1 .75.75V7h1.75A3.25 3.25 0 0 1 21 10.25v6.5A3.25 3.25 0 0 1 17.75 20H6.25A3.25 3.25 0 0 1 3 16.75v-6.5A3.25 3.25 0 0 1 6.25 7H8V3.75a.75.75 0 0 1 .648-.743L8.75 3h6.5Zm-.75 1.5h-5V7h5V4.5Z"
             fill="#88a4bf" class="fill-212121"></path>
         </svg>
-        Vacations
+        {{ $t('vacations') }}
       </Button>
       <Button v-if="canReadOnlyWorkDisabilities || canManageWorkDisabilities" title="Work disabilities" class="btn"
         @click="onClickWorkDisabilities">
@@ -96,7 +96,7 @@
             </path>
           </g>
         </svg>
-        Work Disabilities
+        {{ $t('work_disabilities') }}
       </Button>
     </div>
 
@@ -110,7 +110,7 @@
         :canRemoveShiftAssigned="canRemoveShiftAssigned" :withOutLimitDays="withOutLimitDays" />
     </div>
     <div v-else class="no-shifts">
-      This employee has no shifts assigned to this month
+      {{ $t('this_employee_has_no_shifts_assigned_to_this_month') }}
     </div>
 
     <Sidebar v-model:visible="drawerShiftExceptions" :blockScroll="true" :dismissable="false" :closeOnEscape="false"

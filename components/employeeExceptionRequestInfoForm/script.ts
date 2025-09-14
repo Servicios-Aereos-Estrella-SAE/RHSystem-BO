@@ -18,6 +18,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'ExceptionRequestForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     date: { type: Date, required: true },
@@ -60,6 +66,14 @@ export default defineComponent({
   }),
 
   computed: {
+    getStatusOptions() {
+      return [
+        { label: this.t('requested'), value: 'requested' },
+        { label: this.t('pending'), value: 'pending' },
+        { label: this.t('accepted'), value: 'accepted' },
+        { label: this.t('refused'), value: 'refused' }
+      ]
+    }
   },
   watch: {
     // Convierte automáticamente el objeto Date a una cadena de hora cuando cambia
@@ -184,8 +198,8 @@ export default defineComponent({
       if (!exceptionRequestService.validateInfo(this.exceptionRequest)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -194,8 +208,8 @@ export default defineComponent({
       if (this.needCheckInTime && !this.exceptionRequest.exceptionRequestCheckInTime) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -204,8 +218,8 @@ export default defineComponent({
       if (this.needCheckOutTime && !this.exceptionRequest.exceptionRequestCheckOutTime) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -214,8 +228,8 @@ export default defineComponent({
       if (this.applyToMoreThanOneDay && !this.exceptionRequest.daysToApply) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -261,7 +275,7 @@ export default defineComponent({
           const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
+            summary: `${this.t('exception_requests')} ${this.exceptionRequest.exceptionRequestId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -276,7 +290,7 @@ export default defineComponent({
           const severityType = exceptionRequestResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Exception Request ${this.exceptionRequest.exceptionRequestId ? 'updated' : 'created'}`,
+            summary: `${this.t('exception_requests')} ${this.exceptionRequest.exceptionRequestId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -318,8 +332,8 @@ export default defineComponent({
                 this.exceptionRequest.requestedDate = null
                 this.$toast.add({
                   severity: 'warn',
-                  summary: 'Date invalid',
-                  detail: `When on vacation, the selected date cannot be earlier than ${dateNew.toFormat('DD')}`,
+                  summary: this.t('date_is_invalid'),
+                  detail: `${this.t('when_on_vacation_the_selected_date_cannot_be_earlier_than')} ${dateNew.toFormat('DD')}`,
                   life: 5000,
                 })
               }

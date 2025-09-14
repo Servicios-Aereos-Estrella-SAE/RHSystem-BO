@@ -21,9 +21,6 @@ import type { FlightAttendantInterface } from '~/resources/scripts/interfaces/Fl
 import UserService from '~/resources/scripts/services/UserService';
 import type { EmployeeTypeInterface } from '~/resources/scripts/interfaces/EmployeeTypeInterface';
 import { useMyGeneralStore } from '~/store/general';
-import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
-import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface';
-import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 
 export default defineComponent({
   components: {
@@ -31,6 +28,13 @@ export default defineComponent({
     ToastService,
   },
   name: 'employeeInfoForm',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     pilot: { type: Object as PropType<PilotInterface>, required: false, default: null },
@@ -82,8 +86,33 @@ export default defineComponent({
       { label: 'Do not ignore consecutive absences report', value: 0 },
       { label: 'Yes, ignore consecutive absences report', value: 1 }
     ],
+    localeToUse: 'en',
   }),
   computed: {
+    getTypesOfContract() {
+      return this.typesOfContract.map(option => ({
+        label: this.$t(`contractTypes.${option.value.toLowerCase()}`),
+        value: option.value
+      }))
+    },
+    getWorkModalityOptions() {
+      return [
+        { label: this.$t('work_modality_option.onsite'), value: true },
+        { label: this.$t('work_modality_option.home_office'), value: false }
+      ];
+    },
+    getAssistDiscriminatorOptions() {
+      return this.assistDiscriminatorOptions.map(option => ({
+        label: this.$t(`assistance.discriminate.${option.value}`),
+        value: option.value
+      }))
+    },
+    getIgnoreConsecutiveAbsenceOptions() {
+      return this.ignoreConsecutiveAbsenceOptions.map(option => ({
+        label: this.$t(`absence.ignore.${option.value}`),
+        value: option.value
+      }))
+    },
     displayEmployeeTypeFilter() {
       let display = false
 
@@ -113,6 +142,9 @@ export default defineComponent({
       this.personBirthday = this.getBirthdayFormatted(val)
     }
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
     this.isReady = false
     this.isNewUser = !this.employee?.employeeId ? true : false
@@ -138,7 +170,7 @@ export default defineComponent({
       if (this.employee.employeeHireDate) {
         const hireDate = DateTime.fromISO(`${this.employee.employeeHireDate}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employee.employeeHireDate = hireDate
@@ -148,7 +180,7 @@ export default defineComponent({
       if (this.employee.employeeTerminatedDate) {
         const terminatedDate = DateTime.fromISO(`${this.employee.employeeTerminatedDate.toString().split('T')[0] + 'T00:00:00.000-06:00'}`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
         this.employee.employeeTerminatedDate = terminatedDate
         this.employeeTerminatedDate = this.getTerminatedDateFormatted(this.employee.employeeTerminatedDate as Date)
@@ -161,7 +193,7 @@ export default defineComponent({
 
         const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
 
         this.employee.person.personBirthday = birthDay
@@ -334,8 +366,8 @@ export default defineComponent({
       if (!employeeService.validateEmployeeInfo(this.employee)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -346,8 +378,8 @@ export default defineComponent({
           this.isEmailInvalid = true
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Email not valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('email')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -357,8 +389,8 @@ export default defineComponent({
         this.isValidCURP = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Personal identification is not valid',
+          summary: this.t('validation_data'),
+          detail: `${this.t('personal_identification')} ${this.t('is_not_valid')}`,
           life: 5000,
         })
         return
@@ -367,8 +399,8 @@ export default defineComponent({
         this.isValidRFC = false
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'RFC is not valid',
+          summary: this.t('validation_data'),
+          detail: `RFC ${this.t('is_not_valid')}`,
           life: 5000,
         })
         return
@@ -376,8 +408,8 @@ export default defineComponent({
       if (this.pilot !== null && this.files.length > 1) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Image invalid',
-          detail: 'Only one image is allowed',
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_is_allowed'),
           life: 5000,
         })
         return
@@ -389,8 +421,8 @@ export default defineComponent({
             if (!isAudioOrVideo) {
               this.$toast.add({
                 severity: 'warn',
-                summary: 'Image invalid',
-                detail: 'Only select image.',
+                summary: this.t('image_invalid'),
+                detail: this.t('only_select_image'),
                 life: 5000,
               })
               return
@@ -442,7 +474,7 @@ export default defineComponent({
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -458,7 +490,7 @@ export default defineComponent({
       if (employeeResponse.status === 201) {
         this.$toast.add({
           severity: 'success',
-          summary: `User ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('user')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: employeeResponse._data.message,
           life: 5000,
         })
@@ -484,7 +516,7 @@ export default defineComponent({
           if (pilotResponse.status === 201 || pilotResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.pilot.pilotId ? this.t('updated') : this.t('created')}`,
               detail: pilotResponse._data.message,
               life: 5000,
             })
@@ -497,7 +529,7 @@ export default defineComponent({
             const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
             this.$toast.add({
               severity: 'error',
-              summary: `Pilot ${this.pilot.pilotId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.pilot.pilotId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
             })
@@ -520,7 +552,7 @@ export default defineComponent({
           if (FlightAttendantResponse.status === 201 || FlightAttendantResponse.status === 200) {
             this.$toast.add({
               severity: 'success',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.flightAttendant.flightAttendantId ? this.t('updated') : this.t('created')}`,
               detail: FlightAttendantResponse._data.message,
               life: 5000,
             })
@@ -533,7 +565,7 @@ export default defineComponent({
             const msgError = FlightAttendantResponse._data.error ? FlightAttendantResponse._data.error : FlightAttendantResponse._data.message
             this.$toast.add({
               severity: 'error',
-              summary: `Pilot ${this.flightAttendant.flightAttendantId ? 'updated' : 'created'}`,
+              summary: `${this.t('pilot')} ${this.flightAttendant.flightAttendantId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
             })
@@ -543,7 +575,7 @@ export default defineComponent({
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.employee.employeeId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })
@@ -579,7 +611,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getTerminatedDateFormatted(date: Date) {
@@ -589,7 +621,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDDD')
     },
     getBirthdayFormatted(date: Date) {
@@ -599,7 +631,7 @@ export default defineComponent({
 
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerDisplayHireDate() {
@@ -620,7 +652,7 @@ export default defineComponent({
       if (employeeResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
-          summary: 'Employee Reactivate',
+          summary: this.t('employee_reactivate'),
           detail: employeeResponse._data.message,
           life: 5000,
         })
@@ -634,7 +666,7 @@ export default defineComponent({
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Employee Reactivate',
+          summary: this.t('employee_reactivate'),
           detail: msgError,
           life: 5000,
         })

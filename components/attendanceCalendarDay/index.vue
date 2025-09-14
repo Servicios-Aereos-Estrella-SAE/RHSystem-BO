@@ -105,7 +105,7 @@
               </svg>
             </div>
             <div class="text">
-              Vacation Day
+              {{ $t('vacation_day') }}
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
               </svg>
             </div>
             <div class="text">
-              Rest
+              {{ $t('rest') }}
             </div>
           </div>
         </div>
@@ -140,7 +140,7 @@
               </svg>
             </div>
             <div class="text">
-              Next
+              {{ $t('next') }}
             </div>
           </div>
         </div>
@@ -164,7 +164,7 @@
               </svg>
             </div>
             <div class="time" :class="checkAssist.assist.checkInStatus">
-              {{ chekInTime || ((checkAssist.assist.checkInStatus === 'fault') ? 'Fault' :
+              {{ chekInTime || ((checkAssist.assist.checkInStatus === 'fault') ? $t('fault') :
               checkAssist.assist.checkInStatus === 'working' ? 'Working' : '---') }}
             </div>
           </div>
@@ -185,7 +185,7 @@
               </svg>
             </div>
             <div class="time eat-time">
-              {{ chekEatInTime || ((checkAssist.assist.checkInStatus === 'fault') ? 'Fault' : '---') }}
+              {{ chekEatInTime || ((checkAssist.assist.checkInStatus === 'fault') ? $t('fault') : '---') }}
               <span v-if="(chekOutTime && checkAssist.assist.isCheckInEatNextDay)">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -209,7 +209,7 @@
               </svg>
             </div>
             <div class="time eat-time">
-              {{ chekEatOutTime || ((checkAssist.assist.checkInStatus === 'fault') ? 'Fault' : '---') }}
+              {{ chekEatOutTime || ((checkAssist.assist.checkInStatus === 'fault') ? $t('fault') : '---') }}
               <span v-if="(chekOutTime && checkAssist.assist.isCheckOutEatNextDay)">
                 <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -256,7 +256,7 @@
               </svg>
             </div>
             <div class="note">
-              {{ (checkAssist.assist.hasExceptions || hasNotes) ? 'Notes' : 'Without notes' }}
+              {{ (checkAssist.assist.hasExceptions || hasNotes) ? $t('notes') : $t('without_notes') }}
             </div>
           </div>
           <div :class="{'check info': true, 'inactive': !checkAssist.assist.isSundayBonus}">
@@ -269,7 +269,7 @@
               </svg>
             </div>
             <div class="note" :class="{ active: checkAssist.assist.isSundayBonus }">
-              Sunday bonus
+              {{ $t('sunday_bonus') }}
             </div>
           </div>
         </div>
@@ -286,7 +286,7 @@
             </svg>
           </div>
           <div class="note" :class="{ active: checkAssist.assist.assitFlatList.length > 0 }">
-            All day records
+            {{ $t('all_day_records') }}
           </div>
         </div>
       </div>
@@ -353,16 +353,17 @@
             </svg>
           </div>
           <span>
-            This day has not
+            {{ $t('this_day_has_not') }}
             <br>
-            assigned shift
+            {{ $t('assigned_shift') }}
           </span>
         </div>
       </div>
     </div>
 
-    <Sidebar v-model:visible="commentsSidebar" header="Exception Notes" position="right" class="exception-day-sidebar">
-      <h3 v-if="dayExceptions.length > 0">Exception notes</h3>
+    <Sidebar v-model:visible="commentsSidebar" :header="$t('exception_notes')" position="right"
+      class="exception-day-sidebar">
+      <h3 v-if="dayExceptions.length > 0">{{ $t('exception_notes') }}</h3>
       <div v-for="(item, index) in dayExceptions" :key="`dayExceptions-${index}-${item.shiftExceptionId}`"
         class="exception-date">
         <div class="day">
@@ -384,13 +385,13 @@
           {{ item.shiftExceptionsDescription }}
         </div>
         <div v-if="item.shiftExceptionCheckInTime" class="exception-time">
-          Check In Time: {{ item.shiftExceptionCheckInTime }}
+          {{ $t('check_in_time') }} {{ item.shiftExceptionCheckInTime }}
         </div>
         <div v-if="item.shiftExceptionCheckOutTime" class="exception-time">
-          Check Out Time: {{ item.shiftExceptionCheckOutTime }}
+          {{ $t('check_out_time') }} {{ item.shiftExceptionCheckOutTime }}
         </div>
         <div v-if="item.shiftExceptionEvidences && item.shiftExceptionEvidences.length > 0" class="input-box">
-          <h3>Evidences</h3>
+          <h3>{{ $t('evidences') }}</h3>
           <div class="evidence-grid">
             <div v-for="(evidence, index) in item.shiftExceptionEvidences" :key="index" class="evidence-card">
               <a :href="evidence.shiftExceptionEvidenceFile" target="_blank" rel="noopener" class="preview-link">
@@ -417,7 +418,7 @@
 
       </div>
       <br>
-      <h3 v-if="employeeShiftChangesList.length > 0">Shift change notes</h3>
+      <h3 v-if="employeeShiftChangesList.length > 0">{{ $t('shift_change_notes') }}</h3>
       <div v-for="(item, index) in employeeShiftChangesList" :key="`dayExceptions-${index}-${item.shiftExceptionId}`"
         class="exception-date">
         <div class="day">
@@ -433,7 +434,7 @@
               <path data-name="<Transparent Rectangle>" d="M0 0h32v32H0z" fill="none"></path>
             </svg>
           </div>
-          Shift change
+          {{ $t('shift_change') }}
         </div>
         <div class="exception-description">
           {{ item.employeeShiftChangeNote }}

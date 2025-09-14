@@ -15,6 +15,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'EmployeeUserResponsibleInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     usersAsigned: { type: Array as PropType<UserResponsibleEmployeeInterface[]>, required: true },
@@ -52,6 +58,16 @@ export default defineComponent({
     if (this.canManageUserResponsible && !this.canUpdate) {
       this.canManageUserResponsible = false
     }
+    if (this.userResponsibleEmployee.userId) {
+      const existUser = this.usersList.find(a => a.userId === this.userResponsibleEmployee.userId)
+      if (!existUser) {
+        const userResponse = await new UserService().show(this.userResponsibleEmployee.userId)
+        if (userResponse?.status === 200) {
+          this.usersList.push(userResponse._data.data.user)
+        }
+      }
+    }
+
     this.isReady = true
   },
   methods: {
@@ -78,8 +94,8 @@ export default defineComponent({
       if (!this.isValid) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -87,8 +103,8 @@ export default defineComponent({
       if (this.readonlySwicht && this.directBossSwicht) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Readonly and direct boss cannot be assigned at the same time.',
+          summary: this.t('validation_data'),
+          detail: this.t('readonly_and_direct_boss_cannot_be_assigned_at_the_same_time'),
           life: 5000,
         })
         return
@@ -116,7 +132,7 @@ export default defineComponent({
         const severityType = userResponsibleEmployeeResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `User responsible employee ${this.userResponsibleEmployee.userResponsibleEmployeeId ? 'update' : 'create'}`,
+          summary: `${this.t('user_responsible_employee')} ${this.userResponsibleEmployee.userResponsibleEmployeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })

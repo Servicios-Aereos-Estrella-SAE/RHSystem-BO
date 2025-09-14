@@ -2,7 +2,7 @@
   <div class="box user-info-card">
     <div class="employee-head">
       <div class="avatar" @click="onClickPhoto">
-        <img v-if="employee.employeePhoto" :src="getEmployeePhoto" alt="Employee Photo" class="employee-photo" />
+        <img v-if="employee.employeePhoto" :src="getEmployeePhoto" :alt="$t('employee_photo')" class="employee-photo" />
         <div v-else class="username-initial">
           {{ employeeInitial }}
         </div>
@@ -22,14 +22,14 @@
           {{ `Emp. ID: ${employee.employeeCode}` }}
         </div>
         <div class="employee-email">
-          {{ `Email: ${employee.employeeBusinessEmail || 'Not assigned'}` }}
+          {{ `${ $t('email') }: ${employee.employeeBusinessEmail || $t('not_assigned')}` }}
         </div>
       </div>
     </div>
 
     <div class="info">
       <div class="business-unit">
-        {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
+        {{ `${ $t('business_unit') }: ${employee.businessUnit?.businessUnitName || $t('not_assigned')}` }}
       </div>
       <div class="department">
         {{ `${employee.department.departmentName || ''}`}}

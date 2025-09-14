@@ -115,14 +115,14 @@ export default defineComponent({
           }
           this.$toast.add({
             severity: 'success',
-            summary: 'Delete employee account bank',
+            summary: this.t('delete_employee_account_bank'),
             detail: employeeBankResponse._data.message,
             life: 5000,
           })
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: 'Delete employee account bank',
+            summary: this.t('delete_employee_account_bank'),
             detail: employeeBankResponse._data.message,
             life: 5000,
           })

@@ -5,7 +5,7 @@
 
       <Head>
         <Title>
-          Flight Attendants
+          {{ $t('flight_attendants') }}
         </Title>
       </Head>
       <NuxtLayout name="backoffice">
@@ -13,20 +13,20 @@
           <div class="box head-page">
             <div class="input-box">
               <label for="search">
-                Search
+                {{ $t('search') }}
               </label>
               <InputText v-model="search" aria-describedby="search" @keypress="handlerSearchFlightAttendant"
                 @keyup.delete="handlerSearchFlightAttendant" />
             </div>
             <div class="input-box">
               <br />
-              <Button v-if="canCreate" class="btn-add mr-2" label="New" icon="pi pi-plus" severity="primary"
-                @click="addNew" />
+              <Button v-if="canCreate" class="btn-add mr-2" :label="$t('add_flight_attendant') " icon="pi pi-plus"
+                severity="primary" @click="addNew" />
             </div>
           </div>
           <div>
             <h2>
-              Flight Attendants
+              {{ $t('flight_attendants') }}
             </h2>
             <div class="flight-attendant-card-wrapper">
               <div v-for="(flightAttendant, index) in filteredFlightAttendants"
@@ -42,23 +42,23 @@
               :totalRecords="totalRecords" @page="onPageChange" />
             <!-- Form -->
             <div class="card flex justify-content-center">
-              <Sidebar v-model:visible="drawerFlightAttendantForm" header="Flight attendant form" position="right"
-                class="flight-attendant-form-sidebar" :showCloseIcon="true">
+              <Sidebar v-model:visible="drawerFlightAttendantForm" :header="`${$t('flight_attendant')} ${$t('form')}`"
+                position="right" class="flight-attendant-form-sidebar" :showCloseIcon="true">
                 <employeeInfoForm employeeType='pilot' :flightAttendant="flightAttendant"
                   :employee="flightAttendant.employee" @save="onSave" :canUpdate="canUpdate" />
               </Sidebar>
             </div>
           </div>
         </div>
-        <Dialog v-model:visible="drawerFlightAttendantDelete" :style="{width: '450px'}" header="Confirm" :modal="true">
+        <Dialog v-model:visible="drawerFlightAttendantDelete" :style="{width: '450px'}" :header="$t('confirm')"
+          :modal="true">
           <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="flightAttendant"> Are you sure you want to delete
-              ?</span>
+            <span v-if="flightAttendant"> {{ $t('are_you_sure_you_want_to_delete') }}</span>
           </div>
           <template #footer>
-            <Button label="No" icon="pi pi-times" text @click="drawerFlightAttendantDelete = false" />
-            <Button label="Yes" icon="pi pi-check" text @click="confirmDelete()" />
+            <Button :label="$t('no')" icon="pi pi-times" text @click="drawerFlightAttendantDelete = false" />
+            <Button :label="$t('yes')" icon="pi pi-check" text @click="confirmDelete()" />
           </template>
         </Dialog>
       </NuxtLayout>

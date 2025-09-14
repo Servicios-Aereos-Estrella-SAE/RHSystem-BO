@@ -4,7 +4,7 @@
       <h1>{{ props.error.statusCode }}</h1>
       <h2>{{ title }}</h2>
       <p>{{ props.error.message }}</p>
-      <NuxtLink class="back-link" to="/">← Go back home</NuxtLink>
+      <NuxtLink class="back-link" :to="`/${$i18n.locale}`">← Go back home</NuxtLink>
       <button class="logout-button" @click="logout">Logout</button>
     </div>
   </div>

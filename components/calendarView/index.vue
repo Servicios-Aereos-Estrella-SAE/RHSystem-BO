@@ -1,15 +1,11 @@
 <template>
   <div>
     <div class="calendars-wrapper">
-      <div
-        v-for="month in calendarData"
-        :key="`month-year-${month.monthNumber}`"
-        class="calendar-month"
-        :class="month.status"
-      >
+      <div v-for="month in calendarData" :key="`month-year-${month.monthNumber}`" class="calendar-month"
+        :class="month.status">
         <div class="month-title">
           <h2>
-            {{ month.monthName }}, {{ year }}
+            {{ capitalizeFirstLetter(month.monthName) }}, {{ year }}
           </h2>
         </div>
         <div class="month-week-head">
@@ -18,22 +14,12 @@
           </div>
         </div>
         <div class="month-days-wrapper">
-          <div
-            v-for="(week, weekIndex) in month.days"
-            :key="`month-week-${weekIndex}`"
-            class="month-week"
-          >
-            <div
-              v-for="(day, dayIndex) in week"
-              :key="`month-day-${dayIndex}`"
-              class="week-day-cell"
-              :class="{
+          <div v-for="(week, weekIndex) in month.days" :key="`month-week-${weekIndex}`" class="month-week">
+            <div v-for="(day, dayIndex) in week" :key="`month-day-${dayIndex}`" class="week-day-cell" :class="{
                 'marked-day': !!day.marked,
                 'today': day.isToday,
                 'ghost': day.isEmpty
-              }"
-              @click="day.day && !day.isEmpty ? onDayClick(month.monthNumber, day.day) : null"
-            >
+              }" @click="day.day && !day.isEmpty ? onDayClick(month.monthNumber, day.day) : null">
               <span v-if="!!day.marked && !hideIndicator" class="quantity">
                 {{ day.quantity }}
               </span>

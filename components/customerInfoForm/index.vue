@@ -1,66 +1,75 @@
 <template>
   <div class="box customer-info-form">
     <h4>
-      {{ isNewCustomer ? 'New customer' : 'Update customer' }}
+      {{ isNewCustomer ? $t('add_customer') : $t('update_customer') }}
     </h4>
     <div v-if="isReady" class="user-form">
       <div class="form-container">
         <div class="input-box">
-          <label for="firstName">First Name</label>
-          <InputText v-model="customer.person.personFirstname" placeholder="Enter First Name" />
-          <small class="p-error" v-if="submitted && !customer.person.personFirstname">First Name is required.</small>
+          <label for="firstName">{{ $t('first_name') }}</label>
+          <InputText v-model="customer.person.personFirstname" :placeholder="`${$t('enter')} ${$t('first_name')}`" />
+          <small class="p-error" v-if="submitted && !customer.person.personFirstname">{{ $t('first_name') }} {{
+            $t('is_required')
+            }}</small>
         </div>
         <div class="input-box">
-          <label for="lastName">Last Name</label>
-          <InputText v-model="customer.person.personLastname" placeholder="Enter Last Name" />
-          <small class="p-error" v-if="submitted && !customer.person.personLastname">Last Name is required.</small>
+          <label for="lastName">{{ $t('last_name') }}</label>
+          <InputText v-model="customer.person.personLastname" :placeholder="`${$t('enter')} ${$t('last_name')}`" />
+          <small class="p-error" v-if="submitted && !customer.person.personLastname">{{ $t('last_name') }} {{
+            $t('is_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="lastName">Second Last Name</label>
-          <InputText v-model="customer.person.personSecondLastname" placeholder="Enter Second Last Name" />
-          <small class="p-error" v-if="submitted && !customer.person.personSecondLastname">Second Last Name is required.</small>
+          <label for="lastName">{{ $t('second_last_name') }}</label>
+          <InputText v-model="customer.person.personSecondLastname"
+            :placeholder="`${$t('enter')} ${$t('second_last_name')}`" />
+          <small class="p-error" v-if="submitted && !customer.person.personSecondLastname">{{ $t('second_last_name') }}
+            {{ $t('is_required') }}</small>
         </div>
         <div class="input-box">
-          <label for="customerHireDate">Birthday</label>
-          <Calendar v-model="customer.person.personBirthday" dateFormat="yy-mm-dd" placeholder="Select birthday" @update:model-value="formatDate('birthday')"/>
+          <label for="customerHireDate">{{ $t('birthday') }}</label>
+          <Calendar v-model="customer.person.personBirthday" dateFormat="yy-mm-dd"
+            :placeholder="`${$t('select')} ${$t('birthday')}`" @update:model-value="formatDate('birthday')" />
         </div>
         <div class="input-box">
-          <label for="customerLastName">Phone</label>
-          <InputText v-model="customer.person.personPhone" placeholder="Enter customer phone" />
-          <small class="p-error" v-if="submitted && customer.person.personPhone && !isValidPhone">Phone number is not valid.</small>
+          <label for="customerLastName">{{ $t('phone') }}</label>
+          <InputText v-model="customer.person.personPhone" :placeholder="`${$t('enter')} ${$t('phone')}`" />
+          <small class="p-error" v-if="submitted && customer.person.personPhone && !isValidPhone">{{ $t('phone') }} {{
+            $t('is_not_valid') }}</small>
         </div>
         <div class="input-box">
-          <label for="personGender">Gender</label>
-          <Dropdown v-model="customer.person.personGender" :options="genders" optionLabel="label" optionValue="value"
-            placeholder="Select Gender" class="w-full md:w-14rem" />
+          <label for="personGender">{{ $t('gender') }}</label>
+          <Dropdown v-model="customer.person.personGender" :options="getGenders" optionLabel="label" optionValue="value"
+            :placeholder="`${$t('select')} ${$t('gender')}`" class=" w-full md:w-14rem" />
         </div>
         <div class="input-box">
-          <label for="customerLastName">Personal identification code</label>
-          <InputText v-model="customer.person.personCurp" placeholder="Enter customer CURP" />
-          <small class="p-error" v-if="submitted && customer.person.personCurp && !isValidCURP">Personal identification is not valid.</small>
+          <label for="customerLastName">CURP</label>
+          <InputText v-model="customer.person.personCurp" :placeholder="`${$t('enter')} CURP`" />
+          <small class="p-error" v-if="submitted && customer.person.personCurp && !isValidCURP">{{
+            $t('personal_identification_is_not_valid') }}</small>
         </div>
         <div class="input-box">
           <label for="customerLastName">RFC</label>
-          <InputText v-model="customer.person.personRfc" placeholder="Enter customer RFC" />
-          <small class="p-error" v-if="submitted && customer.person.personRfc && !isValidRFC">RFC is not valid.</small>
+          <InputText v-model="customer.person.personRfc" :placeholder="`${$t('enter')} RFC`" />
+          <small class="p-error" v-if="submitted && customer.person.personRfc && !isValidRFC">RFC {{ $t('is_not_valid')
+            }}</small>
         </div>
         <div class="input-box">
           <label for="customerLastName">NSS</label>
-          <InputText v-model="customer.person.personImssNss" placeholder="Enter customer NSS" />
+          <InputText v-model="customer.person.personImssNss" :placeholder="`${$t('enter')} NSS`" />
         </div>
         <div class="input-box">
           <label for="customerUuid">UUID</label>
-          <InputText v-model="customer.customerUuid" placeholder="Enter customer UUID" />
+          <InputText v-model="customer.customerUuid" :placeholder="`${$t('enter')} UUID`" />
         </div>
         <div class="box-tools-footer">
-          <Button label="Proceeding files" severity="primary" @click="getProceedingFiles()" />
-          <Button label="Save" severity="primary" @click="onSave()" />
+          <Button :label="$t('proceeding_files')" severity="primary" @click="getProceedingFiles()" />
+          <Button :label="$t('save')" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>
     <div class="card flex justify-content-center">
-      <Sidebar v-model:visible="drawerProceedingFiles" header="Customer proceeding files" position="right" class="proceeding-file-sidebar"
-        :showCloseIcon="true">
+      <Sidebar v-model:visible="drawerProceedingFiles" :header="`${$t('customer')} ${$t('proceeding_files')}`"
+        position="right" class="proceeding-file-sidebar" :showCloseIcon="true">
         <customerProceedingFile :customer="customer" />
       </Sidebar>
     </div>
@@ -75,6 +84,7 @@
 
 <style lang="scss">
   @import './style';
+
   .shift-exception-sidebar {
     width: 100% !important;
     max-width: 70rem !important;
@@ -83,6 +93,7 @@
       width: 100% !important;
     }
   }
+
   .shift-sidebar {
     width: 100% !important;
     max-width: 70rem !important;
@@ -91,6 +102,7 @@
       width: 100% !important;
     }
   }
+
   .proceeding-file-sidebar {
     width: 100% !important;
     max-width: 90rem !important;

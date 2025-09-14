@@ -15,14 +15,14 @@
           {{ `Emp. ID: ${employee.employeeCode}` }}
         </div>
         <div class="employee-email">
-          {{ `Email: ${employee.employeeBusinessEmail || 'Not assigned'}` }}
+          {{ `${ $t('email') }: ${employee.employeeBusinessEmail || $t('not_assigned')}` }}
         </div>
       </div>
     </div>
 
     <div class="info">
       <div class="business-unit">
-        {{ `Business Unit: ${employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
+        {{ `${ $t('business_unit') }: ${employee.businessUnit?.businessUnitName || $t('not_assigned')}` }}
       </div>
       <div class="capitalize">
         {{ `${employee.department.departmentName || ''}`}}
@@ -32,7 +32,7 @@
       </div>
     </div>
     <div v-if="employee.shift_exceptions.length > 0 && showDays" class="info">
-      Days:
+      {{ $t('days') }}:
       <div v-for="(shiftException, index) in employee.shift_exceptions" :key="`exception-${index}`">
         <span>{{ getFormattedDate(shiftException.shiftExceptionsDate) }}</span>
       </div>

@@ -5,7 +5,7 @@
 
       <Head>
         <Title>
-          Birthday's on the year
+          {{ $t('birthdays_on_the_year') }}
         </Title>
       </Head>
 
@@ -15,7 +15,7 @@
             <div class="box head-employees-page">
               <div class="input-box">
                 <label for="birthday">
-                  Period
+                  {{ $t('period') }}
                 </label>
                 <Calendar v-if="isReady" v-model="periodSelected" view="year" dateFormat="yy"
                   @update:modelValue="handlerPeriodChange" />
@@ -23,9 +23,9 @@
               <div class="input-search">
                 <div class="input-box">
                   <label for="search">
-                    Search employee
+                    {{ $t('search_employee') }}
                   </label>
-                  <InputText v-model="search" placeholder="Employee name or id"
+                  <InputText v-model="search" :placeholder="$t('employee_name_or_id')"
                     @keypress.enter="handlerSearchEmployee" />
                 </div>
                 <button class="btn btn-block" @click="handlerSearchEmployee">
@@ -38,31 +38,28 @@
               </div>
               <div class="input-box">
                 <label for="role">
-                  Department
+                  {{ $t('department') }}
                 </label>
                 <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
-                  optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-                  showClear />
+                  optionValue="departmentId" :placeholder="$t('select_a_department')" filter class="w-full md:w-14rem"
+                  showClear :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div class="input-box">
-                <label for="positionId">Position</label>
+                <label for="positionId">{{ $t('position') }}</label>
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
-                  placeholder="Select a Position" filter class="w-full md:w-14rem" showClear />
+                  :placeholder="$t('select_a_position')" filter class="w-full md:w-14rem" showClear
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div></div>
             </div>
           </div>
 
           <h2>
-            Birthday days on year
+            {{ $t('birthdays_on_the_year') }}
           </h2>
 
-          <CalendarView
-            :year="yearSelected"
-            :marked-days="filterBirthdays"
-            marked-day-class="birthday"
-            @day-click="onShowCurrentBirthday"
-          />
+          <CalendarView :year="yearSelected" :marked-days="filterBirthdays" marked-day-class="birthday"
+            @day-click="onShowCurrentBirthday" />
 
         </div>
       </NuxtLayout>
@@ -70,18 +67,15 @@
 
     <Sidebar v-model:visible="drawerEmployeesBirthday" header="Birthday form" position="right"
       class="birthday-form-sidebar" :showCloseIcon="true">
-      <h4>Birthday {{ currentBirthday }}</h4>
+      <h4>{{ $t('birthday') }} {{ currentBirthday }}</h4>
       <div v-if="filteredEmployeesBirthday.length > 0" class="employee-card-wrapper">
         <div v-for="(employee, index) in filteredEmployeesBirthday" :key="`employee-${employee.employeeId}-${index}`">
-          <EmployeeInfoCard :click-on-photo="() => { onPhoto(employee) }" :employee="employee"
-            :can-manage-shifts="false" :can-update="false" :can-delete="false" :canReadOnlyFiles="false"
-            :canManageFiles="false" :click-on-edit="() => { onEdit(employee) }"
-            :click-on-delete="() => { onDelete(employee) }" />
+          <employeeModalInfoCard :employee="employee" />
         </div>
       </div>
       <div v-else class="employee-card-wrapper">
         <div class="empty-data">
-          There are no employees
+          {{ $t('there_are_no_employees') }}
         </div>
       </div>
     </Sidebar>

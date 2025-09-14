@@ -5,6 +5,13 @@ import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeI
 
 export default defineComponent({
   name: 'employeeVacationInfoCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     showDays: { type: Boolean, required: true }
@@ -30,8 +37,9 @@ export default defineComponent({
   },
   methods: {
     getFormattedDate(date: string) {
+      const localeToUse = this.locale === 'en' ? 'en' : 'es'
       const dateNew = DateTime.fromISO(date, { zone: 'utc' })
-      return dateNew.setLocale('en').toFormat('DDDD')
+      return dateNew.setLocale(localeToUse).toFormat('DDDD')
     },
   }
 })

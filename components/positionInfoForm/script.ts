@@ -7,6 +7,12 @@ import PositionService from '~/resources/scripts/services/PositionService'
 
 export default defineComponent({
   name: 'PositionInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     position: { type: Object as PropType<PositionInterface>, required: true },
     department: { type: Object as PropType<DepartmentInterface>, required: true },
@@ -48,7 +54,7 @@ export default defineComponent({
         this.positions = [this.position.parentPosition]
       }
     },
-    setPrefix () {
+    setPrefix() {
       const prefix = this.position.positionName.split(' ')[0]
       const type = prefix.slice(0, 3).replace('(', '')
       const order = parseInt(prefix.slice(3).replace(')', ''))
@@ -77,7 +83,7 @@ export default defineComponent({
               severity: 'error',
               summary: 'Error',
               detail:
-                'There was an error saving the position: ' +
+                this.t('there_was_an_error_saving_the_position') +
                 response._data.data.sqlMessage,
               life: 10000,
             })
@@ -87,7 +93,7 @@ export default defineComponent({
           this.$toast.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'There was an error saving the position: ' + error,
+            detail: this.t('there_was_an_error_saving_the_position') + error,
             life: 5000,
           })
           this.$emit('save-error')

@@ -1,3 +1,4 @@
+/// <reference types="@nuxtjs/i18n" />
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
@@ -26,8 +27,21 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['nuxt-primevue', '@pinia/nuxt', 'nuxt-highcharts', '@nuxtjs/color-mode', '@sidebase/nuxt-auth', "vue3-carousel-nuxt"],
-
+  modules: [
+    'nuxt-primevue',
+    '@pinia/nuxt',
+    'nuxt-highcharts',
+    '@nuxtjs/color-mode',
+    '@sidebase/nuxt-auth',
+    "vue3-carousel-nuxt",
+    '@nuxtjs/i18n'
+  ],
+  i18n: {
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'es', name: 'Español', file: 'es.json' }
+    ]
+  },
   carousel: {
     prefix: 'VueCar',
   },

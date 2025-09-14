@@ -4,7 +4,7 @@
     <h1>
       {{ selectedExceptionDate }}
       <br /><br />
-      {{ isNewShiftException ? 'Add shift exception' : 'Update shift exception' }}
+      {{ isNewShiftException ? $t('add_shift_exception') : $t('update_shift_exception') }}
 
     </h1>
 
@@ -16,82 +16,84 @@
           <div class="checkbox-item">
             <Checkbox v-model="applyToMoreThanOneDay" inputId="applyToMoreThanOneDay" name="applyToMoreThanOneDay"
               :binary="true" />
-            <label for="applyToMoreThanOneDay" class="ml-2"> Apply to more than one day </label>
+            <label for="applyToMoreThanOneDay" class="ml-2"> {{ $t('apply_to_more_than_one_day') }} </label>
           </div>
         </div>
         <div v-if="applyToMoreThanOneDay && needPeriodDays" class="input-box">
           <label for="description">
-            Days to apply
+            {{ $t('days_to_apply') }}
           </label>
           <InputNumber v-model="shiftException.daysToApply" inputId="daysToApply" />
           <small class="p-error" v-if="submitted && !shiftException.daysToApply">
-            Days to apply is required.
+            {{ $t('days_to_apply') }} {{ $t('is_required') }}.
           </small>
         </div>
         <div class="input-box">
           <label for="exception-type">
-            Exception type
+            {{ $t('exception_type') }}
           </label>
           <Dropdown v-model="shiftException.exceptionTypeId" :options="exceptionTypeList"
             optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" filter
             class="w-full md:w-14rem" @update:model-value="handleTypeChange"
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
-          <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">Exception type is required.</small>
+          <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">{{ $t('exception_type') }} {{
+            $t('is_required') }}.</small>
         </div>
         <div class="input-box">
           <label for="description">
-            Reason
+            {{ $t('reason') }}
           </label>
           <Textarea v-model="shiftException.shiftExceptionsDescription" rows="5" cols="30"
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && needReason && !shiftException.shiftExceptionsDescription">
-            Reason is required.
+            {{ $t('reason') }} {{ $t('is_required') }}.
           </small>
         </div>
         <div v-if="needCheckInTime || needPeriodHours" class="input-box">
           <label for="check-in-time">
-            {{ needPeriodHours ? 'From' : 'Check in time' }}
+            {{ needPeriodHours ? capitalizeFirstLetter($t('from')) : $t('check_in_time') }}
           </label>
           <Calendar v-model="shiftException.shiftExceptionCheckInTime" timeOnly
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckInTime">
-            {{ needPeriodHours ? 'From' : 'Check in time' }} is required
+            {{ needPeriodHours ? capitalizeFirstLetter($t('from')) : $t('check_in_time') }} {{ $t('is_required') }}.
           </small>
         </div>
         <div v-if="needCheckOutTime || needPeriodHours" class="input-box">
           <label for="check-out-time">
-            {{ needPeriodHours ? 'To' : 'Check out time' }}
+            {{ needPeriodHours ? capitalizeFirstLetter($t('to')) : $t('check_out_time') }}
           </label>
           <Calendar v-model="shiftException.shiftExceptionCheckOutTime" timeOnly
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && !shiftException.shiftExceptionCheckOutTime">
-            {{ needPeriodHours ? 'To' : 'Check out time' }} is required
+            {{ needPeriodHours ? capitalizeFirstLetter($t('to')) : $t('check_out_time') }} {{ $t('is_required') }}.
           </small>
         </div>
         <div v-if="needEnjoymentOfSalary" class="input-box">
           <label for="enjoyment-of-salary">
-            Salary enjoyment
+            {{ $t('salary_enjoyment') }}
           </label>
-          <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="options" optionLabel="label"
-            optionValue="value" placeholder="Select a Option" class="w-full md:w-14rem"
+          <Dropdown v-model="shiftException.shiftExceptionEnjoymentOfSalary" :options="getOptions" optionLabel="label"
+            optionValue="value" :placeholder="$t('select_a_option')" class="w-full md:w-14rem"
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
           <small class="p-error" v-if="submitted && shiftException.shiftExceptionEnjoymentOfSalary === null">
-            Salary enjoyment is required.
+            {{ $t('salary_enjoyment') }} {{ $t('is_required') }}.
           </small>
         </div>
         <div v-if="(needTimeByTime) && !isDisabilityLeave" class="input-box">
           <label for="timeByTime">
-            Time by Time</label>
+            {{ $t('time_by_time') }}</label>
           <InputSwitch v-model="activeSwichtTimeByTime"
             :disabled="!canManageUserResponsible || !canManageToPreviousDays" />
         </div>
         <div v-if="canManageUserResponsible && canManageToPreviousDays" class="input-box">
           <label for="evidence-file">
-            Evidence files
+            {{ $t('evidence_files') }}
           </label>
           <FileUpload v-model="files" name="demo[]" url="/api/upload" :custom-upload="true" :maxFileSize="1000000"
-            chooseLabel="Click to select files" :multiple="true" :show-upload-button="false" @select="validateFiles"
-            :showCancelButton="false" :disabled="!canManageUserResponsible || !canManageToPreviousDays">
+            :chooseLabel="$t('click_to_select_files')" :multiple="true" :show-upload-button="false"
+            @select="validateFiles" :showCancelButton="false"
+            :disabled="!canManageUserResponsible || !canManageToPreviousDays">
             <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <div class="p-fileupload-file-thumbnail-wrapper">
@@ -119,15 +121,15 @@
             </template>
 
             <template #empty>
-              <p>Drag and drop files here or click to select.</p>
+              <p>{{ $t('drag_and_drop_files_here_or_click_to_select') }}</p>
             </template>
           </FileUpload>
         </div>
         <div v-if="!isNewShiftException">
           <div v-if="shiftExceptionEvidences.length > 0" class="input-box">
-            <h3>Evidences</h3>
+            <h3>{{ $t('evidences') }}</h3>
             <DataTable :value="shiftExceptionEvidences" :responsiveLayout="'scroll'" class="p-datatable-sm">
-              <Column header="File">
+              <Column :header="$t('file')">
                 <template #body="slotProps">
                   <a :href="slotProps.data.shiftExceptionEvidenceFile" target="_blank" rel="noopener"
                     class="p-d-flex p-ai-center gap-2">
@@ -140,7 +142,8 @@
                 </template>
               </Column>
 
-              <Column v-if="canManageUserResponsible && canManageToPreviousDays" header="Actions" style="width: 100px;">
+              <Column v-if="canManageUserResponsible && canManageToPreviousDays" :header="$t('action')"
+                style="width: 100px;">
                 <template #body="slotProps">
                   <Button class="p-ml-auto p-button-text p-button-rounded p-button-danger"
                     @click="deleteEvidence(slotProps.data)">
@@ -157,13 +160,13 @@
             </DataTable>
           </div>
           <div v-else class="empty">
-            Empty evidence list.
+            {{ $t('empty_evidence_list') }}
           </div>
         </div>
         <div class="box-tools-footer">
           <Button v-if="canManageUserResponsible && canManageToPreviousDays" class="btn btn-block btn-primary"
             @click="onSave">
-            Save exception
+            {{ $t('save') }}
           </Button>
         </div>
       </div>

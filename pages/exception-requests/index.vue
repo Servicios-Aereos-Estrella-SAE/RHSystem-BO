@@ -3,31 +3,36 @@
 
 
     <Head>
-      <Title>Exception Requests</Title>
+      <Title>{{ $t('exception_requests') }}</Title>
     </Head>
     <NuxtLayout name="backoffice">
       <div class="exception-request-wrapper">
         <div class="box head-page">
           <div class="input-box">
             <label for="role">
-              Department
+              {{ $t('department') }}
             </label>
             <Dropdown v-model="selectedDepartmentId" :options="departments" optionLabel="departmentName"
-              optionValue="departmentId" placeholder="Select a Department" filter class="w-full md:w-14rem"
-              @change="handlerSearchExceptionRequest" />
+              optionValue="departmentId" :placeholder="`${$t('select')} ${$t('department')}`" filter
+              class="w-full md:w-14rem" @change="handlerSearchExceptionRequest"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="positionId">Position</label>
+            <label for="positionId">{{ $t('position') }}</label>
             <Dropdown v-model="selectedPositionId" :options="positions" optionLabel="positionName"
-              optionValue="positionId" placeholder="Select a Position" filter class="w-full md:w-14rem" />
+              optionValue="positionId" :placeholder="`${$t('select')} ${$t('position')}`" filter
+              class="w-full md:w-14rem" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="status">Status</label>
-            <Dropdown v-model="selectedStatus" :options="statusOptions" optionLabel="label" optionValue="value"
-              placeholder="Select a Status" filter class="w-full md:w-14rem" @change="handlerSearchExceptionRequest" />
+            <label for="status">{{ $t('status') }}</label>
+            <Dropdown v-model="selectedStatus" :options="getStatusOptions" optionLabel="label" optionValue="value"
+              :placeholder="`${$t('select')} ${$t('status')}`" filter class="w-full md:w-14rem"
+              @change="handlerSearchExceptionRequest" :emptyMessage="$t('no_available_options')"
+              :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-box">
-            <label for="search">Search employee</label>
+            <label for="search">{{ $t('search_employee') }}</label>
             <AutoComplete v-model="selectedEmployee"
               :optionLabel="(employee) => `${employee.person?.personFirstname || ''} ${employee.person?.personLastname || ''} ${employee.person?.personSecondLastname || ''}`"
               :suggestions="filteredEmployees" @complete="handlerSearchEmployee" @item-select="onEmployeeSelect">
@@ -47,15 +52,21 @@
                   </div>
                 </div>
               </template>
+              <template #empty>
+                <div class="p-2 text-center text-gray-500">
+                  <i class="pi pi-info-circle mr-2" />
+                  {{ $t('no_results_found') }}
+                </div>
+              </template>
             </AutoComplete>
           </div>
 
           <div class="input-box">
-            <Button label="Clear Filters " class="btn btn-block" icon="pi pi-times" @click="clearFilters" />
+            <Button :label="$t('clear_filters')" class="btn btn-block" icon="pi pi-times" @click="clearFilters" />
           </div>
         </div>
         <div>
-          <h2>Exception Requests</h2>
+          <h2>{{ $t('exception_requests') }}</h2>
           <div v-if="filteredExceptionRequests.length > 0" class="exception-request-card-wrapper">
             <div v-for="(exceptionRequest, index) in filteredExceptionRequests"
               :key="`exceptionRequest-${exceptionRequest.id}-${index}`">
@@ -74,7 +85,7 @@
                     fill="#88a4bf" class="fill-212121"></path>
                 </svg>
               </div>
-              No Exception Requests results
+              {{ $t('no_exception_requests_results') }}
             </div>
           </div>
           <div></div>
@@ -98,13 +109,13 @@
     <transition name="page">
       <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
         <div class="modal-content">
-          <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
-          <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
-          <textarea v-if="currentAction === 'refuse'" v-model="description" placeholder="Enter the reason for refuse..."
-            class="textarea"></textarea>
+          <h3>{{ currentAction === 'refuse' ? $t('refuse_exception_request') : $t('accept_exception_request') }}</h3>
+          <p v-if="currentAction === 'refuse'">{{ $t('please_provide_a_reason_for_refuse') }} </p>
+          <textarea v-if="currentAction === 'refuse'" v-model="description"
+            :placeholder="$t('enter_the_reason_for_refuse')" class="textarea"></textarea>
           <div class="modal-actions">
-            <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
-            <Button label="Confirm" class="btn btn-confirm"
+            <Button :label="$t('cancel')" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
+            <Button :label="$t('confirm')" class="btn btn-confirm"
               :disabled="currentAction === 'refuse' && !description.trim()"
               @click="currentAction === 'refuse' ? (drawerExceptionRequestDelete = true, drawerExceptionRequestDeletes = false) : confirmAccept()" />
           </div>

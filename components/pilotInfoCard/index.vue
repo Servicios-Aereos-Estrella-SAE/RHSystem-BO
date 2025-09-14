@@ -19,7 +19,7 @@
     <div class="line">
     </div>
     <div class="info business-unit">
-      {{ `Business Unit: ${pilot.employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
+      {{ `${ $t('business_unit') }: ${pilot.employee.businessUnit?.businessUnitName || 'Not assigned'}` }}
     </div>
     <div class="info capitalize">
       {{ `${pilot.employee?.department?.departmentName || ''}`}}

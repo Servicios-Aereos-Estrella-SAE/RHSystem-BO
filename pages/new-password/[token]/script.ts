@@ -4,6 +4,12 @@ import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
   name: "NuevaContrasena",
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
   },
   data: () => ({
@@ -14,7 +20,7 @@ export default defineComponent({
     token: ''
   }),
   computed: {
-    getBackgroundImageLogo(){
+    getBackgroundImageLogo() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage
@@ -34,8 +40,8 @@ export default defineComponent({
     if (!this.token) {
       this.$toast.add({
         severity: 'warn',
-        summary: 'User',
-        detail: 'User token not found',
+        summary: this.t('email'),
+        detail: this.t('user_token_not_found'),
         life: 5000,
       })
       return
@@ -46,7 +52,7 @@ export default defineComponent({
     if (userResponse.status !== 200) {
       this.$toast.add({
         severity: 'warn',
-        summary: 'User',
+        summary: this.t('email'),
         detail: userResponse._data.message,
         life: 5000,
       })
@@ -61,8 +67,8 @@ export default defineComponent({
       if (!this.newPassword) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User',
-          detail: 'Password is required',
+          summary: this.t('user'),
+          detail: `${this.t('password')} ${this.t('is_required')}`,
           life: 5000,
         })
         return
@@ -70,8 +76,8 @@ export default defineComponent({
       if (!userService.isValidPassword(this.newPassword)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User',
-          detail: 'The password entered does not meet the requested characteristics',
+          summary: this.t('user'),
+          detail: this.t('the_password_entered_does_not_meet_the_requested_characteristics'),
           life: 5000,
         })
         return
@@ -80,8 +86,8 @@ export default defineComponent({
       if (this.newPassword !== this.newPasswordConfirmed) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User',
-          detail: 'passwords do not match',
+          summary: this.t('user'),
+          detail: this.t('passwords_do_not_match'),
           life: 5000,
         })
         return
@@ -92,7 +98,7 @@ export default defineComponent({
       if (userResponse.status == 200) {
         this.$toast.add({
           severity: 'success',
-          summary: 'User',
+          summary: this.t('user'),
           detail: userResponse._data.message,
           life: 5000,
         })
@@ -100,7 +106,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User',
+          summary: this.t('email'),
           detail: userResponse._data.message,
           life: 5000,
         })

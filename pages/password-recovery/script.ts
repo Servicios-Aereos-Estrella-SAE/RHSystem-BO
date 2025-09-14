@@ -4,6 +4,12 @@ import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
   name: "RecuperarContrasena",
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
   },
   data: () => ({
@@ -16,7 +22,7 @@ export default defineComponent({
     myGeneralStore.getSystemSettings()
   },
   computed: {
-    getBackgroundImageLogo(){
+    getBackgroundImageLogo() {
       const myGeneralStore = useMyGeneralStore()
       const backgroundImage = myGeneralStore.backgroundImage
       return backgroundImage
@@ -34,8 +40,8 @@ export default defineComponent({
       if (!this.userEmail) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User email',
-          detail: 'User email is required',
+          summary: this.t('email'),
+          detail: `${this.t('email')} ${this.t('is_required')}`,
           life: 5000,
         });
         return
@@ -48,7 +54,7 @@ export default defineComponent({
         this.sendEmail = true
         this.$toast.add({
           severity: 'success',
-          summary: 'User',
+          summary: this.t('user'),
           detail: userResponse._data.message,
           life: 5000,
         });
@@ -56,7 +62,7 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: 'warn',
-          summary: 'User',
+          summary: this.t('user'),
           detail: userResponse._data.message,
           life: 5000,
         });

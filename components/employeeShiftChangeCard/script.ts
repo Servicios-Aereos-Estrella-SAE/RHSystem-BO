@@ -6,6 +6,13 @@ import type { ShiftInterface } from '~/resources/scripts/interfaces/ShiftInterfa
 
 export default defineComponent({
   name: 'employeeShiftChangeCard',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employeeShiftChange: { type: Object as PropType<EmployeeShiftChangeInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
@@ -18,16 +25,20 @@ export default defineComponent({
   },
   data: () => ({
     isReady: false,
+    localeToUse: 'en',
   }),
   computed: {
 
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   mounted() {
   },
   methods: {
     getFormattedDate(date: string) {
       const dateNew = DateTime.fromISO(date, { zone: 'utc' })
-      return dateNew.setLocale('en').toFormat('DDDD')
+      return dateNew.setLocale(this.localeToUse).toFormat('DDDD')
     },
     handlerClickOnEdit() {
       if (this.clickOnEdit) {

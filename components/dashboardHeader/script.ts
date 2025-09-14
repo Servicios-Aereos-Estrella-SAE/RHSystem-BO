@@ -4,10 +4,30 @@ import { useMyGeneralStore } from '~/store/general'
 import ShiftExceptionRequestService from "~/resources/scripts/services/ShiftExceptionService"
 import { io } from 'socket.io-client'
 import type { NotificationInterface } from '~/resources/scripts/interfaces/NotificationInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
 
 export default defineComponent({
   name: 'dashboardHeader',
   props: {
+  },
+  setup() {
+    const { locales, t, locale, setLocale } = useI18n()
+    watch(locale, (newLocale, oldLocale) => {
+
+      if (newLocale !== oldLocale) {
+        const { status } = useAuth()
+        if (status.value !== 'unauthenticated') {
+          localStorage.setItem('rh-language', newLocale)
+        }
+
+      }
+    })
+    return {
+      t,
+      locale,
+      locales,
+      setLocale
+    }
   },
   data: () => ({
     socketIO: null as any,
@@ -21,6 +41,7 @@ export default defineComponent({
     currentPage: 1,
     rowsPerPage: 10,
     notificationAudio: null as HTMLAudioElement | null,
+    currentLocale: ''
   }),
   computed: {
     getBusinessName() {
@@ -52,12 +73,37 @@ export default defineComponent({
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${imagePath}`
-      return photoPath
+      let photoIsValid = false
+      const employeeService = new EmployeeService()
+      employeeService.checkImage(photoPath).then(valid => {
+        photoIsValid = valid
+      });
+      if (photoIsValid) {
+        return photoPath
+      }
+      return imagePath
     }
+  },
+  watch: {
+
   },
   created() {
   },
   mounted() {
+    const availableLocales = this.locales.map((l) =>
+      typeof l === 'string' ? l : l.code
+    )
+    const savedLang = localStorage.getItem('rh-language') as 'en' | 'es' | null
+
+    if (savedLang && availableLocales.includes(savedLang)) {
+      this.setLocale(savedLang)
+    } else {
+      const browserLang = navigator.language.split('-')[0] as 'en' | 'es'
+      const defaultLang = availableLocales.includes(browserLang) ? browserLang : 'en'
+      this.setLocale(defaultLang)
+      localStorage.setItem('rh-language', defaultLang)
+    }
+    this.currentLocale = this.locale
     // this.notificationAudio = new Audio('/sounds/notification-sound.mp3')
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.getSystemSettings()

@@ -3,19 +3,19 @@
     <div>
       <div v-if="employeeBank.bank" class="employee-bank">
         <div class="capitalize">
-          Bank:
+          {{ $t('bank') }}:
           {{ employeeBank.bank.bankName }}
         </div>
       </div>
       <div class="employee-bank-account-clabe">
         <div>
-          Account CLABE:
+          {{ $t('account_clabe') }}:
           {{ `${employeeBank.employeeBankAccountClabeLastNumbers}`.padStart(18, '*') }}
         </div>
       </div>
       <div class="employee-bank-account-currency-type">
         <div class="capitalize">
-          Currency type:
+          {{ $t('currency_type') }}:
           {{ employeeBank.employeeBankAccountCurrencyType }}
         </div>
       </div>

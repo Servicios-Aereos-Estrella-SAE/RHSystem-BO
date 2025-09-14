@@ -3,18 +3,18 @@
 
     <employeeModalInfoCard :employee="employee" />
     <h1>
-      {{ isNewWorkDisabilityPeriod ? 'Add work disability period' : 'Update work disability period' }}
+      {{ isNewWorkDisabilityPeriod ? $t('add_work_disability_period') : $t('update_work_disability_period') }}
     </h1>
 
     <div v-if="isReady" class="work-disability-period-form">
       <div class="form-container">
         <div class="input-box">
           <label for="work-disability-period-file">
-            Work disability document
+            {{ $t('work_disability_document') }}
           </label>
 
           <FileUpload v-if="canManageWorkDisabilities && canManageCurrentPeriod" ref="fileUpload" v-model="files"
-            name="demo[]" url="/api/upload" accept="image/*,application/pdf" chooseLabel="Click to select file"
+            name="demo[]" url="/api/upload" accept="image/*,application/pdf" :chooseLabel="$t('click_to_select_files')"
             :showUploadButton="false" :showCancelButton="false" :custom-upload="true" :fileLimit="1"
             :disabled="!canManageUserResponsible" @select="validateFiles" @upload="onAdvancedUpload($event)">
             <template #content="{ files, removeFileCallback }">
@@ -44,7 +44,7 @@
             </template>
             <template #empty>
               <div class="empty-file-uploader">
-                Drag and drop file to here to upload.
+                {{ $t('drag_and_drop_files_here_or_click_to_select') }}
               </div>
             </template>
           </FileUpload>
@@ -57,42 +57,41 @@
                 d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z"
                 fill="#88a4bf" class="fill-212121"></path>
             </svg>
-            Open attached file
+            {{ $t('open_attached_file') }}
           </button>
         </div>
         <div class="input-box">
           <label for="folio">
-            Document folio
+            {{ $t('document_folio') }}
           </label>
           <InputText v-model="workDisabilityPeriod.workDisabilityPeriodTicketFolio"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
           <small class="p-error"
-            v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">Ticket
-            folio
-            is required.
+            v-if="submitted && !isInternalDisability && !workDisabilityPeriod.workDisabilityPeriodTicketFolio">{{
+            $t('document_folio') }} {{ $t('is_required') }}
           </small>
           <small class="p-error"
-            v-if="submitted && workDisabilityPeriod.workDisabilityPeriodTicketFolio && !isValidTicketFolio">Required
-            folio with the format of 2 uppercase letters and 6 numbers.
+            v-if="submitted && workDisabilityPeriod.workDisabilityPeriodTicketFolio && !isValidTicketFolio">{{
+            $t('required_folio_with_the_format_of_2_uppercase_letters_and_6_numbers') }}
           </small>
         </div>
         <div class="input-box">
           <label for="work-disability-type">
-            Work disability type
+            {{ $t('work_disability_type') }}
           </label>
           <Dropdown v-model="workDisabilityPeriod.workDisabilityTypeId" :options="workDisabilityTypeList"
             optionLabel="workDisabilityTypeName" optionValue="workDisabilityTypeId" placeholder="" filter
             class="w-full md:w-14rem"
             :disabled="!canManageWorkDisabilities || !canManageCurrentPeriod || !canManageUserResponsible" />
-          <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">Work disability type is
-            required.</small>
+          <small class="p-error" v-if="submitted && !workDisabilityPeriod.workDisabilityTypeId">{{
+            $t('work_disability_type') }} {{ $t('is_required') }}</small>
         </div>
         <div class="input-box">
           <label for="requested-date">
-            Date start
+            {{ $t('date_start') }}
           </label>
           <Calendar v-if="isNewWorkDisabilityPeriod" v-model="workDisabilityPeriod.workDisabilityPeriodStartDate"
-            dateFormat="yy-mm-dd" placeholder="Select date range" class="w-full md:w-14rem"
+            dateFormat="yy-mm-dd" :placeholder="$t('select_date_range')" class="w-full md:w-14rem"
             :disabled="!isNewWorkDisabilityPeriod || !canManageCurrentPeriod" :minDate="startDateLimit" />
           <div v-else class="period-applied">
             <div class="period-applied-date">
@@ -118,16 +117,16 @@
           </div>
           <small class="p-error"
             v-if="submitted && (!workDisabilityPeriod.workDisabilityPeriodStartDate || !workDisabilityPeriod.workDisabilityPeriodEndDate)">
-            Date is required.
+            {{ $t('date') }} {{ $t('is_required') }}
           </small>
         </div>
         <div v-if="isNewWorkDisabilityPeriod" class="input-box">
           <label for="description">
-            Days to apply
+            {{ $t('days_to_apply') }}
           </label>
           <InputNumber v-model="daysToApply" inputId="daysToApply" />
           <small class="p-error" v-if="submitted && !daysToApply">
-            Days to apply is required.
+            {{ $t('days_to_apply') }} {{ $t('is_required') }}
           </small>
         </div>
         <div class="box-tools-footer">
@@ -144,17 +143,17 @@
               <path d="m20.56 14.5-6.06 6.06v-4.31c0-.966.784-1.75 1.75-1.75h4.31Z" fill="#88a4bf" class="fill-212121">
               </path>
             </svg>
-            Add expense
+            {{ $t('add_expense') }}
           </Button>
           <Button v-if="canManageWorkDisabilities && canManageCurrentPeriod && canManageUserResponsible"
             class="btn btn-block btn-primary" @click="onSave">
-            Save work disability period
+            {{ $t('save') }}
           </Button>
         </div>
 
         <div v-if="workDisabilityPeriodExpensesList.length > 0">
           <h2>
-            Expenses
+            {{ $t('expenses') }}
           </h2>
           <div class="work-disability-period-expenses-wrapper">
             <workDisabilityPeriodExpenseInfoCard
@@ -171,7 +170,7 @@
         </div>
         <div v-else class="work-disability-period-expenses-wrapper">
           <div class="empty-data">
-            No expenses recorded yet
+            {{ $t('no_expenses_recorded_yet') }}
           </div>
         </div>
         <Sidebar v-model:visible="drawerWorkDisabilityPeriodExpenseForm" header="form" position="right"

@@ -11,6 +11,13 @@ export default defineComponent({
   components: {
   },
   name: 'vacationsControl',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t,
+      locale
+    }
+  },
   props: {
     employee: { type: Object as PropType<EmployeeInterface>, required: true },
     shiftException: { type: Object as PropType<ShiftExceptionInterface>, required: true },
@@ -31,7 +38,8 @@ export default defineComponent({
     submitted: false,
     canManageToPreviousDays: false,
     currentDate: null as string | null | DateTime | Date,
-    sessionUser: null as UserInterface | null
+    sessionUser: null as UserInterface | null,
+    localeToUse: 'en',
   }),
   watch: {
     'shiftException.shiftExceptionsDate'(val: Date) {
@@ -73,6 +81,9 @@ export default defineComponent({
       return false
     }
   },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   async mounted() {
     await this.setSessionUser()
 
@@ -83,7 +94,7 @@ export default defineComponent({
         .setZone('UTC-6', { keepLocalTime: true })
         .toJSDate()
       this.shiftException.shiftExceptionsDate = currentDate
-      this.shiftExceptionsDate = shiftExceptionsDate.setLocale('en').toFormat('DDD')
+      this.shiftExceptionsDate = shiftExceptionsDate.setLocale(this.localeToUse).toFormat('DDD')
     }
     if (!this.shiftException.shiftExceptionId) {
       this.displayForm = true
@@ -170,15 +181,15 @@ export default defineComponent({
       }
       return DateTime.fromJSDate(date, { zone: 'utc' })
         //.setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
     handlerClickOnDelete() {
       if (!this.canManageVacation) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'You do not have permission to manage vacations',
+          summary: this.t('validation_data'),
+          detail: this.t('you_do_not_have_permission_to_manage_vacations'),
           life: 5000,
         })
         return
@@ -192,8 +203,8 @@ export default defineComponent({
       if (!this.canManageVacation) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'You do not have permission to manage vacations',
+          summary: this.t('validation_data'),
+          detail: this.t('you_do_not_have_permission_to_manage_vacations'),
           life: 5000,
         })
         return
@@ -202,8 +213,8 @@ export default defineComponent({
       if (!shiftExceptionService.validateInfo(this.shiftException)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -211,8 +222,8 @@ export default defineComponent({
       if (this.applyToMoreThanOneDay && !this.shiftException.daysToApply) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -221,8 +232,8 @@ export default defineComponent({
         if (this.applyToMoreThanOneDay && this.shiftException.daysToApply > this.vacationPeriodAvailableDays) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: `The number of days cannot be greater than the available days ${this.vacationPeriodAvailableDays}`,
+            summary: this.t('validation_data'),
+            detail: `${this.t('the_number_of_days_cannot_be_greater_than_the_available_days')} ${this.vacationPeriodAvailableDays}`,
             life: 5000,
           })
           return
@@ -232,8 +243,8 @@ export default defineComponent({
       if (!this.canManageToPreviousDays) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: `The date: ${this.shiftExceptionsDate} is in the past and you do not have permission to save it `,
+          summary: this.t('validation_data'),
+          detail: `${this.t('the_date')}: ${this.shiftExceptionsDate} ${this.t('is_in_the_past_and_you_do_not_have_permission_to_save_it')} `,
           life: 5000,
         })
         return
@@ -264,7 +275,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'updated' : 'created'}`,
+            summary: `${this.t('shift_exception')} ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -282,7 +293,7 @@ export default defineComponent({
           const severityType = shiftExceptionResponse.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift exception ${this.shiftException.shiftExceptionId ? 'updated' : 'created'}`,
+            summary: `${this.t('shift_exception')} ${this.shiftException.shiftExceptionId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })
@@ -298,8 +309,8 @@ export default defineComponent({
       if (!this.canManageVacation) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'You do not have permission to manage vacations',
+          summary: this.t('validation_data'),
+          detail: this.t('you_do_not_have_permission_to_manage_vacations'),
           life: 5000,
         })
         return

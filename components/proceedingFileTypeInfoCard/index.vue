@@ -1,15 +1,20 @@
 <template>
   <div class="box proceeding-file-type-info-card">
     <div class="name">
+
       {{ `${proceedingFileType.proceedingFileTypeName || ''}`}}
     </div>
     <div class="line">
     </div>
     <div class="info capitalize">
-      <strong>{{ `${proceedingFileType.proceedingFileTypeAreaToUse || ''}`}}</strong>
+      <strong>
+        {{
+        `${capitalizeFirstLetter($t(proceedingFileType.proceedingFileTypeAreaToUse.toLocaleLowerCase().replaceAll('-',
+        '_')))}`
+        }}</strong>
     </div>
     <div class="status assist">
-      {{ `Active: ${proceedingFileType.proceedingFileTypeActive ? 'Yes' : 'No'}` }}
+      {{ `${$t('active')}: ${proceedingFileType.proceedingFileTypeActive ? $t('yes') : $t('no')}` }}
     </div>
     <div class="box-tools-footer">
       <Button v-if="canUpdate" icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />

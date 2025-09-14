@@ -3,28 +3,29 @@
 
     <Head>
       <Title>
-        Department Attendance Monitor
+        {{ $t('department_attendance_monitor') }}
       </Title>
     </Head>
     <NuxtLayout name="backoffice">
       <div class="dashboard-wrapper">
         <div class="title">
           <h1>
-            Department Attendance Monitor
+            {{ $t('department_attendance_monitor') }}
           </h1>
         </div>
         <div class="box head-page">
           <div class="input-box">
             <label for="departments">
-              Select Department
+              {{ $t('select_department') }}
             </label>
             <Dropdown id="departments" v-model="departmenSelected" optionLabel="label" filter
-              :options="departmentCollection" :highlightOnSelect="false" @change="handlerDeparmentSelect" />
+              :options="departmentCollection" :highlightOnSelect="false" @change="handlerDeparmentSelect"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div class="input-search">
             <div class="input-box">
               <label for="search">
-                Search employee
+                {{ $t('search_employee') }}
               </label>
               <AutoComplete v-model="selectedEmployee"
                 :optionLabel="() => `${selectedEmployee.person?.personFirstname || ''} ${selectedEmployee.person?.personLastname || ''} ${selectedEmployee.person?.personSecondLastname || ''}`"
@@ -43,6 +44,12 @@
                     </div>
                   </div>
                 </template>
+                <template #empty>
+                  <div class="p-2 text-center text-gray-500">
+                    <i class="pi pi-info-circle mr-2" />
+                    {{ $t('no_results_found') }}
+                  </div>
+                </template>
               </AutoComplete>
             </div>
             <button class="btn btn-block">
@@ -56,22 +63,23 @@
           <div></div>
           <div class="input-box">
             <label for="parentDepartmentId">
-              Status
+              {{ $t('status') }}
             </label>
-            <Dropdown v-model="statusSelected" :options="statusList" optionLabel="name" optionValue="name"
-              placeholder="Select a Status" filter class="w-full md:w-14rem" />
+            <Dropdown v-model="statusSelected" :options="getStatus" optionLabel="label" optionValue="name"
+              :placeholder="$t('select_a_status')" filter class="w-full md:w-14rem"
+              :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">
-              Visualization mode
+              {{ $t('visualization_mode') }}
             </label>
-            <SelectButton v-model="visualizationMode" :options="visualizationModeOptions" dataKey="value"
-              optionLabel="name" aria-labelledby="basic" optionDisabled="selected"
+            <SelectButton v-model="visualizationMode" :options="getVisualizationModes" dataKey="value"
+              optionLabel="label" aria-labelledby="basic" optionDisabled="selected"
               @change="onInputVisualizationModeChange" />
           </div>
           <div v-if="visualizationMode" class="input-box">
             <label for="departments">
-              Period
+              {{ $t('period') }}
             </label>
             <Calendar
               v-if="visualizationMode && visualizationMode?.calendar_format && visualizationMode?.name !== 'Custom' && visualizationMode?.name !== 'Payroll'"
@@ -97,14 +105,15 @@
         <div class="btns-group">
           <div v-if="canSeeSwitchOptionGetAssist" class="input-box">
             <label for="getAssistFromSaveCalendarSwicht">
-              Get Assist {{ getAssistFromSaveCalendarSwicht ? 'From Save Calendar' : 'From API Calculate Calendar' }}
+              {{ $t('get_assist') }} {{ getAssistFromSaveCalendarSwicht ? $t('from_save_calendar') :
+              $t('from_api_calculate_calendar') }}
             </label>
             <InputSwitch v-model="getAssistFromSaveCalendarSwicht" />
           </div>
           <Button v-if="visualizationMode && isRangeAtLeast3Days && canSeeConsecutiveFaults" class="btn"
             :class="{ 'btn-info': employeesWithFaults.length > 0 }" severity="success"
             @click="drawerEmployeeWithFaults = true">
-            Consecutive Faults
+            {{ $t('consecutive_faults') }}
           </Button>
           <Button v-if="displayNoAssignedShiftBtn" class="btn" severity="success"
             @click="drawerEmployeeWithOutShift = true">
@@ -138,7 +147,7 @@
 
         <div class="box department-excel-report-buttons">
           <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcelAllAssistance">
-            Detailed
+            {{ $t('detailed') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -146,7 +155,7 @@
             </svg>
           </Button>
           <button v-if="visualizationMode" class="btn" severity="success" @click="getExcelIncidentSummary">
-            Summary
+            {{ $t('summary') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -155,7 +164,7 @@
           </button>
           <button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcelIncidentSummaryPayRoll">
-            Payroll
+            {{ $t('payroll') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -166,7 +175,7 @@
 
         <div v-if="canDisplayFrontExcel" class="box department-excel-report-buttons from-api">
           <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Assistance Report')">
-            Detailed API
+            {{ $t('detailed') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -174,7 +183,7 @@
             </svg>
           </Button>
           <Button v-if="visualizationMode" class="btn" severity="success" @click="getExcel('Incident Summary')">
-            Summary API
+            {{ $t('summary') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -183,7 +192,7 @@
           </Button>
           <Button v-if="visualizationMode && visualizationMode?.name === 'Payroll'" class="btn" severity="success"
             @click="getExcel('Incident Summary Payroll')">
-            Payroll API
+            {{ $t('payroll') }} API
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M10.401 61.569v380.797l280.129 49.767V11.802L10.401 61.569zm160.983 270.574-23.519-61.703-23.065 58.466H92.688l37.539-81.576-34.825-79.956h33.017l21.257 55.231 25.327-59.853 31.66-1.618-39.574 85.505 41.158 88.274-36.863-2.77zM489.281 61.133H300.015v27.811h71.249v50.15h-71.249v15.081h71.249v50.15h-71.249v15.082h71.249v50.15h-71.249v15.08h71.249v50.151h-71.249v15.395h71.249v50.149h-71.249v32.182h189.267c5.357 0 9.739-4.514 9.739-10.034V71.168c0-5.52-4.382-10.035-9.74-10.035zm-23.068 339.199h-80.269v-50.149h80.269v50.149zm0-65.544h-80.269v-50.151h80.269v50.151zm0-65.231h-80.269v-50.15h80.269v50.15zm0-65.232h-80.269v-50.15h80.269v50.15zm0-65.231h-80.269v-50.15h80.269v50.15z"
@@ -193,54 +202,54 @@
         </div>
 
         <Message v-if="assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false">
-          Last attendance recorded at
+          {{ $t('last_attendance_recorded_at') }}
           {{ assistSyncStatusDate }}
           <br>
-          ( Checking every 5 minutes )
+          ( {{ $t('checking_every_5_minutes') }} )
         </Message>
 
         <Message v-if="!assistSyncStatusDate && !onSyncStatus" class="sync" :closable="false" severity="warn">
           <div>
-            No se ha logrado obtener la fecha y hora de la última sincronización de la información de asistencia.
+            {{ $t('the_date_and_time_of_the_last_synchronization_of_attendance_information_could_not_be_obtained.') }}
           </div>
         </Message>
 
         <div class="general-graphs-department">
           <div class="box">
             <h2>
-              General behavior into period
+              {{ $t('general_behavior_into_period') }}
             </h2>
             <highchart :options="generalData" style="width: 100%;" />
             <div v-if="isRootUser">
               <Button v-if="rotationIndex === null" class="btn btn-block" @click="getRotation">
-                Obtener índice de rotación
+                {{ $t('get_turnover_rate') }}
               </Button>
               <div v-else class="rotation-info">
                 <div class="value">
                   {{ rotationIndex }}%
                   <label>
-                    Índice de Rotación
+                    {{ $t('turnover_rate') }}
                   </label>
                 </div>
                 <Message class="sync" :closable="false" style="width: 100%;" icon="'aa'" severity="info">
                   <strong>
-                    ¿Cómo se calcula?
+                    {{ $t('how_is_it_calculated') }}
                   </strong>
                   <br>
                   <br>
-                  Índice = S ÷ ((I + F) ÷ 2)
+                  {{ $t('index') }} = S ÷ ((I + F) ÷ 2)
                   <br><br>
                   <div>
                     <strong>S:</strong>
-                    No. de bajas durante el periodo.
+                    {{ $t('number_of_departures_during_period') }}
                   </div>
                   <div>
                     <strong>I:</strong>
-                    Personal al inicio del periodo.
+                    {{ $t('staff_at_start_of_period') }}
                   </div>
                   <div>
                     <strong>F:</strong>
-                    Personal al final del periodo.
+                    {{ $t('staff_at_end_of_period') }}
                   </div>
                 </Message>
               </div>
@@ -254,7 +263,7 @@
           </div>
         </div>
         <h2>
-          Department positions
+          {{ $t('department_positions') }}
         </h2>
         <div class="department-positions-wrapper">
           <div v-for="(item, index) in getDepartmentPositionAssistStatistics()"
@@ -267,7 +276,7 @@
           </div>
         </div>
         <h2>
-          All Department Employees
+          {{ $t('all_department_employees') }}
         </h2>
         <div v-if="filtersEmployeesByStatus(employeeDepartmentList).length > 0" class="department-positions-wrapper">
           <div v-for="(employeeAssist, index) in filtersEmployeesByStatus(employeeDepartmentList)"
@@ -286,9 +295,9 @@
                     fill="#88a4bf" class="fill-212121"></path>
                 </svg>
               </div>
-              No employees to display.
+              {{ $t('no_employees_to_display') }}
               <br>
-              Existing employees may be discriminated
+              {{ $t('existing_employees_may_be_discriminated') }}
             </div>
           </div>
         </div>
