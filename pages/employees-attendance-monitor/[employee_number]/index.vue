@@ -53,7 +53,7 @@
             </div>
           </div>
           <div class="employee-period-filter">
-            <div v-if="visualizationMode" class="input-box">
+            <div v-if="visualizationMode" class="input-box input-visualization-mode">
               <label>
                 {{ $t('visualization_mode') }}
               </label>

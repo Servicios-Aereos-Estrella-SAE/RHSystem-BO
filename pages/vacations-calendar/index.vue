@@ -12,22 +12,8 @@
       <NuxtLayout name="backoffice">
         <div v-if="isReady" class="vacation-wrapper">
           <div class="filters">
-            <div class="box head-employees-page">
-              <div class="input-box">
-                <label for="start-year">{{ $t('start_year') }}</label>
-                <Calendar v-if="isReady" v-model="periodSelectedStart" view="year" dateFormat="yy"
-                  @update:modelValue="handlerPeriodStartChange" :minDate="yearStartLimitDate"
-                  :maxDate="yearEndLimitDate" />
-              </div>
-
-              <div class="input-box">
-                <label for="end-year">{{ $t('end_year') }}</label>
-                <Calendar v-if="isReady" v-model="periodSelectedEnd" view="year" dateFormat="yy"
-                  @update:modelValue="handlerPeriodEndChange" :minDate="yearStartLimitDate"
-                  :maxDate="yearEndLimitDate" />
-              </div>
+            <div class="box head-vacations-calendar-page">
               <div class="input-search">
-                <!-- -->
                 <div class="input-box">
                   <label for="search">
                     {{ $t('search_employee') }}
@@ -42,22 +28,43 @@
                   </svg>
                 </button>
               </div>
-              <div class="input-box">
-                <label for="role">
-                  {{ $t('department') }}
-                </label>
-                <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
-                  optionValue="departmentId" :placeholder="$t('select_a_department')" filter
-                  @change="onHandlerDepartmentChange" showClear :emptyMessage="$t('no_available_options')"
-                  :emptyFilterMessage="$t('no_results_found')" />
+
+              <div class="controls-box-wrapper">
+                <div class="input-box period-input-box">
+                  <label for="start-year">{{ $t('start_year') }}</label>
+                  <Calendar v-if="isReady" v-model="periodSelectedStart" view="year" dateFormat="yy"
+                    @update:modelValue="handlerPeriodStartChange" :minDate="yearStartLimitDate"
+                    :maxDate="yearEndLimitDate" />
+                </div>
+
+                <div class="input-box period-input-box">
+                  <label for="end-year">{{ $t('end_year') }}</label>
+                  <Calendar v-if="isReady" v-model="periodSelectedEnd" view="year" dateFormat="yy"
+                    @update:modelValue="handlerPeriodEndChange" :minDate="yearStartLimitDate"
+                    :maxDate="yearEndLimitDate" />
+                </div>
+
+                <div class="input-box department-input-box">
+                  <label for="role">
+                    {{ $t('department') }}
+                  </label>
+                  <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
+                    optionValue="departmentId" :placeholder="$t('select_a_department')" filter
+                    @change="onHandlerDepartmentChange" showClear :emptyMessage="$t('no_available_options')"
+                    :emptyFilterMessage="$t('no_results_found')" />
+                </div>
+
+                <div class="input-box position-input-box">
+                  <label for="positionId">{{ $t('position') }}</label>
+                  <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
+                    :placeholder="$t('select_a_position')" filter @change="onHandlerPositionChange" showClear
+                    :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
+                </div>
               </div>
-              <div class="input-box">
-                <label for="positionId">{{ $t('position') }}</label>
-                <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
-                  :placeholder="$t('select_a_position')" filter @change="onHandlerPositionChange" showClear
-                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
-              </div>
-              <div class="input-box">
+            </div>
+
+            <div class="box head-vacations-calendar-page-excel-buttons">
+              <div class="input-box excel-button">
                 <Button class="btn btn-block btn-vacations" @click="getVacationsSummaryExcel">
                   <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -69,7 +76,7 @@
                   </span>
                 </Button>
               </div>
-              <div class="input-box">
+              <div class="input-box excel-button">
                 <Button class="btn btn-block btn-vacations" @click="getVacationExcel">
                   <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -81,7 +88,7 @@
                   </span>
                 </Button>
               </div>
-              <div class="input-box">
+              <div class="input-box excel-button">
                 <Button class="btn btn-block btn-vacations" @click="getVacationsUsedExcel">
                   <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -114,7 +121,7 @@
       <h4>{{ $t('vacation') }} {{ currentVacation }}</h4>
       <div v-if="filteredEmployeesVacation.length > 0" class="vacations-wrapper">
         <div v-for="(employee, index) in filteredEmployeesVacation" :key="`employee-${employee.employeeId}-${index}`">
-          <EmployeeVacationInfoCard :employee="employee" :showDays="false" />
+          <employeeModalInfoCard :employee="employee" />
         </div>
       </div>
       <div v-else class="employee-card-wrapper">

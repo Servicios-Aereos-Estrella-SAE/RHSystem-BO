@@ -252,6 +252,10 @@ export default defineComponent({
         employeeAssistDiscriminator: 0,
         employeeTypeOfContract: "Internal",
         employeeTerminatedDate: new Date(),
+        employeeSecondLastName: '',
+        dailySalary: 0,
+        employeeIgnoreConsecutiveAbsences: 0,
+        userResponsibleEmployeeDirectBoss: false
       }
       this.employee = newEmployee
       this.drawerEmployeeForm = true

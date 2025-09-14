@@ -53,7 +53,7 @@
         </small>
       </div>
       <div class="box-tools-footer">
-        <nuxt-link :to="`/employees-attendance-monitor/${employee.employee.employeeCode}`" class="box-button block">
+        <nuxt-link :to="`/${$i18n.locale}/employees-attendance-monitor/${employee.employee.employeeCode}`" class="box-button block">
           {{ $t('see_details') }}
           <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round"
             stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -70,10 +70,7 @@
       <h4>{{ $t('birthday') }} {{ currentBirthday }}</h4>
       <div v-if="filteredEmployeesBirthday.length > 0" class="employee-card-wrapper">
         <div v-for="(employee, index) in filteredEmployeesBirthday" :key="`employee-${employee.employeeId}-${index}`">
-          <EmployeeInfoCard :click-on-photo="() => { onPhoto(employee) }" :employee="employee"
-            :can-manage-shifts="false" :can-update="false" :can-delete="false" :canReadOnlyFiles="false"
-            :canManageFiles="false" :click-on-edit="() => { onEdit(employee) }"
-            :click-on-delete="() => { onDelete(employee) }" />
+          <employeeModalInfoCard :employee="employee" />
         </div>
       </div>
       <div v-else class="employee-card-wrapper">

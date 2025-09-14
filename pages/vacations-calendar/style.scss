@@ -33,17 +33,44 @@
     min-height: 100dvh;
     box-sizing: border-box;
 
-    .head-employees-page {
+    .filters {
       display: grid;
-      grid-template-columns: 10rem 10rem repeat(3, auto) 12rem 12rem 12rem;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .head-vacations-calendar-page {
+      display: grid;
+      grid-template-columns: 30rem 1fr;
       gap: 0.5rem;
 
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: repeat(5, 1fr);
+      .input-search {
+        width: 100%;
+      }
+
+      .controls-box-wrapper {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+
+        .period-input-box {
+          width: 100%;
+          max-width: 15rem;
+        }
+
+        .department-input-box {
+          width: 100%;
+          max-width: 15rem;
+        }
+
+        .position-input-box {
+          width: 100%;
+          max-width: 15rem;
+        }
       }
 
       @media screen and (max-width: $ipad) {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 20rem 1fr;
       }
 
       @media screen and (max-width: $phone) {
@@ -56,6 +83,16 @@
 
       .btn-vacations {
         margin-top: 1.45rem;
+      }
+    }
+
+    .head-vacations-calendar-page-excel-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+
+      .excel-button {
+        width: auto;
       }
     }
 

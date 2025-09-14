@@ -40,7 +40,7 @@
     </div>
     <div v-if="!hideLink" class="box-tools-footer">
       <nuxt-link v-if="department && position"
-        :to="`/departments-attendance-monitor/${department.departmentId}/position/${position.positionId}`"
+        :to="`/${$i18n.locale}/departments-attendance-monitor/${department.departmentId}/position/${position.positionId}`"
         class="box-button block">
         {{ $t('see_details') }}
         <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round"
@@ -48,7 +48,7 @@
           <path d="M5 12h14M12 5l7 7-7 7"></path>
         </svg>
       </nuxt-link>
-      <nuxt-link v-else-if="department" :to="`/departments-attendance-monitor/${department.departmentId}`"
+      <nuxt-link v-else-if="department" :to="`/${$i18n.locale}/departments-attendance-monitor/${department.departmentId}`"
         class="box-button block">
         {{ $t('see_positions') }}
         <svg class="feather feather-arrow-right" fill="none" stroke="#303e67" stroke-linecap="round"

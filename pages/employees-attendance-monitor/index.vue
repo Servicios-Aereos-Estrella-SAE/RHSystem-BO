@@ -64,7 +64,7 @@
                 :placeholder="$t('select_a_status')" class="w-full md:w-14rem" filter
                 :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
             </div>
-            <div class="input-box">
+            <div class="input-box input-visualization-mode">
               <label for="departments">
                 {{ $t('visualization_mode') }}
               </label>
