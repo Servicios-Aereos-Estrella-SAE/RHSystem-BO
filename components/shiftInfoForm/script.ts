@@ -5,10 +5,15 @@ import ShiftService from "~/resources/scripts/services/ShiftService"
 export default defineComponent({
 
   name: 'ShiftInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     shift: { type: Object as PropType<ShiftInterface>, required: true },
     clickOnSave: { type: Function, default: null },
-
   },
   data: () => ({
     submitted: false,
@@ -38,12 +43,18 @@ export default defineComponent({
   }),
   computed: {
     formTitle() {
-      const title = this.shift && this.shift.shiftId ? 'Update Shift' : 'Create Shift'
+      const title = this.shift && this.shift.shiftId ? this.t('update_shift') : this.t('create_shift')
       return title
     },
     shiftName() {
       const name = this.shift && this.shift.shiftId ? this.shift.shiftName : ''
       return name
+    },
+    getDays() {
+      return this.daysOfWeeks.map(day => ({
+        ...day,
+        name: this.$t(day.name.toLowerCase())
+      }))
     }
   },
   watch: {
@@ -129,7 +140,7 @@ export default defineComponent({
           this.$toast.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Start day cannot be a rest day',
+            detail: this.t('start_day_cannot_be_a_rest_day'),
             life: 5000
           })
           return
@@ -141,8 +152,8 @@ export default defineComponent({
         if (response.status === 200 || response.status === 201) {
           this.$toast.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Shift saved successfully',
+            summary: this.t('success'),
+            detail: this.t('shift_saved_successfully'),
             life: 5000
           })
           const shift = response._data.data
@@ -153,7 +164,7 @@ export default defineComponent({
           const severityType = response.status === 500 ? 'error' : 'warn'
           this.$toast.add({
             severity: severityType,
-            summary: `Shift ${this.shift.shiftId ? 'update' : 'create'}`,
+            summary: `${this.t('shift')} ${this.shift.shiftId ? this.t('updated') : this.t('created')}`,
             detail: msgError,
             life: 5000,
           })

@@ -15,6 +15,12 @@ interface VacationData {
 
 export default defineComponent({
   name: 'Vacation-days',
+  setup() {
+    const { t, locale } = useI18n()
+    return {
+      t, locale
+    }
+  },
   props: {},
   data: () => ({
     date: new Date() as Date,
@@ -41,7 +47,8 @@ export default defineComponent({
     drawerEmployeesVacation: false as boolean,
     currentVacation: '' as string,
     isSearching: false as boolean,
-    yearStartLimit: 2016 as number
+    yearStartLimit: 2016 as number,
+    localeToUse: 'en',
   }),
   watch: {
     search(newValue) {
@@ -66,6 +73,9 @@ export default defineComponent({
       const nextYear = new Date().getFullYear() + 1
       return new Date(nextYear, 0, 1)
     },
+  },
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
@@ -172,7 +182,7 @@ export default defineComponent({
           }
         }
       } catch (error) {
-        console.error("Error fetching vacations:", error)
+        console.error(this.t('error_fetching_vacations'), error)
       } finally {
         this.isSearching = false
         myGeneralStore.setFullLoader(false)
@@ -209,8 +219,8 @@ export default defineComponent({
       if (!this.periodSelectedStart || !this.periodSelectedEnd) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Period',
-          detail: 'Please select both start and end years',
+          summary: this.t('period'),
+          detail: this.t('please_select_both_start_and_end_years'),
           life: 5000,
         })
         return false
@@ -218,8 +228,8 @@ export default defineComponent({
       if (this.periodSelectedStart.getFullYear() > this.periodSelectedEnd.getFullYear()) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Period',
-          detail: 'The start year cannot be later than the end year',
+          summary: this.t('period'),
+          detail: this.t('the_start_year_cannot_be_later_than_the_end_year'),
           life: 5000,
         })
         return false
@@ -292,7 +302,7 @@ export default defineComponent({
       })
     },
     onShowCurrentVacation({ year, month, day }: { year: number, month: number, day: number }) {
-      const date = DateTime.fromObject({ year, month, day }).setZone('UTC')
+      const date = DateTime.fromObject({ year, month, day }).setZone('UTC').setLocale(this.localeToUse)
       this.currentVacation = date.toFormat('MMMM dd, yyyy')
       this.filteredEmployeesVacation = this.getEmployeesWithVacation(month, day)
       this.drawerEmployeesVacation = true
@@ -311,6 +321,7 @@ export default defineComponent({
         }
         return false
       })
+
     },
     async getVacationExcel() {
       if (!this.validPeriodRange()) {
@@ -329,14 +340,14 @@ export default defineComponent({
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `Vacations Report.xlsx`)
+        link.setAttribute('download', `${this.t('vacations_report')}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',
-          summary: 'Excel vacation',
-          detail: 'Excel was created successfully',
+          summary: this.t('excel_vacation'),
+          detail: this.t('excel_was_created_successfully'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -344,7 +355,7 @@ export default defineComponent({
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel vacation',
+          summary: this.t('excel_vacation'),
           detail: msgError,
           life: 5000,
         })
@@ -366,14 +377,14 @@ export default defineComponent({
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `${this.yearSelectedStart} Vacations Used Report.xlsx`)
+        link.setAttribute('download', `${this.yearSelectedStart} ${this.t('vacations_used_report')}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',
-          summary: 'Excel vacation',
-          detail: 'Excel was created successfully',
+          summary: this.t('excel_vacation'),
+          detail: this.t('excel_was_created_successfully'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -381,7 +392,7 @@ export default defineComponent({
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel vacation',
+          summary: this.t('excel_vacation'),
           detail: msgError,
           life: 5000,
         })
@@ -403,14 +414,14 @@ export default defineComponent({
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', `${this.yearSelectedStart} to ${this.yearSelectedEnd} Vacations Summary Report.xlsx`)
+        link.setAttribute('download', `${this.yearSelectedStart} ${this.t('to')} ${this.yearSelectedEnd} ${this.t('vacations_summary_report')}.xlsx`)
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
         this.$toast.add({
           severity: 'success',
-          summary: 'Excel vacation',
-          detail: 'Excel was created successfully',
+          summary: this.t('excel_vacation'),
+          detail: this.t('excel_was_created_successfully'),
           life: 5000,
         })
         myGeneralStore.setFullLoader(false)
@@ -418,7 +429,7 @@ export default defineComponent({
         const msgError = assistResponse._data.error ? assistResponse._data.error : assistResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: 'Excel vacation',
+          summary: this.t('excel_vacation'),
           detail: msgError,
           life: 5000,
         })

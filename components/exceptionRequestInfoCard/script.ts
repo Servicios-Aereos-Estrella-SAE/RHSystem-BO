@@ -5,6 +5,12 @@ import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/E
 
 export default defineComponent({
   name: 'ExceptionRequestInfoCard',
+  setup() {
+    const { locale } = useI18n()
+    return {
+      locale
+    }
+  },
   props: {
     exceptionRequest: {
       type: Object as () => ExceptionRequestInterface,
@@ -40,8 +46,12 @@ export default defineComponent({
   data: () => ({
     selectedExceptionDate: new Date() as Date,
     drawerExceptionRequestForm: false,
-    employee: null as EmployeeInterface | null
+    employee: null as EmployeeInterface | null,
+    localeToUse: 'en',
   }),
+  created() {
+    this.localeToUse = this.locale === 'en' ? 'en' : 'es'
+  },
   mounted() {
     if (this.exceptionRequest) {
       if (this.exceptionRequest.employee) {
@@ -54,7 +64,7 @@ export default defineComponent({
     calendarDay() {
       const dateToException = DateTime.fromISO(this.exceptionRequest.requestedDate, { zone: 'utc' })
 
-      return dateToException.setLocale('en').toFormat('DDDD HH:mm')
+      return dateToException.setLocale(this.localeToUse).toFormat('DDDD HH:mm')
     },
   },
   methods: {

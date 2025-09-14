@@ -16,6 +16,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'userInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     user: { type: Object as PropType<UserInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -82,8 +88,8 @@ export default defineComponent({
       if (!userService.validateInfo(this.user)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         })
         return
@@ -93,8 +99,8 @@ export default defineComponent({
           this.isEmailInvalid = true
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Email not valid',
+            summary: this.t('validation_data'),
+            detail: `${this.t('email')} ${this.t('is_not_valid')}`,
             life: 5000,
           })
           return
@@ -104,8 +110,8 @@ export default defineComponent({
       if ((!this.user.userId || this.changePassword) && !this.user.userPassword) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing password',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_password'),
           life: 5000,
         })
         return
@@ -114,8 +120,8 @@ export default defineComponent({
         if (!userService.validateSamePass(this.user.userPassword, this.passwordConfirm)) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Passwords do not match',
+            summary: this.t('validation_data'),
+            detail: this.t('passwords_do_not_match'),
             life: 5000,
           })
           return
@@ -123,8 +129,8 @@ export default defineComponent({
         if (!userService.isValidPassword(this.user.userPassword)) {
           this.$toast.add({
             severity: 'warn',
-            summary: 'Validation data',
-            detail: 'Passwords not is valid',
+            summary: this.t('validation_data'),
+            detail: this.t('passwords_not_is_valid'),
             life: 5000,
           })
           return
@@ -140,7 +146,7 @@ export default defineComponent({
       if (userResponse.status === 201) {
         this.$toast.add({
           severity: 'success',
-          summary: `User ${this.user.userId ? 'updated' : 'created'}`,
+          summary: `${this.t('user')} ${this.user.userId ? this.t('updated') : this.t('created')}`,
           detail: userResponse._data.message,
           life: 5000,
         })
@@ -154,7 +160,7 @@ export default defineComponent({
         const msgError = userResponse._data.error ? userResponse._data.error : userResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `User ${this.user.userId ? 'updated' : 'created'}`,
+          summary: `${this.t('user')} ${this.user.userId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
         })

@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeInterface } from '~/resources/scripts/interfaces/EmployeeInterface'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -33,11 +34,19 @@ export default defineComponent({
       const first = name.charAt(0)
       return first.toUpperCase()
     },
-    getEmployeePhoto () {
+    getEmployeePhoto() {
       const CONFIG = useRuntimeConfig()
       const API_PATH = CONFIG.public.BASE_API_PATH
       const photoPath = `${API_PATH}/proxy-image?url=${this.employee.employeePhoto}`
-      return photoPath
+      let photoIsValid = false
+      const employeeService = new EmployeeService()
+      employeeService.checkImage(photoPath).then(valid => {
+        photoIsValid = valid
+      });
+      if (photoIsValid) {
+        return photoPath
+      }
+      return this.employee.employeePhoto
     }
   },
   async mounted() {

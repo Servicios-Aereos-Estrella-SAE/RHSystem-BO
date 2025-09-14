@@ -12,6 +12,12 @@ export default defineComponent({
     ToastService,
   },
   name: 'departmentInfoForm',
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   props: {
     department: { type: Object as PropType<DepartmentInterface>, required: true },
     clickOnSave: { type: Function, default: null },
@@ -19,11 +25,6 @@ export default defineComponent({
   data: () => ({
     departments: [] as DepartmentInterface[],
     submitted: false,
-    genders: [
-        { label: 'Male', value: 'Hombre' },
-        { label: 'Female', value: 'Mujer' },
-        { label: 'Other', value: 'Otro' }
-    ],
     isNewDepartment: false,
     isReady: false,
     isSubDeparment: false,
@@ -54,7 +55,7 @@ export default defineComponent({
     }
   },
   methods: {
-    setPrefix () {
+    setPrefix() {
       const prefix = this.department.departmentName.split(' ')[0]
       const type = prefix.slice(0, 3).replace('(', '')
       const order = parseInt(prefix.slice(3).replace(')', ''))
@@ -89,9 +90,9 @@ export default defineComponent({
       if (!departmentService.validate(this.department)) {
         this.$toast.add({
           severity: 'warn',
-          summary: 'Validation data',
-          detail: 'Missing data',
-            life: 5000,
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
+          life: 5000,
         })
         return
       }
@@ -112,7 +113,7 @@ export default defineComponent({
       if (departmentResponse.status === 201 || departmentResponse.status === 200) {
         this.$toast.add({
           severity: 'success',
-          summary: `Department ${this.department.departmentId ? 'updated' : 'created'}`,
+          summary: `${this.t('department')} ${this.department.departmentId ? this.t('updated') : this.t('created')}`,
           detail: departmentResponse._data.message,
           life: 5000,
         })
@@ -123,9 +124,9 @@ export default defineComponent({
         const msgError = departmentResponse._data.error ? departmentResponse._data.error : departmentResponse._data.message
         this.$toast.add({
           severity: 'error',
-          summary: `Employee ${this.department.departmentId ? 'updated' : 'created'}`,
+          summary: `${this.t('employee')} ${this.department.departmentId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
-            life: 5000,
+          life: 5000,
         })
       }
     },

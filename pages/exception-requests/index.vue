@@ -26,7 +26,7 @@
           </div>
           <div class="input-box">
             <label for="status">{{ $t('status') }}</label>
-            <Dropdown v-model="selectedStatus" :options="statusOptions" optionLabel="label" optionValue="value"
+            <Dropdown v-model="selectedStatus" :options="getStatusOptions" optionLabel="label" optionValue="value"
               :placeholder="`${$t('select')} ${$t('status')}`" filter class="w-full md:w-14rem"
               @change="handlerSearchExceptionRequest" :emptyMessage="$t('no_available_options')"
               :emptyFilterMessage="$t('no_results_found')" />
@@ -62,7 +62,7 @@
           </div>
 
           <div class="input-box">
-            <Button label="Clear Filters " class="btn btn-block" icon="pi pi-times" @click="clearFilters" />
+            <Button :label="$t('clear_filters')" class="btn btn-block" icon="pi pi-times" @click="clearFilters" />
           </div>
         </div>
         <div>
@@ -85,7 +85,7 @@
                     fill="#88a4bf" class="fill-212121"></path>
                 </svg>
               </div>
-              No Exception Requests results
+              {{ $t('no_exception_requests_results') }}
             </div>
           </div>
           <div></div>
@@ -109,13 +109,13 @@
     <transition name="page">
       <div v-if="drawerExceptionRequestDeletes" class="modal-overlay">
         <div class="modal-content">
-          <h3>{{ currentAction === 'refuse' ? 'Refuse Exception Request' : 'Accept Exception Request' }}</h3>
-          <p v-if="currentAction === 'refuse'">Please provide a reason for refuse:</p>
-          <textarea v-if="currentAction === 'refuse'" v-model="description" placeholder="Enter the reason for refuse..."
-            class="textarea"></textarea>
+          <h3>{{ currentAction === 'refuse' ? $t('refuse_exception_request') : $t('accept_exception_request') }}</h3>
+          <p v-if="currentAction === 'refuse'">{{ $t('please_provide_a_reason_for_refuse') }} </p>
+          <textarea v-if="currentAction === 'refuse'" v-model="description"
+            :placeholder="$t('enter_the_reason_for_refuse')" class="textarea"></textarea>
           <div class="modal-actions">
-            <Button label="Cancel" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
-            <Button label="Confirm" class="btn btn-confirm"
+            <Button :label="$t('cancel')" class="btn btn-cancel" @click="drawerExceptionRequestDeletes = false" />
+            <Button :label="$t('confirm')" class="btn btn-confirm"
               :disabled="currentAction === 'refuse' && !description.trim()"
               @click="currentAction === 'refuse' ? (drawerExceptionRequestDelete = true, drawerExceptionRequestDeletes = false) : confirmAccept()" />
           </div>

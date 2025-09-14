@@ -5,7 +5,7 @@
 
       <Head>
         <Title>
-          Vacations on the year
+          {{ $t('vacations_on_the_year') }}
         </Title>
       </Head>
 
@@ -14,14 +14,14 @@
           <div class="filters">
             <div class="box head-employees-page">
               <div class="input-box">
-                <label for="start-year">Start Year</label>
+                <label for="start-year">{{ $t('start_year') }}</label>
                 <Calendar v-if="isReady" v-model="periodSelectedStart" view="year" dateFormat="yy"
                   @update:modelValue="handlerPeriodStartChange" :minDate="yearStartLimitDate"
                   :maxDate="yearEndLimitDate" />
               </div>
 
               <div class="input-box">
-                <label for="end-year">End Year</label>
+                <label for="end-year">{{ $t('end_year') }}</label>
                 <Calendar v-if="isReady" v-model="periodSelectedEnd" view="year" dateFormat="yy"
                   @update:modelValue="handlerPeriodEndChange" :minDate="yearStartLimitDate"
                   :maxDate="yearEndLimitDate" />
@@ -30,9 +30,9 @@
                 <!-- -->
                 <div class="input-box">
                   <label for="search">
-                    Search employee
+                    {{ $t('search_employee') }}
                   </label>
-                  <InputText v-model="search" placeholder="Employee name or id" />
+                  <InputText v-model="search" :placeholder="$t('employee_name_or_id')" />
                 </div>
                 <button class="btn btn-block" @click="handlerSearchEmployee">
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -44,16 +44,18 @@
               </div>
               <div class="input-box">
                 <label for="role">
-                  Department
+                  {{ $t('department') }}
                 </label>
                 <Dropdown v-model="departmentId" :options="departments" optionLabel="departmentName"
-                  optionValue="departmentId" placeholder="Select a Department" filter
-                  @change="onHandlerDepartmentChange" showClear />
+                  optionValue="departmentId" :placeholder="$t('select_a_department')" filter
+                  @change="onHandlerDepartmentChange" showClear :emptyMessage="$t('no_available_options')"
+                  :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div class="input-box">
-                <label for="positionId">Position</label>
+                <label for="positionId">{{ $t('position') }}</label>
                 <Dropdown v-model="positionId" :options="positions" optionLabel="positionName" optionValue="positionId"
-                  placeholder="Select a Position" filter @change="onHandlerPositionChange" showClear />
+                  :placeholder="$t('select_a_position')" filter @change="onHandlerPositionChange" showClear
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
               </div>
               <div class="input-box">
                 <Button class="btn btn-block btn-vacations" @click="getVacationsSummaryExcel">
@@ -63,7 +65,7 @@
                       fill="#88a4bf" class="fill-000000"></path>
                   </svg>
                   <span>
-                    Vacations Summary
+                    {{ $t('vacations_summary') }}
                   </span>
                 </Button>
               </div>
@@ -75,7 +77,7 @@
                       fill="#88a4bf" class="fill-000000"></path>
                   </svg>
                   <span>
-                    Vacations
+                    {{ $t('vacations') }}
                   </span>
                 </Button>
               </div>
@@ -87,15 +89,14 @@
                       fill="#88a4bf" class="fill-000000"></path>
                   </svg>
                   <span>
-                    Vacations used
+                    {{ $t('vacations_used') }}
                   </span>
                 </Button>
               </div>
             </div>
           </div>
-
           <h2>
-            Vacations days on year {{ yearSelectedEnd }}
+            {{ $t('vacations_days_on_year') }} {{ yearSelectedEnd }}
           </h2>
 
           <CalendarView :year="yearSelectedEnd" :marked-days="filterVacations" marked-day-class="vacation"
@@ -110,7 +111,7 @@
 
     <Sidebar v-model:visible="drawerEmployeesVacation" header="Vacation form" position="right"
       class="vacation-form-sidebar" :showCloseIcon="true">
-      <h4>Vacation {{ currentVacation }}</h4>
+      <h4>{{ $t('vacation') }} {{ currentVacation }}</h4>
       <div v-if="filteredEmployeesVacation.length > 0" class="vacations-wrapper">
         <div v-for="(employee, index) in filteredEmployeesVacation" :key="`employee-${employee.employeeId}-${index}`">
           <EmployeeVacationInfoCard :employee="employee" :showDays="false" />
@@ -118,7 +119,7 @@
       </div>
       <div v-else class="employee-card-wrapper">
         <div class="empty-data">
-          There are no employees
+          {{ $t('there_are_no_employees') }}
         </div>
       </div>
     </Sidebar>

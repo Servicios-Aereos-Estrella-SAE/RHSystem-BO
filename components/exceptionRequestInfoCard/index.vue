@@ -5,7 +5,7 @@
       {{ `${exceptionRequest?.exceptionType.exceptionTypeTypeName}` }}
     </div>
 
-    <div class="exception-request-details">
+    <div v-if="exceptionRequest.employee" class="exception-request-details">
       <div class="property-row">
         <span>{{ $t('employee') }} {{ $t('name') }}</span>
         <span class="property-value">
@@ -30,10 +30,10 @@
       </div>
     </div>
     <div class="role assist capitalize" v-if="exceptionRequest.exceptionRequestStatus === 'accepted'">
-      {{ `${exceptionRequest.exceptionRequestStatus}` }}
+      {{ `${$t(exceptionRequest.exceptionRequestStatus)}` }}
     </div>
     <div class="role no-assist capitalize" v-if="exceptionRequest.exceptionRequestStatus === 'refused'">
-      {{ `${exceptionRequest.exceptionRequestStatus}` }}
+      {{ `${$t(exceptionRequest.exceptionRequestStatus)}` }}
     </div>
 
     <div class="box-tools-footer" v-if="showEditButton && exceptionRequest.exceptionRequestStatus === 'pending'">
