@@ -119,21 +119,32 @@ export default defineComponent({
 
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-            const shiftExceptionsDate = DateTime
-              .fromFormat(this.shiftExceptionsDate, 'LLLL dd, yyyy')
-              .startOf('day');
-
-            const limitDate = DateTime
-              .fromJSDate(startDateLimit)
-              .startOf('day')
-
-            if (shiftExceptionsDate.toMillis() >= limitDate.toMillis()) {
-              this.canManageToPreviousDays = true
-            }
-          } else {
+          if (authUser.role.roleManagementDays === null) {
             this.canManageToPreviousDays = true
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            if (authUser.role.roleManagementDays > 0) {
+              const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+              const fechaStr = this.shiftExceptionsDate.toLowerCase();
+
+              const isSpanish = fechaStr.includes('de');
+
+              const shiftExceptionsDate = DateTime
+                .fromFormat(
+                  fechaStr,
+                  isSpanish ? "dd 'de' LLLL 'de' yyyy" : 'LLLL dd, yyyy',
+                  { locale: isSpanish ? 'es' : 'en' }
+                )
+                .startOf('day');
+
+              const limitDate = DateTime
+                .fromJSDate(startDateLimit)
+                .startOf('day')
+              if (shiftExceptionsDate.toMillis() >= limitDate.toMillis()) {
+                this.canManageToPreviousDays = true
+              }
+            } else {
+              this.canManageToPreviousDays = false
+            }
           }
         }
       }

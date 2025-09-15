@@ -35,6 +35,7 @@ export default defineComponent({
     dateInvalid: false,
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
     localeToUse: 'en',
+    canUseCalendar: false
   }),
   watch: {
     'assist.assistPunchTime'(val: Date) {
@@ -53,6 +54,8 @@ export default defineComponent({
     this.isReady = false
     if (!myGeneralStore.isRoot) {
       this.getStartPeriodDay()
+    } else {
+      this.canUseCalendar = true
     }
 
     myGeneralStore.setFullLoader(false)
@@ -65,13 +68,19 @@ export default defineComponent({
         this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
       } else {
         const { data } = useAuth()
-
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          } else {
+          if (authUser.role.roleManagementDays === null) {
+            this.canUseCalendar = true
             this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            if (authUser.role.roleManagementDays > 0) {
+              this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+              this.canUseCalendar = true
+            } else {
+              this.startDateLimit = DateTime.now().plus({ years: 100 }).toJSDate()
+              this.canUseCalendar = false
+            }
           }
         }
       }

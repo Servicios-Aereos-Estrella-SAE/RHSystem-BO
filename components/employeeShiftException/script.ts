@@ -108,13 +108,17 @@ export default defineComponent({
 
       const authUser = data.value as unknown as UserInterface
       if (authUser.role) {
-        if (authUser.role.roleManagementDays) {
-          const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          const inputDate = new Date(this.date.toString())
-          startDateLimit.setHours(0, 0, 0, 0)
-          return inputDate >= startDateLimit
-        } else {
+        if (authUser.role.roleManagementDays === null) {
           return true
+        } else if (typeof authUser.role.roleManagementDays === 'number') {
+          if (authUser.role.roleManagementDays > 0) {
+            const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+            const inputDate = new Date(this.date.toString())
+            startDateLimit.setHours(0, 0, 0, 0)
+            return inputDate >= startDateLimit
+          } else {
+            return false
+          }
         }
       }
     },

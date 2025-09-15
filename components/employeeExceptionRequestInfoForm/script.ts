@@ -234,9 +234,21 @@ export default defineComponent({
         })
         return
       }
-
-
       const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        if (!this.isDateAfterOrEqualToStartDay()) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: this.t('validation_data'),
+            detail: `${this.t('the_date')} ${this.t('is_in_the_past_and_you_do_not_have_permission_to_save_it')} `,
+            life: 5000,
+          })
+          return
+        }
+      }
+
+
+
       myGeneralStore.setFullLoader(true)
 
       let exceptionRequestResponse = null
@@ -361,5 +373,24 @@ export default defineComponent({
     async handlerClickOnDecline() {
       this.$emit('onExceptionRequestDecline')
     },
+    isDateAfterOrEqualToStartDay() {
+      const { data } = useAuth()
+
+      const authUser = data.value as unknown as UserInterface
+      if (authUser.role) {
+        if (authUser.role.roleManagementDays === null) {
+          return true
+        } else if (typeof authUser.role.roleManagementDays === 'number') {
+          if (authUser.role.roleManagementDays > 0) {
+            const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
+            const inputDate = new Date(this.date.toString())
+            startDateLimit.setHours(0, 0, 0, 0)
+            return inputDate >= startDateLimit
+          } else {
+            return false
+          }
+        }
+      }
+    }
   }
 })
