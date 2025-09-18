@@ -103,11 +103,9 @@ export default defineComponent({
           if (authUser.role.roleManagementDays === null) {
             this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
           } else if (typeof authUser.role.roleManagementDays === 'number') {
-            if (authUser.role.roleManagementDays > 0) {
-              this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-            } else {
-              this.startDateLimit = DateTime.now().plus({ years: 100 }).toJSDate()
-            }
+            const days = authUser.role.roleManagementDays
+            const date = DateTime.now().setZone('UTC-6')
+            this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
           }
         }
       }
@@ -268,7 +266,7 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
     },
-    onSave(shiftException: ShiftExceptionInterface, index: number) {
+    async onSave(shiftException: ShiftExceptionInterface, index: number) {
       if (shiftException.shiftExceptionsDate) {
         const shiftExceptionsDate = DateTime.fromISO(shiftException.shiftExceptionsDate.toString(), { setZone: true })
           .setZone('UTC-6')
@@ -278,6 +276,7 @@ export default defineComponent({
       }
       this.shiftExceptions[index] = shiftException
       this.getCurrentInfo()
+      this.$emit('save', [] as Array<ShiftExceptionErrorInterface>)
       this.$forceUpdate()
     },
     async onSaveAll(shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {

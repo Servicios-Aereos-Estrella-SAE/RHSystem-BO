@@ -126,7 +126,7 @@ export default defineComponent({
     }
 
     let hasAccess = false
-    const fullPath = this.$route.path;
+    const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
     const firstSegment = fullPath.split('/')[1]
     let systemModuleSlug = firstSegment
     if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
@@ -381,14 +381,13 @@ export default defineComponent({
         if (authUser.role.roleManagementDays === null) {
           return true
         } else if (typeof authUser.role.roleManagementDays === 'number') {
-          if (authUser.role.roleManagementDays > 0) {
-            const startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-            const inputDate = new Date(this.date.toString())
-            startDateLimit.setHours(0, 0, 0, 0)
-            return inputDate >= startDateLimit
-          } else {
-            return false
-          }
+          const days = authUser.role.roleManagementDays
+          const now = DateTime.now().setZone('UTC-6')
+          const startDateLimit = (days > 0 ? now.minus({ days }) : now).toJSDate()
+          startDateLimit.setHours(0, 0, 0, 0)
+
+          const inputDate = new Date(this.exceptionRequest.requestedDate)
+          return inputDate >= startDateLimit
         }
       }
     }

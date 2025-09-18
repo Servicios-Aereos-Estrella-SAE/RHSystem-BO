@@ -35,7 +35,7 @@
         {{ vacationPeriod.vacationPeriodAvailableDays.toString().padStart(2, '0') }}
       </div>
     </div>
-    <div class="info">
+    <div v-if="vacationPeriod.vacationPreviousAvailableDays" class="info">
       <div class="prop">
         {{ $t('available_previous_days') }}
       </div>
