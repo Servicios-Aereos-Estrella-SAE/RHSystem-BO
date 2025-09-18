@@ -335,12 +335,8 @@ export default defineComponent({
         this.displaySidebarVacationsManager = false
         this.displaySidebarVacations = false
         this.displaySidebarWorkDisabilities = false
-      } else {
-        this.displaySidebarVacationsManager = false
-        this.displaySidebarVacationsManager = true
       }
       myGeneralStore.setFullLoader(false)
-
       this.isReady = true
     },
     async onSaveExceptionRequest(exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {

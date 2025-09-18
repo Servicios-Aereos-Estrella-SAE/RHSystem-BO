@@ -127,7 +127,6 @@ export default defineComponent({
     myGeneralStore.setFullLoader(true)
     this.status = this.capitalizeFirstLetter(this.t('active'))
     const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
-    console.log(systemModuleSlug)
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
       this.canCreate = true
