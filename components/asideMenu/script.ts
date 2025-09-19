@@ -177,7 +177,8 @@ export default defineComponent({
     async handlerLogout() {
       try {
         const { signOut } = useAuth()
-        await signOut({ callbackUrl: '/' })
+        const localePath = useLocalePath()
+        await signOut({ callbackUrl: localePath('/') })
       } catch (error) {
         console.error('🚀 ---------------------------------🚀')
         console.error('🚀 ~ handlerLogout ~ error:', error)

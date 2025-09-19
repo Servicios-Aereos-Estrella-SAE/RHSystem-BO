@@ -64,7 +64,8 @@ export default defineComponent({
       const session: string = status.value as string
 
       if (session === 'authenticated') {
-        return this.$router.push({ path: '/employees-attendance-monitor' })
+        const localePath = useLocalePath()
+        return this.$router.push(localePath('/employees-attendance-monitor'))
       }
 
       this.isGuest = true
@@ -78,7 +79,8 @@ export default defineComponent({
 
       try {
         const { signIn } = useAuth()
-        await signIn(this.credentials, { callbackUrl: '/employees-attendance-monitor' })
+        const localePath = useLocalePath()
+        await signIn(this.credentials, { callbackUrl: localePath('/employees-attendance-monitor') as unknown as string })
       } catch (error) {
         this.credentials.userPassword = ''
         this.invalidCredentials = true
