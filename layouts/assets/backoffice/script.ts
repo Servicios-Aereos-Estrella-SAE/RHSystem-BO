@@ -62,7 +62,7 @@ export default defineComponent({
     const businessFavicon = ref(myGeneralStore.favicon)
 
     useHead({
-      titleTemplate: `${businessName.value} BO | %s`,
+      titleTemplate: `${businessName.value} RH | %s`,
       link: [
         { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
       ]
@@ -99,9 +99,11 @@ export default defineComponent({
     async handlerLogout() {
       try {
         const { signOut } = useAuth()
-        await signOut({ callbackUrl: '/' })
+        const localePath = useLocalePath()
+        await signOut({ callbackUrl: localePath('/') })
       } catch (error) {
-        this.$router.push({ path: "/" })
+        const localePath = useLocalePath()
+        this.$router.push(localePath('/'))
       }
     },
     updateScreenWidth () {

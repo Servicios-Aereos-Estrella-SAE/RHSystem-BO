@@ -73,6 +73,7 @@ export default defineComponent({
     await this.setSessionUser()
     this.isReady = false
     this.currentVacationPeriod = this.vacationPeriod
+    this.getCurrentInfo()
     await this.getVacations()
     if (this.employee.deletedAt) {
       this.isDeleted = true
@@ -98,13 +99,14 @@ export default defineComponent({
         this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
       } else {
         const { data } = useAuth()
-
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          } else {
+          if (authUser.role.roleManagementDays === null) {
             this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            const days = authUser.role.roleManagementDays
+            const date = DateTime.now().setZone('UTC-6')
+            this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
           }
         }
       }
@@ -214,7 +216,7 @@ export default defineComponent({
       if (this.shiftException && this.shiftException.shiftExceptionsDate) {
         this.shiftExceptionsDate = DateTime.fromJSDate(new Date(this.shiftException.shiftExceptionsDate.toString()))
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toFormat('DDD')
       }
       this.drawerShiftExceptionDelete = true
@@ -265,16 +267,19 @@ export default defineComponent({
       }
       myGeneralStore.setFullLoader(false)
     },
-    onSave(shiftException: ShiftExceptionInterface, index: number) {
+    async onSave(shiftException: ShiftExceptionInterface, index: number) {
       if (shiftException.shiftExceptionsDate) {
         const shiftExceptionsDate = DateTime.fromISO(shiftException.shiftExceptionsDate.toString(), { setZone: true })
           .setZone('UTC-6')
-          .setLocale('en')
+          .setLocale(this.localeToUse)
           .toJSDate()
+
         shiftException.shiftExceptionsDate = shiftExceptionsDate
       }
       this.shiftExceptions[index] = shiftException
       this.getCurrentInfo()
+      await this.getVacations()
+      this.$emit('save', [] as Array<ShiftExceptionErrorInterface>)
       this.$forceUpdate()
     },
     async onSaveAll(shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
@@ -302,6 +307,7 @@ export default defineComponent({
       return `${formattedOriginalDate} - ${formattedNextYearDate}`
     },
     async getCurrentInfo() {
+      this.isReady = false
       if (this.employee.employeeId && this.employee.employeeHireDate && this.currentVacationPeriod) {
         this.countsNewVacation = 0
         const employeeService = new EmployeeService()
@@ -330,6 +336,7 @@ export default defineComponent({
           }
         }
       }
+      this.isReady = true
     },
     getDateFormatted(date: Date) {
       if (!date) {
@@ -337,7 +344,7 @@ export default defineComponent({
       }
       return DateTime.fromJSDate(date)
         .setZone('UTC-6')
-        .setLocale('en')
+        .setLocale(this.localeToUse)
         .toFormat('DDD')
     },
   }
