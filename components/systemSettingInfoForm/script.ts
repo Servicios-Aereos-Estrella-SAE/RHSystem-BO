@@ -10,11 +10,20 @@ import SystemModuleService from "~/resources/scripts/services/SystemModuleServic
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import ToleranceService from "~/resources/scripts/services/ToleranceService";
 import type { ToleranceInterface } from "~/resources/scripts/interfaces/ToleranceInterface";
+import SystemSettingsEmployeeService from "~/resources/scripts/services/SystemSettingsEmployeeService";
+import type { SystemSettingsEmployeeInterface } from "~/resources/scripts/interfaces/SystemSettingsEmployeeInterface";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   components: {
     Toast,
     ToastService,
+  },
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
   },
   name: "systemSettingInfoForm",
   props: {
@@ -43,6 +52,10 @@ export default defineComponent({
     canUpdate: true,
     tardinessToleranceId: null,
     restrictFutureVacationSwicht: false,
+    employeeLimit: null as number | null,
+    employeeLimitId: null as number | null,
+    employeeLimitHistory: [] as SystemSettingsEmployeeInterface[],
+    showHistoryDropdown: false,
   }),
   computed: {
     isRoot() {
@@ -78,6 +91,7 @@ export default defineComponent({
     await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
+    this.fetchEmployeeLimit();
   },
   methods: {
     async getSystemModules() {
@@ -151,9 +165,8 @@ export default defineComponent({
       if (toleranceResponse) {
         this.$toast.add({
           severity: "success",
-          summary: `Delay tolerance ${this.tardinessToleranceId ? "updated" : "created"
-            }`,
-          detail: "Delay tolerance saved successfully",
+          summary: this.tardinessToleranceId ? this.t('delay_tolerance_updated') : this.t('delay_tolerance_created'),
+          detail: this.t('delay_tolerance_saved_successfully'),
           life: 5000,
         });
         this.toleranceDelayId = toleranceResponse._data.data.toleranceId
@@ -162,7 +175,7 @@ export default defineComponent({
         const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Delay ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          summary: this.tardinessToleranceId ? this.t('delay_tolerance_updated') : this.t('delay_tolerance_created'),
           detail: msgError,
           life: 5000,
         })
@@ -186,9 +199,8 @@ export default defineComponent({
       if (toleranceResponse) {
         this.$toast.add({
           severity: "success",
-          summary: `Fault tolerance ${this.tardinessToleranceId ? "updated" : "created"
-            }`,
-          detail: "Fault tolerance saved successfully",
+          summary: this.tardinessToleranceId ? this.t('fault_tolerance_updated') : this.t('fault_tolerance_created'),
+          detail: this.t('fault_tolerance_saved_successfully'),
           life: 5000,
         });
         this.toleranceFaultId = toleranceResponse._data.data.toleranceId
@@ -197,7 +209,7 @@ export default defineComponent({
         const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Fault ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          summary: this.tardinessToleranceId ? this.t('fault_tolerance_updated') : this.t('fault_tolerance_created'),
           detail: msgError,
           life: 5000,
         })
@@ -222,9 +234,8 @@ export default defineComponent({
       if (toleranceResponse) {
         this.$toast.add({
           severity: "success",
-          summary: `Tardiness tolerance ${this.tardinessToleranceId ? "updated" : "created"
-            }`,
-          detail: "Tardiness tolerance saved successfully",
+          summary: this.tardinessToleranceId ? this.t('tardiness_tolerance_updated') : this.t('tardiness_tolerance_created'),
+          detail: this.t('tardiness_tolerance_saved_successfully'),
           life: 5000,
         });
       } else {
@@ -232,7 +243,7 @@ export default defineComponent({
         const severityType = toleranceResponse.status === 500 ? 'error' : 'warn'
         this.$toast.add({
           severity: severityType,
-          summary: `Tardiness ${this.tardinessToleranceId ? 'updated' : 'created'}`,
+          summary: this.tardinessToleranceId ? this.t('tardiness_tolerance_updated') : this.t('tardiness_tolerance_created'),
           detail: msgError,
           life: 5000,
         })
@@ -251,8 +262,8 @@ export default defineComponent({
       if (response) {
         this.$toast.add({
           severity: "success",
-          summary: `System setting Delete`,
-          detail: "Delete sucess",
+          summary: this.t('system_setting_delete'),
+          detail: this.t('delete_success'),
           life: 5000,
         });
         if (id === this.toleranceDelayId) {
@@ -295,8 +306,8 @@ export default defineComponent({
       if (!systemSettingService.validateSystemSettingInfo(this.systemSetting)) {
         this.$toast.add({
           severity: "warn",
-          summary: "Validation data",
-          detail: "Missing data",
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
           life: 5000,
         });
         return;
@@ -304,8 +315,8 @@ export default defineComponent({
       if (this.files.length > 1) {
         this.$toast.add({
           severity: "warn",
-          summary: "Image invalid",
-          detail: "Only one image is allowed to logo",
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_logo'),
           life: 5000,
         });
         return;
@@ -313,8 +324,8 @@ export default defineComponent({
       if (this.bannerFiles.length > 1) {
         this.$toast.add({
           severity: "warn",
-          summary: "Image invalid",
-          detail: "Only one image is allowed to banner",
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_banner'),
           life: 5000,
         });
         return;
@@ -322,8 +333,8 @@ export default defineComponent({
       if (this.faviconFiles.length > 1) {
         this.$toast.add({
           severity: "warn",
-          summary: "Image invalid",
-          detail: "Only one image is allowed to favicon",
+          summary: this.t('image_invalid'),
+          detail: this.t('only_one_image_favicon'),
           life: 5000,
         });
         return;
@@ -337,8 +348,8 @@ export default defineComponent({
           if (!isImage || !allowedFormats.includes(mimeType)) {
             this.$toast.add({
               severity: "warn",
-              summary: "Invalid Image",
-              detail: "Only .png, .webp, and .svg images are allowed to logo.",
+              summary: this.t('invalid_image'),
+              detail: this.t('only_png_webp_svg_logo'),
               life: 5000,
             });
             return;
@@ -354,8 +365,8 @@ export default defineComponent({
           if (!isImage || !allowedFormats.includes(mimeType)) {
             this.$toast.add({
               severity: "warn",
-              summary: "Invalid Image",
-              detail: "Only .png, .webp, and .svg images are allowed to banner.",
+              summary: this.t('invalid_image'),
+              detail: this.t('only_png_webp_svg_banner'),
               life: 5000,
             });
             return;
@@ -371,8 +382,8 @@ export default defineComponent({
           if (!isImage || !allowedFormats.includes(mimeType)) {
             this.$toast.add({
               severity: "warn",
-              summary: "Invalid Image",
-              detail: "Only .png, .webp, and .svg images are allowed to favicon.",
+              summary: this.t('invalid_image'),
+              detail: this.t('only_png_webp_svg_favicon'),
               life: 5000,
             });
             return;
@@ -415,8 +426,7 @@ export default defineComponent({
         ) {
           this.$toast.add({
             severity: "success",
-            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
-              }`,
+            summary: this.systemSetting.systemSettingId ? this.t('system_setting_updated') : this.t('system_setting_created'),
             detail: systemSettingResponse._data.message,
             life: 5000,
           });
@@ -437,8 +447,8 @@ export default defineComponent({
               if (response.status === 201) {
                 this.$toast.add({
                   severity: 'success',
-                  summary: 'System modules assigned',
-                  detail: 'All system modules were assigned successfully.',
+                  summary: this.t('system_modules_assigned'),
+                  detail: this.t('all_system_modules_assigned_successfully'),
                   life: 5000,
                 });
               } else {
@@ -447,8 +457,7 @@ export default defineComponent({
                   : response._data.message;
                 this.$toast.add({
                   severity: "warn",
-                  summary: `System modules assign ${this.systemSetting.systemSettingId ? "updated" : "created"
-                    }`,
+                  summary: this.systemSetting.systemSettingId ? this.t('system_modules_assign_updated') : this.t('system_modules_assign_created'),
                   detail: msgError,
                   life: 5000,
                 });
@@ -463,8 +472,7 @@ export default defineComponent({
             : systemSettingResponse._data.message;
           this.$toast.add({
             severity: "warn",
-            summary: `System setting ${this.systemSetting.systemSettingId ? "updated" : "created"
-              }`,
+            summary: this.systemSetting.systemSettingId ? this.t('system_setting_updated') : this.t('system_setting_created'),
             detail: msgError,
             life: 5000,
           });
@@ -472,8 +480,8 @@ export default defineComponent({
       } else {
         this.$toast.add({
           severity: "error",
-          summary: `System setting`,
-          detail: "System setting not found",
+          summary: this.t('system_setting_created'),
+          detail: this.t('system_setting_not_found'),
           life: 5000,
         });
       }
@@ -515,6 +523,177 @@ export default defineComponent({
     },
     updateColor(event: any) {
       this.systemSetting.systemSettingSidebarColor = "#" + event.value;
+    },
+    async fetchEmployeeLimit() {
+      if (this.systemSetting.systemSettingId) {
+        const systemSettingsEmployeeService = new SystemSettingsEmployeeService();
+        const response = await systemSettingsEmployeeService.getBySystemSettingId(this.systemSetting.systemSettingId);
+        if (response && response.status === 200) {
+          const employees = response._data.data.systemSettingsEmployees;
+          this.employeeLimitHistory = employees.sort((a: SystemSettingsEmployeeInterface, b: SystemSettingsEmployeeInterface) =>
+            new Date(b.systemSettingEmployeeUpdatedAt || '').getTime() - new Date(a.systemSettingEmployeeUpdatedAt || '').getTime()
+          );
+
+          // Find the active employee limit
+          const activeEmployee = employees.find((emp: SystemSettingsEmployeeInterface) => emp.isActive === 1);
+          if (activeEmployee) {
+            this.employeeLimit = activeEmployee.employeeLimit;
+            this.employeeLimitId = activeEmployee.systemSettingEmployeeId;
+          }
+        }
+      }
+    },
+    async saveEmployeeLimit() {
+      // Validate input
+      if (this.employeeLimit !== null && (this.employeeLimit < 0 || this.employeeLimit > 999999)) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('invalid_input'),
+          detail: this.t('employee_limit_validation'),
+          life: 5000,
+        });
+        return;
+      }
+
+      // Check if the value has changed
+      const currentActiveEmployee = this.employeeLimitHistory.find(emp => emp.isActive === 1);
+      if (currentActiveEmployee && currentActiveEmployee.employeeLimit === this.employeeLimit) {
+        // Simulate success without API call
+        this.$toast.add({
+          severity: "success",
+          summary: this.t('employee_limit_already_set'),
+          detail: this.t('employee_limit_already_set_to_this_value'),
+          life: 3000,
+        });
+        return;
+      }
+
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      const systemSettingsEmployeeService = new SystemSettingsEmployeeService();
+      const response = await systemSettingsEmployeeService.create(this.systemSetting.systemSettingId!, this.employeeLimit);
+
+      myGeneralStore.setFullLoader(false);
+
+      if (response) {
+        let severity = "success";
+        let summary = "Employee limit created";
+        let detail = "Employee limit was created successfully";
+
+        switch (response.status) {
+          case 200:
+          case 201:
+            severity = "success";
+            summary = this.t('employee_limit_created');
+            detail = response._data?.message || this.t('employee_limit_created_successfully');
+            this.employeeLimitId = response._data?.data?.systemSettingsEmployee?.systemSettingEmployeeId;
+            await this.fetchEmployeeLimit(); // Refresh the data
+            break;
+          case 400:
+            severity = "warn";
+            summary = this.t('failed_to_set_employee_limit');
+            detail = this.t('failed_to_establish_employee_limit');
+            break;
+          case 404:
+            severity = "warn";
+            summary = this.t('error_unknown_element');
+            detail = this.t('error_unknown_element');
+            break;
+          case 422:
+            severity = "info";
+            summary = this.t('invalid_format');
+            detail = this.t('invalid_format');
+            break;
+          case 500:
+            severity = "error";
+            summary = this.t('server_error');
+            detail = this.t('server_error');
+            break;
+          default:
+            severity = "warn";
+            summary = this.t('unexpected_error');
+            detail = response._data?.message || this.t('unexpected_error_occurred');
+        }
+
+        this.$toast.add({
+          severity: severity as "success" | "info" | "warn" | "error",
+          summary,
+          detail,
+          life: 5000,
+        });
+      }
+    },
+    async deleteEmployeeLimit() {
+      if (!this.employeeLimitId || this.employeeLimit === null || this.employeeLimit === 0) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('no_employee_limit_to_delete'),
+          detail: this.t('no_employee_limit_to_delete_message'),
+          life: 5000,
+        });
+        return;
+      }
+
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      const systemSettingsEmployeeService = new SystemSettingsEmployeeService();
+      const response = await systemSettingsEmployeeService.delete(this.systemSetting.systemSettingId!);
+
+      myGeneralStore.setFullLoader(false);
+
+      if (response) {
+        let severity = "success";
+        let summary = "Employee limit deleted";
+        let detail = "Employee limit was deleted successfully";
+
+        switch (response.status) {
+          case 200:
+          case 201:
+            severity = "success";
+            summary = this.t('employee_limit_deleted');
+            detail = response._data?.message || this.t('employee_limit_deleted_successfully');
+            this.employeeLimit = null;
+            this.employeeLimitId = null;
+            await this.fetchEmployeeLimit(); // Refresh the data
+            break;
+          case 400:
+            severity = "warn";
+            summary = this.t('failed_to_set_employee_limit');
+            detail = this.t('failed_to_establish_employee_limit');
+            break;
+          case 404:
+            severity = "warn";
+            summary = this.t('error_unknown_element');
+            detail = this.t('error_unknown_element');
+            break;
+          case 422:
+            severity = "info";
+            summary = this.t('invalid_format');
+            detail = this.t('invalid_format');
+            break;
+          case 500:
+            severity = "error";
+            summary = this.t('server_error');
+            detail = this.t('server_error');
+            break;
+          default:
+            severity = "warn";
+            summary = this.t('unexpected_error');
+            detail = response._data?.message || this.t('unexpected_error_occurred');
+        }
+
+        this.$toast.add({
+          severity: severity as "success" | "info" | "warn" | "error",
+          summary,
+          detail,
+          life: 5000,
+        });
+      }
+    },
+    toggleHistoryDropdown() {
+      this.showHistoryDropdown = !this.showHistoryDropdown;
     },
   },
 });

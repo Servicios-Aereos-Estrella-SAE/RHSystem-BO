@@ -2,17 +2,17 @@
   <div class="box system-setting-info-form">
 
     <h4>
-      {{ isNewSystemSetting ? 'New system setting' : 'Update system setting' }}
+      {{ isNewSystemSetting ? t('system_setting') : t('update_system_setting')}}
     </h4>
     <div v-if="isReady" class="system-setting-form">
       <div class="form-container">
         <div class="input-box">
           <label for="userActive">
-            {{ activeSwicht ? 'Active' : 'Inactive' }}</label>
+            {{ activeSwicht ? t('active') : t('inactive') }}</label>
           <InputSwitch v-model="activeSwicht" />
         </div>
         <div class="input-box">
-          <label for="logo">Logo</label>
+          <label for="logo">{{ t('logo') }}</label>
           <div v-if="systemSetting && systemSetting.systemSettingLogo"
             class="p-d-flex p-ai-center p-mb-2 image-system-setting">
             <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
@@ -32,12 +32,12 @@
               </div>
             </template>
             <template #empty>
-              <p>Drag and drop file to here to upload.</p>
+              <p>{{ t('drag_and_drop_file_to_here_to_upload.') }}</p>
             </template>
           </FileUpload>
         </div>
         <div class="input-box">
-          <label for="logo">Banner</label>
+          <label for="logo">{{ t('banner') }}</label>
           <div v-if="systemSetting && systemSetting.systemSettingBanner"
             class="p-d-flex p-ai-center p-mb-2 image-system-setting">
             <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
@@ -57,12 +57,12 @@
               </div>
             </template>
             <template #empty>
-              <p>Drag and drop file to here to upload.</p>
+              <p>{{ t('drag_and_drop_file_to_here_to_upload.') }}</p>
             </template>
           </FileUpload>
         </div>
         <div class="input-box">
-          <label for="logo">Favicon</label>
+          <label for="logo">{{ t('favicon') }}</label>
           <div v-if="systemSetting && systemSetting.systemSettingFavicon"
             class="p-d-flex p-ai-center p-mb-2 image-system-setting">
             <img role="presentation" class="p-fileupload-file-thumbnail" width="50"
@@ -82,18 +82,18 @@
               </div>
             </template>
             <template #empty>
-              <p>Drag and drop file to here to upload.</p>
+              <p>{{ t('drag_and_drop_file_to_here_to_upload.') }}</p>
             </template>
           </FileUpload>
         </div>
         <div class="input-box">
-          <label for="firstName">Trade Name</label>
+          <label for="firstName">{{ t('trade_name') }}</label>
           <InputText v-model="systemSetting.systemSettingTradeName" placeholder="Enter Trade Name" />
-          <small class="p-error" v-if="submitted && !systemSetting.systemSettingTradeName">Trade name is
-            required.</small>
+          <small class="p-error" v-if="submitted && !systemSetting.systemSettingTradeName">{{ t('Trade_name_is_required.') }}
+            </small>
         </div>
         <div class="iput-box">
-          <label for="firstName">Sidebar Color</label>
+          <label for="firstName">{{ t('Sidebar_color') }}</label>
           <div class="color-container">
             <InputText v-model="systemSetting.systemSettingSidebarColor" placeholder="Enter Color" @input="addHash"
               class="color-text" />
@@ -102,47 +102,98 @@
                 class="mb-3 color " @change="updateColor" />
             </div>
           </div>
-          <small class="p-error" v-if="submitted && !systemSetting.systemSettingSidebarColor">Sidebar color is
-            required.</small>
+          <small class="p-error" v-if="submitted && !systemSetting.systemSettingSidebarColor">{{t('sidebar_color_is_required.')}}</small>
         </div>
 
 
         <div class="input-box">
-          <label for="systemSettingToleranceCountPerAbsence">Tolerance count to delay</label>
+          <label for="systemSettingToleranceCountPerAbsence">{{ t('tolerance_count_to_delay') }}</label>
           <InputNumber id="ToleranceCountPerAbsence" v-model="systemSetting.systemSettingToleranceCountPerAbsence"
             :invalid="submitted" />
-          <small class="p-error" v-if="submitted && !systemSetting.systemSettingToleranceCountPerAbsence">Tolerance
-            count per absence is
-            required.</small>
+          <small class="p-error" v-if="submitted && !systemSetting.systemSettingToleranceCountPerAbsence">{{ t('Tolerance_count_per_absence_is_required.') }}</small>
         </div>
 
 
         <div v-if="!isNewSystemSetting" class="input-box">
-          <label for="toleranceDelay">Tolerance Delay (Minutes)</label>
+          <label for="toleranceDelay">{{ t('tolerance_delay_minutes') }}</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="toleranceDelay" v-model="toleranceDelay" :invalid="submitted" />
             <div style="display:flex; gap: 20px">
-              <Button label="Save Delay" severity="primary" @click="saveDelay()" />
-              <Button label="Delete" severity="danger" @click="deleteDelay()" />
+              <Button :label="t('save_delay')" severity="primary" @click="saveDelay()" />
+              <Button :label="t('delete')" severity="danger" @click="deleteDelay()" />
             </div>
           </div>
 
         </div>
 
         <div v-if="!isNewSystemSetting" class="input-box">
-          <label for="toleranceFault">Tolerance Fault (Minutes)</label>
+          <label for="toleranceFault">{{ t('tolerance_fault_minutes') }}</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="toleranceFault" v-model="toleranceFault" :invalid="submitted" />
             <div style="display:flex; gap: 20px">
 
-              <Button label="Save Fault" severity="primary" @click="saveFault()" />
-              <Button label="Delete" severity="danger" @click="deleteFault()" />
+              <Button :label="t('save_fault')" severity="primary" @click="saveFault()" />
+              <Button :label="t('delete')" severity="danger" @click="deleteFault()" />
             </div>
           </div>
         </div>
+
+        <div v-if="!isNewSystemSetting" class="input-box">
+          <label for="employeeLimit">{{ t('employee_limit') }}</label>
+          <div style="display: flex; align-items: center; gap: 40px;">
+            <InputNumber
+              id="employeeLimit"
+              v-model="employeeLimit"
+              :invalid="submitted"
+              :min="0"
+              :max="999999"
+              :allowEmpty="true"
+              :useGrouping="false"
+              :minFractionDigits="0"
+              :maxFractionDigits="0"
+              :placeholder="t('enter_employee_limit')"
+            />
+            <div style="display:flex; gap: 20px">
+              <Button :label="t('save_employee_limit')" severity="primary" @click="saveEmployeeLimit()" />
+              <Button :label="t('delete')" severity="danger" @click="deleteEmployeeLimit()" />
+              <Button
+                v-if="employeeLimitHistory.filter(emp => emp.isActive === 0).length > 0"
+                :label="t('history')"
+                severity="secondary"
+                @click="toggleHistoryDropdown()"
+              />
+            </div>
+          </div>
+
+          <!-- History Dropdown -->
+          <div v-if="showHistoryDropdown && employeeLimitHistory.filter(emp => emp.isActive === 0).length > 0" class="history-dropdown">
+            <div class="history-header">
+              <h4>{{ t('employee_limit_history') }}</h4>
+              <Button icon="pi pi-times" severity="secondary" text @click="showHistoryDropdown = false" />
+            </div>
+            <div class="history-list">
+              <div
+                v-for="employee in employeeLimitHistory.filter(emp => emp.isActive === 0)"
+                :key="employee.systemSettingEmployeeId"
+                class="history-item"
+              >
+                <div class="history-info">
+                  <span class="limit-value">{{ employee.employeeLimit }}</span>
+                  <span class="limit-date">
+                    {{ new Date(employee.systemSettingEmployeeCreatedAt || '').toLocaleDateString() }}
+                  </span>
+                </div>
+                <div class="history-status inactive">
+                  {{ t('inactive') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div v-if="isRoot" class="input-box">
           <DataTable :value="groupedSystemModules" tableStyle="min-width: 50rem">
-            <Column v-for="(dept, index) in groupedSystemModules[0]" :key="index" header="System Module">
+            <Column v-for="(dept, index) in groupedSystemModules[0]" :key="index" :header="t('system_module')">
               <template #body="slotProps">
                 <div v-if="slotProps.data[index]" class="item-system-modules">
                   <Checkbox v-model="systemModules[0]" name="permission" :disabled="!canUpdate"
@@ -155,24 +206,24 @@
         </div>
 
         <div v-if="!isNewSystemSetting" class="input-box">
-          <label for="tardinessTolerance">Tardiness Tolerance (Occurrences)</label>
+          <label for="tardinessTolerance">{{ t('tardiness_tolerance_occurrences') }}</label>
           <div style="display: flex; align-items: center; gap: 40px;">
             <InputNumber id="tardinessTolerance" v-model="tardinessTolerance" :invalid="submitted" />
             <div style="display:flex; gap: 20px">
-              <Button label="Save Tardiness" severity="primary" @click="saveTardiness()" />
-              <Button label="Delete" severity="danger" @click="deleteTardiness()" />
+              <Button :label="t('save_tardiness')" severity="primary" @click="saveTardiness()" />
+              <Button :label=" t('delete')" severity="danger" @click="deleteTardiness()" />
             </div>
           </div>
         </div>
         <div class="input-box">
           <label for="userActive">
-            {{ restrictFutureVacationSwicht ? 'Active Restrict Future Vacation' : 'Inactive Restrict Future Vacation'
+            {{ restrictFutureVacationSwicht ? t('active_restrict_future_vacation') : t('inactive_restrict_future_vacation')
             }}</label>
           <InputSwitch v-model="restrictFutureVacationSwicht" />
         </div>
 
         <div class="box-tools-footer">
-          <Button label="Save" severity="primary" @click="onSave()" />
+          <Button :label="t('save')" severity="primary" @click="onSave()" />
         </div>
       </div>
     </div>
