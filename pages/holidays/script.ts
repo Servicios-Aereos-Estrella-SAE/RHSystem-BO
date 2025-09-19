@@ -45,7 +45,7 @@ export default defineComponent({
   methods: {
     async verifyPermissions() {
       const myGeneralStore = useMyGeneralStore()
-      const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
       const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
       if (myGeneralStore.isRoot) {

@@ -46,7 +46,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.displayContent = false
 
-      const fullPath = this.$route.path
+      const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
       const firstSegment = fullPath.split('/')[1]
       const systemModuleSlug = firstSegment
       const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
@@ -186,7 +186,7 @@ export default defineComponent({
     },
     setLinkActive(link: any) {
       const browserPath = this.$route.path.split('/')[2]
-      return  link.path === `/${browserPath}`
+      return link.path.replace(`/${this.$i18n.locale}/`, "/") === `/${browserPath}`
     },
     async closeCallback() {
       const myGeneralStore = useMyGeneralStore()
@@ -204,7 +204,7 @@ export default defineComponent({
         this.expandNode(node)
       }
 
-      this.expandedKeys = {...this.expandedKeys}
+      this.expandedKeys = { ...this.expandedKeys }
     },
   }
 })

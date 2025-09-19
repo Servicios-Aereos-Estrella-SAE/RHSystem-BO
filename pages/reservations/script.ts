@@ -123,7 +123,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
     if (myGeneralStore.isRoot) {
