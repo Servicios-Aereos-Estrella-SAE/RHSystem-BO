@@ -13,15 +13,26 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    img{
+
+    img {
       height: 68%;
       width: auto;
       object-fit: contain;
     }
   }
+
   .color {
     height: 3rem;
     width: 2rem;
+  }
+
+  .payroll-config-wrapper {
+    box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: .5rem;
+    margin-top: 0.5rem;
   }
 
 
@@ -33,6 +44,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
     margin-top: 0.5rem;
+
     button {
       width: 100%;
     }
@@ -42,25 +54,33 @@
 .color-container {
   display: flex;
   width: 30%;
+
   .color-text {
     height: 2.4rem;
-    flex: 1; /* Este valor hace que los elementos se expandan para llenar el espacio disponible de manera equitativa */
+    flex: 1;
+    /* Este valor hace que los elementos se expandan para llenar el espacio disponible de manera equitativa */
     margin-top: 0.4rem;
-    text-align: center; /* Centra el contenido dentro de cada elemento */
+    text-align: center;
+    /* Centra el contenido dentro de cada elemento */
     //border: 1px solid #ccc; /* Opcional, solo para ver los bordes de cada elemento */
   }
+
   .color-input {
-    flex: 1; /* Este valor hace que los elementos se expandan para llenar el espacio disponible de manera equitativa */
+    flex: 1;
+    /* Este valor hace que los elementos se expandan para llenar el espacio disponible de manera equitativa */
     //padding: 10px;
 
     margin-top: 0.6rem;
-    text-align: center; /* Centra el contenido dentro de cada elemento */
+    text-align: center;
+    /* Centra el contenido dentro de cada elemento */
     //border: 1px solid #ccc; /* Opcional, solo para ver los bordes de cada elemento */
   }
 }
+
 .item-system-modules {
   display: flex;
   align-items: center;
+
   label {
     padding-top: 0.5rem;
   }

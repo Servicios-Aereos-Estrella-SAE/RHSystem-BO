@@ -10,6 +10,7 @@ import SystemModuleService from "~/resources/scripts/services/SystemModuleServic
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import ToleranceService from "~/resources/scripts/services/ToleranceService";
 import type { ToleranceInterface } from "~/resources/scripts/interfaces/ToleranceInterface";
+import type { SystemSettingPayrollConfigInterface } from "~/resources/scripts/interfaces/SystemSettingPayrollConfigInterface";
 
 export default defineComponent({
   components: {
@@ -43,6 +44,9 @@ export default defineComponent({
     canUpdate: true,
     tardinessToleranceId: null,
     restrictFutureVacationSwicht: false,
+    systemSettingPayrollConfigs: [] as Array<SystemSettingPayrollConfigInterface>,
+    drawerSystemSettingPayrollConfigDelete: false,
+    drawerSystemSettingPayrollConfigForm: false
   }),
   computed: {
     isRoot() {
@@ -75,6 +79,10 @@ export default defineComponent({
       "#" + this.systemSetting.systemSettingSidebarColor;
     this.activeSwicht = isActive === 1 ? true : false;
     this.restrictFutureVacationSwicht = isRestrictFutureVacationActive === 1 ? true : false;
+    this.systemSettingPayrollConfigs = []
+    if (this.systemSetting.systemSettingId && this.systemSetting.systemSettingPayrollConfigs) {
+      this.systemSettingPayrollConfigs = this.systemSetting.systemSettingPayrollConfigs
+    }
     await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
@@ -515,6 +523,17 @@ export default defineComponent({
     },
     updateColor(event: any) {
       this.systemSetting.systemSettingSidebarColor = "#" + event.value;
+    },
+    addNewPayrollConfig() {
+
+    },
+    onEditPayrollConfig(systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) {
+      this.systemSettingPayrollConfig = { ...systemSettingPayrollConfig }
+      this.drawerSystemSettingPayrollConfigForm = true
+    },
+    onDeletePayrollConfig(systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) {
+      this.systemSettingPayrollConfig = { ...systemSettingPayrollConfig }
+      this.drawerSystemSettingPayrollConfigDelete = true
     },
   },
 });
