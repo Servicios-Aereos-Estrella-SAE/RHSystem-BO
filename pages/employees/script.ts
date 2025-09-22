@@ -16,6 +16,8 @@ import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/Em
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
 import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
+import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import SystemSettingsEmployeeService from '~/resources/scripts/services/SystemSettingsEmployeeService'
 
 export default defineComponent({
   name: 'Employees',
@@ -59,6 +61,10 @@ export default defineComponent({
     canReadOnlyWorkDisabilities: false as boolean,
     canManageWorkDisabilities: false as boolean,
     canReadTerminatedEmployees: false as boolean,
+    employeeLimit: null as number | null,
+    currentEmployeeCount: 0 as number,
+    showEmployeeLimitNotification: false as boolean,
+    employeeLimitNotificationType: 'info' as 'info' | 'warning',
     drawerShifts: false as boolean,
     drawerProceedingFiles: false as boolean,
     hasAccessToManageShifts: false as boolean,
@@ -86,6 +92,15 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       const flag = myGeneralStore.isRoot
       return flag
+    },
+    canCreateEmployee() {
+      if (!this.canCreate) return false
+      if (this.employeeLimit === null) return true
+      return this.currentEmployeeCount < this.employeeLimit
+    },
+    employeeCountText() {
+      if (this.employeeLimit === null) return ''
+      return `${this.currentEmployeeCount}/${this.employeeLimit} ${this.t('employees_count')}`
     },
     displayResponsibleSection() {
       if (this.isRootUser || this.canManageResponsibleRead) {
@@ -164,8 +179,47 @@ export default defineComponent({
     await this.handlerSearchEmployee()
     await this.getDepartments()
     this.hasAccessToManageShifts = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-shift')
+    await this.getEmployeeLimit()
   },
   methods: {
+    async getEmployeeLimit() {
+      try {
+        // Get active system setting
+        const systemSettingService = new SystemSettingService()
+        const activeSystemSetting = await systemSettingService.getActive()
+
+        if (activeSystemSetting && activeSystemSetting.systemSettingId) {
+          // Get employee limit for this system setting
+          const systemSettingsEmployeeService = new SystemSettingsEmployeeService()
+          const limitResponse = await systemSettingsEmployeeService.getActiveLimit(activeSystemSetting.systemSettingId)
+
+          if (limitResponse && limitResponse.status === 200) {
+            this.employeeLimit = limitResponse._data.data.systemSettingsEmployee.employeeLimit
+            this.checkEmployeeLimitStatus()
+          }
+        }
+      } catch (error) {
+        console.error('Error getting employee limit:', error)
+      }
+    },
+    checkEmployeeLimitStatus() {
+      if (this.employeeLimit === null) return
+
+      const remainingSlots = this.employeeLimit - this.currentEmployeeCount
+
+      if (remainingSlots <= 0) {
+        // Limit reached
+        this.showEmployeeLimitNotification = true
+        this.employeeLimitNotificationType = 'warning'
+      } else if (remainingSlots <= 10) {
+        // Info: limit will be reached soon
+        this.showEmployeeLimitNotification = true
+        this.employeeLimitNotificationType = 'info'
+      } else {
+        // All good
+        this.showEmployeeLimitNotification = false
+      }
+    },
     async getPositions(departmentId: number) {
       const positionService = new PositionService()
       this.positions = await positionService.getPositionsDepartment(departmentId)
@@ -187,6 +241,13 @@ export default defineComponent({
       this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
       this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0
       this.filteredEmployees = list
+
+      // Count active employees for limit checking
+      if (!onlyInactive) {
+        this.currentEmployeeCount = this.totalRecords
+        this.checkEmployeeLimitStatus()
+      }
+
       myGeneralStore.setFullLoader(false)
     },
     async getWorkSchedules() {
@@ -203,6 +264,17 @@ export default defineComponent({
       this.handlerSearchEmployee()
     },
     addNew() {
+      // Check if we can create new employees
+      if (!this.canCreateEmployee) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('employee_limit_reached'),
+          detail: this.t('employee_limit_reached_message'),
+          life: 5000,
+        });
+        return;
+      }
+
       const person: PeopleInterface = {
         personId: null,
         personFirstname: "",
@@ -324,6 +396,17 @@ export default defineComponent({
       this.drawerEmployeePhotoForm = false
     },
     async syncEmployees() {
+      // Check if we can sync new employees (limit not reached)
+      if (this.employeeLimit !== null && this.currentEmployeeCount >= this.employeeLimit) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('employee_limit_reached'),
+          detail: this.t('employee_limit_reached_sync'),
+          life: 5000,
+        });
+        return;
+      }
+
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       const employeeService = new EmployeeService()

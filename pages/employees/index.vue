@@ -50,15 +50,21 @@
             </div>
 
             <div class="buttons-group">
-              <Button v-if="canCreate" class="btn" @click="addNew">
-                <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
-                    fill="#88a4bf" class="fill-000000"></path>
-                </svg>
-                {{ $t('employee') }}
-              </Button>
+              <div class="employee-limit-container">
+                <div v-if="employeeCountText" class="employee-count">
+                  <i class="pi pi-user"></i>
+                  <span>{{ employeeCountText }}</span>
+                </div>
+                <Button v-if="canCreate" class="btn" :disabled="!canCreateEmployee" @click="addNew">
+                  <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                      fill="#88a4bf" class="fill-000000"></path>
+                  </svg>
+                  {{ $t('employee') }}
+                </Button>
+              </div>
               <Button v-if="canManageBiotime" class="btn" @click="syncEmployees">
                 <span>
                   <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -78,6 +84,19 @@
                     fill="#88a4bf" class="fill-000000"></path>
                 </svg>
               </Button>
+            </div>
+          </div>
+
+          <!-- Employee Limit Notification -->
+          <div v-if="showEmployeeLimitNotification" class="employee-limit-notification" :class="employeeLimitNotificationType">
+            <div class="notification-content">
+              <i class="pi pi-info-circle"></i>
+              <div class="notification-text">
+                <strong v-if="employeeLimitNotificationType === 'warning'">{{ $t('employee_limit_reached') }}</strong>
+                <strong v-else>{{ $t('employee_limit_warning') }}</strong>
+                <p v-if="employeeLimitNotificationType === 'warning'">{{ $t('employee_limit_reached_message') }}</p>
+                <p v-else>{{ $t('employee_limit_warning_message') }}</p>
+              </div>
             </div>
           </div>
 
@@ -186,7 +205,9 @@
           <employeeInfoForm
             v-if="!drawerEmployeePersonForm && !drawerAddressForm && !drawerRecords && !drawerBanks && !drawerResponsible && !drawerAssigned"
             :employee="employee" :can-update="canUpdateInformation" @save="onSave"
-            :click-on-edit="() => { onEditPerson(employee) }" />
+            :click-on-edit="() => { onEditPerson(employee) }"
+            :employee-limit="employeeLimit"
+            :current-employee-count="currentEmployeeCount" />
           <employeePersonInfoForm v-if="drawerEmployeePersonForm" :employee="employee" @save="onSave"
             :click-on-close="() => { onClosePerson() }" :can-update="canUpdateInformation" :can-delete="canDelete" />
           <addressInfoForm v-if="drawerAddressForm" :employee="employee" :address="address"
@@ -218,7 +239,8 @@
         </Sidebar>
         <Sidebar v-model:visible="drawerEmployeeSync" :closeOnEscape="true" :header="$t('employee_sync')"
           position="right" class="employees-sync" :showCloseIcon="true">
-          <employeeSyncList :employeesSync="employeesSync" @onSaveSync="onSaveSync" />
+          <employeeSyncList :employeesSync="employeesSync" @onSaveSync="onSaveSync"
+            :employee-limit="employeeLimit" :current-employee-count="currentEmployeeCount" />
         </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"

@@ -739,5 +739,13 @@
   "all_system_modules_assigned_successfully": "All system modules were assigned successfully.",
   "system_modules_assign_created": "System modules assign created",
   "system_modules_assign_updated": "System modules assign updated",
-  "system_setting_not_found": "System setting not found"
+  "system_setting_not_found": "System setting not found",
+  "employee_limit_reached": "Employee limit reached",
+  "employee_limit_reached_message": "The employee limit has been reached. Consider contacting sales",
+  "employee_limit_warning": "Employee limit will be reached soon",
+  "employee_limit_warning_message": "The employee limit will be reached soon",
+  "employees_count": "employees",
+  "employee_limit_reached_terminated": "Employee limit reached - terminated employees cannot be restored",
+  "employee_limit_reached_sync": "Employee limit reached - cannot sync new employees",
+  "employee_limit_exceeded_sync": "Cannot sync: would exceed employee limit"
 }

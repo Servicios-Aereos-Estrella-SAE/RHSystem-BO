@@ -739,5 +739,13 @@
   "all_system_modules_assigned_successfully": "Todos los módulos del sistema fueron asignados exitosamente.",
   "system_modules_assign_created": "Asignación de módulos del sistema creada",
   "system_modules_assign_updated": "Asignación de módulos del sistema actualizada",
-  "system_setting_not_found": "Configuración del sistema no encontrada"
+  "system_setting_not_found": "Configuración del sistema no encontrada",
+  "employee_limit_reached": "Límite de empleados alcanzado",
+  "employee_limit_reached_message": "El límite de empleados se ha alcanzado. considera contactar con ventas",
+  "employee_limit_warning": "Límite de empleados se alcanzará pronto",
+  "employee_limit_warning_message": "El límite de empleados se alcanzará pronto",
+  "employees_count": "empleados",
+  "employee_limit_reached_terminated": "Límite de empleados alcanzado - empleados terminados no pueden ser restaurados",
+  "employee_limit_reached_sync": "Límite de empleados alcanzado - no se pueden sincronizar nuevos empleados",
+  "employee_limit_exceeded_sync": "No se puede sincronizar: excedería el límite de empleados"
 }

@@ -7,9 +7,17 @@ export default defineComponent({
   emits: ['onSaveSync'],
   components: {
   },
+  setup() {
+    const { t } = useI18n()
+    return {
+      t
+    }
+  },
   name: 'employeeSyncListList',
   props: {
     employeesSync: { type: Array<EmployeeSyncInterface>, required: true },
+    employeeLimit: { type: Number, default: null },
+    currentEmployeeCount: { type: Number, default: 0 },
   },
   data: () => ({
     isReady: false,
@@ -36,12 +44,10 @@ export default defineComponent({
       this.drawerEmployeeSync = true
     },
     async confirmSync() {
-      const myGeneralStore = useMyGeneralStore()
-      myGeneralStore.setFullLoader(true)
-      this.drawerEmployeeSync = false
       const employees = this.employeesSync
         .filter(employee => employee.checked)
         .map(employee => employee.employeeCode)
+
       if (employees.length === 0) {
         return this.$toast.add({
           severity: 'info',
@@ -50,6 +56,21 @@ export default defineComponent({
           life: 5000,
         })
       }
+
+      // Check if syncing would exceed employee limit
+      if (this.employeeLimit !== null && (this.currentEmployeeCount + employees.length) > this.employeeLimit) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('employee_limit_reached'),
+          detail: this.t('employee_limit_exceeded_sync'),
+          life: 5000,
+        });
+        return;
+      }
+
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.drawerEmployeeSync = false
       const employeeService = new EmployeeService()
       const employeeResponse = await employeeService.synchronizationBySelection(employees)
       if (employeeResponse.status === 201) {

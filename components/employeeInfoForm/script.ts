@@ -42,6 +42,8 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false, required: true },
     clickOnSave: { type: Function, default: null },
     clickOnEdit: { type: Function, default: null },
+    employeeLimit: { type: Number, default: null },
+    currentEmployeeCount: { type: Number, default: 0 },
   },
   data: () => ({
     activeSwicht: true,
@@ -583,6 +585,17 @@ export default defineComponent({
       this.employee.employeeTerminatedDate = terminatedDateTemp
     },
     async onReactivate() {
+      // Check if we can reactivate employees (limit not reached)
+      if (this.employeeLimit !== null && this.currentEmployeeCount >= this.employeeLimit) {
+        this.$toast.add({
+          severity: "warn",
+          summary: this.t('employee_limit_reached'),
+          detail: this.t('employee_limit_reached_terminated'),
+          life: 5000,
+        });
+        return;
+      }
+
       this.drawerEmployeeReactivate = true
     },
     convertToDateTime(birthday: string | Date | null): Date | null {

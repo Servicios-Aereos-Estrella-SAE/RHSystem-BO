@@ -72,4 +72,22 @@ export default class SystemSettingsEmployeeService {
 
     return responseRequest
   }
+
+  async getActiveLimit(systemSettingId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+
+    try {
+      await $fetch(`${this.API_PATH}/system-settings-employees/${systemSettingId}/active`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+
+      return responseRequest
+    } catch (error) {
+      console.error('Error fetching active employee limit:', error)
+      return null
+    }
+  }
 }
