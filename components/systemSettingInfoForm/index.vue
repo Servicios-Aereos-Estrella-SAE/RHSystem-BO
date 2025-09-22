@@ -178,7 +178,8 @@
                 class="history-item"
               >
                 <div class="history-info">
-                  <span class="limit-value">{{ employee.employeeLimit }}</span>
+                  <span v-if="employee.employeeLimit" class="limit-value">{{ employee.employeeLimit }}</span>
+                  <span v-else class="limit-value">{{ t('enter_employee_limit') }}</span>
                   <span class="limit-date">
                     {{ new Date(employee.systemSettingEmployeeCreatedAt || '').toLocaleDateString() }}
                   </span>
