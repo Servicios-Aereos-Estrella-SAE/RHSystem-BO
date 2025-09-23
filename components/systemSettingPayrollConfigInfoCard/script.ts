@@ -8,9 +8,7 @@ export default defineComponent({
   props: {
     systemSettingPayrollConfig: { type: Object as PropType<SystemSettingPayrollConfigInterface>, required: true },
     clickOnEdit: { type: Function, default: null },
-    clickOnDelete: { type: Function, default: null },
-    canUpdate: { type: Boolean, default: false, required: true },
-    canDelete: { type: Boolean, default: false, required: true }
+    clickOnDelete: { type: Function, default: null }
   },
   data: () => ({
   }),
@@ -32,7 +30,16 @@ export default defineComponent({
     },
     getFormattedDate(date: string) {
       const dateNew = DateTime.fromISO(date, { setZone: true })
-      return dateNew.setLocale(this.localeToUse).toFormat('DDDD')
+      return dateNew.setLocale('en').toFormat('DDDD')
     },
+    getPaymentTypeName(type: string) {
+      if (type === 'specific_day_of_month') {
+        return 'Specific day of month'
+      } else if (type === 'fixed_day_every_n_weeks') {
+        return 'Fixed day every N weeks'
+      } else if (type === 'biweekly') {
+        return 'Biweekly'
+      }
+    }
   }
 })

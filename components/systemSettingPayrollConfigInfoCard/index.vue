@@ -1,7 +1,7 @@
 <template>
   <div class="box system-setting-payroll-config-info-card">
     <div class="name capitalize">
-      {{ `${systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType || ''}` }}
+      {{ getPaymentTypeName(systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType) }}
     </div>
     <div class="line">
     </div>
@@ -14,8 +14,10 @@
       <span> {{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset }}</span>
     </div>
     <div class="info date">
-      <label for="status">Apply since</label>
-      <span> {{ getFormattedDate(systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) }}</span>
+      <label for="date" class="label-item">Apply since:</label>
+      <label class="label-date"> {{ getFormattedDate(systemSettingPayrollConfig.systemSettingPayrollConfigApplySince)
+        }}</label>
+
     </div>
     <div class="box-tools-footer">
       <Button icon="pi pi-pencil" class="box-btn" @click="handlerClickOnEdit()" />

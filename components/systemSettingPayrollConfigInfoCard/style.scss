@@ -43,10 +43,18 @@
   }
 
   .date {
+    display: flex;
     width: 100%;
+    align-items: center;
 
-    label {
+    .label-item {
       margin-right: 10px;
+    }
+
+    .label-date {
+      margin-left: auto; // Esto empuja la fecha al extremo derecho
+      text-align: right;
+      font-weight: 500;
     }
   }
 

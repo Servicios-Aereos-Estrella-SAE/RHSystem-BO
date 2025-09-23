@@ -201,6 +201,15 @@
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
+      <transition name="page">
+        <confirmDelete v-if="drawerPayrollConfigDelete" @confirmDelete="confirmDeletePayrollConfig"
+          @cancelDelete="drawerPayrollConfigDelete = false" />
+      </transition>
+      <Sidebar v-model:visible="drawerPayrollConfigForm" header="Payroll Config form" position="right"
+        class="payroll-config-form-sidebar" :showCloseIcon="true">
+        <systemSettingPayrollConfigInfoForm :systemSettingPayrollConfig="systemSettingPayrollConfig"
+          @onPayrollConfigSave="onPayrollConfigSave" />
+      </Sidebar>
     </div>
   </div>
 </template>
@@ -235,6 +244,15 @@
   .proceeding-file-sidebar {
     width: 100% !important;
     max-width: 90rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .payroll-config-form-sidebar {
+    width: 100% !important;
+    max-width: 25rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;

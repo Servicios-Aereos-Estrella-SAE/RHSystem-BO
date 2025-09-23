@@ -93,6 +93,18 @@ export default class SystemSettingPayrollConfigService {
       console.error('Wrong payment type')
       return false;
     }
+    if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
+      console.error('Wrong number of days to be paid')
+      return false;
+    }
+    if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
+      console.error('Wrong number of over days to offset')
+      return false;
+    }
+    if (!systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) {
+      console.error('Wrong apply since')
+      return false;
+    }
     if (!systemSettingPayrollConfig.systemSettingId) {
       console.error('Wrong system setting id')
       return false;
