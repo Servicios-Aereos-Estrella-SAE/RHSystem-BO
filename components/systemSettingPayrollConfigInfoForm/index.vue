@@ -9,18 +9,49 @@
       <div class="form-container">
         <div class="input-box">
           <label>
-            Payment Type
+            Payment type
           </label>
           <Dropdown :disabled="!isNewSystemSettingPayrollConfig" placeholder="Select payment type"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType" :options="paymentTypeOptions"
-            optionLabel="label" optionValue="value" />
+            optionLabel="label" optionValue="value"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType" />
+          <small class="p-error"
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType">Payment type is
+            required.</small>
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
+          class="input-box">
+          <label>
+            Fixed day
+          </label>
+          <Dropdown :disabled="!isNewSystemSettingPayrollConfig" placeholder="Select fixed day"
+            v-model="systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay" :options="daysOfWeeks"
+            optionLabel="label" optionValue="value"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay" />
+          <small class="p-error"
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay">Fixed day is
+            required.</small>
         </div>
 
-        <div class="input-box">
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
+          class="input-box">
+          <label for="systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n weeks</label>
+          <InputNumber id="systemSettingPayrollConfigFixedEveryNWeeks"
+            v-model="systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks" />
+          <small class="p-error"
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n
+            weeks is
+            required.</small>
+        </div>
+
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'specific_day_of_month'"
+          class="input-box">
           <label for="systemSettingPayrollConfigNumberOfDaysToBePaid">Config number of days to be paid</label>
           <InputNumber id="systemSettingPayrollConfigNumberOfDaysToBePaid"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid"
-            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid" :min="1"
+            :max="31"
             :disabled="!isNewSystemSettingPayrollConfig || systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'biweekly'" />
           <small class="p-error"
             v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid">Config number

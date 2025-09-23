@@ -34,9 +34,9 @@ export default defineComponent({
     },
     getPaymentTypeName(type: string) {
       if (type === 'specific_day_of_month') {
-        return 'Specific day of month'
+        return 'Monthly'
       } else if (type === 'fixed_day_every_n_weeks') {
-        return 'Fixed day every N weeks'
+        return 'Specific day'
       } else if (type === 'biweekly') {
         return 'Biweekly'
       }

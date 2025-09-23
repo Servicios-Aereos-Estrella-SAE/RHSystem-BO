@@ -93,9 +93,21 @@ export default class SystemSettingPayrollConfigService {
       console.error('Wrong payment type')
       return false;
     }
-    if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
-      console.error('Wrong number of days to be paid')
-      return false;
+    const paymentType = systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType
+    if (paymentType === 'fixed_day_every_n_weeks') {
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay) {
+        console.error('Wrong fixed day')
+        return false;
+      }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks) {
+        console.error('Wrong fixed every n weeks')
+        return false;
+      }
+    } else if (paymentType === 'biweekly' || paymentType === 'specific_day_of_month') {
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
+        console.error('Wrong number of days to be paid')
+        return false;
+      }
     }
     if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
       console.error('Wrong number of over days to offset')

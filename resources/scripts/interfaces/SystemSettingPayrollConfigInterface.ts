@@ -1,6 +1,8 @@
 interface SystemSettingPayrollConfigInterface {
   systemSettingPayrollConfigId: number | null,
   systemSettingPayrollConfigPaymentType: string,
+  systemSettingPayrollConfigFixedDay: string | null,
+  systemSettingPayrollConfigFixedEveryNWeeks: number | null,
   systemSettingPayrollConfigNumberOfDaysToBePaid: number | null,
   systemSettingPayrollConfigNumberOfOverdueDaysToOffset: number | null,
   systemSettingPayrollConfigApplySince: string | Date,

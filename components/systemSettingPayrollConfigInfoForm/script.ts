@@ -28,10 +28,19 @@ export default defineComponent({
     canUpdate: true,
     paymentTypeOptions: [
       { label: 'Biweekly', value: 'biweekly' },
-      { label: 'Specific day of month', value: 'specific_day_of_month' },
-      { label: 'Fixed day every N weeks', value: 'fixed_day_every_n_weeks' }
+      { label: 'Monthly', value: 'specific_day_of_month' },
+      { label: 'Specific day', value: 'fixed_day_every_n_weeks' }
     ],
-    systemSettingPayrollConfigApplySince: ''
+    systemSettingPayrollConfigApplySince: '',
+    daysOfWeeks: [
+      { label: 'Monday', value: 'monday' },
+      { label: 'Tuesday', value: 'tuesday' },
+      { label: 'Wednesday', value: 'wednesday' },
+      { label: 'Thursday', value: 'thursday' },
+      { label: 'Friday', value: 'friday' },
+      { label: 'Saturday', value: 'saturday' },
+      { label: 'Sunday', value: 'sunday' },
+    ],
   }),
   watch: {
     'systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType'(newVal) {
@@ -48,16 +57,21 @@ export default defineComponent({
     if (this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince) {
       this.systemSettingPayrollConfig.systemSettingPayrollConfigApplySince = new Date(this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince).toISOString().slice(0, 10)
       this.systemSettingPayrollConfigApplySince = this.getFormattedDate(this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince)
+    } else {
+      this.systemSettingPayrollConfig.systemSettingPayrollConfigApplySince = new Date().toISOString().slice(0, 10)
     }
 
     this.isReady = true;
   },
   methods: {
     handlePaymentTypeChange(type: string) {
+      this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset = 0
       if (type === 'biweekly') {
         this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid = 15
+      } else if (type === 'specific_day_of_month') {
+        this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid = 1
       } else {
-        this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid = 0
+        this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid = null
       }
     },
     async onSave() {
