@@ -244,4 +244,20 @@ export default class SystemSettingService {
     return responseRequest
   }
 
+  async getPayrollConfig() {
+    let responseRequest: any = null
+    try {
+      const headers = { ...this.GENERAL_HEADERS }
+      await $fetch(`${this.API_PATH}/system-settings-get-payroll-config`, {
+        headers,
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+      const systemSettingPayrollConfig = responseRequest.status === 200 ? responseRequest._data.data.systemSettingPayrollConfig : null
+
+      return systemSettingPayrollConfig
+    } catch (error) {
+    }
+  }
+
 }
