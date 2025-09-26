@@ -104,4 +104,69 @@
     grid-template-columns: auto 4rem;
     gap: 0.5rem;
   }
+
+  // Form Mode Switch Styles
+  .form-mode-switch {
+    margin-bottom: 2rem;
+
+    .switch-container {
+      display: flex;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 4px;
+      border: 1px solid #e9ecef;
+
+      .mode-button {
+        flex: 1;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+
+        &.active {
+          background-color: #007bff;
+          color: white;
+          box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+        }
+
+        &:not(.active) {
+          background-color: transparent;
+          color: #6c757d;
+
+          &:hover {
+            background-color: #e9ecef;
+            color: #495057;
+          }
+        }
+      }
+    }
+  }
+
+  // Excel Import Section Styles
+  .excel-import-section {
+    .box-tools-footer {
+      margin-top: 1rem;
+
+      .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+
+        &:hover {
+          background-color: #218838;
+          border-color: #1e7e34;
+        }
+
+        &:disabled {
+          background-color: #6c757d;
+          border-color: #6c757d;
+          opacity: 0.65;
+        }
+      }
+    }
+  }
+
+  // Manual Form Section Styles
+  .manual-form-section {
+    // Inherits existing styles
+  }
 }

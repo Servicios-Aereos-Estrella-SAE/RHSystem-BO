@@ -1,0 +1,197 @@
+.employee-excel-importer {
+  .excel-import-form {
+    h4 {
+      margin-bottom: 1.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-container {
+      .inputs-group {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        &.group-2 {
+          .input-box {
+            flex: 1;
+          }
+        }
+      }
+
+      .input-box {
+        margin-bottom: 1rem;
+
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: #555;
+        }
+
+        .p-error {
+          color: #e24c4c;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+        }
+      }
+
+      .box-tools-footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+
+        .btn {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: none;
+          border-radius: 0.375rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &.btn-success {
+            background-color: #28a745;
+            color: white;
+
+            &:hover:not(:disabled) {
+              background-color: #218838;
+            }
+
+            &:disabled {
+              background-color: #6c757d;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+  }
+}
+
+// File upload styles
+:deep(.p-fileupload) {
+  .p-fileupload-buttonbar {
+    display: none;
+  }
+
+  .p-fileupload-content {
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    background-color: #f9fafb;
+    transition: border-color 0.2s ease;
+    min-height: 200px;
+    min-width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      border-color: #9ca3af;
+    }
+
+    p {
+      color: #6b7280;
+      margin: 0;
+    }
+
+    .file-upload-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+
+      p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 0.875rem;
+        max-width: 300px;
+        line-height: 1.4;
+      }
+
+      .btn {
+        margin-top: 0;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: white;
+        color: #374151;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 140px;
+
+        &:hover {
+          background-color: #f3f4f6;
+          border-color: #9ca3af;
+        }
+
+        &.btn-sm {
+          padding: 0.5rem 1rem;
+          font-size: 0.75rem;
+          min-width: 120px;
+        }
+
+        &.btn-secondary {
+          background-color: #6b7280;
+          color: white;
+          border-color: #6b7280;
+
+          &:hover {
+            background-color: #4b5563;
+            border-color: #4b5563;
+          }
+        }
+      }
+    }
+  }
+
+  .p-fileupload-file {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+
+    .pi-file-excel {
+      color: #28a745;
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+    }
+
+    span {
+      flex: 1;
+      color: #374151;
+    }
+
+    .p-button {
+      padding: 0.25rem 0.5rem;
+      min-width: auto;
+    }
+  }
+}
+
+// Dropdown styles
+:deep(.p-dropdown) {
+  width: 100%;
+
+  .p-dropdown-label {
+    padding: 0.75rem;
+  }
+
+  .p-dropdown-trigger {
+    padding: 0.75rem;
+  }
+}

@@ -1,6 +1,7 @@
 import type { EmployeeInterface } from "../interfaces/EmployeeInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { PeopleInterface } from "../interfaces/PeopleInterface"
+import type { EmployeeImportExcelResponseInterface } from "../interfaces/EmployeeImportExcelInterface"
 
 export default class EmployeeService {
   protected API_PATH: string
@@ -598,6 +599,26 @@ export default class EmployeeService {
       img.onerror = () => resolve(false);
       img.src = url;
     });
+  }
+
+  async importExcel(file: File, businessUnitId: number, payrollBusinessUnitId: number) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('businessUnitId', businessUnitId.toString())
+    formData.append('payrollBusinessUnitId', payrollBusinessUnitId.toString())
+
+    await $fetch(`${this.API_PATH}/employees/import-excel`, {
+      method: 'POST',
+      headers,
+      body: formData,
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    return responseRequest
   }
 
 }

@@ -123,7 +123,7 @@ export default defineComponent({
       }
 
       return display
-    }
+    },
   },
   watch: {
     'employee.departmentId': function (newVal) {
@@ -475,7 +475,7 @@ export default defineComponent({
       } else {
         const msgError = personResponse._data.error ? personResponse._data.error : personResponse._data.message
         this.$toast.add({
-          severity: 'error',
+          severity: 'warn',
           summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
@@ -530,7 +530,7 @@ export default defineComponent({
           } else {
             const msgError = pilotResponse._data.error ? pilotResponse._data.error : pilotResponse._data.message
             this.$toast.add({
-              severity: 'error',
+              severity: 'warn',
               summary: `${this.t('pilot')} ${this.pilot.pilotId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
@@ -566,7 +566,7 @@ export default defineComponent({
           } else {
             const msgError = FlightAttendantResponse._data.error ? FlightAttendantResponse._data.error : FlightAttendantResponse._data.message
             this.$toast.add({
-              severity: 'error',
+              severity: 'warn',
               summary: `${this.t('pilot')} ${this.flightAttendant.flightAttendantId ? this.t('updated') : this.t('created')}`,
               detail: msgError,
               life: 5000,
@@ -576,7 +576,7 @@ export default defineComponent({
       } else {
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
-          severity: 'error',
+          severity: 'warn',
           summary: `${this.t('employee')} ${this.employee.employeeId ? this.t('updated') : this.t('created')}`,
           detail: msgError,
           life: 5000,
@@ -678,7 +678,7 @@ export default defineComponent({
       } else {
         const msgError = employeeResponse._data.error ? employeeResponse._data.error : employeeResponse._data.message
         this.$toast.add({
-          severity: 'error',
+          severity: 'warn',
           summary: this.t('employee_reactivate'),
           detail: msgError,
           life: 5000,

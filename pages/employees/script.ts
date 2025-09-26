@@ -48,6 +48,7 @@ export default defineComponent({
     drawerResponsible: false as boolean,
     drawerAssigned: false as boolean,
     drawerEmployeePhotoForm: false as boolean,
+    drawerExcelImporter: false as boolean,
     drawerEmployeeDelete: false as boolean,
     drawerEmployeeSync: false as boolean,
     canCreate: false as boolean,
@@ -370,7 +371,7 @@ export default defineComponent({
           })
         } else {
           this.$toast.add({
-            severity: 'error',
+            severity: 'warn',
             summary: this.t('delete_employee'),
             detail: employeeResponse._data.message,
             life: 5000,
@@ -460,7 +461,7 @@ export default defineComponent({
         } else {
           const msgError = assistResponse?._data?.error || assistResponse?._data?.message || 'Unknown error'
           this.$toast.add({
-            severity: 'error',
+            severity: 'warn',
             summary: this.t('excel_report'),
             detail: msgError,
             life: 5000,
@@ -469,7 +470,7 @@ export default defineComponent({
       } catch (error) {
         console.error(this.t('error_generating_excel_file'), error)
         this.$toast.add({
-          severity: 'error',
+          severity: 'warn',
           summary: this.t('excel_report'),
           detail: this.t('error_generating_excel_file'),
           life: 5000,
@@ -615,7 +616,7 @@ export default defineComponent({
 
           if (employeeAddressResponse.status !== 201) {
             this.$toast.add({
-              severity: 'error',
+              severity: 'warn',
               summary: 'Error',
               detail: this.t('there_was_an_error_saving_the_relation_employee_address'),
               life: 5000
@@ -635,6 +636,12 @@ export default defineComponent({
       this.drawerEmployeePersonForm = false
       this.drawerAddressForm = false
       this.drawerRecords = false
+    },
+    openExcelImporter() {
+      this.drawerExcelImporter = true
+    },
+    onExcelImporterHide() {
+      this.drawerExcelImporter = false
     },
     async onEmployeeContractSave(employeeContract: EmployeeContractInterface) {
       const employeeService = new EmployeeService()
