@@ -162,7 +162,8 @@ export default defineComponent({
     canSeePayroll: false,
     getAssistFromSaveCalendarSwicht: false,
     localeToUse: 'en',
-    paymentType: null as string | null
+    paymentType: null as string | null,
+    dayToBePaid: null as number | null
   }),
   computed: {
     getStatus() {
@@ -249,63 +250,68 @@ export default defineComponent({
         }
         case 'payroll': {
           if (this.paymentType === 'biweekly') {
-
-            const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
-            let startDate = date
-            // console.log(date.toFormat('dd'))
-            if (date.toFormat('dd').toString() === '01') {
-              // Día 16 del mes anterior
-              const sixteenthOfPreviousMonth = date
-                .minus({ months: 1 })
-                .set({ day: 16 });
-              // console.log('dia 16 del mes anterior: ' + sixteenthOfPreviousMonth.toISODate())
-              startDate = sixteenthOfPreviousMonth
-              // console.log(sixteenthOfPreviousMonth.toISODate()); // e.g., "2025-08-16"
-              // Obtener el último día del mes anterior
-              const lastDayOfPreviousMonth = date
-                .minus({ months: 1 })
-                .endOf('month');
-
-              // console.log('ultimo dia del mes anterior: ' + lastDayOfPreviousMonth.toISODate())
+            const date = DateTime.fromJSDate(this.periodSelected)
+            let startDate, endDate
+            if (date.day === 1) {
+              const previousMonth = date.minus({ months: 1 })
+              startDate = previousMonth.set({ day: 16 })
+              endDate = previousMonth.endOf('month')
             } else {
-              const firtDayOfMonth = date
-                .set({ day: 1 });
-              startDate = firtDayOfMonth
+              startDate = date.set({ day: 1 })
+              endDate = date.set({ day: 15 })
             }
 
-            // console.log('startDate: ' + startDate.toFormat('dd'))
-            // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
-            for (let index = 0; index < 15; index++) {
-              const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
-              const year = parseInt(currentDay.toFormat('yyyy'))
-              const month = parseInt(currentDay.toFormat('LL'))
-              const day = parseInt(currentDay.toFormat('dd'))
-              // console.log('currentDay: ' + currentDay.toFormat('dd'))
+            let currentDay = startDate
+
+            while (currentDay <= endDate) {
               daysList.push({
-                year,
-                month,
-                day
+                year: currentDay.year,
+                month: currentDay.month,
+                day: currentDay.day
               })
+              currentDay = currentDay.plus({ days: 1 })
             }
+          } else if (this.paymentType === 'specific_day_of_month') {
+            const date = DateTime.fromJSDate(this.periodSelected)
+            const dayToBePaid = this.dayToBePaid
+            if (dayToBePaid && typeof dayToBePaid === 'number' && dayToBePaid > 0 && dayToBePaid <= 31) {
+              const previousMonth = date.minus({ months: 1 })
 
-          } else {
+              const startDay = Math.min(dayToBePaid, previousMonth.daysInMonth!)
+              const startDate = previousMonth.set({ day: startDay })
+
+              const nextMonth = startDate.plus({ months: 1 })
+
+              const endDay = Math.min(dayToBePaid, nextMonth.daysInMonth!)
+              const endDate = nextMonth.set({ day: endDay })
+
+              let currentDay = startDate
+
+              while (currentDay <= endDate) {
+                daysList.push({
+                  year: currentDay.year,
+                  month: currentDay.month,
+                  day: currentDay.day
+                })
+
+                currentDay = currentDay.plus({ days: 1 })
+              }
+            }
+          }
+          else {
             const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
-            // console.log(date.toFormat('dd'))
             const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
-
             // Encontrar el jueves de la semana seleccionada
             let thursday = startOfWeek.plus({ days: 3 }) // Jueves es el cuarto día (índice 3)
 
             // Establecer el inicio del periodo como el jueves de dos semanas atrás
             let startDate = thursday.minus({ days: 24 }) // Jueves de dos semanas atrás
-            // console.log('startDate: ' + startDate.toFormat('dd'))
             // El periodo abarca 14 días desde el jueves de dos semanas atrás hasta el jueves de la semana seleccionada
             for (let index = 0; index < 14; index++) {
               const currentDay = startDate.plus({ days: index }) // Añadir cada día al periodo
               const year = parseInt(currentDay.toFormat('yyyy'))
               const month = parseInt(currentDay.toFormat('LL'))
               const day = parseInt(currentDay.toFormat('dd'))
-              // console.log('currentDay: ' + currentDay.toFormat('dd'))
               daysList.push({
                 year,
                 month,
@@ -331,41 +337,33 @@ export default defineComponent({
       }
 
       if (this.visualizationMode?.value === 'payroll') {
-        if (this.paymentType === 'biweekly') {
-          // Convertimos la fecha inicio desde weeklyStartDay[0]
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
           const startDate = DateTime.fromObject({
             year: this.weeklyStartDay[0].year,
             month: this.weeklyStartDay[0].month,
             day: this.weeklyStartDay[0].day
           }).setLocale(this.localeToUse)
 
-          // Convertimos la fecha fin desde weeklyStartDay[1]
           const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
           const endDate = DateTime.fromObject({
             year: endDateObject.year,
             month: endDateObject.month,
             day: endDateObject.day
           }).setLocale(this.localeToUse)
-          // console.log('startDates: ' + startDate.toFormat('DDD'))
-          // console.log('endDate: ' + endDate.toFormat('DDD'))
           return `${this.t('behavior_from')} ${startDate.toFormat('DDD')} ${this.t('to')} ${endDate.toFormat('DDD')}`
         } else {
-          // Convertimos la fecha inicio desde weeklyStartDay[0]
           const startDate = DateTime.fromObject({
             year: this.weeklyStartDay[0].year,
             month: this.weeklyStartDay[0].month,
             day: this.weeklyStartDay[0].day
           }).minus({ days: 1 }).setLocale(this.localeToUse)
 
-          // Convertimos la fecha fin desde weeklyStartDay[1]
           const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
           const endDate = DateTime.fromObject({
             year: endDateObject.year,
             month: endDateObject.month,
             day: endDateObject.day
           }).minus({ days: 1 }).setLocale(this.localeToUse)
-          // console.log('startDate: ' + startDate.toFormat('DDD'))
-          // console.log('endDate: ' + endDate.toFormat('DDD'))
           return `${this.t('behavior_from')} ${startDate.toFormat('DDD')} ${this.t('to')} ${endDate.toFormat('DDD')}`
         }
 
@@ -429,7 +427,7 @@ export default defineComponent({
     this.minDate = minDate
   },
   async mounted() {
-    this.getPayrollConfig()
+    await this.getPayrollConfig()
     this.setAssistSyncStatus()
     this.getNoPaymentDates()
 
@@ -480,6 +478,7 @@ export default defineComponent({
   methods: {
     async getPayrollConfig() {
       this.paymentType = null
+      this.dayToBePaid = null
       const systemSettingService = new SystemSettingService()
       const systemSettingPayrollConfig = await systemSettingService.getPayrollConfig()
       if (systemSettingPayrollConfig) {
@@ -487,12 +486,9 @@ export default defineComponent({
           this.paymentType = systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType
         }
       }
-      /*  if (this.paymentType === 'fixed_day_every_n_weeks') {
-         console.log('se paga en dia: ' + systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay)
-         console.log('cada ' + systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks + ' semanas')
-       } else if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
-         console.log('se paga en el día: ' + systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid)
-       } */
+      if (this.paymentType === 'specific_day_of_month') {
+        this.dayToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid
+      }
     },
     getStartPeriodDay() {
       const myGeneralStore = useMyGeneralStore()
@@ -552,26 +548,75 @@ export default defineComponent({
       return weekDayName === 'Thursday'
     },
     getNoPaymentDates() {
-      const initialYear = DateTime.now().year - 10
+      const initialYear = DateTime.now().year - 10;
       const filteredDays: Date[] = [];
+      if (this.paymentType === 'biweekly') {
+        for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+          const year = initialYear + yearOffset
 
-      for (let index = 0; index < 20; index++) {
-        const currentEvaluatedYear = initialYear + index
-        let date = DateTime.local(currentEvaluatedYear, 1, 1);
+          for (let month = 1; month <= 12; month++) {
+            const date = DateTime.local(year, month)
+            if (!date.isValid || typeof date.daysInMonth !== 'number') continue
 
-        while (date.year === currentEvaluatedYear) {
-          const isThursday = date.weekday === 4
-          const isEvenWeek = date.weekNumber % 2 === 0
-
-          if (!isThursday || (isThursday && !isEvenWeek)) {
-            filteredDays.push(date.toJSDate())
+            for (let day = 1; day <= date.daysInMonth; day++) {
+              if (day !== 1 && day !== 15) {
+                const date = DateTime.local(year, month, day)
+                filteredDays.push(date.toJSDate())
+              }
+            }
           }
-
-          date = date.plus({ days: 1 })
         }
+
+        this.disabledNoPaymentDates = filteredDays
+      } else if (this.paymentType === 'specific_day_of_month') {
+        const dayToBePaid = this.dayToBePaid
+        if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+          this.disabledNoPaymentDates = []
+          return
+        }
+
+        for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+          const year = initialYear + yearOffset
+
+          for (let month = 1; month <= 12; month++) {
+            const date = DateTime.local(year, month)
+
+            if (!date.isValid || typeof date.daysInMonth !== 'number') continue
+
+            const lastDayOfMonth = date.daysInMonth
+
+            const validPayDay = Math.min(dayToBePaid, lastDayOfMonth)
+
+            for (let day = 1; day <= lastDayOfMonth; day++) {
+              if (day !== validPayDay) {
+                const disabledDate = DateTime.local(year, month, day)
+                filteredDays.push(disabledDate.toJSDate())
+              }
+            }
+          }
+        }
+
+        this.disabledNoPaymentDates = filteredDays
+      } else {
+        for (let index = 0; index < 20; index++) {
+          const currentEvaluatedYear = initialYear + index
+          let date = DateTime.local(currentEvaluatedYear, 1, 1);
+
+          while (date.year === currentEvaluatedYear) {
+            const isThursday = date.weekday === 4
+            const isEvenWeek = date.weekNumber % 2 === 0
+
+            if (!isThursday || (isThursday && !isEvenWeek)) {
+              filteredDays.push(date.toJSDate())
+            }
+
+            date = date.plus({ days: 1 })
+          }
+        }
+
+        this.disabledNoPaymentDates = filteredDays
       }
 
-      this.disabledNoPaymentDates = filteredDays
     },
     getDefaultDatesRange() {
       const currentDay = DateTime.now().setZone('UTC-6').endOf('month').toJSDate()
@@ -638,6 +683,8 @@ export default defineComponent({
         if (this.visualizationMode?.value === 'payroll') {
           if (this.paymentType === 'biweekly') {
             this.periodSelected = this.getNextPayDateBiweekly()
+          } else if (this.paymentType === 'specific_day_of_month') {
+            this.periodSelected = this.getNextPayDateMonthly()!
           } else {
             this.periodSelected = this.getNextPayThursday()
           }
@@ -702,8 +749,8 @@ export default defineComponent({
           year: lastDay.year,
           month: lastDay.month,
           day: lastDay.day,
-        })
-        if (this.paymentType === 'biweekly') {
+        }).plus({ days: 1 })
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
           const startDayMinusOne = startDate
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
@@ -1072,20 +1119,40 @@ export default defineComponent({
 
       this.drawerAssistForm = false
     },
+    getNextPayDateMonthly() {
+      const today = DateTime.now()
+
+      const dayToBePaid = this.dayToBePaid
+      if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+        return null
+      }
+      if (today.day === dayToBePaid) {
+        return today.toJSDate()
+      }
+      if (today.day < dayToBePaid) {
+        const possibleDate = today.set({ day: dayToBePaid })
+        if (possibleDate.isValid) {
+          return possibleDate.toJSDate()
+        }
+      }
+      let nextMonthDate = today.plus({ months: 1 }).set({ day: dayToBePaid })
+      if (!nextMonthDate.isValid) {
+        nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
+      }
+      return nextMonthDate.toJSDate()
+    },
     getNextPayDateBiweekly() {
-      const today = DateTime.now() // Fecha actual
-      // Si hoy es el 1 o el 15, se devuelve esa fecha
+      const today = DateTime.now()
+
       if (today.day === 1 || today.day === 15) {
         return today.toJSDate()
       }
 
-      // Si estamos después del 15, la próxima fecha de pago será el 1 del mes siguiente
       if (today.day > 15) {
         let nextPayDate = today.plus({ months: 1 }).set({ day: 1 })
         return nextPayDate.toJSDate()
       }
 
-      // Si estamos antes del 1 o el 15, la próxima fecha de pago será el 15 de este mes
       let nextPayDate = today.set({ day: 15 })
       return nextPayDate.toJSDate()
     },
@@ -1159,34 +1226,35 @@ export default defineComponent({
         }
         case 'payroll': {
           if (this.paymentType === 'biweekly') {
-            const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
-            let startDate = date
-            // console.log(date.toFormat('dd'))
-            if (date.toFormat('dd').toString() === '01') {
-              // Día 16 del mes anterior
-              const sixteenthOfPreviousMonth = date
-                .minus({ months: 1 })
-                .set({ day: 16 });
-              // console.log('dia 16 del mes anterior: ' + sixteenthOfPreviousMonth.toISODate())
-              startDate = sixteenthOfPreviousMonth
-              // console.log(sixteenthOfPreviousMonth.toISODate()); // e.g., "2025-08-16"
-              // Obtener el último día del mes anterior
-              const lastDayOfPreviousMonth = date
-                .minus({ months: 1 })
-                .endOf('month');
-              this.vacationDateEnd = lastDayOfPreviousMonth.toFormat('yyyy-MM-dd')
-              // console.log('ultimo dia del mes anterior: ' + lastDayOfPreviousMonth.toISODate())
+            const date = DateTime.fromJSDate(this.periodSelected)
+            let startDate, endDate
+
+            if (date.day === 1) {
+              const previousMonth = date.minus({ months: 1 })
+              startDate = previousMonth.set({ day: 16 })
+              endDate = previousMonth.endOf('month')
             } else {
-              const firstDayOfMonth = date
-                .set({ day: 1 });
-              startDate = firstDayOfMonth
-              const fifteenDayOfMonth = date
-                .set({ day: 15 });
-              this.vacationDateEnd = fifteenDayOfMonth.toFormat('yyyy-MM-dd')
+              startDate = date.set({ day: 1 })
+              endDate = date.set({ day: 15 })
             }
-
             this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
+            this.vacationDateEnd = endDate.toFormat('yyyy-MM-dd')
 
+          } else if (this.paymentType === 'specific_day_of_month') {
+            const startDate = DateTime.fromObject({
+              year: this.weeklyStartDay[0].year,
+              month: this.weeklyStartDay[0].month,
+              day: this.weeklyStartDay[0].day
+            }).setLocale(this.localeToUse)
+
+            const endDateObject = this.weeklyStartDay[this.weeklyStartDay.length - 1]
+            const endDate = DateTime.fromObject({
+              year: endDateObject.year,
+              month: endDateObject.month,
+              day: endDateObject.day
+            }).setLocale(this.localeToUse)
+            this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
+            this.vacationDateEnd = endDate.toFormat('yyyy-MM-dd')
           } else {
             const date = DateTime.fromJSDate(this.periodSelected)
             const startOfWeek = date.startOf('week')
@@ -1218,7 +1286,7 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        if (this.paymentType === 'biweekly') {
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
           const startDayMinusOne = startDate
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
@@ -1339,7 +1407,7 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        if (this.paymentType === 'biweekly') {
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
           const startDayMinusOne = startDate
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
