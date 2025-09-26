@@ -4,23 +4,6 @@
       <h4>{{ $t('excel_import') }}</h4>
 
       <div class="form-container">
-        <div class="inputs-group group-2">
-          <div class="input-box">
-            <label for="importBusinessUnit">{{ $t('work_business_unit') }}</label>
-            <Dropdown v-model="importBusinessUnitId" :options="businessUnits" optionLabel="businessUnitName"
-              optionValue="businessUnitId" :placeholder="`${$t('select')} ${$t('work_business_unit')}`"
-              class="w-full md:w-14rem" :emptyMessage="$t('no_available_options')"
-              :emptyFilterMessage="$t('no_results_found')" />
-          </div>
-          <div class="input-box">
-            <label for="importPayrollBusinessUnit">{{ $t('payroll_business_unit') }}</label>
-            <Dropdown v-model="importPayrollBusinessUnitId" :options="businessUnits" optionLabel="businessUnitName"
-              optionValue="businessUnitId" :placeholder="`${$t('select')} ${$t('payroll_business_unit')}`"
-              class="w-full md:w-14rem" :emptyMessage="$t('no_available_options')"
-              :emptyFilterMessage="$t('no_results_found')" />
-          </div>
-        </div>
-
         <div class="input-box">
           <label for="excelFile">{{ $t('excel_file') }}</label>
           <FileUpload ref="fileUpload" v-model="excelFiles" name="excel[]" :custom-upload="true" :showUploadButton="false"

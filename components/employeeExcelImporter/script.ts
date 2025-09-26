@@ -3,8 +3,6 @@ import type { PropType } from 'vue'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
-import BusinessUnitService from '~/resources/scripts/services/BusinessUnitService';
-import type { BusinessUnitInterface } from '~/resources/scripts/interfaces/BusinessUnitInterface';
 import { useMyGeneralStore } from '~/store/general';
 
 export default defineComponent({
@@ -26,29 +24,18 @@ export default defineComponent({
   data: () => ({
     isReady: false,
     // Excel Import properties
-    importBusinessUnitId: null as number | null,
-    importPayrollBusinessUnitId: null as number | null,
     excelFiles: [] as Array<any>,
-    businessUnits: [] as BusinessUnitInterface[],
     submitted: false,
   }),
   computed: {
     canImportExcel() {
-      return this.importBusinessUnitId &&
-             this.importPayrollBusinessUnitId &&
-             this.excelFiles.length > 0
+      return this.excelFiles.length > 0
     }
   },
   async mounted() {
-    this.isReady = false
-    await this.getBusinessUnits()
     this.isReady = true
   },
   methods: {
-    async getBusinessUnits() {
-      const body = await new BusinessUnitService().index()
-      this.businessUnits = body.status === 200 ? body._data.data.data || [] : []
-    },
     browseFiles() {
       const fileInput = this.$refs.fileUpload.$el.querySelector('input[type=file]')
       if (fileInput) {
@@ -106,11 +93,7 @@ export default defineComponent({
 
       const employeeService = new EmployeeService();
       const file = this.excelFiles[0];
-      const response = await employeeService.importExcel(
-        file,
-        this.importBusinessUnitId!,
-        this.importPayrollBusinessUnitId!
-      );
+      const response = await employeeService.importExcel(file);
 
       myGeneralStore.setFullLoader(false);
 
@@ -129,8 +112,6 @@ export default defineComponent({
               detail = `${this.t('import_successful')}: ${data.created} ${this.t('employees_created')}, ${data.updated} ${this.t('employees_updated')}, ${data.skipped} ${this.t('employees_skipped')}`;
 
               // Reset form
-              this.importBusinessUnitId = null;
-              this.importPayrollBusinessUnitId = null;
               this.excelFiles = [];
 
               // Emit save event to refresh the employee list

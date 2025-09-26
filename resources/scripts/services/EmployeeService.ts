@@ -601,14 +601,12 @@ export default class EmployeeService {
     });
   }
 
-  async importExcel(file: File, businessUnitId: number, payrollBusinessUnitId: number) {
+  async importExcel(file: File) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
 
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('businessUnitId', businessUnitId.toString())
-    formData.append('payrollBusinessUnitId', payrollBusinessUnitId.toString())
 
     await $fetch(`${this.API_PATH}/employees/import-excel`, {
       method: 'POST',
