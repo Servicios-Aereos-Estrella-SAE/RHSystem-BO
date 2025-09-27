@@ -1,3 +1,4 @@
+import { DateTime } from "luxon"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { SystemSettingPayrollConfigInterface } from "../interfaces/SystemSettingPayrollConfigInterface"
 
@@ -103,16 +104,17 @@ export default class SystemSettingPayrollConfigService {
         console.error('Wrong fixed every n weeks')
         return false;
       }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
+        console.error('Wrong number of over days to offset')
+        return false;
+      }
     } else if (paymentType === 'biweekly' || paymentType === 'specific_day_of_month') {
       if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
         console.error('Wrong number of days to be paid')
         return false;
       }
     }
-    if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
-      console.error('Wrong number of over days to offset')
-      return false;
-    }
+
     if (!systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) {
       console.error('Wrong apply since')
       return false;
@@ -123,5 +125,11 @@ export default class SystemSettingPayrollConfigService {
     }
 
     return true;
+  }
+  getDayIndex(value: string | null): number {
+    if (!value) return -1
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    const normalized = value.toLowerCase()
+    return days.indexOf(normalized)
   }
 }

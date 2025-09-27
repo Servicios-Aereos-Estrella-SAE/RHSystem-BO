@@ -5,6 +5,11 @@
     </div>
     <div class="line">
     </div>
+    <div class="info date">
+      <label for="date" class="label-item">Apply since:</label>
+      <label class="label-date"> {{ getFormattedDate(systemSettingPayrollConfig.systemSettingPayrollConfigApplySince)
+        }}</label>
+    </div>
     <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
       class="info status">
       <label for="status">Fixed day</label>
@@ -22,15 +27,17 @@
       <span> {{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid }}</span>
     </div>
 
-    <div class="info status">
+    <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
+      class="info status">
       <label for="status">Number of overdue days to offset</label>
       <span> {{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset }}</span>
     </div>
-    <div class="info date">
-      <label for="date" class="label-item">Apply since:</label>
-      <label class="label-date"> {{ getFormattedDate(systemSettingPayrollConfig.systemSettingPayrollConfigApplySince)
-        }}</label>
+    <div v-else class="
+          info status">
+      <label for="status">&nbsp;</label>
+      <span> &nbsp;</span>
     </div>
+
     <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType !== 'fixed_day_every_n_weeks'" class="
       info status">
       <label for="status">&nbsp;</label>

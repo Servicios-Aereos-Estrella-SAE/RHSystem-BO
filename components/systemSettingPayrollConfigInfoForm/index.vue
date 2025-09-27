@@ -38,7 +38,8 @@
           <label for="systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n weeks</label>
           <InputNumber id="systemSettingPayrollConfigFixedEveryNWeeks"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks"
-            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks" />
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks"
+            :disabled="!isNewSystemSettingPayrollConfig" />
           <small class="p-error"
             v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n
             weeks is
@@ -59,7 +60,8 @@
             required.</small>
         </div>
 
-        <div class="input-box">
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
+          class="input-box">
           <label for="systemSettingPayrollConfigNumberOfOverdueDaysToOffset">Config number of overdue days to
             offset</label>
           <InputNumber id="systemSettingPayrollConfigNumberOfOverdueDaysToOffset"
