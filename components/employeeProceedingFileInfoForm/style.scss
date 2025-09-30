@@ -42,5 +42,44 @@
     display: inline;
   }
 
+  .employee-record-wrapper {
+    .inputs-group {
+      .property {
+        .property-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
 
+          label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+          }
+
+          .btn-delete-property {
+            padding: 0.25rem;
+            min-width: auto;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid var(--red-500);
+            color: var(--red-500);
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: var(--red-500);
+              color: white;
+            }
+
+            svg {
+              width: 12px;
+              height: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
 }

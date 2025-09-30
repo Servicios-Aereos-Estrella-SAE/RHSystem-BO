@@ -29,7 +29,7 @@
               </svg>
             </span>
             {{
-            `${capitalizeFirstLetter($t(folderSelected.proceedingFileTypeName.toLocaleLowerCase()))}`
+            folderSelected.proceedingFileTypeName ? `${capitalizeFirstLetter($t(folderSelected.proceedingFileTypeName.toLocaleLowerCase()))}` : ''
             }}
           </span>
         </h1>
@@ -59,8 +59,19 @@
 
           <div v-if="!folderSelected" class="proceeding-file-wrapper">
             <proceedingFileTypeFolder v-for="(folder, index) in foldersFiltered"
-              :key="`proceeding-file-folder-${index}`" :folder="folder" @dblclick="handlerDoubleClick(folder)"
-              @dblclickContracts="handlerContractsDoubleClick(folder)" />
+              :key="`proceeding-file-folder-${index}`" :folder="folder" :canManageFiles="canManageFiles"
+              @dblclick="handlerDoubleClick(folder)" @dblclickContracts="handlerContractsDoubleClick(folder)"
+              @addSubfolder="handlerAddSubfolder" />
+              <div v-if="canManageFiles" class="add-folder-button-container">
+              <Button class="btn btn-add-folder btn-block" @click="addNewFolder">
+                <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 2.5a1.5 1.5 0 0 1 1.5 1.5v1.5h3.75a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5V6a1.5 1.5 0 0 1 1.5-1.5H10.5V4a1.5 1.5 0 0 1 1.5-1.5ZM12 6H6.75v12h10.5V6H12Z"
+                    fill="#88a4bf" class="fill-212121"></path>
+                </svg>
+                {{ $t('add_folder') }}
+              </Button>
+            </div>
           </div>
 
           <div v-if="!filesLoader" class="files-wrapper">
@@ -83,13 +94,21 @@
                       fill="#88a4bf" class="fill-000000"></path>
                   </svg>
                 </Button>
+                <Button class="btn btn-add-folder" @click="addFolder">
+                  <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 2.5a1.5 1.5 0 0 1 1.5 1.5v1.5h3.75a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5V6a1.5 1.5 0 0 1 1.5-1.5H10.5V4a1.5 1.5 0 0 1 1.5-1.5ZM12 6H6.75v12h10.5V6H12Z"
+                      fill="#88a4bf" class="fill-212121"></path>
+                  </svg>
+                  {{ $t('add_folder') }}
+                </Button>
               </div>
 
               <div v-if="folderSelected.children && folderSelected.children.length > 0"
                 class="proceeding-file-wrapper children">
                 <proceedingFileTypeFolder v-for="(folder, index) in childrenFoldersFiltered"
-                  :key="`proceeding-file-folder-child-${index}`" :folder="folder"
-                  @dblclick="handlerDoubleClick(folder)" />
+                  :key="`proceeding-file-folder-child-${index}`" :folder="folder" :canManageFiles="canManageFiles"
+                  @dblclick="handlerDoubleClick(folder)" @addSubfolder="handlerAddSubfolder" />
               </div>
 
               <div v-if="filesFolderFiltered.length > 0" class="file-list-wrapper">
@@ -131,6 +150,14 @@
               <proceedingFileTypeEmail :proceedingFileType="folderSelected" />
             </Sidebar>
           </div>
+
+          <div class="card flex justify-content-center">
+            <Sidebar v-model:visible="drawerProceedingFileTypeFolderForm" position="right"
+              class="proceeding-file-type-folder-form-sidebar" :blockScroll="true" :closeOnEscape="false"
+              :dismissable="false" :showCloseIcon="true" :header="$t('new_folder')">
+              <proceedingFileTypeFolderForm :parentId="currentParentId" @onSave="onFolderSave" @onCancel="onFolderCancel" />
+            </Sidebar>
+          </div>
         </div>
 
         <transition name="page">
@@ -166,6 +193,15 @@
   .proceeding-file-type-email-form-sidebar {
     width: 100% !important;
     max-width: 30rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .proceeding-file-type-folder-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
