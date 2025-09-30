@@ -550,12 +550,6 @@ export default defineComponent({
         this.fixedEveryNWeeksToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks
         this.daysToOffset = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset
       }
-      /*   console.log('paymentType: ' + this.paymentType)
-        console.log('dateApplySince: ' + this.dateApplySince)
-        console.log('fixedDayToBePaid: ' + this.fixedDayToBePaid)
-        console.log('fixedEveryNWeeksToBePaid: ' + this.fixedEveryNWeeksToBePaid)
-        console.log('daysToOffset: ' + this.daysToOffset) */
-
     },
     getStartPeriodDay() {
       const myGeneralStore = useMyGeneralStore()
@@ -665,56 +659,48 @@ export default defineComponent({
 
         this.disabledNoPaymentDates = filteredDays
       } else if (this.paymentType === 'fixed_day_every_n_weeks') {
-        if (!this.dateApplySince) return null
+        if (!this.dateApplySince || !this.fixedEveryNWeeksToBePaid) return null
 
-        const applySince = DateTime.fromISO(this.dateApplySince)
+        const applySince = DateTime.fromISO(this.dateApplySince).setLocale(this.localeToUse)
         if (!applySince.isValid) return null
 
         const targetDay = this.fixedDayToBePaid
         const weeksInterval = this.fixedEveryNWeeksToBePaid
 
         const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService()
-        const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay)
-
-        if (dayIndex < 0 || !weeksInterval) {
+        const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay) + 1
+        if (dayIndex < 1 || dayIndex > 7) {
           this.disabledNoPaymentDates = []
           return
         }
 
         const paymentDates: Set<string> = new Set()
 
-        const totalWeeksToLookBack = 52 * 10
-        const totalWeeksToLookForward = 52 * 20
-
-
-        for (let weekOffset = 0; weekOffset <= totalWeeksToLookBack; weekOffset += weeksInterval) {
-          const payDate = applySince.minus({ weeks: weekOffset }).plus({ days: dayIndex })
+        for (let weekOffset = 0; weekOffset <= 52 * 10; weekOffset += weeksInterval) {
+          const baseDate = applySince.minus({ weeks: weekOffset })
+          const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
           if (payDate.isValid) {
             paymentDates.add(payDate.toISODate()!)
           }
         }
 
-        for (let weekOffset = 0; weekOffset <= totalWeeksToLookForward; weekOffset += weeksInterval) {
-          const payDate = applySince.plus({ weeks: weekOffset }).plus({ days: dayIndex })
+        for (let weekOffset = 0; weekOffset <= 52 * 20; weekOffset += weeksInterval) {
+          const baseDate = applySince.plus({ weeks: weekOffset })
+          const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
           if (payDate.isValid) {
             paymentDates.add(payDate.toISODate()!)
           }
         }
-
 
         for (let yearOffset = -10; yearOffset < 20; yearOffset++) {
           const year = applySince.year + yearOffset
-
           for (let month = 1; month <= 12; month++) {
             const date = DateTime.local(year, month)
-            if (!date.isValid || typeof date.daysInMonth !== 'number') continue;
+            if (!date.isValid || typeof date.daysInMonth !== 'number') continue
 
-            const lastDayOfMonth = date.daysInMonth;
-
-            for (let day = 1; day <= lastDayOfMonth; day++) {
-              const currentDate = DateTime.local(year, month, day)
+            for (let day = 1; day <= date.daysInMonth; day++) {
+              const currentDate = DateTime.local(year, month, day).setLocale(this.localeToUse)
               const isoDate = currentDate.toISODate()
-
               if (isoDate && !paymentDates.has(isoDate)) {
                 filteredDays.push(currentDate.toJSDate())
               }
@@ -723,6 +709,7 @@ export default defineComponent({
         }
 
         this.disabledNoPaymentDates = filteredDays
+
       } else {
         for (let index = 0; index < 20; index++) {
           const currentEvaluatedYear = initialYear + index
@@ -819,7 +806,6 @@ export default defineComponent({
         } else {
           this.periodSelected = new Date()
         }
-        // console.log('this.periodSelected: ' + DateTime.fromJSDate(this.periodSelected).toFormat('DDD'))
 
         await this.getEmployeeAssist()
       }
@@ -1254,30 +1240,27 @@ export default defineComponent({
       this.drawerAssistForm = false
     },
     getNextPayDateWeekDay() {
-      const today = DateTime.now();
-      if (this.fixedEveryNWeeksToBePaid) {
-        const targetDay = this.fixedDayToBePaid // e.g. 'Thursday'
+      const today = DateTime.now()
+      if (this.fixedEveryNWeeksToBePaid && this.dateApplySince) {
+        const targetDay = this.fixedDayToBePaid
         const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService()
-        const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay) + 1 // 0 (Monday) - 6 (Sunday)
-        let nextPayDate = today.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 });
+        const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay) + 1
 
-        // Si ya pasó ese día en la semana actual, saltamos a la siguiente
-        if (nextPayDate < today) {
-          nextPayDate = nextPayDate.plus({ weeks: 1 });
+        const applySince = DateTime.fromJSDate(new Date(this.dateApplySince))
+        let startDate = applySince.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
+
+        if (startDate < applySince) {
+          startDate = startDate.plus({ weeks: 1 })
         }
 
-        // Asegurar que caiga en una semana válida
-        const currentWeekNumber = today.weekNumber;
-        while ((nextPayDate.weekNumber - currentWeekNumber) % this.fixedEveryNWeeksToBePaid !== 0) {
-          nextPayDate = nextPayDate.plus({ weeks: 1 });
+        while (startDate < today) {
+          startDate = startDate.plus({ weeks: this.fixedEveryNWeeksToBePaid })
         }
 
-        return nextPayDate.toJSDate();
+        return startDate.toJSDate()
       } else {
-        return today.toJSDate();
+        return today.toJSDate()
       }
-
-
     },
     getNextPayDateMonthly() {
       const today = DateTime.now()
