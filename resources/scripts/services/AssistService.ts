@@ -2,6 +2,8 @@ import { DateTime } from "luxon"
 import type { AssistDayInterface } from "../interfaces/AssistDayInterface"
 import type { AssistInterface } from "../interfaces/AssistInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
+import type { AssistNoPaymentDatesInterface } from "../interfaces/AssistNoPaymentDatesInterface"
+import SystemSettingPayrollConfigService from "./SystemSettingPayrollConfigService"
 
 export default class AssistService {
   protected API_PATH: string
@@ -235,5 +237,127 @@ export default class AssistService {
     }
 
     return responseRequest
+  }
+
+  getNoPaymentDates(filters: AssistNoPaymentDatesInterface) {
+    const initialYear = DateTime.now().year - 10;
+    const filteredDays: Date[] = [];
+    if (filters.paymentType === 'biweekly') {
+      for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+        const year = initialYear + yearOffset
+
+        for (let month = 1; month <= 12; month++) {
+          const date = DateTime.local(year, month)
+          if (!date.isValid || typeof date.daysInMonth !== 'number') continue
+
+          for (let day = 1; day <= date.daysInMonth; day++) {
+            if (day !== 1 && day !== 15) {
+              const date = DateTime.local(year, month, day)
+              filteredDays.push(date.toJSDate())
+            }
+          }
+        }
+      }
+
+      return filteredDays
+    } else if (filters.paymentType === 'specific_day_of_month') {
+      const dayToBePaid = filters.dayToBePaid
+      if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+        return filteredDays
+      }
+
+      for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+        const year = initialYear + yearOffset
+
+        for (let month = 1; month <= 12; month++) {
+          const date = DateTime.local(year, month)
+
+          if (!date.isValid || typeof date.daysInMonth !== 'number') continue
+
+          const lastDayOfMonth = date.daysInMonth
+
+          const validPayDay = Math.min(dayToBePaid, lastDayOfMonth)
+
+          for (let day = 1; day <= lastDayOfMonth; day++) {
+            if (day !== validPayDay) {
+              const disabledDate = DateTime.local(year, month, day)
+              filteredDays.push(disabledDate.toJSDate())
+            }
+          }
+        }
+      }
+
+      return filteredDays
+    } else if (filters.paymentType === 'fixed_day_every_n_weeks') {
+      if (!filters.dateApplySince || !filters.fixedEveryNWeeksToBePaid) return filteredDays
+
+      const applySince = DateTime.fromISO(filters.dateApplySince).setLocale(filters.localeToUse)
+      if (!applySince.isValid) return filteredDays
+
+      const targetDay = filters.fixedDayToBePaid
+      const weeksInterval = filters.fixedEveryNWeeksToBePaid
+
+      const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService()
+      const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay) + 1
+      if (dayIndex < 1 || dayIndex > 7) {
+        return filteredDays
+      }
+
+      const paymentDates: Set<string> = new Set()
+
+      for (let weekOffset = 0; weekOffset <= 52 * 10; weekOffset += weeksInterval) {
+        const baseDate = applySince.minus({ weeks: weekOffset })
+        const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
+        if (payDate.isValid) {
+          paymentDates.add(payDate.toISODate()!)
+        }
+      }
+
+      for (let weekOffset = 0; weekOffset <= 52 * 20; weekOffset += weeksInterval) {
+        const baseDate = applySince.plus({ weeks: weekOffset })
+        const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
+        if (payDate.isValid) {
+          paymentDates.add(payDate.toISODate()!)
+        }
+      }
+
+      for (let yearOffset = -10; yearOffset < 20; yearOffset++) {
+        const year = applySince.year + yearOffset
+        for (let month = 1; month <= 12; month++) {
+          const date = DateTime.local(year, month)
+          if (!date.isValid || typeof date.daysInMonth !== 'number') continue
+
+          for (let day = 1; day <= date.daysInMonth; day++) {
+            const currentDate = DateTime.local(year, month, day).setLocale(filters.localeToUse)
+            const isoDate = currentDate.toISODate()
+            if (isoDate && !paymentDates.has(isoDate)) {
+              filteredDays.push(currentDate.toJSDate())
+            }
+          }
+        }
+      }
+
+      return filteredDays
+
+    } else {
+      for (let index = 0; index < 20; index++) {
+        const currentEvaluatedYear = initialYear + index
+        let date = DateTime.local(currentEvaluatedYear, 1, 1)
+
+        while (date.year === currentEvaluatedYear) {
+          const isThursday = date.weekday === 4
+          const isEvenWeek = date.weekNumber % 2 === 0
+
+          if (!isThursday || (isThursday && !isEvenWeek)) {
+            filteredDays.push(date.toJSDate())
+          }
+
+          date = date.plus({ days: 1 })
+        }
+      }
+
+      return filteredDays
+    }
+
   }
 }

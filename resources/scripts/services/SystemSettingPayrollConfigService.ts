@@ -132,4 +132,67 @@ export default class SystemSettingPayrollConfigService {
     const normalized = value.toLowerCase()
     return days.indexOf(normalized)
   }
+  getNextPayDateBiweekly() {
+    const today = DateTime.now()
+
+    if (today.day === 1 || today.day === 15) {
+      return today.toJSDate()
+    }
+
+    if (today.day > 15) {
+      let nextPayDate = today.plus({ months: 1 }).set({ day: 1 })
+      return nextPayDate.toJSDate()
+    }
+
+    let nextPayDate = today.set({ day: 15 })
+    return nextPayDate.toJSDate()
+  }
+  getNextPayDateMonthly(dayToBePaid: number | null) {
+    const today = DateTime.now()
+
+    if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+      return null
+    }
+
+    if (today.day === dayToBePaid) {
+      return today.toJSDate()
+    }
+
+    if (today.day < dayToBePaid) {
+      const possibleDate = today.set({ day: dayToBePaid })
+      if (possibleDate.isValid) {
+        return possibleDate.toJSDate()
+      }
+    }
+
+    let nextMonthDate = today.plus({ months: 1 }).set({ day: dayToBePaid })
+    if (!nextMonthDate.isValid) {
+      nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
+    }
+
+    return nextMonthDate.toJSDate()
+  }
+  getNextPayDateWeekDay(fixedEveryNWeeksToBePaid: number | null, dateApplySince: string | null, fixedDayToBePaid: string | null) {
+    const today = DateTime.now()
+    if (fixedEveryNWeeksToBePaid && dateApplySince) {
+      const targetDay = fixedDayToBePaid
+      const dayIndex = this.getDayIndex(targetDay) + 1
+
+      const applySince = DateTime.fromJSDate(new Date(dateApplySince))
+      let startDate = applySince.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
+
+      if (startDate < applySince) {
+        startDate = startDate.plus({ weeks: 1 })
+      }
+
+      while (startDate < today) {
+        startDate = startDate.plus({ weeks: fixedEveryNWeeksToBePaid })
+      }
+
+      return startDate.toJSDate()
+    } else {
+      return today.toJSDate()
+    }
+  }
+
 }
