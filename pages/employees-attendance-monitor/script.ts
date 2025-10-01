@@ -159,6 +159,7 @@ export default defineComponent({
     dateApplySince: null as string | null,
     paymentType: null as string | null,
     dayToBePaid: null as number | null,
+    dayEndToBePaid: null as number | null,
     fixedDayToBePaid: null as string | null,
     fixedEveryNWeeksToBePaid: null as number | null,
     daysToOffset: null as number | null,
@@ -170,7 +171,10 @@ export default defineComponent({
       Friday: 4,
       Saturday: 5,
       Sunday: 6
-    }
+    },
+    advanceDateInMonthsOf31Days: false,
+    advanceDateOnHolidays: false,
+    advanceDateOnWeekends: false
   }),
   computed: {
     getStatus() {
@@ -534,9 +538,13 @@ export default defineComponent({
       this.dateApplySince = null
       this.paymentType = null
       this.dayToBePaid = null
+      this.dayEndToBePaid = null
       this.fixedDayToBePaid = null
       this.fixedEveryNWeeksToBePaid = null
       this.daysToOffset = null
+      this.advanceDateInMonthsOf31Days = false
+      this.advanceDateOnHolidays = false
+      this.advanceDateOnWeekends = false
       const systemSettingService = new SystemSettingService()
       const systemSettingPayrollConfig = await systemSettingService.getPayrollConfig()
       if (systemSettingPayrollConfig) {
@@ -551,6 +559,13 @@ export default defineComponent({
         this.fixedDayToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigFixedDay
         this.fixedEveryNWeeksToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks
         this.daysToOffset = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset
+      } else if (this.paymentType === 'fourteenth') {
+        this.dayToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid
+        this.dayEndToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid
+        this.dateApplySince = systemSettingPayrollConfig.systemSettingPayrollConfigApplySince
+        this.advanceDateInMonthsOf31Days = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1;
+        this.advanceDateOnHolidays = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1;
+        this.advanceDateOnWeekends = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1;
       }
     },
     isThursday(dateObject: any, addOneMonth = true) {
@@ -558,28 +573,6 @@ export default defineComponent({
       const mydate = dateObject.year + '-' + (month < 10 ? '0' + month : month) + '-' + (dateObject.day < 10 ? '0' + dateObject.day : dateObject.day) + "T00:00:00";
       const weekDayName = moment(mydate).format('dddd');
       return weekDayName === 'Thursday';
-    },
-    getNoPaymentDates() {
-      const initialYear = DateTime.now().year - 10
-      const filteredDays: Date[] = [];
-
-      for (let index = 0; index < 20; index++) {
-        const currentEvaluatedYear = initialYear + index
-        let date = DateTime.local(currentEvaluatedYear, 1, 1);
-
-        while (date.year === currentEvaluatedYear) {
-          const isThursday = date.weekday === 4
-          const isEvenWeek = date.weekNumber % 2 === 0
-
-          if (!isThursday || (isThursday && !isEvenWeek)) {
-            filteredDays.push(date.toJSDate())
-          }
-
-          date = date.plus({ days: 1 })
-        }
-      }
-
-      this.disabledNoPaymentDates = filteredDays
     },
     async setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')

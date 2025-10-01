@@ -4,6 +4,10 @@ interface SystemSettingPayrollConfigInterface {
   systemSettingPayrollConfigFixedDay: string | null,
   systemSettingPayrollConfigFixedEveryNWeeks: number | null,
   systemSettingPayrollConfigNumberOfDaysToBePaid: number | null,
+  systemSettingPayrollConfigNumberOfDaysEndToBePaid: number | null,
+  systemSettingPayrollConfigAdvanceDateInMonthsOf31Days: number | null,
+  systemSettingPayrollConfigAdvanceDateOnHolidays: number | null,
+  systemSettingPayrollConfigAdvanceDateOnWeekends: number | null,
   systemSettingPayrollConfigNumberOfOverdueDaysToOffset: number | null,
   systemSettingPayrollConfigApplySince: string | Date,
   systemSettingId: number,
@@ -13,3 +17,4 @@ interface SystemSettingPayrollConfigInterface {
 }
 
 export type { SystemSettingPayrollConfigInterface }
+

@@ -29,7 +29,8 @@ export default defineComponent({
     paymentTypeOptions: [
       { label: 'Biweekly', value: 'biweekly' },
       { label: 'Monthly', value: 'specific_day_of_month' },
-      { label: 'Specific day', value: 'fixed_day_every_n_weeks' }
+      { label: 'Specific day', value: 'fixed_day_every_n_weeks' },
+      { label: 'Fourteenth', value: 'fourteenth' }
     ],
     systemSettingPayrollConfigApplySince: '',
     daysOfWeeks: [
@@ -41,6 +42,9 @@ export default defineComponent({
       { label: 'Saturday', value: 'saturday' },
       { label: 'Sunday', value: 'sunday' },
     ],
+    advanceDateInMonthsOf31Days: false,
+    advanceDateOnHolidays: false,
+    advanceDateOnWeekends: false
   }),
   watch: {
     'systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType'(newVal) {
@@ -54,6 +58,9 @@ export default defineComponent({
     this.isNewSystemSettingPayrollConfig = !this.systemSettingPayrollConfig.systemSettingPayrollConfigId
       ? true
       : false;
+    this.advanceDateInMonthsOf31Days = this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1;
+    this.advanceDateOnHolidays = this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1;
+    this.advanceDateOnWeekends = this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1;
     if (this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince) {
       this.systemSettingPayrollConfig.systemSettingPayrollConfigApplySince = new Date(this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince).toISOString().slice(0, 10)
       this.systemSettingPayrollConfigApplySince = this.getFormattedDate(this.systemSettingPayrollConfig?.systemSettingPayrollConfigApplySince)
@@ -77,6 +84,9 @@ export default defineComponent({
     async onSave() {
       this.submitted = true;
       const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService();
+      this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days = this.advanceDateInMonthsOf31Days ? 1 : 0;
+      this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays = this.advanceDateOnHolidays ? 1 : 0;
+      this.systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends = this.advanceDateOnWeekends ? 1 : 0;
       if (!systemSettingPayrollConfigService.validateInfo(this.systemSettingPayrollConfig)) {
         this.$toast.add({
           severity: "warn",
@@ -92,6 +102,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(true);
 
       if (this.systemSettingPayrollConfig) {
+
         let systemSettingPayrollConfigResponse = null;
         if (!this.systemSettingPayrollConfig.systemSettingPayrollConfigId) {
           systemSettingPayrollConfigResponse = await systemSettingPayrollConfigService.store(

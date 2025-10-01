@@ -46,9 +46,10 @@
             required.</small>
         </div>
 
-        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'specific_day_of_month'"
+        <div
+          v-if="['specific_day_of_month', 'fourteenth'].includes(systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType)"
           class="input-box">
-          <label for="systemSettingPayrollConfigNumberOfDaysToBePaid">Config number of days to be paid</label>
+          <label for="systemSettingPayrollConfigNumberOfDaysToBePaid">Config number of day to be paid</label>
           <InputNumber id="systemSettingPayrollConfigNumberOfDaysToBePaid"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid"
             :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid" :min="1"
@@ -56,8 +57,41 @@
             :disabled="!isNewSystemSettingPayrollConfig || systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'biweekly'" />
           <small class="p-error"
             v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid">Config number
-            of days to be paid is
+            of day to be paid is
             required.</small>
+        </div>
+
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="systemSettingPayrollConfigNumberOfDaysEndToBePaid">Config number of day end to be paid</label>
+          <InputNumber id="systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            :min="1" :max="31" :disabled="!isNewSystemSettingPayrollConfig" />
+          <small class="p-error"
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid">Config
+            number
+            of day end to be paid is
+            required.</small>
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateInMonthsOf31Days">
+            {{ advanceDateInMonthsOf31Days ?
+            'Active Advance Date In Months Of 31 Days'
+            :
+            'Inactive Advance Date In Months Of 31 Days' }}</label>
+          <InputSwitch v-model="advanceDateInMonthsOf31Days" :disabled="!isNewSystemSettingPayrollConfig" />
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateOnHolidays">
+            {{ advanceDateOnHolidays ? 'Active Advance Date On Holidays' : 'Inactive Advance Date On Holidays'
+            }}</label>
+          <InputSwitch v-model="advanceDateOnHolidays" :disabled="!isNewSystemSettingPayrollConfig" />
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateOnWeekends">
+            {{ advanceDateOnWeekends ? 'Active Advance Date On Weekends' : 'Inactive Advance Date On Weekends'
+            }}</label>
+          <InputSwitch v-model="advanceDateOnWeekends" :disabled="!isNewSystemSettingPayrollConfig" />
         </div>
 
         <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"

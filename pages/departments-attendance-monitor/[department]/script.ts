@@ -549,28 +549,6 @@ export default defineComponent({
         this.daysToOffset = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset
       }
     },
-    getNoPaymentDates() {
-      const initialYear = DateTime.now().year - 10
-      const filteredDays: Date[] = [];
-
-      for (let index = 0; index < 20; index++) {
-        const currentEvaluatedYear = initialYear + index
-        let date = DateTime.local(currentEvaluatedYear, 1, 1);
-
-        while (date.year === currentEvaluatedYear) {
-          const isThursday = date.weekday === 4
-          const isEvenWeek = date.weekNumber % 2 === 0
-
-          if (!isThursday || (isThursday && !isEvenWeek)) {
-            filteredDays.push(date.toJSDate())
-          }
-
-          date = date.plus({ days: 1 })
-        }
-      }
-
-      this.disabledNoPaymentDates = filteredDays
-    },
     setDefaultVisualizationMode() {
       const index = this.visualizationModeOptions.findIndex(opt => opt.value === 'custom')
 

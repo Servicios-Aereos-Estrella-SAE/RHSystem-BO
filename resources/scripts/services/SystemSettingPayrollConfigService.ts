@@ -113,6 +113,15 @@ export default class SystemSettingPayrollConfigService {
         console.error('Wrong number of days to be paid')
         return false;
       }
+    } else if (paymentType === 'fourteenth') {
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
+        console.error('Wrong number of days to be paid')
+        return false;
+      }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid) {
+        console.error('Wrong number of days end to be paid')
+        return false;
+      }
     }
 
     if (!systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) {
