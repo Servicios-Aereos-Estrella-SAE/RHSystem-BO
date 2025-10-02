@@ -146,6 +146,7 @@ export default defineComponent({
     canSeeSwitchOptionGetAssist: false,
     drawerEmployeeWithFaults: false,
     employeesWithFaults: [] as EmployeeInterface[],
+    drawerPermissionsExcel: false,
     employeeDiscrimitorsList: [] as EmployeeAssistStatisticInterface[],
     searchTime: null as null | Date,
     employeeWorkDisabilities: [] as EmployeeInterface[],
