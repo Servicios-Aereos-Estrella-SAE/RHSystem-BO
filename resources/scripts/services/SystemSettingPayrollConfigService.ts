@@ -203,5 +203,45 @@ export default class SystemSettingPayrollConfigService {
       return today.toJSDate()
     }
   }
+  getNextPayDateFourteenth(dayToBePaid: number | null, dayEndToBePaid: number | null) {
+    const today = DateTime.now()
 
+    if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+      return null
+    }
+
+    if (typeof dayEndToBePaid !== 'number' || dayEndToBePaid < 1 || dayEndToBePaid > 31) {
+      return null
+    }
+
+    if (today.day === dayToBePaid) {
+      return today.toJSDate()
+    }
+
+    if (today.day === dayEndToBePaid) {
+      return today.toJSDate()
+    }
+
+
+    if (today.day < dayToBePaid) {
+      const possibleDate = today.set({ day: dayToBePaid })
+      if (possibleDate.isValid) {
+        return possibleDate.toJSDate()
+      }
+    }
+
+    if (today.day < dayEndToBePaid) {
+      const possibleDate = today.set({ day: dayEndToBePaid })
+      if (possibleDate.isValid) {
+        return possibleDate.toJSDate()
+      }
+    }
+
+    let nextMonthDate = today.plus({ months: 1 }).set({ day: dayToBePaid })
+    if (!nextMonthDate.isValid) {
+      nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
+    }
+
+    return nextMonthDate.toJSDate()
+  }
 }

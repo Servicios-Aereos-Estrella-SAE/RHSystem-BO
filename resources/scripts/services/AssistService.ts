@@ -339,25 +339,136 @@ export default class AssistService {
 
       return filteredDays
 
-    } else {
-      for (let index = 0; index < 20; index++) {
-        const currentEvaluatedYear = initialYear + index
-        let date = DateTime.local(currentEvaluatedYear, 1, 1)
-
-        while (date.year === currentEvaluatedYear) {
-          const isThursday = date.weekday === 4
-          const isEvenWeek = date.weekNumber % 2 === 0
-
-          if (!isThursday || (isThursday && !isEvenWeek)) {
-            filteredDays.push(date.toJSDate())
+    } else if (filters.paymentType === 'fourteenth') {
+      const initialYear = DateTime.now().year;
+      /*   const dayToBePaid = filters.dayToBePaid
+        if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+          return filteredDays
+        }
+  
+        const dayEndToBePaid = filters.dayEndToBePaid
+        if (typeof dayEndToBePaid !== 'number' || dayEndToBePaid < 1 || dayEndToBePaid > 31) {
+          return filteredDays
+        }
+  
+        for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+          const year = initialYear + yearOffset
+  
+          for (let month = 1; month <= 12; month++) {
+            const date = DateTime.local(year, month)
+  
+            if (!date.isValid || typeof date.daysInMonth !== 'number') continue
+  
+            const lastDayOfMonth = date.daysInMonth
+  
+            const validPayDay = Math.min(dayToBePaid, lastDayOfMonth)
+            const validPayDayEnd = Math.min(dayEndToBePaid, lastDayOfMonth)
+  
+            for (let day = 1; day <= lastDayOfMonth; day++) {
+              if (day !== validPayDay && day !== validPayDayEnd) {
+                const disabledDate = DateTime.local(year, month, day)
+                filteredDays.push(disabledDate.toJSDate())
+              }
+            }
           }
+        }
+        return filteredDays */
 
-          date = date.plus({ days: 1 })
+      if (typeof filters.dayToBePaid !== 'number' || filters.dayToBePaid < 1 || filters.dayToBePaid > 31) {
+        return filteredDays
+      }
+
+      if (typeof filters.dayEndToBePaid !== 'number' || filters.dayEndToBePaid < 1 || filters.dayEndToBePaid > 31) {
+        return filteredDays
+      }
+
+      // 👉 Lista de días festivos en formato 'yyyy-MM-dd'
+      const holidays: string[] = [
+        '2025-01-01',
+        '2025-12-25',
+        '2025-10-12',
+        // Agrega más según tu país
+      ]
+
+
+
+      for (let yearOffset = 0; yearOffset < 1; yearOffset++) {
+        // console.log('buscando')
+        const year = initialYear + yearOffset
+
+        for (let month = 1; month <= 12; month++) {
+          // console.log('year: ' + year)
+          // console.log('mes: ' + month)
+          const baseDate = DateTime.local(year, month)
+          // console.log('basedate is valid: ' + baseDate.isValid)
+          // console.log('basedate days in month: ' + baseDate.daysInMonth)
+          if (!baseDate.isValid || typeof baseDate.daysInMonth !== 'number') continue
+
+          const lastDayOfMonth = baseDate.daysInMonth
+          // console.log(lastDayOfMonth)
+          // Intentamos crear la fecha original
+          let rawPayDate = DateTime.local(year, month, filters.dayToBePaid)
+          let rawPayDateEnd = DateTime.local(year, month, filters.dayEndToBePaid)
+
+          // Ajustamos si no existe o es inválida según las banderas
+          const payDate = this.adjustToValidDate(rawPayDate, filters, holidays)
+          const payDateEnd = this.adjustToValidDate(rawPayDateEnd, filters, holidays)
+
+          for (let day = 1; day <= lastDayOfMonth; day++) {
+            const currentDate = DateTime.local(year, month, day)
+            // console.log(currentDate.toFormat('yyyy LLL dd'))
+            if (!currentDate.hasSame(payDate, 'day') && !currentDate.hasSame(payDateEnd, 'day')) {
+              // console.log('esta fecha no se muestra')
+              filteredDays.push(currentDate.toJSDate())
+            }
+          }
         }
       }
 
+
       return filteredDays
+
+
+    } else {
     }
 
+  }
+  // Verifica si la fecha debe evitarse
+  isInvalidDate(date: DateTime, filters: AssistNoPaymentDatesInterface, holidays: Array<string>): boolean {
+    if (!date.isValid) return true
+
+    const isoDate = date.toISODate()
+    if (!isoDate) return true
+
+    const isWeekend = date.weekday >= 6
+    const isHoliday = holidays.includes(isoDate)
+
+    return (filters.advanceDateOnWeekends && isWeekend) || (filters.advanceDateOnHolidays && isHoliday)
+  }
+
+  // Ajusta la fecha hacia adelante o atrás hasta que sea válida
+  adjustToValidDate(date: DateTime, filters: AssistNoPaymentDatesInterface, holidays: Array<string>): DateTime {
+    let newDate = date
+
+    // Si la fecha no existe (como 31 de febrero), la validamos antes
+    if (!newDate.isValid) {
+      const year: number = date.year ?? 2000;
+      const month: number = date.month ?? 1;
+
+      const fallbackDate = DateTime.local(year, month);
+      const lastDay: number = fallbackDate.daysInMonth ?? 28; // fallback si fuera undefined por alguna razón
+
+      newDate = DateTime.local(year, month, lastDay);
+    }
+
+    while (this.isInvalidDate(newDate, filters, holidays)) {
+      // console.log('ciclado')
+      // console.log(newDate)
+      newDate = filters.advanceDateInMonthsOf31Days
+        ? newDate.minus({ days: 1 })  // Ir hacia atrás
+        : newDate.plus({ days: 1 })   // Ir hacia adelante
+    }
+
+    return newDate
   }
 }

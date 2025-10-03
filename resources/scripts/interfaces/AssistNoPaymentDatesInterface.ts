@@ -4,7 +4,11 @@ interface AssistNoPaymentDatesInterface {
   dateApplySince: string | null
   fixedDayToBePaid: string | null
   dayToBePaid: string | null
-  localeToUse: string
+  dayEndToBePaid: string | null
+  localeToUse: string,
+  advanceDateInMonthsOf31Days: boolean,
+  advanceDateOnHolidays: boolean,
+  advanceDateOnWeekends: boolean
 }
 
 export type { AssistNoPaymentDatesInterface }

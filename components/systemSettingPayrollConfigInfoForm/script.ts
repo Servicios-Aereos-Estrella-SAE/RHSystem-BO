@@ -96,6 +96,23 @@ export default defineComponent({
         });
         return;
       }
+      const numberOfDaysEndToBePaid = this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid;
+      const numberOfDaysToBePaid = this.systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid;
+
+      if (
+        numberOfDaysEndToBePaid != null &&
+        numberOfDaysToBePaid != null &&
+        numberOfDaysEndToBePaid <= numberOfDaysToBePaid
+      ) {
+        this.$toast.add({
+          severity: "warn",
+          summary: "Validation data",
+          detail: "The number of day end to be paid must be greater than the number of day to be paid",
+          life: 5000,
+        });
+        return;
+      }
+
 
 
       const myGeneralStore = useMyGeneralStore();

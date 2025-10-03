@@ -502,7 +502,7 @@ export default defineComponent({
       dayToBePaid: this.dayToBePaid,
       localeToUse: this.localeToUse,
     } as AssistNoPaymentDatesInterface
-    this.disabledNoPaymentDates = assistService.getNoPaymentDates(filters)
+    // this.disabledNoPaymentDates = assistService.getNoPaymentDates(filters)
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
