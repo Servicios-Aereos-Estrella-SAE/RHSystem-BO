@@ -105,7 +105,7 @@
             <span v-if="employeesWithFaults.length > 0" class="dot-indicator"></span>
             {{ $t('consecutive_faults') }}
           </Button>
-          <Button class="btn" severity="info" @click="drawerPermissionsExcel = true">
+          <Button class="btn" severity="info" @click="getExcelPermissionsDates">
             {{ $t('permissions_excel') }}
             <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -277,11 +277,6 @@
           position="right" class="employee-whith-consecutive-faults" :showCloseIcon="true">
           <employeeWithFaultsList :employeesWithFaults="employeesWithFaults" />
         </Sidebar>
-
-        <Sidebar v-model:visible="drawerPermissionsExcel" :closeOnEscape="true" header="Download Permissions Excel"
-          position="right" class="permissions-excel-sidebar" :showCloseIcon="true">
-          <employeePermissionsExcelForm />
-        </Sidebar>
       </div>
     </NuxtLayout>
   </div>
@@ -320,15 +315,6 @@
   .employee-whith-consecutive-faults {
     width: 100% !important;
     max-width: 30rem !important;
-
-    @media screen and (max-width: $sm) {
-      width: 100% !important;
-    }
-  }
-
-  .permissions-excel-sidebar {
-    width: 35rem !important;
-    max-width: 50rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
