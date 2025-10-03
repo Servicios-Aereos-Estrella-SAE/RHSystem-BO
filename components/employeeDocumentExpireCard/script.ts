@@ -49,8 +49,16 @@ export default defineComponent({
       window.open(this.document.proceedingFilePath)
     },
     expireDateFormat(date: string) {
-      const toDate = DateTime.fromISO(date, { setZone: true }).setZone('UTC-6').setLocale(this.localeToUse)
+      const toDate = DateTime.fromISO(date, { setZone: true }).setLocale(this.localeToUse)
       return toDate.toFormat('LLLL dd, yyyy')
+    },
+    expireDateNumberDay(date: string) {
+      const toDate = DateTime.fromISO(date, { setZone: true }).setLocale(this.localeToUse)
+      return toDate.toFormat('dd')
+    },
+    expireDateMonthShort(date: string) {
+      const toDate = DateTime.fromISO(date, { setZone: true }).setLocale(this.localeToUse)
+      return toDate.toFormat('LLL')
     },
     capitalizeFirstLetter(str: string): string {
       return str.charAt(0).toUpperCase() + str.slice(1)
