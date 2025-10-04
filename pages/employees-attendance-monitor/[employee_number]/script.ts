@@ -182,7 +182,8 @@ export default defineComponent({
     },
     advanceDateInMonthsOf31Days: false,
     advanceDateOnHolidays: false,
-    advanceDateOnWeekends: false
+    advanceDateOnWeekends: false,
+    filtersAssistPaymentDates: {} as AssistNoPaymentDatesInterface
   }),
   computed: {
     getStatus() {
@@ -493,7 +494,7 @@ export default defineComponent({
     }
     this.setAssistSyncStatus()
     const assistService = new AssistService()
-    const filters = {
+    this.filtersAssistPaymentDates = {
       paymentType: this.paymentType,
       fixedEveryNWeeksToBePaid: this.fixedEveryNWeeksToBePaid,
       dateApplySince: this.dateApplySince,
@@ -501,8 +502,11 @@ export default defineComponent({
       dayToBePaid: this.dayToBePaid,
       dayEndToBePaid: this.dayEndToBePaid,
       localeToUse: this.localeToUse,
-    } as AssistNoPaymentDatesInterface
-    // this.disabledNoPaymentDates = assistService.getNoPaymentDates(filters)
+      advanceDateInMonthsOf31Days: this.advanceDateInMonthsOf31Days,
+      advanceDateOnHolidays: this.advanceDateOnHolidays,
+      advanceDateOnWeekends: this.advanceDateOnWeekends
+    }
+    this.disabledNoPaymentDates = await assistService.getNoPaymentDates(this.filtersAssistPaymentDates)
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -712,7 +716,8 @@ export default defineComponent({
           } else if (this.paymentType === 'fixed_day_every_n_weeks') {
             this.periodSelected = systemSettingPayrollConfigService.getNextPayDateWeekDay(this.fixedEveryNWeeksToBePaid, this.dateApplySince, this.fixedDayToBePaid)!
           } else if (this.paymentType === 'fourteenth') {
-            this.periodSelected = systemSettingPayrollConfigService.getNextPayDateFourteenth(this.dayToBePaid, this.dayEndToBePaid)!
+            const periodSelected = await systemSettingPayrollConfigService.getNextPayDateFourteenth(this.dayToBePaid, this.dayEndToBePaid, this.filtersAssistPaymentDates)!
+            this.periodSelected = periodSelected ? periodSelected : new Date()
           } else {
             this.periodSelected = this.getNextPayThursday()
           }

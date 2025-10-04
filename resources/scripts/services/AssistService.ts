@@ -4,6 +4,8 @@ import type { AssistInterface } from "../interfaces/AssistInterface"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { AssistNoPaymentDatesInterface } from "../interfaces/AssistNoPaymentDatesInterface"
 import SystemSettingPayrollConfigService from "./SystemSettingPayrollConfigService"
+import type { HolidayInterface } from "../interfaces/HolidayInterface"
+import HolidayService from "./HolidayService"
 
 export default class AssistService {
   protected API_PATH: string
@@ -239,7 +241,7 @@ export default class AssistService {
     return responseRequest
   }
 
-  getNoPaymentDates(filters: AssistNoPaymentDatesInterface) {
+  async getNoPaymentDates(filters: AssistNoPaymentDatesInterface) {
     const initialYear = DateTime.now().year - 10;
     const filteredDays: Date[] = [];
     if (filters.paymentType === 'biweekly') {
@@ -340,39 +342,6 @@ export default class AssistService {
       return filteredDays
 
     } else if (filters.paymentType === 'fourteenth') {
-      const initialYear = DateTime.now().year;
-      /*   const dayToBePaid = filters.dayToBePaid
-        if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
-          return filteredDays
-        }
-  
-        const dayEndToBePaid = filters.dayEndToBePaid
-        if (typeof dayEndToBePaid !== 'number' || dayEndToBePaid < 1 || dayEndToBePaid > 31) {
-          return filteredDays
-        }
-  
-        for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
-          const year = initialYear + yearOffset
-  
-          for (let month = 1; month <= 12; month++) {
-            const date = DateTime.local(year, month)
-  
-            if (!date.isValid || typeof date.daysInMonth !== 'number') continue
-  
-            const lastDayOfMonth = date.daysInMonth
-  
-            const validPayDay = Math.min(dayToBePaid, lastDayOfMonth)
-            const validPayDayEnd = Math.min(dayEndToBePaid, lastDayOfMonth)
-  
-            for (let day = 1; day <= lastDayOfMonth; day++) {
-              if (day !== validPayDay && day !== validPayDayEnd) {
-                const disabledDate = DateTime.local(year, month, day)
-                filteredDays.push(disabledDate.toJSDate())
-              }
-            }
-          }
-        }
-        return filteredDays */
 
       if (typeof filters.dayToBePaid !== 'number' || filters.dayToBePaid < 1 || filters.dayToBePaid > 31) {
         return filteredDays
@@ -382,58 +351,53 @@ export default class AssistService {
         return filteredDays
       }
 
-      // 👉 Lista de días festivos en formato 'yyyy-MM-dd'
-      const holidays: string[] = [
-        '2025-01-01',
-        '2025-12-25',
-        '2025-10-12',
-        // Agrega más según tu país
-      ]
+      const holidayService = new HolidayService()
+      const response = await holidayService.getFilteredList('', null, null, 1, 99999)
+      const holidays: string[] = []
+      const list = response.status === 200 ? response._data.holidays.data : []
+      for await (const holiday of list) {
+        const formattedDate = new Date(holiday.holidayDate).toISOString().slice(0, 10)
+        holidays.push(formattedDate)
+      }
 
-
-
-      for (let yearOffset = 0; yearOffset < 1; yearOffset++) {
-        // console.log('buscando')
+      const filteredDaysNext: Date[] = [];
+      for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
         const year = initialYear + yearOffset
 
         for (let month = 1; month <= 12; month++) {
-          // console.log('year: ' + year)
-          // console.log('mes: ' + month)
           const baseDate = DateTime.local(year, month)
-          // console.log('basedate is valid: ' + baseDate.isValid)
-          // console.log('basedate days in month: ' + baseDate.daysInMonth)
           if (!baseDate.isValid || typeof baseDate.daysInMonth !== 'number') continue
 
           const lastDayOfMonth = baseDate.daysInMonth
-          // console.log(lastDayOfMonth)
-          // Intentamos crear la fecha original
-          let rawPayDate = DateTime.local(year, month, filters.dayToBePaid)
           let rawPayDateEnd = DateTime.local(year, month, filters.dayEndToBePaid)
+          if (filters.dayToBePaid > lastDayOfMonth || filters.dayEndToBePaid > lastDayOfMonth) {
+            const baseDate = DateTime.local(year, month, lastDayOfMonth)
+            rawPayDateEnd = filters.advanceDateInMonthsOf31Days
+              ? baseDate
+              : baseDate.plus({ days: 1 })
+          }
+          let rawPayDate = DateTime.local(year, month, filters.dayToBePaid)
 
-          // Ajustamos si no existe o es inválida según las banderas
           const payDate = this.adjustToValidDate(rawPayDate, filters, holidays)
           const payDateEnd = this.adjustToValidDate(rawPayDateEnd, filters, holidays)
-
           for (let day = 1; day <= lastDayOfMonth; day++) {
             const currentDate = DateTime.local(year, month, day)
-            // console.log(currentDate.toFormat('yyyy LLL dd'))
             if (!currentDate.hasSame(payDate, 'day') && !currentDate.hasSame(payDateEnd, 'day')) {
-              // console.log('esta fecha no se muestra')
               filteredDays.push(currentDate.toJSDate())
             }
           }
+          if (payDateEnd.day < payDate.day) {// esto quiere decir que se aumento el dia al siguiente mes
+            filteredDaysNext.push(payDateEnd.toJSDate())
+          }
         }
       }
+      const filteredDaysSet = new Set(filteredDaysNext.map(date => date.toDateString()))
+      const finalFilteredDays = filteredDays.filter(date => !filteredDaysSet.has(date.toDateString()))
 
-
-      return filteredDays
-
-
-    } else {
+      return finalFilteredDays
     }
-
+    return []
   }
-  // Verifica si la fecha debe evitarse
   isInvalidDate(date: DateTime, filters: AssistNoPaymentDatesInterface, holidays: Array<string>): boolean {
     if (!date.isValid) return true
 
@@ -445,28 +409,21 @@ export default class AssistService {
 
     return (filters.advanceDateOnWeekends && isWeekend) || (filters.advanceDateOnHolidays && isHoliday)
   }
-
-  // Ajusta la fecha hacia adelante o atrás hasta que sea válida
   adjustToValidDate(date: DateTime, filters: AssistNoPaymentDatesInterface, holidays: Array<string>): DateTime {
     let newDate = date
-
-    // Si la fecha no existe (como 31 de febrero), la validamos antes
     if (!newDate.isValid) {
-      const year: number = date.year ?? 2000;
-      const month: number = date.month ?? 1;
+      const year: number = date.year ?? 2000
+      const month: number = date.month ?? 1
 
-      const fallbackDate = DateTime.local(year, month);
-      const lastDay: number = fallbackDate.daysInMonth ?? 28; // fallback si fuera undefined por alguna razón
+      const fallbackDate = DateTime.local(year, month)
+      const lastDay: number = fallbackDate.daysInMonth ?? 28
+      newDate = DateTime.local(year, month, lastDay)
 
-      newDate = DateTime.local(year, month, lastDay);
     }
-
     while (this.isInvalidDate(newDate, filters, holidays)) {
-      // console.log('ciclado')
-      // console.log(newDate)
       newDate = filters.advanceDateInMonthsOf31Days
-        ? newDate.minus({ days: 1 })  // Ir hacia atrás
-        : newDate.plus({ days: 1 })   // Ir hacia adelante
+        ? newDate.minus({ days: 1 })
+        : newDate.plus({ days: 1 })
     }
 
     return newDate

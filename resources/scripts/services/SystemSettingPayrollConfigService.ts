@@ -1,6 +1,9 @@
 import { DateTime } from "luxon"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { SystemSettingPayrollConfigInterface } from "../interfaces/SystemSettingPayrollConfigInterface"
+import AssistService from "./AssistService"
+import type { AssistNoPaymentDatesInterface } from "../interfaces/AssistNoPaymentDatesInterface"
+import HolidayService from "./HolidayService"
 
 export default class SystemSettingPayrollConfigService {
   protected API_PATH: string
@@ -203,7 +206,7 @@ export default class SystemSettingPayrollConfigService {
       return today.toJSDate()
     }
   }
-  getNextPayDateFourteenth(dayToBePaid: number | null, dayEndToBePaid: number | null) {
+  async getNextPayDateFourteenth(dayToBePaid: number | null, dayEndToBePaid: number | null, filters: AssistNoPaymentDatesInterface) {
     const today = DateTime.now()
 
     if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
@@ -213,27 +216,35 @@ export default class SystemSettingPayrollConfigService {
     if (typeof dayEndToBePaid !== 'number' || dayEndToBePaid < 1 || dayEndToBePaid > 31) {
       return null
     }
-
+    const holidayService = new HolidayService()
+    const response = await holidayService.getFilteredList('', null, null, 1, 99999)
+    const holidays: string[] = []
+    const list = response.status === 200 ? response._data.holidays.data : []
+    for await (const holiday of list) {
+      const formattedDate = new Date(holiday.holidayDate).toISOString().slice(0, 10)
+      holidays.push(formattedDate)
+    }
+    const assistService = new AssistService()
     if (today.day === dayToBePaid) {
-      return today.toJSDate()
+      return assistService.adjustToValidDate(today, filters, holidays).toJSDate()
     }
 
     if (today.day === dayEndToBePaid) {
-      return today.toJSDate()
+      return assistService.adjustToValidDate(today, filters, holidays).toJSDate()
     }
 
 
     if (today.day < dayToBePaid) {
       const possibleDate = today.set({ day: dayToBePaid })
       if (possibleDate.isValid) {
-        return possibleDate.toJSDate()
+        return assistService.adjustToValidDate(possibleDate, filters, holidays).toJSDate()
       }
     }
 
     if (today.day < dayEndToBePaid) {
       const possibleDate = today.set({ day: dayEndToBePaid })
       if (possibleDate.isValid) {
-        return possibleDate.toJSDate()
+        return assistService.adjustToValidDate(possibleDate, filters, holidays).toJSDate()
       }
     }
 
@@ -242,6 +253,6 @@ export default class SystemSettingPayrollConfigService {
       nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
     }
 
-    return nextMonthDate.toJSDate()
+    return assistService.adjustToValidDate(nextMonthDate, filters, holidays).toJSDate()
   }
 }
