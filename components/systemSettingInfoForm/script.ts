@@ -49,6 +49,9 @@ export default defineComponent({
     showNotificationEmails: false,
     notificationEmails: [] as SystemSettingNotificationEmailInterface[],
     newEmail: '',
+    // Variables para switch de emails de cumpleaños
+    birthdayEmailsSwitch: false,
+    isUpdatingBirthdayEmails: false,
   }),
   computed: {
     isRoot() {
@@ -81,6 +84,11 @@ export default defineComponent({
       "#" + this.systemSetting.systemSettingSidebarColor;
     this.activeSwicht = isActive === 1 ? true : false;
     this.restrictFutureVacationSwicht = isRestrictFutureVacationActive === 1 ? true : false;
+
+    // Inicializar switch de emails de cumpleaños
+    const birthdayEmailsActive = this.systemSetting.systemSettingBirthdayEmails ? this.systemSetting.systemSettingBirthdayEmails : 0;
+    this.birthdayEmailsSwitch = birthdayEmailsActive === 1 ? true : false;
+
     await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
@@ -685,6 +693,61 @@ export default defineComponent({
         });
       } catch (error) {
         return 'Invalid date';
+      }
+    },
+
+    // Método para actualizar el estado de emails de cumpleaños
+    async updateBirthdayEmailsStatus() {
+      if (!this.systemSetting.systemSettingId) return;
+
+      this.isUpdatingBirthdayEmails = true;
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      try {
+        const systemSettingService = new SystemSettingService();
+        const response = await systemSettingService.updateBirthdayEmailsStatus(
+          this.systemSetting.systemSettingId,
+          this.birthdayEmailsSwitch
+        );
+
+        if (response && response.status === 200) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Birthday Emails Updated",
+            detail: `Birthday emails ${this.birthdayEmailsSwitch ? 'activated' : 'deactivated'} successfully`,
+            life: 5000,
+          });
+
+          // Actualizar el valor en el system setting
+          this.systemSetting.systemSettingBirthdayEmails = this.birthdayEmailsSwitch ? 1 : 0;
+        } else {
+          const msgError = response?._data?.message || "Failed to update birthday emails status";
+          const severityType = response?.status === 500 ? 'error' : 'warn';
+          this.$toast.add({
+            severity: severityType,
+            summary: response?.status === 500 ? "Error" : "Warning",
+            detail: msgError,
+            life: 5000,
+          });
+
+          // Revertir el switch si hay error
+          this.birthdayEmailsSwitch = !this.birthdayEmailsSwitch;
+        }
+      } catch (error) {
+        console.error('Error updating birthday emails status:', error);
+        this.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Failed to update birthday emails status",
+          life: 5000,
+        });
+
+        // Revertir el switch si hay error
+        this.birthdayEmailsSwitch = !this.birthdayEmailsSwitch;
+      } finally {
+        this.isUpdatingBirthdayEmails = false;
+        myGeneralStore.setFullLoader(false);
       }
     },
   },

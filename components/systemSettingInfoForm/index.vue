@@ -184,6 +184,18 @@
             />
           </div>
 
+          <!-- Switch para activar/desactivar emails de cumpleaños -->
+          <div class="input-box birthday-emails-switch">
+            <label for="birthdayEmailsSwitch">
+              {{ birthdayEmailsSwitch ? 'Birthday Emails Active' : 'Birthday Emails Inactive' }}
+            </label>
+            <InputSwitch
+              v-model="birthdayEmailsSwitch"
+              @change="updateBirthdayEmailsStatus"
+              :disabled="isUpdatingBirthdayEmails"
+            />
+          </div>
+
           <div v-if="showNotificationEmails" class="notification-emails-content">
             <!-- Formulario para agregar email -->
             <div class="add-email-form">
