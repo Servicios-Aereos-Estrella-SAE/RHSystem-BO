@@ -32,10 +32,15 @@
         <label for="status">Number of days end to be paid</label>
         <span> {{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid }}</span>
       </div>
-      <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'"
+      <div
+        v-if="['fixed_day_every_n_weeks', 'fourteenth'].includes(systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType)"
         class="info status">
-        <label for="status">Number of overdue days to offset</label>
-        <span> {{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset }}</span>
+        <label for="status">
+          {{ systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fixed_day_every_n_weeks'
+          ? 'Number of overdue days to offset'
+          : 'Number of overdue periods to offset' }}
+        </label>
+        <span>{{ systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset }}</span>
       </div>
     </div>
 

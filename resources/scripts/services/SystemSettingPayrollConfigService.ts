@@ -125,6 +125,10 @@ export default class SystemSettingPayrollConfigService {
         console.error('Wrong number of days end to be paid')
         return false;
       }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
+        console.error('Wrong number of over periods to offset')
+        return false;
+      }
     }
 
     if (!systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) {

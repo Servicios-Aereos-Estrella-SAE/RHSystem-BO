@@ -171,6 +171,7 @@ export default defineComponent({
     fixedDayToBePaid: null as string | null,
     fixedEveryNWeeksToBePaid: null as number | null,
     daysToOffset: null as number | null,
+    periodsToOffset: null as number | null,
     dayOffsets: {
       Monday: 0,
       Tuesday: 1,
@@ -183,7 +184,8 @@ export default defineComponent({
     advanceDateInMonthsOf31Days: false,
     advanceDateOnHolidays: false,
     advanceDateOnWeekends: false,
-    filtersAssistPaymentDates: {} as AssistNoPaymentDatesInterface
+    filtersAssistPaymentDates: {} as AssistNoPaymentDatesInterface,
+    paymentDates: [] as Date[],
   }),
   computed: {
     getStatus() {
@@ -341,8 +343,39 @@ export default defineComponent({
               }
             }
 
-          }
-          else {
+          } else if (this.paymentType === 'fourteenth') {
+            // console.log(this.periodSelected)
+            // console.log(this.periodsToOffset)
+            if (this.periodsToOffset && this.periodSelected) {
+              const endDate = DateTime.fromJSDate(this.periodSelected).startOf('day')
+
+              const paymentDatesLuxon = this.paymentDates.map(date =>
+                DateTime.fromJSDate(date).startOf('day')
+              )
+
+              const selectedIndex = paymentDatesLuxon.findIndex(date =>
+                date.hasSame(endDate, 'day')
+              )
+
+              if (selectedIndex !== -1 && selectedIndex - this.periodsToOffset >= 0) {
+                const startDate = paymentDatesLuxon[selectedIndex - this.periodsToOffset]
+
+                let currentDay = startDate.plus({ days: 1 })
+
+                while (currentDay <= endDate) {
+                  daysList.push({
+                    year: currentDay.year,
+                    month: currentDay.month,
+                    day: currentDay.day
+                  })
+
+                  currentDay = currentDay.plus({ days: 1 })
+                }
+
+              }
+            }
+
+          } else {
             const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
             const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
             // Encontrar el jueves de la semana seleccionada
@@ -369,7 +402,6 @@ export default defineComponent({
         default:
           break
       }
-
       return daysList
     },
     calendarTitle() {
@@ -508,6 +540,32 @@ export default defineComponent({
     }
     this.disabledNoPaymentDates = await assistService.getNoPaymentDates(this.filtersAssistPaymentDates)
 
+
+    const isSameDay = (d1: Date, d2: Date): boolean => {
+      return (
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate()
+      );
+    };
+
+    const today = new Date();
+    this.paymentDates = []; // Asegúrate de inicializarla si no lo está
+
+    // Cambia disabledNoPaymentDates si necesitas excluir fechas específicas
+    // Suponemos que es un array de fechas: Date[]
+
+    for (let i = -1000; i <= 1000; i++) {
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i); // i puede ser negativo o positivo
+
+      const exists = this.disabledNoPaymentDates.some((d) => isSameDay(d, currentDate));
+
+      if (!exists) {
+        this.paymentDates.push(currentDate);
+      }
+    }
+
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     if (!myGeneralStore.isRoot) {
@@ -561,6 +619,7 @@ export default defineComponent({
       this.fixedDayToBePaid = null
       this.fixedEveryNWeeksToBePaid = null
       this.daysToOffset = null
+      this.periodsToOffset = null
       this.advanceDateInMonthsOf31Days = false
       this.advanceDateOnHolidays = false
       this.advanceDateOnWeekends = false
@@ -582,9 +641,10 @@ export default defineComponent({
         this.dayToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid
         this.dayEndToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid
         this.dateApplySince = systemSettingPayrollConfig.systemSettingPayrollConfigApplySince
-        this.advanceDateInMonthsOf31Days = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1;
-        this.advanceDateOnHolidays = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1;
-        this.advanceDateOnWeekends = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1;
+        this.advanceDateInMonthsOf31Days = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1
+        this.advanceDateOnHolidays = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1
+        this.advanceDateOnWeekends = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1
+        this.periodsToOffset = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset
       }
     },
     getStartPeriodDay() {

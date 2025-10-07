@@ -361,7 +361,7 @@ export default class AssistService {
       }
 
       const filteredDaysNext: Date[] = [];
-      for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
+      for (let yearOffset = -10; yearOffset < 20; yearOffset++) {
         const year = initialYear + yearOffset
 
         for (let month = 1; month <= 12; month++) {
