@@ -243,7 +243,8 @@ export default class AssistService {
 
   async getNoPaymentDates(filters: AssistNoPaymentDatesInterface) {
     const initialYear = DateTime.now().year - 10;
-    const filteredDays: Date[] = [];
+    const filteredDays: Date[] = []
+    const paymentDates: Date[] = []
     if (filters.paymentType === 'biweekly') {
       for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
         const year = initialYear + yearOffset
@@ -261,11 +262,11 @@ export default class AssistService {
         }
       }
 
-      return filteredDays
+      return { filteredDays: filteredDays, paymentDates: paymentDates }
     } else if (filters.paymentType === 'specific_day_of_month') {
       const dayToBePaid = filters.dayToBePaid
       if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
-        return filteredDays
+        return { filteredDays: filteredDays, paymentDates: paymentDates }
       }
 
       for (let yearOffset = 0; yearOffset < 20; yearOffset++) {
@@ -289,12 +290,12 @@ export default class AssistService {
         }
       }
 
-      return filteredDays
+      return { filteredDays: filteredDays, paymentDates: paymentDates }
     } else if (filters.paymentType === 'fixed_day_every_n_weeks') {
-      if (!filters.dateApplySince || !filters.fixedEveryNWeeksToBePaid) return filteredDays
+      if (!filters.dateApplySince || !filters.fixedEveryNWeeksToBePaid) return { filteredDays: filteredDays, paymentDates: paymentDates }
 
       const applySince = DateTime.fromISO(filters.dateApplySince).setLocale(filters.localeToUse)
-      if (!applySince.isValid) return filteredDays
+      if (!applySince.isValid) return { filteredDays: filteredDays, paymentDates: paymentDates }
 
       const targetDay = filters.fixedDayToBePaid
       const weeksInterval = filters.fixedEveryNWeeksToBePaid
@@ -302,16 +303,16 @@ export default class AssistService {
       const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService()
       const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay) + 1
       if (dayIndex < 1 || dayIndex > 7) {
-        return filteredDays
+        return { filteredDays: filteredDays, paymentDates: paymentDates }
       }
 
-      const paymentDates: Set<string> = new Set()
+      const paymentDatesTemp: Set<string> = new Set()
 
       for (let weekOffset = 0; weekOffset <= 52 * 10; weekOffset += weeksInterval) {
         const baseDate = applySince.minus({ weeks: weekOffset })
         const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
         if (payDate.isValid) {
-          paymentDates.add(payDate.toISODate()!)
+          paymentDatesTemp.add(payDate.toISODate()!)
         }
       }
 
@@ -319,7 +320,7 @@ export default class AssistService {
         const baseDate = applySince.plus({ weeks: weekOffset })
         const payDate = baseDate.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
         if (payDate.isValid) {
-          paymentDates.add(payDate.toISODate()!)
+          paymentDatesTemp.add(payDate.toISODate()!)
         }
       }
 
@@ -332,23 +333,23 @@ export default class AssistService {
           for (let day = 1; day <= date.daysInMonth; day++) {
             const currentDate = DateTime.local(year, month, day).setLocale(filters.localeToUse)
             const isoDate = currentDate.toISODate()
-            if (isoDate && !paymentDates.has(isoDate)) {
+            if (isoDate && !paymentDatesTemp.has(isoDate)) {
               filteredDays.push(currentDate.toJSDate())
             }
           }
         }
       }
 
-      return filteredDays
+      return { filteredDays: filteredDays, paymentDates: paymentDates }
 
     } else if (filters.paymentType === 'fourteenth') {
 
       if (typeof filters.dayToBePaid !== 'number' || filters.dayToBePaid < 1 || filters.dayToBePaid > 31) {
-        return filteredDays
+        return { filteredDays: filteredDays, paymentDates: paymentDates }
       }
 
       if (typeof filters.dayEndToBePaid !== 'number' || filters.dayEndToBePaid < 1 || filters.dayEndToBePaid > 31) {
-        return filteredDays
+        return { filteredDays: filteredDays, paymentDates: paymentDates }
       }
 
       const holidayService = new HolidayService()
@@ -384,19 +385,37 @@ export default class AssistService {
             const currentDate = DateTime.local(year, month, day)
             if (!currentDate.hasSame(payDate, 'day') && !currentDate.hasSame(payDateEnd, 'day')) {
               filteredDays.push(currentDate.toJSDate())
+            } else {
+              const currentJSDate = currentDate.toJSDate()
+              const alreadyExists = paymentDates.some(
+                d => d.getTime() === currentJSDate.getTime()
+              )
+
+              if (!alreadyExists) {
+                paymentDates.push(currentJSDate)
+              }
             }
           }
           if (payDateEnd.day < payDate.day) {// esto quiere decir que se aumento el dia al siguiente mes
             filteredDaysNext.push(payDateEnd.toJSDate())
+          } else {
+            const currentJSDate = payDateEnd.toJSDate()
+            const alreadyExists = paymentDates.some(
+              d => d.getTime() === currentJSDate.getTime()
+            )
+
+            if (!alreadyExists) {
+              paymentDates.push(currentJSDate)
+            }
           }
         }
       }
       const filteredDaysSet = new Set(filteredDaysNext.map(date => date.toDateString()))
       const finalFilteredDays = filteredDays.filter(date => !filteredDaysSet.has(date.toDateString()))
 
-      return finalFilteredDays
+      return { filteredDays: finalFilteredDays, paymentDates: paymentDates }
     }
-    return []
+    return { filteredDays: [], paymentDates: paymentDates }
   }
   isInvalidDate(date: DateTime, filters: AssistNoPaymentDatesInterface, holidays: Array<string>): boolean {
     if (!date.isValid) return true

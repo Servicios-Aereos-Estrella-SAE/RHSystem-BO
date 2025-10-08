@@ -205,9 +205,9 @@ export default defineComponent({
       return myGeneralStore.isRoot
     },
     weeklyStartDay() {
-      const daysList = []
+      const daysList = [] as Array<{ year: number, month: number, day: number }>
       if (!this.periodSelected && !this.datesSelected.length) {
-        return []
+        return daysList
       }
 
       switch (this.visualizationMode?.value) {
@@ -344,37 +344,41 @@ export default defineComponent({
             }
 
           } else if (this.paymentType === 'fourteenth') {
-            // console.log(this.periodSelected)
-            // console.log(this.periodsToOffset)
             if (this.periodsToOffset && this.periodSelected) {
               const endDate = DateTime.fromJSDate(this.periodSelected).startOf('day')
-
               const paymentDatesLuxon = this.paymentDates.map(date =>
                 DateTime.fromJSDate(date).startOf('day')
               )
-
               const selectedIndex = paymentDatesLuxon.findIndex(date =>
                 date.hasSame(endDate, 'day')
               )
-
               if (selectedIndex !== -1 && selectedIndex - this.periodsToOffset >= 0) {
                 const startDate = paymentDatesLuxon[selectedIndex - this.periodsToOffset]
 
                 let currentDay = startDate.plus({ days: 1 })
 
                 while (currentDay <= endDate) {
+                  const year = parseInt(currentDay.toFormat('yyyy'))
+                  const month = parseInt(currentDay.toFormat('LL'))
+                  const day = parseInt(currentDay.toFormat('dd'))
                   daysList.push({
-                    year: currentDay.year,
-                    month: currentDay.month,
-                    day: currentDay.day
+                    year,
+                    month,
+                    day
                   })
 
                   currentDay = currentDay.plus({ days: 1 })
                 }
 
+              } else {
+                const today = new Date()
+                daysList.push({
+                  year: today.getFullYear(),
+                  month: today.getMonth() + 1,
+                  day: today.getDate()
+                })
               }
             }
-
           } else {
             const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
             const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
@@ -538,33 +542,9 @@ export default defineComponent({
       advanceDateOnHolidays: this.advanceDateOnHolidays,
       advanceDateOnWeekends: this.advanceDateOnWeekends
     }
-    this.disabledNoPaymentDates = await assistService.getNoPaymentDates(this.filtersAssistPaymentDates)
-
-
-    const isSameDay = (d1: Date, d2: Date): boolean => {
-      return (
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate()
-      );
-    };
-
-    const today = new Date();
-    this.paymentDates = []; // Asegúrate de inicializarla si no lo está
-
-    // Cambia disabledNoPaymentDates si necesitas excluir fechas específicas
-    // Suponemos que es un array de fechas: Date[]
-
-    for (let i = -1000; i <= 1000; i++) {
-      const currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + i); // i puede ser negativo o positivo
-
-      const exists = this.disabledNoPaymentDates.some((d) => isSameDay(d, currentDate));
-
-      if (!exists) {
-        this.paymentDates.push(currentDate);
-      }
-    }
+    const paymentDates = await assistService.getNoPaymentDates(this.filtersAssistPaymentDates)
+    this.disabledNoPaymentDates = paymentDates.filteredDays
+    this.paymentDates = paymentDates.paymentDates
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -590,7 +570,7 @@ export default defineComponent({
       this.canSeeSwitchOptionGetAssist = await myGeneralStore.hasAccess(systemModuleSlug, 'see-switch-option-get-assist')
 
     }
-    this.periodSelected = new Date()
+    // this.periodSelected = new Date()
     this.datesSelected = this.getDefaultDatesRange()
 
     await this.getEmployee()
