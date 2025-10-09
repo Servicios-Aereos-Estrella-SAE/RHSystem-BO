@@ -23,6 +23,7 @@ import EmployeeAssistCalendarService from '~/resources/scripts/services/Employee
 import SystemSettingPayrollConfigService from '~/resources/scripts/services/SystemSettingPayrollConfigService';
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService';
 import type { AssistNoPaymentDatesInterface } from '~/resources/scripts/interfaces/AssistNoPaymentDatesInterface';
+import type { AssistPeriodCategoriesInterface } from '~/resources/scripts/interfaces/AssistPeriodCategoriesInterface';
 
 export default defineComponent({
   components: {
@@ -174,7 +175,10 @@ export default defineComponent({
     },
     advanceDateInMonthsOf31Days: false,
     advanceDateOnHolidays: false,
-    advanceDateOnWeekends: false
+    advanceDateOnWeekends: false,
+    filtersAssistPaymentDates: {} as AssistNoPaymentDatesInterface,
+    filtersAssistPeriodCategories: {} as AssistPeriodCategoriesInterface,
+    paymentDates: [] as Date[],
   }),
   computed: {
     getStatus() {
@@ -329,8 +333,43 @@ export default defineComponent({
               }
             }
 
-          }
-          else {
+          } else if (this.paymentType === 'fourteenth') {
+            if (this.periodsToOffset && this.periodSelected) {
+              const endDate = DateTime.fromJSDate(this.periodSelected).startOf('day')
+              const paymentDatesLuxon = this.paymentDates.map(date =>
+                DateTime.fromJSDate(date).startOf('day')
+              )
+              const selectedIndex = paymentDatesLuxon.findIndex(date =>
+                date.hasSame(endDate, 'day')
+              )
+              if (selectedIndex !== -1 && selectedIndex - this.periodsToOffset >= 0) {
+                const startDate = paymentDatesLuxon[selectedIndex - this.periodsToOffset]
+
+                let currentDay = startDate.plus({ days: 1 })
+
+                while (currentDay <= endDate) {
+                  const year = parseInt(currentDay.toFormat('yyyy'))
+                  const month = parseInt(currentDay.toFormat('LL'))
+                  const day = parseInt(currentDay.toFormat('dd'))
+                  daysList.push({
+                    year,
+                    month,
+                    day
+                  })
+
+                  currentDay = currentDay.plus({ days: 1 })
+                }
+
+              } else {
+                const today = new Date()
+                daysList.push({
+                  year: today.getFullYear(),
+                  month: today.getMonth() + 1,
+                  day: today.getDate()
+                })
+              }
+            }
+          } else {
             const date = DateTime.fromJSDate(this.periodSelected) // Fecha seleccionada
             const startOfWeek = date.startOf('week') // Inicio de la semana seleccionada
             // Encontrar el jueves de la semana seleccionada
@@ -493,16 +532,23 @@ export default defineComponent({
       }
     }
     this.setAssistSyncStatus()
+
     const assistService = new AssistService()
-    const filters = {
+    this.filtersAssistPaymentDates = {
       paymentType: this.paymentType,
       fixedEveryNWeeksToBePaid: this.fixedEveryNWeeksToBePaid,
       dateApplySince: this.dateApplySince,
       fixedDayToBePaid: this.fixedDayToBePaid,
       dayToBePaid: this.dayToBePaid,
+      dayEndToBePaid: this.dayEndToBePaid,
       localeToUse: this.localeToUse,
-    } as AssistNoPaymentDatesInterface
-    // this.disabledNoPaymentDates = assistService.getNoPaymentDates(filters)
+      advanceDateInMonthsOf31Days: this.advanceDateInMonthsOf31Days,
+      advanceDateOnHolidays: this.advanceDateOnHolidays,
+      advanceDateOnWeekends: this.advanceDateOnWeekends
+    }
+    const paymentDates = await assistService.getNoPaymentDates(this.filtersAssistPaymentDates)
+    this.disabledNoPaymentDates = paymentDates.filteredDays
+    this.paymentDates = paymentDates.paymentDates
 
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
@@ -542,6 +588,7 @@ export default defineComponent({
       this.fixedDayToBePaid = null
       this.fixedEveryNWeeksToBePaid = null
       this.daysToOffset = null
+      this.periodsToOffset = null
       this.advanceDateInMonthsOf31Days = false
       this.advanceDateOnHolidays = false
       this.advanceDateOnWeekends = false
@@ -563,9 +610,10 @@ export default defineComponent({
         this.dayToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid
         this.dayEndToBePaid = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid
         this.dateApplySince = systemSettingPayrollConfig.systemSettingPayrollConfigApplySince
-        this.advanceDateInMonthsOf31Days = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1;
-        this.advanceDateOnHolidays = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1;
-        this.advanceDateOnWeekends = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1;
+        this.advanceDateInMonthsOf31Days = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateInMonthsOf31Days === 1
+        this.advanceDateOnHolidays = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnHolidays === 1
+        this.advanceDateOnWeekends = systemSettingPayrollConfig.systemSettingPayrollConfigAdvanceDateOnWeekends === 1
+        this.periodsToOffset = systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset
       }
     },
     isThursday(dateObject: any, addOneMonth = true) {
@@ -620,7 +668,6 @@ export default defineComponent({
       serieData.push({
         name: `${this.t('faults')}(${`${qtyOnFault}`.padStart(2, '0')} ${this.t('absences')})`, y: fault, color: '#d45633'
       })
-
       this.generalData.series[0].data = serieData
       this.evaluatedEmployees = this.employeeDepartmentPositionList.filter(e => e.assistStatistics.totalAvailable > 0).length
       this.estimatedArrivals = qtyOnTime + qtyOnTolerance + qtyOnDelay + qtyOnFault
@@ -738,8 +785,24 @@ export default defineComponent({
               start = startDate
             }
 
-          }
-          else {
+          } else if (this.paymentType === 'fourteenth') {
+            if (this.periodsToOffset && this.periodSelected) {
+              const endDate = DateTime.fromJSDate(this.periodSelected).startOf('day')
+              const paymentDatesLuxon = this.paymentDates.map(date =>
+                DateTime.fromJSDate(date).startOf('day')
+              )
+              const selectedIndex = paymentDatesLuxon.findIndex(date =>
+                date.hasSame(endDate, 'day')
+              )
+              if (selectedIndex !== -1 && selectedIndex - this.periodsToOffset >= 0) {
+                const startDate = paymentDatesLuxon[selectedIndex - this.periodsToOffset]
+
+                periodLenght = endDate.diff(startDate, 'days').days
+                start = startDate
+
+              }
+            }
+          } else {
             const date = DateTime.local(yearPeriod, monthPerdiod, dayPeriod)
             const startOfWeek = date.startOf('week')
             // Encontrar el jueves de la semana seleccionada
@@ -762,7 +825,7 @@ export default defineComponent({
           let currentDay = start.plus({ days: index })
           switch (this.visualizationMode?.value) {
             case 'payroll':
-              currentDay = currentDay.minus({ days: 1 })
+            //currentDay = currentDay.minus({ days: 1 })
           }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
@@ -776,7 +839,6 @@ export default defineComponent({
               dayCalendar.push(currentCalendar[0].assist)
             }
           })
-
           dayStatisticsCollection.push({
             day: evalDate,
             assist: dayCalendar
@@ -799,6 +861,7 @@ export default defineComponent({
           const tolerance = Math.round((tolerances / totalAvailable) * 100)
           const delay = Math.round((delays / totalAvailable) * 100)
           const fault = Math.round((faults / totalAvailable) * 100)
+
           assistSerie.push(Number.isNaN(assist) ? 0 : assist)
           toleranceSerie.push(Number.isNaN(tolerance) ? 0 : tolerance)
           delaySerie.push(Number.isNaN(delay) ? 0 : delay)
@@ -818,7 +881,6 @@ export default defineComponent({
         serieData.push({
           name: `${this.t('faults')}`, data: faultSerie, color: '#d45633'
         })
-
         this.periodData.series = serieData
         this.setPeriodCategories()
       }
@@ -827,7 +889,23 @@ export default defineComponent({
       if (this.visualizationMode?.value === 'custom') {
         this.periodData.xAxis.categories = new AttendanceMonitorController().getCustomPeriodCategories(this.datesSelected, this.localeToUse)
       } else {
-        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected, this.localeToUse)
+        this.filtersAssistPeriodCategories = {
+          periodSelected: this.periodSelected,
+          paymentType: this.paymentType,
+          fixedEveryNWeeksToBePaid: this.fixedEveryNWeeksToBePaid,
+          daysToOffset: this.daysOffsets,
+          periodsToOffset: this.periodsToOffset,
+          dateApplySince: this.dateApplySince,
+          fixedDayToBePaid: this.fixedDayToBePaid,
+          dayToBePaid: this.dayToBePaid,
+          dayEndToBePaid: this.dayEndToBePaid,
+          localeToUse: this.localeToUse,
+          advanceDateInMonthsOf31Days: this.advanceDateInMonthsOf31Days,
+          advanceDateOnHolidays: this.advanceDateOnHolidays,
+          advanceDateOnWeekends: this.advanceDateOnWeekends,
+          paymentDates: this.paymentDates
+        }
+        this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.localeToUse, this.filtersAssistPeriodCategories)
       }
     },
     async setDepartmentPositionEmployeeList() {
@@ -867,6 +945,11 @@ export default defineComponent({
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
         } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+          const startDayMinusOne = startDate.minus({ days: 1 })
+          const endDayMinusOne = endDate.minus({ days: 1 })
+          startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+          endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        } else if (this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate.minus({ days: 1 })
           const endDayMinusOne = endDate.minus({ days: 1 })
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
@@ -1018,6 +1101,9 @@ export default defineComponent({
           this.periodSelected = systemSettingPayrollConfigService.getNextPayDateMonthly(this.dayToBePaid)!
         } else if (this.paymentType === 'fixed_day_every_n_weeks') {
           this.periodSelected = systemSettingPayrollConfigService.getNextPayDateWeekDay(this.fixedEveryNWeeksToBePaid, this.dateApplySince, this.fixedDayToBePaid)!
+        } else if (this.paymentType === 'fourteenth') {
+          const periodSelected = await systemSettingPayrollConfigService.getNextPayDateFourteenth(this.dayToBePaid, this.dayEndToBePaid, this.filtersAssistPaymentDates)!
+          this.periodSelected = periodSelected ? periodSelected : new Date()
         } else {
           this.periodSelected = this.getNextPayThursday()
         }
@@ -1258,7 +1344,7 @@ export default defineComponent({
             }).setLocale(this.localeToUse)
             this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
             this.vacationDateEnd = endDate.toFormat('yyyy-MM-dd')
-          } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+          } else if (this.paymentType === 'fixed_day_every_n_weeks' || this.paymentType === 'fourteenth') {
             const startDate = DateTime.fromObject({
               year: this.weeklyStartDay[0].year,
               month: this.weeklyStartDay[0].month,
@@ -1303,7 +1389,7 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month' || this.paymentType === 'fixed_day_every_n_weeks') {
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month' || this.paymentType === 'fixed_day_every_n_weeks' || this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
@@ -1469,7 +1555,7 @@ export default defineComponent({
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
-        } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+        } else if (this.paymentType === 'fixed_day_every_n_weeks' || this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate.minus({ days: 1 })
           const endDayMinusOne = endDate.minus({ days: 1 })
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')

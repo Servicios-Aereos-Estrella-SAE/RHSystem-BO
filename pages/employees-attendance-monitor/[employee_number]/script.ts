@@ -723,15 +723,6 @@ export default defineComponent({
 
       this.generalData.series[0].data = serieData
     },
-    async setPeriodData() {
-      this.periodData.series = new AttendanceMonitorController().getDepartmentPeriodData(this.visualizationMode?.value || 'weekly', this.periodSelected, [], this.localeToUse)
-      if (this.visualizationMode?.value !== 'yearly') {
-        await this.getEmployeeAssist()
-      }
-    },
-    setPeriodCategories() {
-      this.periodData.xAxis.categories = new AttendanceMonitorController().getDepartmentPeriodCategories(this.visualizationMode?.value || 'weekly', this.periodSelected, this.localeToUse)
-    },
     async onHandlerVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
@@ -829,6 +820,11 @@ export default defineComponent({
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
         } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+          const startDayMinusOne = startDate.minus({ days: 1 })
+          const endDayMinusOne = endDate.minus({ days: 1 })
+          startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
+          endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
+        } else if (this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate.minus({ days: 1 })
           const endDayMinusOne = endDate.minus({ days: 1 })
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
@@ -1296,7 +1292,7 @@ export default defineComponent({
             }).setLocale(this.localeToUse)
             this.vacationDateStart = startDate.toFormat('yyyy-MM-dd')
             this.vacationDateEnd = endDate.toFormat('yyyy-MM-dd')
-          } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+          } else if (this.paymentType === 'fixed_day_every_n_weeks' || this.paymentType === 'fourteenth') {
             const startDate = DateTime.fromObject({
               year: this.weeklyStartDay[0].year,
               month: this.weeklyStartDay[0].month,
