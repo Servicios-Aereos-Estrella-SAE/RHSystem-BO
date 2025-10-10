@@ -851,10 +851,6 @@ export default defineComponent({
       if (start) {
         for (let index = 0; index < periodLenght; index++) {
           let currentDay = start.plus({ days: index })
-          switch (this.visualizationMode?.value) {
-            case 'payroll':
-            // currentDay = currentDay.minus({ days: 1 })
-          }
           const year = parseInt(currentDay.toFormat('yyyy'))
           const month = parseInt(currentDay.toFormat('LL'))
           const day = parseInt(currentDay.toFormat('dd'))
@@ -969,7 +965,7 @@ export default defineComponent({
     async onInputVisualizationModeChange() {
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.handlerVisualizationModeChange()
+      await this.handlerVisualizationModeChange()
       await Promise.all(this.employeeDepartmentList.map(emp => this.getEmployeeAssistCalendar(emp)))
       this.setGraphsData()
       await this.setEmployeesWithFaults()
@@ -1028,7 +1024,7 @@ export default defineComponent({
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
         } else if (this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate.minus({ days: 1 })
-          const endDayMinusOne = endDate.minus({ days: 1 })
+          const endDayMinusOne = endDate.minus({ days: 2 })
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
         } else {
@@ -1056,12 +1052,12 @@ export default defineComponent({
             newEmployeeCalendar.push(calendar)
           }
           employee.calendar = newEmployeeCalendar
+
         } else {
           const employeeAssistCalendarReq = await new AssistService().index(startDay, endDay, employeeID)
           const employeeCalendar = (employeeAssistCalendarReq.status === 200 ? employeeAssistCalendarReq._data.data.employeeCalendar : []) as AssistDayInterface[]
           employee.calendar = employeeCalendar
         }
-
         this.setGeneralStatisticsData(employee, employee.calendar)
         if (employeeAssistCalendarReq.status === 400) {
           const employeeNoShift = employee?.employee || null
@@ -1069,7 +1065,6 @@ export default defineComponent({
           if (employeeNoShift) {
             const employeeNoShiftName = `${employeeNoShift.person?.personFirstname} ${employeeNoShift.person?.personLastname} ${employeeNoShift.person?.personSecondLastname}`
             const departmentPosition = `${employeeNoShift.department?.departmentName || ''}, ${employeeNoShift.position?.positionName || ''}`
-            console.log(`No Shift: (${employeeID.toString().padStart(5, '0')}) ${employeeNoShiftName} -> ${departmentPosition}`)
             this.employeesWithOutShift.push(employeeNoShift)
           }
         }
@@ -1556,12 +1551,12 @@ export default defineComponent({
           month: lastDay.month,
           day: lastDay.day,
         })
-        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month' || this.paymentType === 'fourteenth') {
+        if (this.paymentType === 'biweekly' || this.paymentType === 'specific_day_of_month') {
           const startDayMinusOne = startDate
           const endDayMinusOne = endDate
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
           endDay = endDayMinusOne.toFormat('yyyy-MM-dd')
-        } else if (this.paymentType === 'fixed_day_every_n_weeks') {
+        } else if (this.paymentType === 'fixed_day_every_n_weeks' || this.paymentType === 'fourteenth') {
           const startDayMinusOne = startDate.minus({ days: 1 })
           const endDayMinusOne = endDate.minus({ days: 1 })
           startDay = startDayMinusOne.toFormat('yyyy-MM-dd')
