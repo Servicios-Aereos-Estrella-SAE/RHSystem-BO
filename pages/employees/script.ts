@@ -330,7 +330,7 @@ export default defineComponent({
       const employeeResponse = await employeeService.getBiometrics()
       this.employeesSync = []
       if (employeeResponse.status === 200) {
-        this.employeesSync = employeeResponse._data.data.employeesSync
+        this.employeesSync = this.sortEmployeesSync(employeeResponse._data.data.employeesSync)
         this.drawerEmployeeSync = true
       }
       myGeneralStore.setFullLoader(false)
@@ -584,6 +584,29 @@ export default defineComponent({
     capitalizeFirstLetter(text: string) {
       if (!text) return ''
       return text.charAt(0).toUpperCase() + text.slice(1)
+    },
+    sortEmployeesSync(employees: EmployeeSyncInterface[]) {
+      if (!employees || employees.length === 0) {
+        return []
+      }
+
+      // Separar empleados seleccionables y no seleccionables
+      const selectableEmployees = employees.filter(emp => emp.canSelect)
+      const nonSelectableEmployees = employees.filter(emp => !emp.canSelect)
+
+      // Función para ordenar alfabéticamente por nombre completo
+      const sortAlphabetically = (a: EmployeeSyncInterface, b: EmployeeSyncInterface) => {
+        const nameA = `${a.employeeFirstName || ''} ${a.employeeLastName || ''}`.trim().toLowerCase()
+        const nameB = `${b.employeeFirstName || ''} ${b.employeeLastName || ''}`.trim().toLowerCase()
+        return nameA.localeCompare(nameB, 'es')
+      }
+
+      // Ordenar ambos grupos alfabéticamente
+      const sortedSelectable = selectableEmployees.sort(sortAlphabetically)
+      const sortedNonSelectable = nonSelectableEmployees.sort(sortAlphabetically)
+
+      // Combinar: primero los seleccionables, luego los no seleccionables
+      return [...sortedSelectable, ...sortedNonSelectable]
     }
   },
 })
