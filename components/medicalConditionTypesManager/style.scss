@@ -1,0 +1,196 @@
+@import '/resources/styles/variables.scss';
+
+.medical-condition-types-manager {
+  .head-page {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--surface-card);
+    border-radius: $radius;
+    border: $border;
+
+    h3 {
+      margin: 0 0 0.25rem 0;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-color-secondary);
+      font-size: 0.85rem;
+    }
+  }
+
+  .medical-condition-types-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 60vh;
+    overflow-y: auto;
+
+    .medical-condition-type-item {
+      border: $border;
+      border-radius: $radius;
+      padding: 1rem;
+      background: var(--surface-card);
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+
+        .type-info {
+          flex: 1;
+
+          h4 {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+          }
+
+          p {
+            margin: 0 0 0.25rem 0;
+            color: var(--text-color-secondary);
+            font-size: 0.8rem;
+            line-height: 1.3;
+          }
+
+          .status-badge {
+            display: inline-block;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            background: var(--red-100);
+            color: var(--red-800);
+
+            &.active {
+              background: var(--green-100);
+              color: var(--green-800);
+            }
+          }
+        }
+
+        .item-actions {
+          display: flex;
+          gap: 0.25rem;
+        }
+      }
+
+      .item-content {
+        .properties-section {
+          h5 {
+            margin: 0 0 0.5rem 0;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+          }
+
+          .properties-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .property-item {
+              padding: 0.5rem;
+              background: var(--surface-50);
+              border-radius: 4px;
+              border-left: 2px solid var(--primary-color);
+
+              .property-info {
+                display: flex;
+                align-items: center;
+                gap: 0.375rem;
+                margin-bottom: 0.125rem;
+
+                .property-name {
+                  font-weight: 600;
+                  color: var(--text-color);
+                  font-size: 0.8rem;
+                }
+
+                .property-type {
+                  font-size: 0.65rem;
+                  padding: 0.125rem 0.25rem;
+                  background: var(--primary-100);
+                  color: var(--primary-800);
+                  border-radius: 2px;
+                  font-weight: 500;
+                }
+
+                .required-badge {
+                  font-size: 0.65rem;
+                  padding: 0.125rem 0.25rem;
+                  background: var(--orange-100);
+                  color: var(--orange-800);
+                  border-radius: 2px;
+                  font-weight: 500;
+                }
+              }
+
+              .property-description {
+                margin: 0;
+                color: var(--text-color-secondary);
+                font-size: 0.75rem;
+                line-height: 1.2;
+              }
+            }
+          }
+        }
+
+        .no-properties {
+          text-align: center;
+          padding: 0.75rem;
+          color: var(--text-color-secondary);
+          font-style: italic;
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+
+  .empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15rem;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: normal;
+    font-size: 0.85rem;
+    text-align: center;
+    border-radius: $radius;
+    background-color: transparentize($color: $gray, $amount: 0.5);
+    color: var(--text-color-secondary);
+  }
+}
+
+.medical-condition-type-form-sidebar {
+  width: 100% !important;
+  max-width: 60rem !important;
+
+  @media screen and (max-width: $tablet) {
+    width: 100% !important;
+  }
+}
+
+@media screen and (max-width: $tablet) {
+  .medical-condition-types-manager {
+    .head-page {
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: center;
+    }
+  }
+}
