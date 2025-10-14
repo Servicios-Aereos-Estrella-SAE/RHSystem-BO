@@ -16,6 +16,9 @@ import type { EmployeeAddressInterface } from '~/resources/scripts/interfaces/Em
 import type { EmployeeContractInterface } from '~/resources/scripts/interfaces/EmployeeContractInterface'
 import PersonService from '~/resources/scripts/services/PersonService'
 import type { EmployeeSyncInterface } from '~/resources/scripts/interfaces/EmployeeSyncInterface'
+import type { ShiftExceptionInterface } from '~/resources/scripts/interfaces/ShiftExceptionInterface'
+import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
+import { DateTime } from 'luxon'
 
 export default defineComponent({
   name: 'Employees',
@@ -75,6 +78,12 @@ export default defineComponent({
     canManageAssignedRead: false,
     currentEmployeeIsUser: false,
     employeesSync: [] as EmployeeSyncInterface[],
+    shiftException: null as ShiftExceptionInterface | null,
+    drawerShiftExceptionGeneralForm: false,
+    canAddExceptionGeneral: false as boolean,
+    drawerShiftExceptionForm: false,
+    drawershiftExceptionsError: false,
+    shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
   }),
   computed: {
     getStatus() {
@@ -143,6 +152,7 @@ export default defineComponent({
       this.canManageBiotime = true
       this.canManageAssignedRead = true
       this.canReadTerminatedEmployees = true
+      this.canAddExceptionGeneral = true
     } else {
       this.canCreate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'create') ? true : false
       this.canUpdate = permissions.find((a: RoleSystemPermissionInterface) => a.systemPermissions && a.systemPermissions.systemPermissionSlug === 'update') ? true : false
@@ -158,6 +168,7 @@ export default defineComponent({
       this.canManageBiotime = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-biotime')
       this.canManageAssignedRead = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-assigned-read')
       this.canReadTerminatedEmployees = await myGeneralStore.hasAccess(systemModuleSlug, 'read-terminated-employees')
+      this.canAddExceptionGeneral = await myGeneralStore.hasAccess(systemModuleSlug, 'add-exception-general,')
     }
     myGeneralStore.setFullLoader(false)
     await this.getWorkSchedules()
@@ -584,7 +595,22 @@ export default defineComponent({
     capitalizeFirstLetter(text: string) {
       if (!text) return ''
       return text.charAt(0).toUpperCase() + text.slice(1)
-    }
+    },
+    addNewExceptionGeneral() {
+      this.drawerShiftExceptionGeneralForm = true
+    },
+    async onSaveShiftExceptionGeneral(shiftExceptions: Array<ShiftExceptionInterface>, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
+      this.isReady = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.drawerShiftExceptionForm = false
+      if (shiftExceptionsError.length > 0) {
+        this.shiftExceptionsError = shiftExceptionsError
+        this.drawershiftExceptionsError = true
+      }
+      this.isReady = true
+      myGeneralStore.setFullLoader(false)
+    },
   },
 })
 

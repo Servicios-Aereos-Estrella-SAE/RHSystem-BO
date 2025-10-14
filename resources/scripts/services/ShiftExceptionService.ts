@@ -225,6 +225,26 @@ export default class ShiftExceptionService {
     };
   }
 
+  async applyGeneral(shiftException: ShiftExceptionInterface) {
+    let responseRequest: any = null;
+    const headers = { ...this.GENERAL_HEADERS };
+
+    try {
+      await $fetch(`${this.API_PATH}/shift-exception-apply-general`, {
+        headers,
+        method: "POST",
+        body: { ...shiftException },
+        onResponse({ response }) {
+          responseRequest = response;
+        },
+        onRequestError({ response }) {
+          responseRequest = response;
+        },
+      });
+    } catch (error) { }
+    return responseRequest;
+  }
+
   validateInfo(shiftException: ShiftExceptionInterface): boolean {
     if (!shiftException.shiftExceptionsDate) {
       console.error("Wrong date");
