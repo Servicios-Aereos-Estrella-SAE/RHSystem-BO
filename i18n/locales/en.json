@@ -257,6 +257,7 @@
   "shift_to": "Shift to",
   "create_shift": "Create Shift",
   "select_start_date": "Select start date",
+  "select_date": "Select date",
   "note": "Note",
   "change_with": "Change with",
   "some_evidence_files_failed": "Some evidence files failed",
@@ -673,5 +674,6 @@
   "cancel_change_password": "Cancel Change Password",
   "change_password": "Change Password",
   "passwords_not_is_valid": "Passwords not is valid",
-  "missing_password": "Missing password"
+  "missing_password": "Missing password",
+  "the_permission_was_added_to_quantity_employees_successfully": "The permission was added to {quantity} employees successfully."
 }

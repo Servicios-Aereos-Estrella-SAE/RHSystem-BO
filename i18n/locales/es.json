@@ -257,6 +257,7 @@
   "shift_to": "Turno destino",
   "create_shift": "Crear turno",
   "select_start_date": "Selecciona la fecha de inicio",
+  "select_date": "Selecciona la fecha",
   "note": "Nota",
   "change_with": "Cambiar con",
   "some_evidence_files_failed": "Algunos archivos de evidencia fallaron",
@@ -673,5 +674,6 @@
   "cancel_change_password": "Cancelar cambio de contraseña",
   "change_password": "Cambiar contraseña",
   "passwords_not_is_valid": "Las contraseñas no son válidas",
-  "missing_password": "Falta la contraseña"
+  "missing_password": "Falta la contraseña",
+  "the_permission_was_added_to_quantity_employees_successfully": "Se agrego el permiso a {quantity} empleados correctamente"
 }

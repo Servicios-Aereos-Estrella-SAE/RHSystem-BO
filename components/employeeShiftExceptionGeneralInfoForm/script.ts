@@ -66,8 +66,12 @@ export default defineComponent({
     shiftException: {} as ShiftExceptionInterface,
     displayDateCalendar: false as boolean,
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
+    dropdownReady: false
   }),
   computed: {
+    getExceptionTypeList() {
+      return this.exceptionTypeList
+    },
     selectedExceptionDate() {
       const day = DateTime.fromJSDate(this.date).setZone('UTC-6').setLocale(this.localeToUse).toFormat('DDDD')
       return day
@@ -102,6 +106,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.isReady = false
+    this.dropdownReady = false
     if (!myGeneralStore.isRoot) {
       this.getStartPeriodDay()
     }
@@ -124,8 +129,13 @@ export default defineComponent({
       })
     }
     await this.getExceptionTypes(true)
+
+    this.$nextTick(() => {
+      this.dropdownReady = true
+    })
     myGeneralStore.setFullLoader(false)
     this.isReady = true
+    this.$forceUpdate()
   },
   methods: {
     handlerDisplayDate() {
@@ -168,8 +178,7 @@ export default defineComponent({
     async getExceptionTypes(onlyActive: boolean) {
       const response = await new ExceptionTypeService().getFilteredList('', 1, 100, onlyActive)
       const list: ExceptionTypeInterface[] = response.status === 200 ? response._data.data.exceptionTypes.data : []
-      const tempList = list.filter(item => item.exceptionTypeSlug !== 'vacation' && item.exceptionTypeIsGeneral === 1)
-      this.exceptionTypeList = tempList
+      this.exceptionTypeList = list.filter(item => item.exceptionTypeSlug !== 'vacation' && item.exceptionTypeIsGeneral === 1)
     },
     async onSave() {
       this.submitted = true
@@ -214,26 +223,6 @@ export default defineComponent({
         })
         return
       }
-
-      /*       if (this.needEnjoymentOfSalary && this.shiftException.shiftExceptionEnjoymentOfSalary === null) {
-              this.$toast.add({
-                severity: 'warn',
-                summary: this.t('validation_data'),
-                detail: this.t('missing_data'),
-                life: 5000,
-              })
-              return
-            }
-      
-            if (this.applyToMoreThanOneDay && !this.shiftException.daysToApply) {
-              this.$toast.add({
-                severity: 'warn',
-                summary: this.t('validation_data'),
-                detail: this.t('missing_data'),
-                life: 5000,
-              })
-              return
-            } */
 
 
 
@@ -286,7 +275,6 @@ export default defineComponent({
       if (shiftExceptionResponse.status === 201) {
         wasSavedCorrectly = true
         shiftExceptionsSaved = shiftExceptionResponse._data.data.shiftExceptionsSaved
-
         if (shiftExceptionResponse._data.data.shiftExceptionsError) {
           this.shiftExceptionsError = shiftExceptionResponse._data.data.shiftExceptionsError
         }

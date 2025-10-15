@@ -46,7 +46,7 @@
             </div>
             <div v-if="displayDateCalendar && isNewShiftException" class="date-box-controller">
               <Calendar v-if="displayDateCalendar" dateFormat="yy-mm-dd"
-                v-model.lazy="shiftException.shiftExceptionsDate" :placeholder="$t('select_start_date')"
+                v-model.lazy="shiftException.shiftExceptionsDate" :placeholder="$t('select_date')"
                 :invalid="submitted && !shiftException.shiftExceptionsDate" :minDate="startDateLimit" />
               <Button type="button" class="btn btn-block" id="display-input-expiration-at"
                 @click="handlerDisplayCloseDate">
@@ -63,13 +63,13 @@
             </small>
           </div>
         </div>
-        <div class="input-box">
+        <div v-if="dropdownReady" class="input-box">
           <label for="exception-type">
             {{ $t('exception_type') }}
           </label>
-          <Dropdown v-model="shiftException.exceptionTypeId" :key="2" :options="exceptionTypeList"
-            optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" placeholder="" class="w-full md:w-14rem"
-            @update:model-value="handleTypeChange" />
+          <Dropdown v-model="shiftException.exceptionTypeId" filter :options="getExceptionTypeList"
+            optionLabel="exceptionTypeTypeName" optionValue="exceptionTypeId" class="w-full md:w-14rem"
+            @update:model-value="handleTypeChange" appendTo="body" />
           <small class="p-error" v-if="submitted && !shiftException.exceptionTypeId">{{ $t('exception_type') }} {{
             $t('is_required') }}.</small>
         </div>

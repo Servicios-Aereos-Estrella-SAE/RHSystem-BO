@@ -599,11 +599,19 @@ export default defineComponent({
     addNewExceptionGeneral() {
       this.drawerShiftExceptionGeneralForm = true
     },
-    async onSaveShiftExceptionGeneral(shiftExceptions: Array<ShiftExceptionInterface>, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
+    async onSaveShiftExceptionGeneral(shiftExceptionsSaved: Array<ShiftExceptionInterface>, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
       this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
-      this.drawerShiftExceptionForm = false
+      this.drawerShiftExceptionGeneralForm = false
+      if (shiftExceptionsSaved.length > 0) {
+        this.$toast.add({
+          severity: 'success',
+          summary: this.t('success'),
+          detail: this.t('the_permission_was_added_to_quantity_employees_successfully', { quantity: shiftExceptionsSaved.length.toString() }),
+          life: 5000,
+        })
+      }
       if (shiftExceptionsError.length > 0) {
         this.shiftExceptionsError = shiftExceptionsError
         this.drawershiftExceptionsError = true

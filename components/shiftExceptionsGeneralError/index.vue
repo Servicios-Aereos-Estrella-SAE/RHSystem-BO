@@ -41,7 +41,7 @@
           </table>
         </div>
         <div class="tools">
-          <Button class="btn btn-block btn-danger" @click="handlerConfirm">
+          <Button class="btn btn-block btn-info" @click="handlerConfirm">
             {{ $t('confirm') }}
           </Button>
           <Button class="btn btn-block" @click="handlerCancel">

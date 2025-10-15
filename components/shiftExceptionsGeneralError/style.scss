@@ -39,7 +39,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: transparentize($color: $danger, $amount: 0.75);
+      background-color: transparentize($color: $info, $amount: 0.75);
       box-sizing: border-box;
       text-align: center;
 
@@ -50,7 +50,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: transparentize($color: $danger, $amount: 0.25);
+        background-color: transparentize($color: $info, $amount: 0.25);
         box-sizing: border-box;
 
         svg {
@@ -70,10 +70,10 @@
       margin-top: 1rem;
       display: block;
 
-     
+
     }
 
-  
+
 
     .tools {
       margin-top: 1rem;
@@ -82,32 +82,41 @@
       width: 100%;
     }
   }
+
   table {
     width: 100%;
-    border-collapse: separate; /* Asegura que los bordes se dibujen correctamente */
-    border-spacing: 0; /* Evita espacios entre bordes */
+    border-collapse: separate;
+    /* Asegura que los bordes se dibujen correctamente */
+    border-spacing: 0;
+    /* Evita espacios entre bordes */
     font-size: 0.7rem;
   }
-  
-  th, td {
+
+  th,
+  td {
     text-align: left;
     padding: 8px;
     border: 0.6px solid black;
   }
-  
+
   th {
     background-color: #f2f2f2;
-    position: sticky; 
-    top: 0; 
-    z-index: 1; 
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
+
   .wide-column {
     width: 25%;
   }
+
   .table-container {
-    max-height: 200px; /* Altura máxima del área de scroll */
-    overflow-y: auto; /* Scroll vertical */
+    max-height: 200px;
+    /* Altura máxima del área de scroll */
+    overflow-y: auto;
+    /* Scroll vertical */
     //border: 1px solid #ccc; /* Bordes para el contenedor */
-    position: relative; /* Necesario para sticky */
+    position: relative;
+    /* Necesario para sticky */
   }
 }
