@@ -59,6 +59,15 @@
       }
     }
 
+    .message-success {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      font-weight: 500;
+      color: $success;
+      margin-bottom: 1rem;
+    }
+
     .title {
       display: block;
       text-align: center;

@@ -239,7 +239,8 @@
         </transition>
         <transition name="page">
           <shiftExceptionsGeneralError v-if="drawershiftExceptionsError" :shiftExceptions="shiftExceptionsError"
-            @confirm="drawershiftExceptionsError = false" @cancel="drawershiftExceptionsError = false" />
+            :quantityShiftExceptionsSaved="quantityShiftExceptionsSaved" @confirm="drawershiftExceptionsError = false"
+            @cancel="drawershiftExceptionsError = false" />
         </transition>
 
       </NuxtLayout>

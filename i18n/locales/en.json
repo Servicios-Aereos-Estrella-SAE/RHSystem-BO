@@ -675,5 +675,7 @@
   "change_password": "Change Password",
   "passwords_not_is_valid": "Passwords not is valid",
   "missing_password": "Missing password",
-  "the_permission_was_added_to_quantity_employees_successfully": "The permission was added to {quantity} employees successfully."
+  "the_permission_was_added_to_quantity_employees_successfully": "The permission was added to {quantity} employees successfully.",
+  "but_there_are": "But there are",
+  "the_following_employees_could_not_be_assigned_leave": "The following employees could not be assigned leave."
 }

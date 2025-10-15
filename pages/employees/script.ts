@@ -84,6 +84,7 @@ export default defineComponent({
     drawerShiftExceptionForm: false,
     drawershiftExceptionsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
+    quantityShiftExceptionsSaved: 0 as number
   }),
   computed: {
     getStatus() {
@@ -604,6 +605,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.drawerShiftExceptionGeneralForm = false
+      this.quantityShiftExceptionsSaved = shiftExceptionsSaved.length
       if (shiftExceptionsSaved.length > 0) {
         this.$toast.add({
           severity: 'success',

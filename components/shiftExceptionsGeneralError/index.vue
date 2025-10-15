@@ -11,11 +11,17 @@
             </svg>
           </div>
         </div>
+        <div v-if="quantityShiftExceptionsSaved > 0" class="message-success">
+          {{ messageSuccess }}
+        </div>
+        <span v-if="quantityShiftExceptionsSaved > 0">
+          {{ $t('but_there_are') }}
+        </span>
         <div class="title">
           {{ $t('shift_exceptions_with_some_error') }}
         </div>
         <p class="description">
-          {{ $t('the_following_dates_could_not_be_registered') }}
+          {{ $t('the_following_employees_could_not_be_assigned_leave') }}
           <br>
           <br>
           {{ $t('verify_the_information') }}

@@ -675,5 +675,7 @@
   "change_password": "Cambiar contraseña",
   "passwords_not_is_valid": "Las contraseñas no son válidas",
   "missing_password": "Falta la contraseña",
-  "the_permission_was_added_to_quantity_employees_successfully": "Se agrego el permiso a {quantity} empleados correctamente"
+  "the_permission_was_added_to_quantity_employees_successfully": "Se agrego el permiso a {quantity} empleados correctamente",
+  "but_there_are": "Pero hay",
+  "the_following_employees_could_not_be_assigned_leave": "Los siguientes empleados no se les pudo asignar el permiso."
 }
