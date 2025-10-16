@@ -672,5 +672,8 @@
   "cancel_change_password": "Cancelar cambio de contraseña",
   "change_password": "Cambiar contraseña",
   "passwords_not_is_valid": "Las contraseñas no son válidas",
-  "missing_password": "Falta la contraseña"
+  "missing_password": "Falta la contraseña",
+  "start": "Inicio",
+  "end": "Fin",
+  "month": "Mes"
 }

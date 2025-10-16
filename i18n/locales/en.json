@@ -672,5 +672,8 @@
   "cancel_change_password": "Cancel Change Password",
   "change_password": "Change Password",
   "passwords_not_is_valid": "Passwords not is valid",
-  "missing_password": "Missing password"
+  "missing_password": "Missing password",
+  "start": "Start",
+  "end": "End",
+  "month": "Month"
 }

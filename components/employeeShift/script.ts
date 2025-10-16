@@ -20,6 +20,7 @@ import EmployeeShiftService from '~/resources/scripts/services/EmployeeShiftServ
 import type { EmployeeShiftInterface } from '~/resources/scripts/interfaces/EmployeeShiftInterface';
 import type { UserResponsibleEmployeeInterface } from '~/resources/scripts/interfaces/UserResponsibleEmployeeInterface';
 import UserResponsibleEmployeeService from '~/resources/scripts/services/UserResponsibleEmployeeService';
+import type { WeekInfoInterface } from '~/resources/scripts/interfaces/WeekInfoInterface';
 
 export default defineComponent({
   components: {
@@ -78,6 +79,8 @@ export default defineComponent({
     canSeeReportAssist: false,
     withOutLimitDays: false,
     localeToUse: 'en',
+    weeks: [] as WeekInfoInterface[],
+    hoursAssignedMonth: 0
   }),
   computed: {
     isRoot() {
@@ -186,6 +189,7 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     async getEmployeeCalendar() {
+      let hoursAssignedMonth = 0
       this.displayCalendar = false
       const firstDay = this.period[0]
       const lastDay = this.period[this.period.length - 1]
@@ -197,8 +201,33 @@ export default defineComponent({
       this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
       const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
       const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
+      this.weeks = this.getWeeksInRange(startDay, endDay);
+
       if (exceptionTypeVacationId) {
         for await (const day of this.employeeCalendar) {
+          const assist = day.assist
+          const dateShift = assist?.dateShift
+
+          if (
+            dateShift &&
+            !dateShift.shiftIsChange &&
+            !assist.isRestDay &&
+            !assist.isVacationDate &&
+            !assist.isWorkDisabilityDate &&
+            !(assist.isHoliday && assist.holiday)
+          ) {
+            const currentDate = DateTime.fromISO(day.day)
+
+            const existWeek = this.weeks.find((week) => {
+              const weekStart = DateTime.fromISO(week.start);
+              const weekEnd = DateTime.fromISO(week.end);
+              return currentDate >= weekStart && currentDate <= weekEnd;
+            })
+            if (existWeek) {
+              existWeek.hours += parseFloat(dateShift.shiftActiveHours.toString())
+            }
+            hoursAssignedMonth += parseFloat(dateShift.shiftActiveHours.toString())
+          }
           const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
           day.assist.exceptions = exceptions
           if (day.assist.exceptions.length === 0) {
@@ -206,6 +235,7 @@ export default defineComponent({
           }
         }
       }
+      this.hoursAssignedMonth = hoursAssignedMonth
       if (exceptionTypeWorkDisabilityId) {
         for await (const day of this.employeeCalendar) {
           const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeWorkDisabilityId)
@@ -449,6 +479,42 @@ export default defineComponent({
       } else {
         this.canSeeReportAssist = true
       }
+    },
+    getWeeksInRange(startDay: string, endDay: string) {
+      const start = DateTime.fromISO(startDay)
+      const end = DateTime.fromISO(endDay)
+
+      const weeks = [] as WeekInfoInterface[]
+
+      let cursor = start.startOf('week')
+      let weekIndex = 1
+
+      while (cursor <= end) {
+        const weekStart = cursor < start ? start : cursor;
+        const weekEnd = cursor.endOf('week') > end ? end : cursor.endOf('week');
+
+        weeks.push({
+          weekNumber: weekIndex,
+          start: weekStart.toISODate() ?? '',
+          end: weekEnd.toISODate() ?? '',
+          hours: 0,
+        })
+
+        cursor = cursor.plus({ weeks: 1 })
+        weekIndex++
+      }
+
+      return weeks;
+    },
+    getDateFormatted(date: string) {
+      if (!date) {
+        return ''
+      }
+
+      return DateTime.fromISO(date)
+        .setZone('UTC-6')
+        .setLocale(this.localeToUse)
+        .toFormat('DD')
     }
   }
 })
