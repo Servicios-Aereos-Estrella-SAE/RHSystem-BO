@@ -9,7 +9,7 @@
       :can-manage-vacation="canManageVacation" />
 
     <div class="head">
-      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block" @click="addNewVacation">
+      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block" @click="toggleAuthorizationForm">
         <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
           xmlns="http://www.w3.org/2000/svg">
           <path
@@ -18,9 +18,45 @@
         </svg>
         {{ $t('add_vacation_day') }}
       </button>
+
+      <!-- Botón para crear solicitud de vacaciones -->
+      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block btn-secondary" @click="toggleVacationRequestForm">
+        <i class="pi pi-calendar-plus"></i>
+        {{ $t('create_vacation_request') }}
+      </button>
+
     </div>
 
     <div v-if="isReady">
+      <!-- Formulario de solicitud de vacaciones (desplegable) -->
+      <div v-if="showVacationRequestForm" class="vacation-request-form-container">
+        <shiftExceptionForm
+          :employee="employee"
+          :startDateLimit="startDateLimit"
+          @exceptionRequestCreated="onVacationRequestCreated"
+          @exceptionRequestError="onVacationRequestError"
+        />
+      </div>
+
+      <!-- Sidebar para autorización de vacaciones -->
+      <div class="card flex justify-content-center">
+        <Sidebar
+          v-model:visible="showAuthorizationDialog"
+          :header="$t('authorize_vacation_requests')"
+          position="right"
+          class="vacation-authorization-sidebar"
+          :showCloseIcon="true"
+        >
+          <vacationAuthorizationForm
+            :employeeId="employee.employeeId"
+            :currentVacationPeriod="currentVacationPeriod"
+            :vacationSettingId="currentVacationPeriod.vacationSettingId"
+            @authorizationCompleted="onVacationAuthorized"
+            @authorizationError="onVacationAuthorizationError"
+          />
+        </Sidebar>
+      </div>
+
       <div class="vacations-wrapper">
         <div v-for="(shiftException, index) in shiftExceptions" :key="`employee-vacation-${index}`">
           <vacationsControl :shift-exception="shiftException"
@@ -38,6 +74,8 @@
       </transition>
     </div>
     <ProgressSpinner v-else />
+
+
 
   </div>
 </template>

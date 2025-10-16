@@ -12,6 +12,9 @@ import { useMyGeneralStore } from '~/store/general'
 import type { ShiftExceptionErrorInterface } from '~/resources/scripts/interfaces/ShiftExceptionErrorInterface'
 import type { UserInterface } from '~/resources/scripts/interfaces/UserInterface'
 import SystemSettingService from '~/resources/scripts/services/SystemSettingService'
+import type { ExceptionRequestInterface } from '~/resources/scripts/interfaces/ExceptionRequestInterface'
+import VacationAuthorizationService from '~/resources/scripts/services/VacationAuthorizationService'
+import type { VacationAuthorizationInterface } from '~/resources/scripts/interfaces/VacationAuthorizationInterface'
 
 export default defineComponent({
   components: {
@@ -48,6 +51,12 @@ export default defineComponent({
     restrictFutureVacations: false,
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
     localeToUse: 'en',
+    // Nuevas propiedades para el sistema de autorización
+    showVacationRequestForm: false,
+    showAuthorizationDialog: false,
+    pendingRequests: [] as VacationAuthorizationInterface[],
+    pendingRequestsCount: 0,
+    vacationAuthorizationService: null as VacationAuthorizationService | null
   }),
   computed: {
     displayAddButton() {
@@ -89,6 +98,11 @@ export default defineComponent({
       this.restrictFutureVacations = isRestrictFutureVacationActive === 1 ? true : false
     }
     this.getStartPeriodDay()
+
+    // Inicializar servicio de autorización de vacaciones
+    this.vacationAuthorizationService = new VacationAuthorizationService()
+    await this.loadPendingRequests()
+
     this.isReady = true
   },
   methods: {
@@ -340,5 +354,82 @@ export default defineComponent({
         .setLocale('en')
         .toFormat('DDD')
     },
+
+    // Nuevos métodos para el sistema de autorización de vacaciones
+    async loadPendingRequests() {
+      if (!this.vacationAuthorizationService) {
+        console.log('VacationAuthorizationService not initialized')
+        return
+      }
+
+      try {
+        console.log('Loading pending requests for employee:', this.employee.employeeId)
+        const response = await this.vacationAuthorizationService.getPendingVacationRequests(this.employee.employeeId!)
+        console.log('Pending requests response:', response)
+
+        if (response.status === 200) {
+          this.pendingRequests = response.data || []
+          this.pendingRequestsCount = this.pendingRequests.length
+          console.log('Pending requests loaded:', this.pendingRequests.length, 'requests')
+        } else {
+          console.log('Response status not 200:', response.status)
+        }
+      } catch (error) {
+        console.error('Error loading pending requests:', error)
+        this.pendingRequests = []
+        this.pendingRequestsCount = 0
+      }
+    },
+
+    toggleVacationRequestForm() {
+      this.showVacationRequestForm = !this.showVacationRequestForm
+    },
+
+    toggleAuthorizationForm() {
+      this.showAuthorizationDialog = !this.showAuthorizationDialog
+    },
+
+    onVacationRequestCreated(exceptionRequest: ExceptionRequestInterface) {
+      this.$toast.add({
+        severity: 'success',
+        summary: this.t('request_created'),
+        detail: this.t('vacation_request_created_successfully'),
+        life: 5000,
+      })
+
+      this.showVacationRequestForm = false
+      this.loadPendingRequests() // Recargar solicitudes pendientes
+    },
+
+    onVacationRequestError(error: any) {
+      this.$toast.add({
+        severity: 'error',
+        summary: this.t('error'),
+        detail: this.t('failed_to_create_vacation_request'),
+        life: 5000,
+      })
+    },
+
+    onVacationAuthorized(response: any) {
+      this.$toast.add({
+        severity: 'success',
+        summary: this.t('authorization_successful'),
+        detail: this.t('vacation_requests_authorized_successfully'),
+        life: 5000,
+      })
+
+      this.showAuthorizationDialog = false
+      this.loadPendingRequests() // Recargar solicitudes pendientes
+      this.getVacations() // Recargar vacaciones autorizadas
+    },
+
+    onVacationAuthorizationError(error: any) {
+      this.$toast.add({
+        severity: 'error',
+        summary: this.t('authorization_failed'),
+        detail: this.t('an_error_occurred_while_authorizing'),
+        life: 5000,
+      })
+    }
   }
 })

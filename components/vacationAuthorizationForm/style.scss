@@ -1,0 +1,200 @@
+@import '/resources/styles/variables.scss';
+
+
+.p-sidebar-right .p-sidebar {
+  width: 80rem !important;
+
+  @media (max-width: 2560px) {
+    width: 80% !important;
+  }
+  @media (max-width: 1920px) {
+    width: 80% !important;
+  }
+  @media (max-width: 1280px) {
+    width: 80% !important;
+  }
+  @media (max-width: 1024px) {
+    width: 80% !important;
+  }
+  @media (max-width: 768px) {
+    width: 10% !important;
+  }
+  @media (max-width: 480px) {
+    width: 100% !important;
+  }
+  @media (max-width: 320px) {
+    width: 100% !important;
+  }
+}
+
+.vacation-authorization-form {
+  width: 80rem !important;
+  margin: 0 auto !important;
+  padding: 2.5rem !important;
+  height: auto !important;
+  min-height: 80vh !important;
+  display: flex !important;
+  flex-direction: column;
+  background-color: var(--surface-card);
+  border-radius: 12px;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.08);
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 70vh;
+    /* 🔹 Evita que crezca demasiado en pantallas bajas */
+    padding-right: 0.5rem;
+  }
+
+  .input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    input,
+    select,
+    textarea {
+      font-size: 1rem;
+      padding: 0.75rem;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      background-color: var(--surface-100);
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+      }
+    }
+  }
+
+  .box-tools-footer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    button {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+    }
+  }
+
+  .confirmation-dialog {
+    .confirmation-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .confirmation-icon {
+      font-size: 2rem;
+      color: var(--orange-500);
+      margin-top: 0.25rem;
+    }
+
+    .confirmation-text {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color);
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        color: var(--text-color-secondary);
+        font-size: 0.95rem;
+      }
+    }
+
+    .confirmation-details {
+      background: var(--surface-100);
+      padding: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--surface-border);
+
+      p {
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  /* 🖥️ Desktop mediano */
+  @media (max-width: 992px) {
+    max-width: 90%;
+    padding: 2rem;
+
+    .form-container {
+      max-height: 65vh;
+    }
+  }
+
+  /* 📱 Tablet */
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    max-width: 100%;
+    min-height: 70vh;
+
+    .form-container {
+      gap: 1.5rem;
+      max-height: none;
+    }
+
+    .box-tools-footer {
+      grid-template-columns: 1fr;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .confirmation-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .confirmation-icon {
+      align-self: center;
+    }
+  }
+
+  /* 📱 Móviles pequeños */
+  @media (max-width: 480px) {
+    padding: 1rem;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+    /* 🔹 En móviles puede ocupar toda la altura */
+
+    .input-box label {
+      font-size: 0.95rem;
+    }
+
+    .input-box input,
+    .input-box select,
+    .input-box textarea {
+      font-size: 0.9rem;
+      padding: 0.6rem;
+    }
+  }
+}

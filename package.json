@@ -25,6 +25,7 @@
     "@nuxtjs/i18n": "^10.0.6",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia/nuxt": "^0.5.1",
+    "@selemondev/vue3-signature-pad": "^1.4.2",
     "@sidebase/nuxt-auth": "^0.7.2",
     "axios": "^1.7.2",
     "date-fns": "^2.30.0",
@@ -45,6 +46,7 @@
     "vue": "^3.4.27",
     "vue-router": "^4.3.2",
     "vue-simple-calendar": "^7.1.0",
-    "vue3-carousel-nuxt": "^1.1.2"
+    "vue3-carousel-nuxt": "^1.1.2",
+    "vue3-signature-pad": "^1.0.7"
   }
 }

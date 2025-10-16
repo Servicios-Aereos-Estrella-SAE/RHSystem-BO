@@ -1,0 +1,152 @@
+.vacation-signature-pad {
+  width: 100%;
+  max-width: 900px;
+  /* más grande en pantallas grandes */
+  margin: 0 auto;
+  padding: 1rem;
+
+  .signature-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+
+    h3 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text-color);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .description {
+      margin: 0;
+      color: var(--text-color-secondary);
+      font-size: 1rem;
+    }
+  }
+
+  .signature-container {
+    border: 2px solid var(--surface-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface-card);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .signature-pad-wrapper {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    /* ocupa 70% de la altura visible */
+    max-height: 700px;
+    min-height: 400px;
+    background: #ffffff;
+    transition: height 0.3s ease;
+  }
+
+  .signature-pad {
+    width: 100% !important;
+    height: 100% !important;
+    cursor: crosshair;
+    touch-action: none;
+
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      border: 1px solid #dcdcdc;
+    }
+  }
+
+  .signature-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--surface-100);
+    border-top: 1px solid var(--surface-border);
+    justify-content: center;
+
+    .p-button {
+      min-width: 120px;
+    }
+  }
+
+  .signature-status {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+
+    &.status-success {
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      color: var(--green-700);
+    }
+
+    &.status-warning {
+      background: var(--orange-50);
+      border: 1px solid var(--orange-200);
+      color: var(--orange-700);
+    }
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+
+  .signature-footer {
+    margin-top: 1rem;
+
+    .signature-info {
+      p {
+        margin: 0;
+        color: var(--text-color-secondary);
+        font-size: 0.9rem;
+        text-align: center;
+        font-style: italic;
+      }
+    }
+  }
+
+  /* 💻 Tablets */
+  @media (max-width: 992px) {
+    max-width: 100%;
+
+    .signature-pad-wrapper {
+      height: 60vh;
+    }
+  }
+
+  /* 📱 Móviles */
+  @media (max-width: 768px) {
+    padding: 0.5rem;
+
+    .signature-pad-wrapper {
+      height: 50vh;
+      min-height: 350px;
+    }
+
+    .signature-actions {
+      flex-direction: column;
+
+      .p-button {
+        width: 100%;
+      }
+    }
+  }
+
+  /* 📱 Pantallas pequeñas */
+  @media (max-width: 480px) {
+    .signature-pad-wrapper {
+      height: 45vh;
+      min-height: 300px;
+    }
+
+    .signature-header h3 {
+      font-size: 1.2rem;
+    }
+  }
+}

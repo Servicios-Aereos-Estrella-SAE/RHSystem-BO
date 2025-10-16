@@ -325,6 +325,12 @@ export default defineComponent({
       this.shiftException.shiftExceptionsDate = this.currentDate
       this.canManageToPreviousDays = true
       this.displayForm = false
+    },
+    showSignature() {
+      if (this.shiftException.signature) {
+        // Abrir la imagen en una nueva ventana
+        window.open(this.shiftException.signature, '_blank')
+      }
     }
   }
 })

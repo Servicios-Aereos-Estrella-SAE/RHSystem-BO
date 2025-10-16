@@ -1,0 +1,160 @@
+.employee-vacation-manager {
+  .vacation-period-header {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      margin: 0 0 1rem 0;
+      color: var(--text-color);
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  .vacation-summary {
+    .summary-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--surface-100);
+      border-radius: 8px;
+      border: 1px solid var(--surface-border);
+      min-width: 120px;
+
+      .label {
+        font-size: 0.8rem;
+        color: var(--text-color-secondary);
+        margin-bottom: 0.25rem;
+        text-align: center;
+      }
+
+      .value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .vacation-actions {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .authorized-vacations,
+  .pending-requests {
+    margin-bottom: 2rem;
+
+    h4 {
+      margin: 0 0 1rem 0;
+      color: var(--text-color);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+  }
+
+  .vacation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vacation-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--surface-border);
+    background: var(--surface-card);
+    transition: all 0.2s ease;
+
+    &.authorized {
+      border-left: 4px solid var(--green-500);
+      background: var(--green-50);
+    }
+
+    &.pending {
+      border-left: 4px solid var(--orange-500);
+      background: var(--orange-50);
+    }
+
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .vacation-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: var(--primary-color);
+      font-size: 1rem;
+    }
+
+    span {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+  }
+
+  .vacation-description {
+    flex: 1;
+    margin: 0 1rem;
+
+    span {
+      color: var(--text-color-secondary);
+      font-size: 0.9rem;
+    }
+  }
+
+  .vacation-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .authorization-dialog,
+  .request-dialog {
+    .p-dialog-content {
+      padding: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .summary-badges {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .badge {
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .vacation-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .vacation-description {
+      margin: 0;
+    }
+
+    .vacation-actions {
+      align-self: flex-end;
+    }
+  }
+}
