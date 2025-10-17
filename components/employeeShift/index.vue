@@ -64,7 +64,7 @@
       </Button>
     </div>
     <div class="head-exception">
-      <div class="weeks-container">
+      <div class="weeks">
         <div class="week-box">
           <h4>{{ $t('month') }}: {{ monthName }}</h4>
 
@@ -73,6 +73,10 @@
             <span class="value">{{ hoursAssignedMonth }}</span>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="head-exception">
+      <div class="weeks-container">
         <div v-for="week in weeks" :key="week.weekNumber" class="week-box">
           <h5>{{ $t('week') }}: {{ week.weekNumber }}</h5>
 

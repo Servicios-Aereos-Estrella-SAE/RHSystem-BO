@@ -102,19 +102,34 @@
   }
 }
 
+.weeks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+
+  .week-box {
+    width: 100%;
+    border: 1px solid #e3ebf6;
+    border-radius: 4px;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+}
+
 .weeks-container {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+
+  .week-box {
+    width: 250px;
+    border: 1px solid #e3ebf6;
+    border-radius: 4px;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
 }
 
-.week-box {
-  width: 250px;
-  border: 1px solid #e3ebf6;
-  border-radius: 4px;
-  padding: 1rem;
-  box-sizing: border-box;
-}
 
 .week-row {
   display: flex;

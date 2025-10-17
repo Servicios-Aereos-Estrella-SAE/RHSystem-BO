@@ -490,8 +490,10 @@ export default defineComponent({
       let weekIndex = 1
 
       while (cursor <= end) {
-        const weekStart = cursor < start ? start : cursor;
-        const weekEnd = cursor.endOf('week') > end ? end : cursor.endOf('week');
+        const weekStart = cursor
+        const weekEnd = cursor.endOf('week')
+        //const weekStart = cursor < start ? start : cursor
+        //const weekEnd = cursor.endOf('week') > end ? end : cursor.endOf('week')
 
         weeks.push({
           weekNumber: weekIndex,
@@ -504,7 +506,7 @@ export default defineComponent({
         weekIndex++
       }
 
-      return weeks;
+      return weeks
     },
     getDateFormatted(date: string) {
       if (!date) {
