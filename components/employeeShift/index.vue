@@ -31,7 +31,6 @@
         <Calendar v-show="displayInputCalendar" v-model="inputSelectedDate" view="month" dateFormat="MM" />
       </div>
 
-
       <Button title="Select month" v-if="!displayInputCalendar" class="btn btn-block" @click="handlerDisplayInputDate">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path

@@ -189,7 +189,6 @@ export default defineComponent({
       myGeneralStore.setFullLoader(false)
     },
     async getEmployeeCalendar() {
-      let hoursAssignedMonth = 0
       this.displayCalendar = false
       const firstDay = this.period[0]
       const lastDay = this.period[this.period.length - 1]
@@ -201,10 +200,47 @@ export default defineComponent({
       this.employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
       const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
       const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
-      this.weeks = this.getWeeksInRange(startDay, endDay);
-
       if (exceptionTypeVacationId) {
         for await (const day of this.employeeCalendar) {
+          const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeVacationId)
+          day.assist.exceptions = exceptions
+          if (day.assist.exceptions.length === 0) {
+            day.assist.hasExceptions = false
+          }
+        }
+      }
+      if (exceptionTypeWorkDisabilityId) {
+        for await (const day of this.employeeCalendar) {
+          const exceptions = day.assist.exceptions.filter(a => a.exceptionTypeId !== exceptionTypeWorkDisabilityId)
+          day.assist.exceptions = exceptions
+          if (day.assist.exceptions.length === 0) {
+            day.assist.hasExceptions = false
+          }
+        }
+      }
+      this.getHoursAssigned()
+      this.displayCalendar = true
+    },
+    async getHoursAssigned() {
+      let hoursAssignedMonth = 0
+      this.displayCalendar = false
+      const firstDay = this.period[0]
+      const lastDay = this.period[this.period.length - 1]
+      const startDay = `${firstDay.year}-${`${firstDay.month}`.padStart(2, '0')}-${`${firstDay.day}`.padStart(2, '0')}`
+      const endDay = `${lastDay.year}-${`${lastDay.month}`.padStart(2, '0')}-${`${lastDay.day}`.padStart(2, '0')}`
+      const employeeID = this.employee?.employeeId || 0
+
+      this.weeks = this.getWeeksInRange(startDay, endDay)
+      const start = this.weeks[0].start
+      const end = this.weeks[this.weeks.length - 1].end
+
+      const assistReq = await new AssistService().index(start, end, employeeID)
+      let employeeCalendar = (assistReq.status === 200 ? assistReq._data.data.employeeCalendar : []) as AssistDayInterface[]
+      employeeCalendar = employeeCalendar.length > 0 ? employeeCalendar : this.getFakeEmployeeCalendar()
+      const exceptionTypeVacationId = await this.getExceptionTypeBySlug('vacation')
+      const exceptionTypeWorkDisabilityId = await this.getExceptionTypeBySlug('falta-por-incapacidad')
+      if (exceptionTypeVacationId) {
+        for await (const day of employeeCalendar) {
           const assist = day.assist
           const dateShift = assist?.dateShift
 
