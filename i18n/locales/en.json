@@ -704,5 +704,21 @@
   "vacation_request_created_successfully": "Vacation request created successfully",
   "if_you_continue_with_this_action_vacation_requests_will_be_authorized": "If you continue with this action, vacation requests will be authorized.",
   "to_authorize": "to authorize.",
-  "confirm_authorize": "Confirm authorize"
+  "confirm_authorize": "Confirm authorize",
+  "authorize_vacation_requests": "Authorize Vacations",
+  "vacation_type": "Vacation Type",
+  "pending_vacations": "Pending Vacations",
+  "authorized_vacations": "Authorized Vacations",
+  "authorized_vacations_without_signature": "Authorized Vacations without Signature",
+  "no_authorized_vacations_without_signature": "No authorized vacations without signature",
+  "loading_vacations": "Loading vacations",
+  "selected_vacations": "Selected vacations",
+  "select_vacations_to_authorize": "Select vacations to authorize",
+  "an_error_occurred_while_authorizing": "An error occurred while authorizing",
+  "authorization_successful": "Authorization successful",
+  "vacation_requests_authorized_successfully": "Vacation requests authorized successfully",
+  "authorization_failed": "Authorization failed",
+  "failed_to_load_pending_requests": "Failed to load pending requests",
+  "validation_required": "Validation required",
+  "description_is_required": "Description is required"
 }

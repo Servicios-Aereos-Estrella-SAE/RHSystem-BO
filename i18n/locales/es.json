@@ -705,5 +705,21 @@
   "vacation_request_created_successfully": "Solicitud de vacaciones creada exitosamente",
   "if_you_continue_with_this_action_vacation_requests_will_be_authorized": "Si continúas con esta acción, las solicitudes de vacaciones serán autorizadas.",
   "to_authorize": "para autorizar.",
-  "confirm_authorize": "Confirmar autorización"
+  "confirm_authorize": "Confirmar autorización",
+  "authorize_vacation_requests": "Autorizar Vacaciones",
+  "vacation_type": "Tipo de Vacación",
+  "pending_vacations": "Vacaciones Pendientes",
+  "authorized_vacations": "Vacaciones Autorizadas",
+  "authorized_vacations_without_signature": "Vacaciones Autorizadas sin Firma",
+  "no_authorized_vacations_without_signature": "No hay vacaciones autorizadas sin firma",
+  "loading_vacations": "Cargando vacaciones",
+  "selected_vacations": "Vacaciones seleccionadas",
+  "select_vacations_to_authorize": "Selecciona las vacaciones a autorizar",
+  "an_error_occurred_while_authorizing": "Ocurrió un error al autorizar",
+  "authorization_successful": "Autorización exitosa",
+  "vacation_requests_authorized_successfully": "Solicitudes de vacaciones autorizadas exitosamente",
+  "authorization_failed": "Autorización fallida",
+  "failed_to_load_pending_requests": "Error al cargar las solicitudes pendientes",
+  "validation_required": "Validación requerida",
+  "description_is_required": "Descripción requerida"
 }

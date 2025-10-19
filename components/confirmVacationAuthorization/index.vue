@@ -31,7 +31,7 @@
           {{ $t('incorrect_value_to_confirm') }}
         </p>
         <div class="tools">
-          <Button class="btn btn-block btn-success" @click="handlerConfirmAuthorization">
+          <Button class="btn btn-block btn-info" @click="handlerConfirmAuthorization">
             {{ $t('confirm_authorize') }}
           </Button>
           <Button class="btn btn-block" @click="handlerCancel">
@@ -44,10 +44,10 @@
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+  @import './style';
 </style>

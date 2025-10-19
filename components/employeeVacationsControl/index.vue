@@ -9,7 +9,8 @@
       :can-manage-vacation="canManageVacation" />
 
     <div class="head">
-      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block" @click="toggleAuthorizationForm">
+      <!-- Botón para agregar vacación directamente -->
+      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block" @click="addNewVacation">
         <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
           xmlns="http://www.w3.org/2000/svg">
           <path
@@ -17,6 +18,12 @@
             fill="#88a4bf" class="fill-000000"></path>
         </svg>
         {{ $t('add_vacation_day') }}
+      </button>
+
+      <!-- Botón para autorizar vacaciones -->
+      <button v-if="displayAddButton && canManageUserResponsible" class="btn btn-block btn-primary" @click="toggleAuthorizationForm">
+        <i class="pi pi-check-circle"></i>
+        {{ $t('authorize_vacation_requests') }}
       </button>
 
       <!-- Botón para crear solicitud de vacaciones -->

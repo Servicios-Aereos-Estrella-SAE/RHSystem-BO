@@ -2,8 +2,29 @@
   <div class="vacation-authorization-form">
     <div v-if="isReady" class="vacation-authorization-form-content">
       <div class="form-container">
+        <!-- Switch para alternar entre tipos de vacaciones -->
+        <div class="input-box switch-container">
+          <div class="switch-wrapper">
+            <label class="switch-label">{{ $t('vacation_type') }}:</label>
+            <div class="switch-options">
+              <button
+                :class="['switch-option', { active: vacationType === 'pending' }]"
+                @click="setVacationType('pending')"
+              >
+                {{ $t('pending_vacations') }}
+              </button>
+              <button
+                :class="['switch-option', { active: vacationType === 'authorized' }]"
+                @click="setVacationType('authorized')"
+              >
+                {{ $t('authorized_vacations') }}
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Selector de solicitudes pendientes -->
-        <div class="input-box">
+        <div v-if="vacationType === 'pending'" class="input-box">
           <vacationRequestSelector
             :employeeId="employeeId"
             v-model:selectedRequests="selectedRequests"
@@ -11,8 +32,18 @@
           />
         </div>
 
+        <!-- Selector de vacaciones autorizadas sin firma -->
+        <div v-if="vacationType === 'authorized'" class="input-box">
+          <vacationAuthorizedSelector
+            :employeeId="employeeId"
+            :vacationSettingId="vacationSettingId"
+            v-model:selectedShiftExceptions="selectedShiftExceptions"
+            @shiftExceptionsLoaded="onShiftExceptionsLoaded"
+          />
+        </div>
+
         <!-- Firma digital -->
-        <div v-if="selectedRequests.length > 0" class="input-box">
+        <div v-if="hasSelectedItems" class="input-box">
           <vacationSignaturePad
             ref="signaturePad"
             @signatureChanged="onSignatureChanged"
@@ -20,7 +51,7 @@
         </div>
 
         <!-- Botones de acción -->
-        <div v-if="selectedRequests.length > 0" class="box-tools-footer">
+        <div v-if="hasSelectedItems" class="box-tools-footer">
           <Button
             :label="$t('authorize_requests')"
             severity="primary"

@@ -1,27 +1,28 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ConfirmVacationAuthorization',
-  emits: ['confirm', 'cancel'],
+  name: 'confirmVacationAuthorization',
+  props: {},
   data: () => ({
+    securityWord: 'authorize',
     verifyWord: '',
-    isIncorrect: false,
-    securityWord: 'AUTORIZAR'
+    isIncorrect: false
   }),
+  computed: {},
+  created () {},
+  mounted() {
+  },
   methods: {
-    handlerConfirmAuthorization() {
-      if (this.verifyWord.toUpperCase() === this.securityWord) {
-        this.isIncorrect = false
-        this.$emit('confirm')
-      } else {
+    handlerConfirmAuthorization () {
+      if (this.securityWord.toLocaleLowerCase() !== this.verifyWord.toLocaleLowerCase()) {
         this.isIncorrect = true
-        this.verifyWord = ''
+        return
       }
+
+      this.$emit('confirm')
     },
-    handlerCancel() {
-      this.verifyWord = ''
-      this.isIncorrect = false
+    handlerCancel () {
       this.$emit('cancel')
     }
   }
-})
+});

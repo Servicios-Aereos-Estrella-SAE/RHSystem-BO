@@ -23,7 +23,9 @@ export default defineComponent({
   emits: ['authorizationCompleted', 'authorizationError'],
   data: () => ({
     isReady: false,
+    vacationType: 'pending' as 'pending' | 'authorized',
     selectedRequests: [] as number[],
+    selectedShiftExceptions: [] as number[],
     hasSignature: false,
     showConfirmation: false,
     isAuthorizing: false,
@@ -31,9 +33,15 @@ export default defineComponent({
     vacationAuthorizationService: null as VacationAuthorizationService | null
   }),
   computed: {
+    hasSelectedItems() {
+      if (this.vacationType === 'pending') {
+        return this.selectedRequests.length > 0
+      } else {
+        return this.selectedShiftExceptions.length > 0
+      }
+    },
     canAuthorize() {
-      return this.selectedRequests.length > 0 &&
-             this.hasSignature
+      return this.hasSelectedItems && this.hasSignature
     }
   },
   async mounted() {
@@ -41,8 +49,15 @@ export default defineComponent({
     this.vacationAuthorizationService = new VacationAuthorizationService()
   },
   methods: {
+    setVacationType(type: 'pending' | 'authorized') {
+      this.vacationType = type
+      this.resetForm()
+    },
     onRequestsLoaded(requests: any[]) {
       console.log('Requests loaded:', requests)
+    },
+    onShiftExceptionsLoaded(shiftExceptions: any[]) {
+      console.log('Shift exceptions loaded:', shiftExceptions)
     },
     onSignatureChanged(hasSignature: boolean) {
       this.hasSignature = hasSignature
@@ -88,10 +103,19 @@ export default defineComponent({
         })
 
         // Preparar datos de autorización
-        const authorizationData: VacationAuthorizationRequestInterface = {
-          signature: signatureFile,
-          requests: this.selectedRequests,
-          vacationSettingId: this.vacationSettingId
+        let authorizationData: any
+        if (this.vacationType === 'pending') {
+          authorizationData = {
+            signature: signatureFile,
+            requests: this.selectedRequests,
+            vacationSettingId: this.vacationSettingId
+          }
+        } else {
+          authorizationData = {
+            signature: signatureFile,
+            shiftExceptionIds: this.selectedShiftExceptions,
+            vacationSettingId: this.vacationSettingId
+          }
         }
 
         // Validar datos
@@ -106,7 +130,12 @@ export default defineComponent({
         }
 
         // Enviar autorización
-        const response = await this.vacationAuthorizationService.authorizeVacationRequests(authorizationData)
+        let response
+        if (this.vacationType === 'pending') {
+          response = await this.vacationAuthorizationService.authorizeVacationRequests(authorizationData)
+        } else {
+          response = await (this.vacationAuthorizationService as any).signVacationShiftExceptions(authorizationData)
+        }
 
         if (response.status === 200 || response.status === 201) {
           this.$toast.add({
@@ -146,6 +175,7 @@ export default defineComponent({
     },
     resetForm() {
       this.selectedRequests = []
+      this.selectedShiftExceptions = []
       this.hasSignature = false
       this.submitted = false
       this.showConfirmation = false

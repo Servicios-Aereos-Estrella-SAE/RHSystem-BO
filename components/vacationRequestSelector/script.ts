@@ -87,7 +87,13 @@ export default defineComponent({
       if (!date) return ''
 
       try {
-        const dateObj = typeof date === 'string' ? DateTime.fromISO(date) : DateTime.fromJSDate(new Date(date))
+        let dateObj
+        if (typeof date === 'string') {
+          // Parsear la fecha ISO y ajustar a zona horaria local
+          dateObj = DateTime.fromISO(date, { zone: 'utc' }).setZone('local')
+        } else {
+          dateObj = DateTime.fromJSDate(new Date(date))
+        }
         return dateObj.toFormat('dd/MM/yyyy')
       } catch (error) {
         console.error('Error formatting date:', error)
