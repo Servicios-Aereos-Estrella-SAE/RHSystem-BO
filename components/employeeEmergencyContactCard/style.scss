@@ -1,0 +1,44 @@
+@import '/resources/styles/variables.scss';
+@import 'primeicons/primeicons.css';
+
+.employee-emergency-contact-card {
+  position: relative;
+  border: $border-dashed;
+
+  .name {
+    font-weight: 500;
+    text-wrap: pretty;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .relationship {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+  }
+
+  .phone {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+  }
+
+  .box-tools-footer {
+    padding-top: 1rem;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+
+    button {
+      width: 100%;
+    }
+  }
+  .hidden {
+    display: none;
+  }
+}
