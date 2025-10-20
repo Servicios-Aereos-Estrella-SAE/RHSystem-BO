@@ -504,7 +504,6 @@
   "permissions_excel": "Excel de Permisos",
   "download_permissions_excel": "Descargar Excel de Permisos",
   "download_excel": "Descargar Excel",
-  "select_start_date": "Selecciona fecha de inicio",
   "select_end_date": "Selecciona fecha de fin",
   "please_select_start_and_end_dates": "Por favor selecciona las fechas de inicio y fin",
   "start_date_must_be_before_end_date": "La fecha de inicio debe ser anterior a la fecha de fin",
@@ -681,5 +680,15 @@
   "cancel_change_password": "Cancelar cambio de contraseña",
   "change_password": "Cambiar contraseña",
   "passwords_not_is_valid": "Las contraseñas no son válidas",
-  "missing_password": "Falta la contraseña"
+  "missing_password": "Falta la contraseña",
+  "sort_order": "Orden de clasificación",
+  "records_per_page": "Registros por página",
+  "showing_all_records": "Mostrando todos los registros",
+  "sort_by": "Ordenar por",
+  "select_sort_option": "Seleccionar opción de clasificación",
+  "ascend": "Ascendente",
+  "descend": "Descendente",
+  "number": "Número de empleado",
+  "select_records_per_page": "Seleccionar registros por página",
+  "all_records": "Todos"
 }

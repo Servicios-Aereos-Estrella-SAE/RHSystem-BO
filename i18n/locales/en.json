@@ -255,7 +255,6 @@
   "day_to": "Day to",
   "shift_to": "Shift to",
   "create_shift": "Create Shift",
-  "select_start_date": "Select start date",
   "note": "Note",
   "change_with": "Change with",
   "some_evidence_files_failed": "Some evidence files failed",
@@ -681,5 +680,12 @@
   "cancel_change_password": "Cancel Change Password",
   "change_password": "Change Password",
   "passwords_not_is_valid": "Passwords not is valid",
-  "missing_password": "Missing password"
+  "missing_password": "Missing password",
+  "sort_order": "Sort order",
+  "records_per_page": "Records per page",
+  "showing_all_records": "Showing all records",
+  "sort_by": "Sort by",
+  "select_sort_option": "Select sort option",
+  "number": "Number",
+  "all_records": "All"
 }
