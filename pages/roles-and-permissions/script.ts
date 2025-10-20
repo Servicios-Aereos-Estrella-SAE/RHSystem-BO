@@ -57,7 +57,7 @@ export default defineComponent({
   methods: {
     async validateAccess() {
       const myGeneralStore = useMyGeneralStore()
-      const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
       const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
       if (myGeneralStore.isRoot) {
@@ -245,6 +245,7 @@ export default defineComponent({
 
       this.roleSelected = index
       this.role = { ...this.roleList[this.roleSelected] }
+      this.setManagementDays()
       let isActive: number = 1
       isActive = this.role.roleActive
       this.activeSwicht = isActive === 1 ? true : false
@@ -324,7 +325,7 @@ export default defineComponent({
     setManagementDays() {
       const role = this.roleList[this.roleSelected]
       if (role) {
-        if (!role.roleManagementDays) {
+        if (role.roleManagementDays === null) {
           this.roleManagementDays = null
           this.roleManagementWithOutLimit = true
         } else {

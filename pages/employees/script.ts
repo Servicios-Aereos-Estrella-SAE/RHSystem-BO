@@ -168,7 +168,8 @@ export default defineComponent({
     // Cargar preferencias desde localStorage
     this.loadSortingPreferences()
     this.loadPaginationPreferences()
-    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    // const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
       this.canCreate = true

@@ -140,7 +140,7 @@ export default defineComponent({
     }
 
     let hasAccess = false
-    const fullPath = this.$route.path;
+    const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/");
     const firstSegment = fullPath.split('/')[1]
     let systemModuleSlug = firstSegment
     if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {

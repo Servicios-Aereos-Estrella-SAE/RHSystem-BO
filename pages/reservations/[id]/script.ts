@@ -69,7 +69,7 @@ export default defineComponent({
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
-    const systemModuleSlug = this.$route.path.split('/')[1]
+    const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").split('/')[1]
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
 
     if (myGeneralStore.isRoot) {

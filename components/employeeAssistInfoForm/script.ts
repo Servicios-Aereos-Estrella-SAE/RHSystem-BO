@@ -35,6 +35,7 @@ export default defineComponent({
     dateInvalid: false,
     startDateLimit: DateTime.local(1999, 12, 29).toJSDate(),
     localeToUse: 'en',
+    drawerConfirmAssist: false
   }),
   watch: {
     'assist.assistPunchTime'(val: Date) {
@@ -65,18 +66,19 @@ export default defineComponent({
         this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
       } else {
         const { data } = useAuth()
-
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          } else {
-            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          if (authUser.role.roleManagementDays === null) {
+            this.startDateLimit = DateTime.local(1999, 12, 29).setZone('UTC-6').toJSDate()
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            const days = authUser.role.roleManagementDays
+            const date = DateTime.now().setZone('UTC-6')
+            this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
           }
         }
       }
     },
-    async onSave() {
+    async onConfirmAssist() {
       this.submitted = true
       const assistService = new AssistService()
       if (!this.assist.assistEmpId) {
@@ -106,6 +108,7 @@ export default defineComponent({
         })
         return
       }
+      this.drawerConfirmAssist = false
       const assistPunchTimeTemp = this.assist.assistPunchTime
       const formattedDate = DateTime.fromJSDate(new Date(this.assist.assistPunchTime)).set({ second: 0 }).toFormat('yyyy-MM-dd HH:mm:ss')
       this.assist.assistPunchTime = formattedDate
@@ -189,6 +192,39 @@ export default defineComponent({
     },
     setSelectedDate() {
       this.displayDateCalendar = false
+    },
+    onSave() {
+      if (!this.assist.assistEmpId) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: this.t('validation_data'),
+          detail: this.t('employee_is_not_selected'),
+          life: 5000,
+        })
+        return
+      }
+      if (!this.assist.assistPunchTime) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: this.t('validation_data'),
+          detail: this.t('missing_data'),
+          life: 5000,
+        })
+        return
+      }
+      if (this.dateInvalid) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: this.t('validation_data'),
+          detail: this.t('date_selected_is_invalid'),
+          life: 5000,
+        })
+        return
+      }
+      this.drawerConfirmAssist = true
+    },
+    onCancelAssist() {
+      this.drawerConfirmAssist = false
     }
   }
 })

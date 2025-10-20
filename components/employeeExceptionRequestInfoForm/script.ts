@@ -126,7 +126,7 @@ export default defineComponent({
     }
 
     let hasAccess = false
-    const fullPath = this.$route.path;
+    const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
     const firstSegment = fullPath.split('/')[1]
     let systemModuleSlug = firstSegment
     if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
@@ -234,9 +234,21 @@ export default defineComponent({
         })
         return
       }
-
-
       const myGeneralStore = useMyGeneralStore()
+      if (!myGeneralStore.isRoot) {
+        if (!this.isDateAfterOrEqualToStartDay()) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: this.t('validation_data'),
+            detail: `${this.t('the_date')} ${this.t('is_in_the_past_and_you_do_not_have_permission_to_save_it')} `,
+            life: 5000,
+          })
+          return
+        }
+      }
+
+
+
       myGeneralStore.setFullLoader(true)
 
       let exceptionRequestResponse = null
@@ -361,5 +373,23 @@ export default defineComponent({
     async handlerClickOnDecline() {
       this.$emit('onExceptionRequestDecline')
     },
+    isDateAfterOrEqualToStartDay() {
+      const { data } = useAuth()
+
+      const authUser = data.value as unknown as UserInterface
+      if (authUser.role) {
+        if (authUser.role.roleManagementDays === null) {
+          return true
+        } else if (typeof authUser.role.roleManagementDays === 'number') {
+          const days = authUser.role.roleManagementDays
+          const now = DateTime.now().setZone('UTC-6')
+          const startDateLimit = (days > 0 ? now.minus({ days }) : now).toJSDate()
+          startDateLimit.setHours(0, 0, 0, 0)
+
+          const inputDate = new Date(this.exceptionRequest.requestedDate)
+          return inputDate >= startDateLimit
+        }
+      }
+    }
   }
 })

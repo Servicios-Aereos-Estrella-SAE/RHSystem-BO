@@ -146,7 +146,7 @@ export default defineComponent({
       this.canManageShiftChanges = true
       this.canRemoveShiftAssigned = true
     } else {
-      let systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+      let systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
       if (systemModuleSlug.toString().includes('employees-attendance-monitor')) {
         systemModuleSlug = 'employees'
       }
@@ -337,7 +337,6 @@ export default defineComponent({
         this.displaySidebarWorkDisabilities = false
       }
       myGeneralStore.setFullLoader(false)
-
       this.isReady = true
     },
     async onSaveExceptionRequest(exceptionRequestsError: Array<ExceptionRequestErrorInterface>) {
@@ -383,10 +382,13 @@ export default defineComponent({
       const authUser = data.value as unknown as UserInterface
       if (authUser.role) {
         this.withOutLimitDays = false
-        if (authUser.role.roleManagementDays) {
-          this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-        } else {
+        if (authUser.role.roleManagementDays === null) {
+          this.startDateLimit = DateTime.local(1999, 12, 29).setZone('UTC-6').toJSDate()
           this.withOutLimitDays = true
+        } else if (typeof authUser.role.roleManagementDays === 'number') {
+          const days = authUser.role.roleManagementDays
+          const date = DateTime.now().setZone('UTC-6')
+          this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
         }
       }
     },
