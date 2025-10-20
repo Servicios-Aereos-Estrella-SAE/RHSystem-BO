@@ -63,7 +63,7 @@ export default defineComponent({
     shiftTemp: null as ShiftInterface | null,
     drawerShiftForm: false,
     canCreateShift: false,
-    localeToUse: 'en',
+    localeToUse: 'en'
   }),
   computed: {
     selectedDate() {
@@ -184,10 +184,12 @@ export default defineComponent({
 
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          } else {
-            this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          if (authUser.role.roleManagementDays === null) {
+            this.startDateLimit = DateTime.local(1999, 12, 29).setZone('UTC-6').toJSDate()
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            const days = authUser.role.roleManagementDays
+            const date = DateTime.now().setZone('UTC-6')
+            this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
           }
         }
       }

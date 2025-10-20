@@ -37,10 +37,17 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n'
   ],
   i18n: {
-    locales: [
+  locales: [
       { code: 'en', name: 'English', file: 'en.json' },
       { code: 'es', name: 'Español', file: 'es.json' }
-    ]
+    ],
+    defaultLocale: 'en',
+    strategy: 'prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    }
   },
   carousel: {
     prefix: 'VueCar',
@@ -50,9 +57,7 @@ export default defineNuxtConfig({
     baseURL: process.env.BASE_API_PATH,
     provider: {
       type: 'local',
-      pages: {
-        login: '/'
-      },
+      pages: {},
       endpoints: {
         signIn: { path: '/auth/login', method: 'post' },
         signOut: { path: '/auth/logout', method: 'post' },

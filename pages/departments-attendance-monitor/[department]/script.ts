@@ -358,7 +358,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    const fullPath = this.$route.path
+    const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
     const firstSegment = fullPath.split('/')[1]
     this.canSeeConsecutiveFaults = false
     const systemModuleSlug = firstSegment

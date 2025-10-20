@@ -42,7 +42,7 @@ export default defineComponent({
     this.isReady = false
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
     this.canManageResponsibleEdit = await myGeneralStore.hasAccess(systemModuleSlug, 'manage-responsible-edit')
     if (this.employee.deletedAt) {
       this.isDeleted = true

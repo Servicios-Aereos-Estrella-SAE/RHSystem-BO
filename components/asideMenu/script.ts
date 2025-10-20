@@ -46,7 +46,7 @@ export default defineComponent({
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.displayContent = false
 
-      const fullPath = this.$route.path
+      const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
       const firstSegment = fullPath.split('/')[1]
       const systemModuleSlug = firstSegment
       const hasAccess = await myGeneralStore.hasAccess(systemModuleSlug, 'read')
@@ -99,18 +99,18 @@ export default defineComponent({
         this.menuGroups = systemModuleGroupsResponse._data.data.systemModulesGroups
       }
 
-      for await (const group of this.menuGroups) {
-        this.menu.push(
-          {
-            key: Math.random().toString(36).substring(2, 15),
-            label: group.systemModuleGroup,
-            name: group.systemModuleGroup,
-            path: '',
-            icon: `<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>`,
-            items: []
-          }
-        )
-      }
+      const menuGroups: Array<MenuGroupInterface> = this.menuGroups.map((group) => ({
+        key: Math.random().toString(36).substring(2, 15),
+        label: group.systemModuleGroup,
+        name: group.systemModuleGroup,
+        path: '',
+        icon: `<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff" class="fill-212121"></path></svg>`,
+        items: []
+      }))
+
+      // asignar a this.menu el menu cuidando que no se dupliquen valores
+      this.menu = new Set([...this.menu, ...menuGroups]) as unknown as Array<MenuGroupInterface>
+      this.menu = Array.from(this.menu)
 
       const systemModuleResponse = await systemModuleService.getFilteredList('', 1, 1000)
       const { getSession } = useAuth()
@@ -177,7 +177,8 @@ export default defineComponent({
     async handlerLogout() {
       try {
         const { signOut } = useAuth()
-        await signOut({ callbackUrl: '/' })
+        const localePath = useLocalePath()
+        await signOut({ callbackUrl: localePath('/') })
       } catch (error) {
         console.error('🚀 ---------------------------------🚀')
         console.error('🚀 ~ handlerLogout ~ error:', error)
@@ -186,7 +187,7 @@ export default defineComponent({
     },
     setLinkActive(link: any) {
       const browserPath = this.$route.path.split('/')[2]
-      return  link.path === `/${browserPath}`
+      return link.path.replace(`/${this.$i18n.locale}/`, "/") === `/${browserPath}`
     },
     async closeCallback() {
       const myGeneralStore = useMyGeneralStore()
@@ -204,7 +205,7 @@ export default defineComponent({
         this.expandNode(node)
       }
 
-      this.expandedKeys = {...this.expandedKeys}
+      this.expandedKeys = { ...this.expandedKeys }
     },
   }
 })
