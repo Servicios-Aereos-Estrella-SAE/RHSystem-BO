@@ -14,7 +14,7 @@ export default class EmployeeService {
       Authorization: `${token.value}`
     }
   }
-  async getFilteredList(searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null) {
+  async getFilteredList(searchText: string, departmentId: number | null, positionId: number | null, employeeWorkSchedule: string | null, page: number = 1, limit: number = 999999999, onlyInactive: boolean = false, employeeTypeId: number | null, orderBy: string = 'name', orderDirection: string = 'ascend') {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null
     await $fetch(`${this.API_PATH}/employees`, {
@@ -27,7 +27,9 @@ export default class EmployeeService {
         onlyInactive: onlyInactive,
         employeeTypeId,
         page,
-        limit
+        limit,
+        orderBy,
+        orderDirection
       },
       onResponse({ response }) { responseRequest = response },
       onRequestError({ response }) { responseRequest = response }

@@ -1,6 +1,11 @@
 <template>
   <div>
 
+    <Head>
+      <Title>
+        {{ $t('documents_expiration_matrix') }}
+      </Title>
+    </Head>
     <NuxtLayout name="backoffice" class="documents-page">
       <div class="document-wrapper">
         <div class="box">
