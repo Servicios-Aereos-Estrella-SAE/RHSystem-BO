@@ -109,6 +109,9 @@ export default defineComponent({
       { label: 'Not_specified', value: 'Otro' }
     ],
     employeeEmergencyContact: null as EmployeeEmergencyContactInterface | null,
+    employeeEmergencyContactList: [] as EmployeeEmergencyContactInterface[],
+    drawerEmployeeEmergencyContactForm: false,
+    drawerEmployeeEmergencyContactDelete: false,
     emergencyContactIsRequired: false,
     canManageUserResponsible: false,
     localeToUse: 'en',
@@ -182,7 +185,7 @@ export default defineComponent({
 
           const birthDay = DateTime.fromISO(`${year}-${month}-${day}T00:00:00.000-06:00`, { setZone: true })
             .setZone('UTC-6')
-            .setLocale(this.lo)
+            .setLocale(this.localeToUse)
             .toJSDate()
 
           this.employee.person.personBirthday = birthDay
@@ -192,8 +195,11 @@ export default defineComponent({
           this.employeeSpouse = employeeResponse._data.data.employee.spouse
           this.setSpouseBirthday()
         }
-        if (employeeResponse._data.data.employee.emergencyContact) {
-          this.employeeEmergencyContact = employeeResponse._data.data.employee.emergencyContact
+        // Cargar contactos de emergencia por separado
+        const employeeEmergencyContactService = new EmployeeEmergencyContactService()
+        const emergencyContactsResponse = await employeeEmergencyContactService.getByEmployeeId(this.employee.employeeId)
+        if (emergencyContactsResponse.status === 200) {
+          this.employeeEmergencyContactList = emergencyContactsResponse._data.data.employeeEmergencyContacts || []
         }
       }
       if (!this.employeeSpouse) {
@@ -205,17 +211,6 @@ export default defineComponent({
           employeeSpouseBirthday: '',
           employeeSpouseOcupation: '',
           employeeSpousePhone: '',
-          employeeId: this.employee.employeeId
-        }
-      }
-      if (!this.employeeEmergencyContact) {
-        this.employeeEmergencyContact = {
-          employeeEmergencyContactId: null,
-          employeeEmergencyContactFirstname: '',
-          employeeEmergencyContactLastname: '',
-          employeeEmergencyContactSecondLastname: '',
-          employeeEmergencyContactRelationship: '',
-          employeeEmergencyContactPhone: '',
           employeeId: this.employee.employeeId
         }
       }
@@ -387,19 +382,6 @@ export default defineComponent({
         }
       }
 
-      const employeeEmergencyContactService = new EmployeeEmergencyContactService()
-      if (this.employeeEmergencyContact) {
-        this.emergencyContactIsRequired = employeeEmergencyContactService.hasAtLeastOneField(this.employeeEmergencyContact)
-        if (this.emergencyContactIsRequired && !employeeEmergencyContactService.validateInfo(this.employeeEmergencyContact)) {
-          this.$toast.add({
-            severity: 'warn',
-            summary: this.t('validation_data'),
-            detail: this.t('missing_data'),
-            life: 5000,
-          })
-          return
-        }
-      }
 
 
       if (this.employee.person && (this.employee.person.personMaritalStatus === 'Married' || this.employee.person.personMaritalStatus === 'Free Union')) {
@@ -439,37 +421,6 @@ export default defineComponent({
         }
       }
 
-      if (this.employeeEmergencyContact && this.emergencyContactIsRequired) {
-        let employeeEmergencyContactResponse = null
-        if (!this.employeeEmergencyContact.employeeEmergencyContactId) {
-          employeeEmergencyContactResponse = await employeeEmergencyContactService.store(this.employeeEmergencyContact)
-        } else {
-          employeeEmergencyContactResponse = await employeeEmergencyContactService.update(this.employeeEmergencyContact)
-        }
-        if (employeeEmergencyContactResponse.status === 201 || employeeEmergencyContactResponse.status === 200) {
-          this.$toast.add({
-            severity: 'success',
-            summary: `${this.t('employee_emergency_contact')} ${this.employeeEmergencyContact.employeeEmergencyContactId ? this.t('updated') : this.t('created')}`,
-            detail: employeeEmergencyContactResponse._data.message,
-            life: 5000,
-          })
-
-          employeeEmergencyContactResponse = await employeeEmergencyContactService.show(employeeEmergencyContactResponse._data.data.employeeEmergencyContact.employeeEmergencyContactId)
-          if (employeeEmergencyContactResponse.status === 200) {
-            this.employeeEmergencyContact = JSON.parse(JSON.stringify(employeeEmergencyContactResponse._data.data.employeeEmergencyContact.employeeEmergencyContact))
-          }
-
-        } else {
-          const msgError = employeeEmergencyContactResponse._data.error ? employeeEmergencyContactResponse._data.error : employeeEmergencyContactResponse._data.message
-          this.$toast.add({
-            severity: 'error',
-            summary: `${this.t('employee_emergency_contact')} ${this.employeeEmergencyContact.employeeEmergencyContactId ? this.t('updated') : this.t('created')}`,
-            detail: msgError,
-            life: 5000,
-          })
-          return
-        }
-      }
       const lastname = this.employee.employeeLastName
       const secondLastname = this.employee.employeeSecondLastName
       const personBirthday: string | Date | null = this.employee.person?.personBirthday ?? null
@@ -676,6 +627,82 @@ export default defineComponent({
         this.$forceUpdate()
       }
       this.drawerEmployeeChildrenForm = false
+    },
+    addNewEmergencyContact() {
+      if (this.employee.employeeId) {
+        const newEmployeeEmergencyContact: EmployeeEmergencyContactInterface = {
+          employeeEmergencyContactId: null,
+          employeeEmergencyContactFirstname: '',
+          employeeEmergencyContactLastname: '',
+          employeeEmergencyContactSecondLastname: '',
+          employeeEmergencyContactRelationship: '',
+          employeeEmergencyContactPhone: '',
+          employeeId: this.employee.employeeId
+        }
+        this.employeeEmergencyContact = newEmployeeEmergencyContact
+        this.drawerEmployeeEmergencyContactForm = true
+      }
+    },
+    onEditEmployeeEmergencyContact(employeeEmergencyContact: EmployeeEmergencyContactInterface) {
+      this.employeeEmergencyContact = { ...employeeEmergencyContact }
+      this.drawerEmployeeEmergencyContactForm = true
+    },
+    onDeleteEmployeeEmergencyContact(employeeEmergencyContact: EmployeeEmergencyContactInterface) {
+      this.employeeEmergencyContact = { ...employeeEmergencyContact }
+      this.drawerEmployeeEmergencyContactDelete = true
+    },
+    onCancelEmployeeEmergencyContactDelete() {
+      this.drawerEmployeeEmergencyContactDelete = false
+    },
+    async confirmDeleteEmployeeEmergencyContact() {
+      if (this.employeeEmergencyContact) {
+        this.drawerEmployeeEmergencyContactDelete = false
+        const employeeEmergencyContactService = new EmployeeEmergencyContactService()
+        const employeeEmergencyContactResponse = await employeeEmergencyContactService.delete(this.employeeEmergencyContact)
+
+        if (employeeEmergencyContactResponse.status === 200 || employeeEmergencyContactResponse.status === 201) {
+          const index = this.employeeEmergencyContactList.findIndex((employeeEmergencyContact: EmployeeEmergencyContactInterface) => employeeEmergencyContact.employeeEmergencyContactId === this.employeeEmergencyContact?.employeeEmergencyContactId)
+          if (index !== -1) {
+            this.employeeEmergencyContactList.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('delete_emergency_contact'),
+            detail: employeeEmergencyContactResponse._data.message,
+            life: 5000,
+          })
+        } else if (employeeEmergencyContactResponse.status === 400 || employeeEmergencyContactResponse.status === 404) {
+          this.$toast.add({
+            severity: 'warn',
+            summary: this.t('delete_emergency_contact'),
+            detail: employeeEmergencyContactResponse._data.message,
+            life: 5000,
+          })
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.t('delete_emergency_contact'),
+            detail: employeeEmergencyContactResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+    },
+    onSaveEmergencyContact(employeeEmergencyContact: EmployeeEmergencyContactInterface) {
+      this.employeeEmergencyContact = { ...employeeEmergencyContact }
+      const index = this.employeeEmergencyContactList.findIndex((a: EmployeeEmergencyContactInterface) => a.employeeEmergencyContactId === this.employeeEmergencyContact?.employeeEmergencyContactId)
+      if (index !== -1) {
+        this.employeeEmergencyContactList[index] = employeeEmergencyContact
+        this.$forceUpdate()
+      } else {
+        this.employeeEmergencyContactList.push(employeeEmergencyContact)
+        this.$forceUpdate()
+      }
+      this.drawerEmployeeEmergencyContactForm = false
+    },
+    onCancelEmergencyContactForm() {
+      this.drawerEmployeeEmergencyContactForm = false
     }
   }
 })
