@@ -1,0 +1,217 @@
+@import '/resources/styles/variables.scss';
+
+
+.supplies-page {
+  .shift-wrapper {
+    .filters {
+        .head-supplies-page {
+          display: grid;
+          grid-template-columns: 10rem auto;
+          gap: 1rem;
+          align-items: end;
+
+        .input-search {
+          display: flex;
+          gap: 0.5rem;
+          align-items: end;
+
+          .input-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+
+            label {
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: $icon;
+            }
+
+            .p-inputtext {
+              width: 100%;
+            }
+          }
+
+          .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            background: $primary;
+            border: none;
+            border-radius: calc($radius / 2);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+
+
+            svg {
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+
+        .input-box {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+
+          label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: $icon;
+          }
+
+          .supply-status-control {
+            .p-selectbutton {
+              .p-button {
+                padding: 0.5rem 1rem;
+                border: 1px solid $border-color;
+                background: white;
+                border-radius: calc($radius / 2);
+
+                &.p-highlight {
+                  background: $primary;
+                  color: white;
+                  border-color: $primary;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .buttons-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+
+        .btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: $primary;
+          border: none;
+          border-radius: calc($radius / 2);
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 0.875rem;
+          font-weight: 500;
+
+
+          svg {
+            width: 1rem;
+            height: 1rem;
+          }
+        }
+      }
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: $icon;
+      margin: 2rem 0 1rem 0;
+    }
+
+    .shift-card-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      text-align: center;
+
+      .icon {
+        margin-bottom: 1rem;
+
+        svg {
+          width: 3rem;
+          height: 3rem;
+        }
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: $icon;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  // Sidebar styles
+  .supply-type-sidebar,
+  .supply-management-sidebar {
+    .p-sidebar-content {
+      padding: 0;
+    }
+
+    .loading-form {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      padding: 2rem;
+
+      .loading-content {
+        text-align: center;
+
+        i {
+          font-size: 2rem;
+          margin-bottom: 1rem;
+          color: $primary;
+        }
+
+        p {
+          font-size: 1rem;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Dialog styles
+  .confirmation-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .supplies-page {
+    .shift-wrapper {
+      .filters {
+        .head-supplies-page {
+          grid-template-columns: 10rem auto;
+          gap: 1rem;
+        }
+
+        .buttons-group {
+          flex-direction: column;
+        }
+      }
+
+      .shift-card-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

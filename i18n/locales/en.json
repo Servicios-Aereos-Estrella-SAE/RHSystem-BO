@@ -672,5 +672,14 @@
   "cancel_change_password": "Cancel Change Password",
   "change_password": "Change Password",
   "passwords_not_is_valid": "Passwords not is valid",
-  "missing_password": "Missing password"
+  "missing_password": "Missing password",
+  "supplies_management": "Supplies Management",
+  "manage_supplies_and_assignments": "Manage supplies and assignments",
+  "add_supply_type": "Add supply type",
+  "export_excel": "Export Excel",
+  "search_supplies": "Search supplies",
+  "supply_type": "Supply type",
+  "supply_types": "Supply types",
+  "supply_type_info": "Supply type info",
+  "loading_supplies": "Loading supplies"
 }
