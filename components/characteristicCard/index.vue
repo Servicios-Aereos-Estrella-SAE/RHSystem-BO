@@ -8,17 +8,17 @@
     </div>
 
     <div class="card-actions">
-      <Button 
+      <Button
         v-if="canUpdate"
-        :label="t('edit')" 
-        icon="pi pi-pencil" 
+        :label="t('edit')"
+        icon="pi pi-pencil"
         class="p-button-outlined p-button-sm"
         @click="handlerClickOnEdit"
       />
-      <Button 
+      <Button
         v-if="canDelete"
-        :label="t('delete')" 
-        icon="pi pi-trash" 
+        :label="t('delete')"
+        icon="pi pi-trash"
         class="p-button-danger p-button-outlined p-button-sm"
         @click="handlerClickOnDelete"
       />

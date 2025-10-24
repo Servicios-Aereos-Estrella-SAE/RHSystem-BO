@@ -34,11 +34,6 @@
           }`
         }}
       </div>
-      <div class="position">
-        {{
-          `${t("created_at")}: ${formatDate(supplyType?.supplyTypeCreatedAt)}`
-        }}
-      </div>
     </div>
 
     <div v-if="isLoading" class="loading-stats">

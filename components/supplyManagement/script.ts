@@ -5,7 +5,7 @@ import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInter
 import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/EmployeeSupplyInterface'
 import SupplyService from '~/resources/scripts/services/SupplyService'
 import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
-import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
+import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
 import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
 import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 
@@ -319,14 +319,21 @@ export default defineComponent({
     },
     async loadSupplyCharacteristics(supplyId: number) {
       try {
-        const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
-        const response = await supplyCharacteristicValueService.getBySupply(supplyId)
+        // Obtener el supplyTypeId del supply
+        const supply = this.filteredSupplies.find(s => s.supplyId === supplyId)
+        if (!supply?.supplyTypeId) {
+          console.warn('No supplyTypeId found for supply:', supplyId)
+          return []
+        }
 
-        console.log('Characteristics response for supply', supplyId, ':', response)
+        const supplyCharacteristicService = new SupplyCharacteristicService()
+        const response = await supplyCharacteristicService.getAll(1, 100, supply.supplyTypeId)
+
+        console.log('Characteristics response for supply type', supply.supplyTypeId, ':', response)
 
         if ((response as any).type === 'success') {
           const data = (response as any).data
-          // Corregir la estructura según el JSON proporcionado
+          // Según el JSON proporcionado, la estructura es supplieCharacteristics.data
           if (data?.supplieCharacteristics?.data) {
             return data.supplieCharacteristics.data
           } else if (data?.supplieCaracteristic?.data) {

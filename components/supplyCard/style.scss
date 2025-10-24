@@ -103,9 +103,56 @@
     }
   }
 
+  .characteristics-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: rgba(60, 180, 229, 0.05);
+    border-radius: calc($radius / 2);
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: $primary;
+      margin: 0 0 0.75rem 0;
+      text-transform: uppercase;
+    }
+
+    .characteristics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .characteristic-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: calc($radius / 4);
+      border: 1px solid rgba(60, 180, 229, 0.2);
+
+      .characteristic-name {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.8rem;
+      }
+
+      .characteristic-type {
+        font-size: 0.7rem;
+        color: #6c757d;
+        background-color: rgba(60, 180, 229, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: calc($radius / 4);
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+    }
+  }
+
   .stats-section {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin: 1rem 0;
     padding: 1rem;

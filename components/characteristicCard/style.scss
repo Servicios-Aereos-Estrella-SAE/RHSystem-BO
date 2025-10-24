@@ -1,3 +1,5 @@
+@import '/resources/styles/variables.scss';
+
 .characteristic-card {
   background: white;
   border-radius: 12px;
@@ -14,21 +16,21 @@
 
   .card-header {
     padding: 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color:black;
+    text-transform: uppercase;
 
     .characteristic-info {
       .characteristic-name {
         font-size: 1.1rem;
         font-weight: 700;
         margin: 0 0 0.5rem 0;
-        color: white;
+        color: #2c3e50;
       }
 
       .characteristic-type {
         font-size: 0.9rem;
         margin: 0;
-        color: rgba(255, 255, 255, 0.9);
+        color: #6c757d;
       }
     }
   }

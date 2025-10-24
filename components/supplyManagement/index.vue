@@ -81,7 +81,7 @@
             >
               <div
                 v-for="supply in filteredSupplies"
-                :key="supply.supplyId"
+                :key="supply.supplyId ?? 0"
                 class="supply-card"
               >
                 <SupplyCard
@@ -174,7 +174,7 @@
             >
               <div
                 v-for="assignment in filteredAssignments"
-                :key="assignment.employeeSupplyId"
+                :key="assignment.employeeSupplyId ?? 0"
                 class="assignment-item"
               >
                 <AssignmentCard
@@ -217,7 +217,7 @@
       <SupplyForm
         v-if="selectedSupply"
         :supply="selectedSupply"
-        :supply-type-id="supplyType.supplyTypeId"
+        :supply-type-id="supplyType.supplyTypeId ?? 0"
         :can-update="canUpdate"
         :can-delete="canDelete"
         @save="onSaveSupply"
@@ -236,9 +236,9 @@
     >
       <AssignmentForm
         v-if="selectedAssignment || selectedSupply"
-        :assignment="selectedAssignment"
-        :supply-id="selectedSupply?.supplyId"
-        :supply-type-id="supplyType.supplyTypeId"
+        :assignment="selectedAssignment ?? undefined"
+        :supply-id="selectedSupply?.supplyId ?? 0"
+        :supply-type-id="supplyType.supplyTypeId ?? 0"
         :can-update="canUpdate"
         :can-delete="canDelete"
         @save="onSaveAssignment"
@@ -280,7 +280,7 @@
   <!-- Confirm Delete Assignment -->
   <div v-if="showConfirmDeleteAssignment" class="confirm-delete-overlay">
     <ConfirmDelete
-      :description="assignmentToDelete ? `${t('delete_assignment')}: ${assignmentToDelete.employee?.person?.personName || ''}` : ''"
+      :description="assignmentToDelete ? `${t('delete_assignment')}: ${assignmentToDelete.employeeId?.toString() ?? ''}` : ''"
       @confirmDelete="confirmDeleteAssignment"
       @cancelDelete="cancelDeleteAssignment"
     />

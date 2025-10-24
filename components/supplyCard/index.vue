@@ -36,11 +36,23 @@
       <span>{{ t('loading') }}...</span>
     </div>
 
-    <div v-else class="stats-section">
-      <div class="stat-item">
-        <div class="stat-value">{{ characteristicsCount }}</div>
-        <div class="stat-label">{{ t("characteristics") }}</div>
+    <!-- Characteristics Section -->
+    <div v-if="supply?.characteristics && supply.characteristics.length > 0" class="characteristics-section">
+      <h4 class="section-title">{{ t('characteristics') }}</h4>
+      <div class="characteristics-list">
+        <div
+          v-for="characteristic in supply.characteristics"
+          :key="characteristic.supplieCaracteristicId"
+          class="characteristic-item"
+        >
+          <span class="characteristic-name">{{ characteristic.supplieCaracteristicName }}</span>
+          <span class="characteristic-type">{{ getTypeLabel(characteristic.supplieCaracteristicType) }}</span>
+        </div>
       </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div v-else class="stats-section">
       <div class="stat-item">
         <div class="stat-value">{{ assignmentsCount }}</div>
         <div class="stat-label">{{ t("assignments") }}</div>

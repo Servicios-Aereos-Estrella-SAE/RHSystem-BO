@@ -74,6 +74,17 @@ export default defineComponent({
       this.characteristicsCount = this.supply?.characteristics?.length || 0
       this.assignmentsCount = this.supply?.assignments?.length || 0
     },
+    getTypeLabel(type: string) {
+      const typeLabels: { [key: string]: string } = {
+        'text': this.t('text'),
+        'number': this.t('number'),
+        'date': this.t('date'),
+        'email': this.t('email'),
+        'url': this.t('url'),
+        'boolean': this.t('boolean')
+      }
+      return typeLabels[type] || type
+    },
     handlerClickOnEdit() {
       console.log('handlerClickOnEdit', this.clickOnEdit, this.supply)
       if (this.clickOnEdit && this.supply) {

@@ -7,11 +7,11 @@ export default defineComponent({
   name: 'characteristicCard',
   props: {
     characteristic: { type: Object as PropType<SupplyCharacteristicInterface>, required: true },
-    clickOnEdit: { type: Function, default: null },
-    clickOnDelete: { type: Function, default: null },
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
+    isDeleting: { type: Boolean, default: false },
   },
+  emits: ['click-edit', 'click-delete'],
   setup() {
     const { t } = useI18n()
     return {
@@ -24,14 +24,12 @@ export default defineComponent({
       return typeOption ? typeOption.label : type
     },
     handlerClickOnEdit() {
-      if (this.clickOnEdit && this.characteristic) {
-        this.clickOnEdit(this.characteristic)
-      }
+      console.log('CharacteristicCard: Edit clicked for characteristic:', this.characteristic)
+      this.$emit('click-edit', this.characteristic)
     },
     handlerClickOnDelete() {
-      if (this.clickOnDelete && this.characteristic) {
-        this.clickOnDelete(this.characteristic)
-      }
+      console.log('CharacteristicCard: Delete clicked for characteristic:', this.characteristic)
+      this.$emit('click-delete', this.characteristic)
     }
   }
 })

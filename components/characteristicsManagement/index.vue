@@ -8,12 +8,6 @@
       </div>
       <div class="header-actions">
         <Button
-          :label="t('close')"
-          icon="pi pi-times"
-          class="p-button-secondary"
-          @click="onCloseCharacteristicsManagement"
-        />
-        <Button
           v-if="canCreate"
           :label="t('add_characteristic')"
           icon="pi pi-plus"
@@ -23,16 +17,25 @@
       </div>
     </div>
 
-    <div class="characteristics-list">
+    <!-- Loading State -->
+    <div v-if="isLoading || isInitialLoad" class="loading-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <h3>{{ t('loading_characteristics') }}</h3>
+      <p>{{ t('please_wait_while_loading') }}</p>
+    </div>
+
+    <!-- Characteristics List -->
+    <div v-else-if="characteristics.length > 0" class="characteristics-list">
       <div
         v-for="characteristic in characteristics"
-        :key="characteristic.supplieCaracteristicId"
+        :key="characteristic.supplieCaracteristicId ?? 0"
         class="characteristic-item"
       >
         <CharacteristicCard
           :characteristic="characteristic"
           :can-update="canUpdate"
           :can-delete="canDelete"
+          :is-deleting="isDeleting"
           @click-edit="onEditCharacteristic"
           @click-delete="onDeleteCharacteristic"
         />
@@ -60,15 +63,27 @@
       :modal="true"
       class="characteristic-sidebar"
     >
-      <CharacteristicForm
-        v-if="selectedCharacteristic"
-        :characteristic="selectedCharacteristic"
-        :supply-type-id="supplyType.supplyTypeId"
-        :can-update="canUpdate"
-        :can-delete="canDelete"
-        @save="onSaveCharacteristic"
-        @close="onCloseCharacteristicForm"
-      />
+      <!-- CharacteristicForm component needs to be created -->
+      <div v-if="selectedCharacteristic" class="characteristic-form-placeholder">
+        <h3>Formulario de Característica</h3>
+        <p>Nombre: {{ selectedCharacteristic.supplieCaracteristicName }}</p>
+        <p>Tipo: {{ selectedCharacteristic.supplieCaracteristicType }}</p>
+        <div class="form-actions">
+          <Button
+            :label="t('save')"
+            icon="pi pi-check"
+            class="p-button-success"
+            :loading="isSaving"
+            @click="onSaveCharacteristic(selectedCharacteristic)"
+          />
+          <Button
+            :label="t('cancel')"
+            icon="pi pi-times"
+            class="p-button-secondary"
+            @click="onCloseCharacteristicForm"
+          />
+        </div>
+      </div>
     </Sidebar>
 
     <Toast />
