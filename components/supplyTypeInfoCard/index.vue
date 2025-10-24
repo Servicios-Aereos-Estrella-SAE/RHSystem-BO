@@ -10,9 +10,6 @@
         <div class="name">
           {{ supplyType?.supplyTypeName || t("loading") }}
         </div>
-        <div class="employee-number">
-          {{ `Tipo ID: ${supplyType?.supplyTypeId || "..."}` }}
-        </div>
         <div class="employee-email">
           {{
             `${t("description")}: ${
@@ -22,20 +19,6 @@
         </div>
       </div>
     </div>
-
-    <div class="info">
-      <div class="business-unit">
-        {{ `${t("slug")}: ${supplyType?.supplyTypeSlug || t("not_assigned")}` }}
-      </div>
-      <div class="department">
-        {{
-          `${t("identifier")}: ${
-            supplyType?.supplyTypeIdentifier || t("not_assigned")
-          }`
-        }}
-      </div>
-    </div>
-
     <div v-if="isLoading" class="loading-stats">
       <i class="pi pi-spin pi-spinner"></i>
       <span>{{ t("loading") }}...</span>

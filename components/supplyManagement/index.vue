@@ -14,14 +14,14 @@
           v-if="supplyType && canCreate"
           :label="t('add_supply')"
           icon="pi pi-plus"
-          class="p-button-success"
+          class="btn"
           @click="addNewSupply"
         />
         <Button
           v-if="supplyType"
           :label="t('manage_characteristics')"
           icon="pi pi-cog"
-          class="p-button-secondary"
+          class="btn"
           @click="showCharacteristicsManagement"
         />
       </div>
@@ -111,7 +111,7 @@
                 v-if="canCreate"
                 :label="t('add_first_supply')"
                 icon="pi pi-plus"
-                class="p-button-primary"
+                class="btn"
                 @click="addNewSupply"
               />
             </div>

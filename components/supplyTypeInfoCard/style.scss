@@ -31,42 +31,22 @@
 
     .employee-head-info {
       display: flex;
-      flex-flow: column;
-      gap: 0.5;
-      line-height: 1.25rem;
+      flex-direction: column;
+      gap: 0.25rem;
 
       .name {
-        font-weight: 500;
-        font-size: 0.8rem;
-        text-wrap: pretty;
-        display: -webkit-box;
-        overflow: hidden;
-        line-clamp: 1;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
-        text-transform: uppercase;
+        font-weight: 600;
+        line-height: 1.2;
       }
 
       .employee-number {
-        font-weight: normal;
-        font-size: 0.7rem;
-        text-wrap: pretty;
-        display: -webkit-box;
-        overflow: hidden;
-        line-clamp: 1;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
+        font-size: 0.875rem;
+        line-height: 1.2;
       }
 
       .employee-email {
-        font-weight: normal;
-        font-size: 0.7rem;
-        text-wrap: pretty;
-        display: -webkit-box;
-        overflow: hidden;
-        line-clamp: 1;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
+        font-size: 0.875rem;
+        line-height: 1.2;
       }
     }
   }
@@ -80,14 +60,8 @@
     .business-unit,
     .department,
     .position {
-      font-weight: normal;
-      font-size: 0.75rem;
-      text-wrap: pretty;
-      display: -webkit-box;
-      overflow: hidden;
-      line-clamp: 1;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
+      font-size: 0.875rem;
+      line-height: 1.2;
     }
   }
 

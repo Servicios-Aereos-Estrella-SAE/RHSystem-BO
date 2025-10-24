@@ -13,7 +13,7 @@
               v-if="supplyType"
               v-model="supplyType.supplyTypeName"
               :placeholder="t('enter_supply_type_name')"
-              class="form-input"
+              class="form-input full-width"
               :class="{ 'p-invalid': submitted && !supplyType.supplyTypeName }"
             />
             <small
@@ -22,16 +22,6 @@
             >
               {{ t("supply_type_name_required") }}
             </small>
-          </div>
-
-          <div class="form-field">
-            <label class="field-label">{{ t("supply_type_identifier") }}</label>
-            <InputText
-              v-if="supplyType"
-              v-model="supplyType.supplyTypeIdentifier"
-              :placeholder="t('enter_supply_type_identifier')"
-              class="form-input"
-            />
           </div>
 
           <div class="form-field full-width">
@@ -81,13 +71,22 @@
     </div>
 
     <div class="form-actions">
-      <Button v-if="supplyType && canUpdate"
+      <button
+      v-if="supplyType && canUpdate"
         :label="supplyType.supplyTypeId ? t('update') : t('create')"
         icon="pi pi-check"
-        class="p-button-primary"
+        class="btn btn-primary btn-block"
         :loading="isLoading"
-        @click="onSave"
-      />
+        @click="onSave">
+
+
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+            fill="#ffffff" class="fill-212121"></path>
+        </svg>
+        {{ $t('save') }}
+      </Button>
     </div>
   </div>
 </template>

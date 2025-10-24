@@ -27,9 +27,7 @@ export default defineComponent({
   },
   setup() {
     const { t } = useI18n()
-    return {
-      t
-    }
+    return { t }
   },
   data: () => ({
     characteristicsCount: 0 as number,
@@ -37,6 +35,7 @@ export default defineComponent({
     isLoading: false as boolean,
     isAssigned: false as boolean,
     assignedEmployee: null as any,
+    characteristicsLoaded: false as boolean // ✅ evita ciclo
   }),
   mounted() {
     this.updateCounts()
@@ -61,11 +60,11 @@ export default defineComponent({
   },
   methods: {
     getStatusClass(status: string) {
-      const statusClasses: { [key: string]: string } = {
-        'active': 'status-active',
-        'inactive': 'status-inactive',
-        'lost': 'status-lost',
-        'damaged': 'status-damaged'
+      const statusClasses: Record<string, string> = {
+        active: 'status-active',
+        inactive: 'status-inactive',
+        lost: 'status-lost',
+        damaged: 'status-damaged'
       }
       return statusClasses[status] || 'status-unknown'
     },
@@ -77,15 +76,21 @@ export default defineComponent({
       if (!date) return '---'
       return new Date(date).toLocaleDateString()
     },
+
     updateCounts() {
       this.characteristicsCount = this.supply?.characteristics?.length || 0
       this.assignmentsCount = this.supply?.assignments?.length || 0
 
-      // Si no hay características cargadas, intentar cargarlas
-      if (this.supply?.supplyId && this.characteristicsCount === 0) {
+      // ✅ Solo intenta cargar una vez, y solo si no hay características
+      if (
+        this.supply?.supplyId &&
+        this.characteristicsCount === 0 &&
+        !this.characteristicsLoaded
+      ) {
         this.loadSupplyCharacteristics()
       }
     },
+
     async loadSupplyCharacteristics() {
       if (!this.supply?.supplyId) return
 
@@ -97,6 +102,7 @@ export default defineComponent({
         if ((response as any).type === 'success') {
           const data = (response as any).data
           if (data?.data && Array.isArray(data.data)) {
+            // ✅ Soporta array vacío sin reiniciar el ciclo
             this.supply.characteristics = data.data
             this.characteristicsCount = data.data.length
           }
@@ -105,31 +111,35 @@ export default defineComponent({
         console.error('Error loading supply characteristics:', error)
       } finally {
         this.isLoading = false
+        this.characteristicsLoaded = true // ✅ Marca como cargado, incluso si está vacío
       }
     },
+
     getTypeLabel(type: string) {
-      const typeLabels: { [key: string]: string } = {
-        'text': this.t('text'),
-        'number': this.t('number'),
-        'date': this.t('date'),
-        'email': this.t('email'),
-        'url': this.t('url'),
-        'boolean': this.t('boolean')
+      const typeLabels: Record<string, string> = {
+        text: this.t('text'),
+        number: this.t('number'),
+        date: this.t('date'),
+        email: this.t('email'),
+        url: this.t('url'),
+        boolean: this.t('boolean')
       }
       return typeLabels[type] || type
     },
+
     handlerClickOnEdit() {
       console.log('handlerClickOnEdit', this.clickOnEdit, this.supply)
       if (this.clickOnEdit && this.supply) {
-        console.log('handlerClickOnEdit')
         this.clickOnEdit(this.supply)
       }
     },
+
     handlerClickOnDelete() {
       if (this.clickOnDelete && this.supply) {
         this.clickOnDelete(this.supply)
       }
     },
+
     async checkAssignmentStatus() {
       if (!this.supply?.supplyId) return
 
@@ -139,8 +149,10 @@ export default defineComponent({
 
         if ((response as any).type === 'success') {
           const assignments = (response as any).data.employeeSupplies.data || []
-          const activeAssignment = assignments.find((assignment: any) =>
-            assignment.supplyId === this.supply.supplyId && assignment.employeeSupplyStatus === 'active'
+          const activeAssignment = assignments.find(
+            (assignment: any) =>
+              assignment.supplyId === this.supply.supplyId &&
+              assignment.employeeSupplyStatus === 'active'
           )
 
           this.isAssigned = !!activeAssignment
@@ -150,6 +162,7 @@ export default defineComponent({
         console.error('Error checking assignment status:', error)
       }
     },
+
     handlerClickOnAssign() {
       console.log('handlerClickOnAssign', this.clickOnAssign, this.supply)
       if (this.clickOnAssign && this.supply) {

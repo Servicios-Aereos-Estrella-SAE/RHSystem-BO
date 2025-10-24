@@ -681,5 +681,19 @@
   "supply_type": "Supply type",
   "supply_types": "Supply types",
   "supply_type_info": "Supply type info",
-  "loading_supplies": "Loading supplies"
+  "loading_supplies": "Loading supplies",
+  "search_supply_type": "Search supply type",
+  "no_supply_types_found": "No supply types found",
+  "no_supply_types_to_display": "No supply types to display",
+  "error_loading_supply_type_data": "Error loading supply type data",
+  "error_loading_supply_management_data": "Error loading supply management data",
+  "error_loading_characteristics_data": "Error loading characteristics data",
+  "error_saving_supply_type": "Error saving supply type",
+  "error_saving_supply_management": "Error saving supply management",
+  "error_saving_characteristics": "Error saving characteristics",
+  "error_deleting_supply_type": "Error deleting supply type",
+  "error_deleting_supply": "Error deleting supply",
+  "error_deleting_assignment": "Error deleting assignment",
+  "supply_will_be_active": "Supply will be active",
+  "available_for_assignment": "Available for assignament"
 }

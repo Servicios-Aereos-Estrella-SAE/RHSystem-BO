@@ -8,53 +8,24 @@
         <div class="shift-wrapper">
           <div class="filters">
             <div class="box head-supplies-page">
-              <div class="input-search">
-                <div class="input-box">
-                  <label for="search">
-                    {{ $t("search_supply_type") }}
-                  </label>
-                  <InputText
-                    v-model="search"
-                    :placeholder="$t('supply_type_name_or_id')"
-                    @keypress.enter="handlerSearchSupplies"
-                  />
-                </div>
-                <button class="btn btn-block" @click="handlerSearchSupplies">
+              <div class="add-supply-type-container">
+                <Button v-if="canCreate" class="btn" @click="addNewSupplyType">
                   <svg
-                    fill="none"
+                    baseProfile="tiny"
+                    version="1.2"
                     viewBox="0 0 24 24"
+                    xml:space="preserve"
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
+                      d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
                       fill="#88a4bf"
-                      class="fill-212121"
+                      class="fill-000000"
                     ></path>
                   </svg>
-                </button>
+                  {{ $t("supply_type") }}
+                </Button>
               </div>
-              <div></div>
-              <div></div>
-            </div>
-
-            <div class="buttons-group">
-              <Button v-if="canCreate" class="btn" @click="addNewSupplyType">
-                <svg
-                  baseProfile="tiny"
-                  version="1.2"
-                  viewBox="0 0 24 24"
-                  xml:space="preserve"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
-                    fill="#88a4bf"
-                    class="fill-000000"
-                  ></path>
-                </svg>
-                {{ $t("supply_type") }}
-              </Button>
-
             </div>
           </div>
 

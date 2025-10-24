@@ -11,7 +11,7 @@
           v-if="canCreate"
           :label="t('add_characteristic')"
           icon="pi pi-plus"
-          class="p-button-success"
+          class="btn"
           @click="addNewCharacteristic"
         />
       </div>
@@ -50,7 +50,7 @@
         v-if="canCreate"
         :label="t('add_first_characteristic')"
         icon="pi pi-plus"
-        class="p-button-primary"
+        class="btn"
         @click="addNewCharacteristic"
       />
     </div>

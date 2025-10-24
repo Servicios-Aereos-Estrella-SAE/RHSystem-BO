@@ -5,50 +5,18 @@
   .shift-wrapper {
     .filters {
         .head-supplies-page {
-          display: grid;
-          grid-template-columns: 10rem auto;
-          gap: 1rem;
-          align-items: end;
-
-        .input-search {
           display: flex;
-          gap: 0.5rem;
-          align-items: end;
+          justify-content: flex-end;
+          align-items: center;
 
-          .input-box {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
+          .add-supply-type-container {
+            .btn {
+              width: 20rem;
 
-            label {
-              font-size: 0.875rem;
-              font-weight: 500;
-              color: $icon;
-            }
-
-            .p-inputtext {
-              width: 100%;
-            }
-          }
-
-          .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem;
-            background: $primary;
-            border: none;
-            border-radius: calc($radius / 2);
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-
-
-
-            svg {
-              width: 1rem;
-              height: 1rem;
+              svg {
+                width: 1rem;
+                height: 1rem;
+              }
             }
           }
         }
@@ -72,11 +40,7 @@
                 background: white;
                 border-radius: calc($radius / 2);
 
-                &.p-highlight {
-                  background: $primary;
-                  color: white;
-                  border-color: $primary;
-                }
+
               }
             }
           }
@@ -88,33 +52,13 @@
         gap: 0.5rem;
         margin-top: 1rem;
 
-        .btn {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem 1rem;
-          background: $primary;
-          border: none;
-          border-radius: calc($radius / 2);
-          color: white;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          font-size: 0.875rem;
-          font-weight: 500;
 
-
-          svg {
-            width: 1rem;
-            height: 1rem;
-          }
-        }
       }
     }
 
     h2 {
       font-size: 1.5rem;
       font-weight: 600;
-      color: $icon;
       margin: 2rem 0 1rem 0;
     }
 
@@ -174,7 +118,6 @@
         i {
           font-size: 2rem;
           margin-bottom: 1rem;
-          color: $primary;
         }
 
         p {
@@ -192,7 +135,6 @@
     gap: 1rem;
     padding: 1rem 0;
   }
-}
 
 // Responsive design
 @media (max-width: 768px) {
@@ -200,8 +142,7 @@
     .shift-wrapper {
       .filters {
         .head-supplies-page {
-          grid-template-columns: 10rem auto;
-          gap: 1rem;
+          justify-content: center;
         }
 
         .buttons-group {

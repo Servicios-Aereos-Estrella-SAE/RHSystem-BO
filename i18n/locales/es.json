@@ -771,5 +771,18 @@
   "error_saving_characteristic": "Error guardando característica",
   "supply_types": "Tipos de Insumos",
   "supply_type_info": "Información del Tipo de Insumo",
-  "loading_supplies": "Cargando insumos"
+  "loading_supplies": "Cargando insumos",
+  "search_supply_type": "Buscar tipo de insumo",
+  "no_supply_types_found": "No se encontraron tipos de insumos",
+  "no_supply_types_to_display": "No hay tipos de insumos para mostrar",
+  "error_loading_supply_type_data": "Error al cargar datos del tipo de insumo",
+  "error_loading_supply_management_data": "Error al cargar datos de la gestión de insumos",
+  "error_loading_characteristics_data": "Error al cargar datos de las características",
+  "error_saving_supply_management": "Error al guardar la gestión de insumos",
+  "error_saving_characteristics": "Error al guardar las características",
+  "error_deleting_supply_type": "Error al eliminar el tipo de insumo",
+  "error_deleting_supply": "Error al eliminar el insumo",
+  "error_deleting_assignment": "Error al eliminar la asignación",
+  "supply_will_be_active": "El insumo será activo",
+  "available_for_assignment": "Disponible para asignar"
 }

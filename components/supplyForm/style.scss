@@ -91,6 +91,13 @@
 
     .p-button {
       min-width: 120px;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      overflow-y: auto;
+      box-sizing: border-box;
+      height: 100%;
     }
   }
 }
