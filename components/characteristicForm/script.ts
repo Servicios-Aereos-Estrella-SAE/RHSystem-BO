@@ -2,6 +2,7 @@ import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyCharacteristicInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicInterface'
 import { SUPPLY_CHARACTERISTIC_TYPES } from '~/resources/scripts/enums/SupplyCharacteristicType'
+import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
 
 export default defineComponent({
   name: 'characteristicForm',
@@ -15,8 +16,10 @@ export default defineComponent({
   },
   setup() {
     const { t } = useI18n()
+    const supplyCharacteristicService = new SupplyCharacteristicService()
     return {
-      t
+      t,
+      supplyCharacteristicService
     }
   },
   data: () => ({
@@ -38,15 +41,36 @@ export default defineComponent({
         // Asegurar que el supplyTypeId esté asignado
         this.characteristic.supplyTypeId = this.supplyTypeId
 
-        this.$toast.add({
-          severity: 'success',
-          summary: this.characteristic.supplieCaracteristicId ? this.t('characteristic_updated') : this.t('characteristic_created'),
-          detail: 'Característica guardada correctamente',
-          life: 5000,
-        })
+        let response
+        if (this.characteristic.supplieCaracteristicId) {
+          // Actualizar característica existente
+          response = await this.supplyCharacteristicService.update(
+            this.characteristic.supplieCaracteristicId,
+            this.characteristic
+          )
+        } else {
+          // Crear nueva característica
+          response = await this.supplyCharacteristicService.create(this.characteristic)
+        }
 
-        if (this.clickOnSave) {
-          this.clickOnSave(this.characteristic)
+        if ((response as any).type === 'success') {
+          this.$toast.add({
+            severity: 'success',
+            summary: this.characteristic.supplieCaracteristicId ? this.t('characteristic_updated') : this.t('characteristic_created'),
+            detail: (response as any).message || 'Característica guardada correctamente',
+            life: 5000,
+          })
+
+          if (this.clickOnSave) {
+            this.clickOnSave(this.characteristic)
+          }
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.t('error'),
+            detail: (response as any).message || this.t('error_saving_characteristic'),
+            life: 5000,
+          })
         }
       } catch (error) {
         console.error('Error saving characteristic:', error)

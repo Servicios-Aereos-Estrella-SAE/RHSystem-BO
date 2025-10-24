@@ -1,7 +1,10 @@
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/EmployeeSupplyInterface'
 import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
+import EmployeeService from '~/resources/scripts/services/EmployeeService'
+import SupplyService from '~/resources/scripts/services/SupplyService'
+import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
 
 export default defineComponent({
   name: 'assignmentCard',
@@ -12,49 +15,112 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
   },
-  setup() {
+
+  setup(props) {
     const { t } = useI18n()
-    return {
-      t
-    }
-  },
-  data: () => ({
-    isLoading: false as boolean,
-  }),
-  computed: {
-    assignmentInitial() {
-      if (this.assignment?.employee?.person?.personName) {
-        return this.assignment.employee.person.personName.charAt(0).toUpperCase()
+    const employeeService = new EmployeeService()
+    const supplyService = new SupplyService()
+    const employeeFullName = ref<string>(t('not_assigned'))
+    const employeePhoto = ref<string | null>(null)
+    const supplyName = ref<string>(t('not_assigned'))
+    const isLoading = ref(false)
+
+    /** 🔹 Cargar empleado asignado */
+    const loadEmployee = async () => {
+      if (!props.assignment?.employeeId) {
+        employeeFullName.value = t('not_assigned')
+        employeePhoto.value = null
+        return
       }
-      return 'A'
-    }
-  },
-  methods: {
-    getStatusClass(status: string) {
-      const statusClasses: { [key: string]: string } = {
-        'active': 'status-active',
-        'retired': 'status-retired',
-        'shipping': 'status-shipping'
+
+      try {
+        isLoading.value = true
+        const response = await employeeService.show(props.assignment.employeeId)
+
+        if (response?.status === 200) {
+          const emp = response._data?.data?.employee
+          employeeFullName.value = `${emp.employeeFirstName} ${emp.employeeLastName} ${emp.employeeSecondLastName || ''}`.trim()
+          employeePhoto.value = emp.employeePhoto || null
+          const supplyResponse = await supplyService.getById(props.assignment.supplyId)
+          if (supplyResponse && (supplyResponse as any).status === 200) {
+            supplyName.value = (supplyResponse as any).data?.supply?.supplyName || t('not_assigned')
+          }
+        } else {
+          employeeFullName.value = t('not_assigned')
+        }
+      } catch (err) {
+        console.error('Error loading employee:', err)
+        employeeFullName.value = t('not_assigned')
+      } finally {
+        isLoading.value = false
       }
-      return statusClasses[status] || 'status-unknown'
-    },
-    getStatusLabel(status: string) {
-      const statusOption = EMPLOYEE_SUPPLY_STATUS_OPTIONS.find(option => option.value === status)
-      return statusOption ? statusOption.label : status
-    },
-    formatDate(date: Date | null) {
+    }
+
+    /** 🔹 Observar cambios en el assignment */
+    watch(
+      () => props.assignment.employeeId,
+      () => loadEmployee(),
+      { immediate: true }
+    )
+
+    onMounted(() => {
+      loadEmployee()
+      loadSupply()
+    })
+
+    const loadSupply = async () => {
+      if (!props.assignment?.supplyId) {
+        supplyName.value = t('not_assigned')
+        return
+      }
+      const supplyResponse = await supplyService.getById(props.assignment.supplyId)
+    }
+
+    /** 🔹 Métodos de ayuda */
+    const getStatusClass = (status: string) => {
+      const classes: Record<string, string> = {
+        active: 'status-active',
+        retired: 'status-retired',
+        shipping: 'status-shipping',
+      }
+      return classes[status] || 'status-unknown'
+    }
+
+    const getStatusLabel = (status: string) => {
+      const opt = EMPLOYEE_SUPPLY_STATUS_OPTIONS.find(o => o.value === status)
+      return opt ? opt.label : status
+    }
+
+    const formatDate = (date: Date | string | null) => {
       if (!date) return '---'
       return new Date(date).toLocaleDateString()
-    },
-    handlerClickOnEdit() {
-      if (this.clickOnEdit && this.assignment) {
-        this.clickOnEdit(this.assignment)
-      }
-    },
-    handlerClickOnDelete() {
-      if (this.clickOnDelete && this.assignment) {
-        this.clickOnDelete(this.assignment)
-      }
     }
-  }
+
+    const assignmentInitial = computed(() => {
+      const name = employeeFullName.value
+      return name ? name.charAt(0).toUpperCase() : 'N'
+    })
+
+    /** 🔹 Acciones */
+    const handlerClickOnEdit = () => {
+      if (props.clickOnEdit && props.assignment) props.clickOnEdit(props.assignment)
+    }
+
+    const handlerClickOnDelete = () => {
+      if (props.clickOnDelete && props.assignment) props.clickOnDelete(props.assignment)
+    }
+
+    return {
+      t,
+      employeeFullName,
+      employeePhoto,
+      isLoading,
+      assignmentInitial,
+      getStatusClass,
+      getStatusLabel,
+      formatDate,
+      handlerClickOnEdit,
+      handlerClickOnDelete,
+    }
+  },
 })

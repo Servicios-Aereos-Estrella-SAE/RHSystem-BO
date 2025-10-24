@@ -2,6 +2,8 @@ import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
 import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
+import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
+import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
 
 export default defineComponent({
   name: 'supplyCard',
@@ -32,14 +34,19 @@ export default defineComponent({
   data: () => ({
     characteristicsCount: 0 as number,
     assignmentsCount: 0 as number,
+    isLoading: false as boolean,
+    isAssigned: false as boolean,
+    assignedEmployee: null as any,
   }),
   mounted() {
     this.updateCounts()
+    this.checkAssignmentStatus()
   },
   watch: {
     supply: {
       handler() {
         this.updateCounts()
+        this.checkAssignmentStatus()
       },
       deep: true
     }
@@ -73,6 +80,32 @@ export default defineComponent({
     updateCounts() {
       this.characteristicsCount = this.supply?.characteristics?.length || 0
       this.assignmentsCount = this.supply?.assignments?.length || 0
+
+      // Si no hay características cargadas, intentar cargarlas
+      if (this.supply?.supplyId && this.characteristicsCount === 0) {
+        this.loadSupplyCharacteristics()
+      }
+    },
+    async loadSupplyCharacteristics() {
+      if (!this.supply?.supplyId) return
+
+      this.isLoading = true
+      try {
+        const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
+        const response = await supplyCharacteristicValueService.getBySupply(this.supply.supplyId)
+
+        if ((response as any).type === 'success') {
+          const data = (response as any).data
+          if (data?.data && Array.isArray(data.data)) {
+            this.supply.characteristics = data.data
+            this.characteristicsCount = data.data.length
+          }
+        }
+      } catch (error) {
+        console.error('Error loading supply characteristics:', error)
+      } finally {
+        this.isLoading = false
+      }
     },
     getTypeLabel(type: string) {
       const typeLabels: { [key: string]: string } = {
@@ -95,6 +128,26 @@ export default defineComponent({
     handlerClickOnDelete() {
       if (this.clickOnDelete && this.supply) {
         this.clickOnDelete(this.supply)
+      }
+    },
+    async checkAssignmentStatus() {
+      if (!this.supply?.supplyId) return
+
+      try {
+        const employeeSupplyService = new EmployeeSupplyService()
+        const response = await employeeSupplyService.getAll(1, 100, null, 'active')
+
+        if ((response as any).type === 'success') {
+          const assignments = (response as any).data.employeeSupplies.data || []
+          const activeAssignment = assignments.find((assignment: any) =>
+            assignment.supplyId === this.supply.supplyId && assignment.employeeSupplyStatus === 'active'
+          )
+
+          this.isAssigned = !!activeAssignment
+          this.assignedEmployee = activeAssignment || null
+        }
+      } catch (error) {
+        console.error('Error checking assignment status:', error)
       }
     },
     handlerClickOnAssign() {

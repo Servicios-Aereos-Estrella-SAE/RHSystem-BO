@@ -236,7 +236,7 @@
     >
       <AssignmentForm
         v-if="selectedAssignment || selectedSupply"
-        :assignment="selectedAssignment ?? undefined"
+        :assignment="selectedAssignment ?? newAssignment"
         :supply-id="selectedSupply?.supplyId ?? 0"
         :supply-type-id="supplyType.supplyTypeId ?? 0"
         :can-update="canUpdate"

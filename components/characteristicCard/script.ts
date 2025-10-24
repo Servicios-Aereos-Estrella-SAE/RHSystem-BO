@@ -18,6 +18,9 @@ export default defineComponent({
       t
     }
   },
+  data: () => ({
+    isLoading: false as boolean,
+  }),
   methods: {
     getTypeLabel(type: string) {
       const typeOption = SUPPLY_CHARACTERISTIC_TYPES.find(option => option.value === type)

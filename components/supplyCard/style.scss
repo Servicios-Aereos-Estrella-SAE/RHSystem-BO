@@ -89,6 +89,37 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 1;
     }
+
+    .assignment-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: calc($radius / 4);
+
+      &.assigned {
+        background-color: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fbbf24;
+
+        i {
+          color: #f59e0b;
+        }
+      }
+
+      &.available {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+
+        i {
+          color: #059669;
+        }
+      }
+    }
   }
 
   .loading-stats {
@@ -132,10 +163,28 @@
       border-radius: calc($radius / 4);
       border: 1px solid rgba(60, 180, 229, 0.2);
 
-      .characteristic-name {
-        font-weight: 500;
-        color: #495057;
-        font-size: 0.8rem;
+      .characteristic-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+
+        .characteristic-name {
+          font-weight: 500;
+          color: #495057;
+          font-size: 0.8rem;
+        }
+
+        .characteristic-value {
+          font-weight: 600;
+          color: $primary;
+          font-size: 0.75rem;
+          background-color: rgba(60, 180, 229, 0.1);
+          padding: 0.25rem 0.5rem;
+          border-radius: calc($radius / 4);
+          display: inline-block;
+          max-width: fit-content;
+        }
       }
 
       .characteristic-type {

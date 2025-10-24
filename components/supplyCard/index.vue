@@ -29,6 +29,14 @@
       <div class="position">
         {{ `${t('updated_at')}: ${formatDate(supply?.supplyUpdatedAt)}` }}
       </div>
+      <div v-if="isAssigned" class="assignment-status assigned">
+        <i class="pi pi-user"></i>
+        <span>{{ t('assigned_to_employee') }}</span>
+      </div>
+      <div v-else class="assignment-status available">
+        <i class="pi pi-check-circle"></i>
+        <span>{{ t('available_for_assignment') }}</span>
+      </div>
     </div>
 
     <div v-if="isLoading" class="loading-stats">
@@ -41,12 +49,15 @@
       <h4 class="section-title">{{ t('characteristics') }}</h4>
       <div class="characteristics-list">
         <div
-          v-for="characteristic in supply.characteristics"
-          :key="characteristic.supplieCaracteristicId"
+          v-for="characteristicValue in supply.characteristics"
+          :key="characteristicValue.supplieCaracteristicValueId"
           class="characteristic-item"
         >
-          <span class="characteristic-name">{{ characteristic.supplieCaracteristicName }}</span>
-          <span class="characteristic-type">{{ getTypeLabel(characteristic.supplieCaracteristicType) }}</span>
+          <div class="characteristic-info">
+            <span class="characteristic-name">{{ characteristicValue.supplieCaracteristic?.supplieCaracteristicName || 'N/A' }}</span>
+            <span class="characteristic-value">{{ characteristicValue.supplieCaracteristicValueValue || 'N/A' }}</span>
+          </div>
+          <span class="characteristic-type">{{ getTypeLabel(characteristicValue.supplieCaracteristic?.supplieCaracteristicType || 'text') }}</span>
         </div>
       </div>
     </div>

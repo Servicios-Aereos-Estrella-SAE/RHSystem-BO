@@ -160,50 +160,21 @@ export default defineComponent({
       console.log('onSaveCharacteristic called with:', characteristic)
       this.isSaving = true
       try {
-        let response
+        // Recargar las características después de guardar
+        await this.loadCharacteristics()
 
-        if (characteristic.supplieCaracteristicId) {
-          // Actualizar característica existente
-          response = await this.supplyCharacteristicService.update(
-            characteristic.supplieCaracteristicId,
-            characteristic
-          )
-        } else {
-          // Crear nueva característica
-          response = await this.supplyCharacteristicService.create(characteristic)
-        }
+        // Mostrar notificación de éxito
+        this.$toast.add({
+          severity: 'success',
+          summary: this.t('success'),
+          detail: characteristic.supplieCaracteristicId
+            ? this.t('characteristic_updated_successfully')
+            : this.t('characteristic_created_successfully'),
+          life: 3000
+        })
 
-        if ((response as any).type === 'success') {
-          const savedCharacteristic = (response as any).data
-
-          if (characteristic.supplieCaracteristicId) {
-            // Actualizar en la lista
-            const index = this.characteristics.findIndex(
-              c => c.supplieCaracteristicId === characteristic.supplieCaracteristicId
-            )
-            if (index !== -1) {
-              this.characteristics[index] = savedCharacteristic
-            }
-          } else {
-            // Agregar a la lista
-            this.characteristics.push(savedCharacteristic)
-          }
-
-          // Mostrar notificación de éxito
-          this.$toast.add({
-            severity: 'success',
-            summary: this.t('success'),
-            detail: characteristic.supplieCaracteristicId
-              ? this.t('characteristic_updated_successfully')
-              : this.t('characteristic_created_successfully'),
-            life: 3000
-          })
-
-          this.drawerCharacteristicForm = false
-          this.$emit('save', savedCharacteristic)
-        } else {
-          throw new Error((response as any).message || 'Error saving characteristic')
-        }
+        this.drawerCharacteristicForm = false
+        this.$emit('save', characteristic)
       } catch (error) {
         console.error('Error saving characteristic:', error)
         this.$toast.add({

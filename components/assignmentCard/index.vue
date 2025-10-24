@@ -8,13 +8,10 @@
       </div>
       <div class="employee-head-info">
         <div class="name">
-          {{ assignment?.employee?.person?.personName || t('loading') }}
-        </div>
-        <div class="employee-number">
-          {{ `Emp. ID: ${assignment?.employee?.employeeCode || '...'}` }}
+          {{ employeeFullName || t('loading') }}
         </div>
         <div class="employee-email">
-          {{ `${t('supply')}: ${assignment?.supply?.supplyName || t('not_assigned')}` }}
+          {{ `${t('supply')}: ${supplyName || t('not_assigned')}` }}
         </div>
       </div>
     </div>
@@ -27,7 +24,7 @@
         {{ `${t('status')}: ${getStatusLabel(assignment?.employeeSupplyStatus)}` }}
       </div>
       <div class="position">
-        {{ `${t('return_date')}: ${formatDate(assignment?.employeeSupplyReturnDate)}` }}
+        {{ `${t('retirement_date')}: ${formatDate(assignment?.employeeSupplyRetirementDate)}` }}
       </div>
     </div>
 
@@ -46,8 +43,8 @@
         <div class="stat-label">{{ t("assigned_date") }}</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">{{ formatDate(assignment?.employeeSupplyReturnDate) }}</div>
-        <div class="stat-label">{{ t("return_date") }}</div>
+        <div class="stat-value">{{ formatDate(assignment?.employeeSupplyRetirementDate) }}</div>
+        <div class="stat-label">{{ t("retirement_date") }}</div>
       </div>
     </div>
 

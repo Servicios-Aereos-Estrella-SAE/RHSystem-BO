@@ -6,6 +6,7 @@ import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/Emp
 import SupplyService from '~/resources/scripts/services/SupplyService'
 import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
 import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
+import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
 import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
 import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 
@@ -48,6 +49,17 @@ export default defineComponent({
     // Form data
     selectedSupply: null as SupplyInterface | null,
     selectedAssignment: null as EmployeeSupplyInterface | null,
+    newAssignment: {
+      employeeSupplyId: null,
+      employeeId: null,
+      supplyId: null,
+      employeeSupplyStatus: 'active',
+      employeeSupplyRetirementReason: null,
+      employeeSupplyRetirementDate: null,
+      employeeSupplyCreatedAt: null,
+      employeeSupplyUpdatedAt: null,
+      deletedAt: null
+    } as EmployeeSupplyInterface,
 
     // Delete confirmation
     showConfirmDeleteSupply: false as boolean,
@@ -210,21 +222,25 @@ export default defineComponent({
       this.showConfirmDeleteSupply = true
     },
     async confirmDeleteSupply() {
-      if (!this.supplyToDelete) return
+      if (!this.supplyToDelete?.supplyId) return
 
       try {
-        // Aquí implementarías la llamada al API para eliminar el supply
-        console.log('Deleting supply:', this.supplyToDelete)
+        const supplyService = new SupplyService()
+        const response = await supplyService.delete(this.supplyToDelete.supplyId)
 
-        // Recargar supplies después de eliminar
-        await this.loadSupplies()
+        if ((response as any).type === 'success') {
+          // Recargar supplies después de eliminar
+          await this.loadSupplies()
 
-        this.$toast.add({
-          severity: 'success',
-          summary: this.t('success'),
-          detail: this.t('supply_deleted_successfully'),
-          life: 3000,
-        })
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('success'),
+            detail: this.t('supply_deleted_successfully'),
+            life: 3000,
+          })
+        } else {
+          throw new Error((response as any).message || 'Error deleting supply')
+        }
       } catch (error) {
         console.error('Error deleting supply:', error)
         this.$toast.add({
@@ -238,6 +254,40 @@ export default defineComponent({
         this.supplyToDelete = null
       }
     },
+    async deactivateSupply(supply: SupplyInterface) {
+      if (!supply.supplyId) return
+
+      try {
+        const supplyService = new SupplyService()
+        const response = await supplyService.deactivate(
+          supply.supplyId,
+          supply.supplyDeactivationReason || 'Desactivado por administrador',
+          supply.supplyDeactivationDate || new Date().toISOString()
+        )
+
+        if ((response as any).type === 'success') {
+          // Recargar supplies después de desactivar
+          await this.loadSupplies()
+
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('success'),
+            detail: this.t('supply_deactivated_successfully'),
+            life: 3000,
+          })
+        } else {
+          throw new Error((response as any).message || 'Error deactivating supply')
+        }
+      } catch (error) {
+        console.error('Error deactivating supply:', error)
+        this.$toast.add({
+          severity: 'error',
+          summary: this.t('error'),
+          detail: this.t('error_deactivating_supply'),
+          life: 5000,
+        })
+      }
+    },
     cancelDeleteSupply() {
       this.showConfirmDeleteSupply = false
       this.supplyToDelete = null
@@ -245,6 +295,18 @@ export default defineComponent({
     onAssignSupply(supply: SupplyInterface) {
       console.log('onAssignSupply called with supply:', supply)
       this.selectedSupply = { ...supply }
+      this.selectedAssignment = null
+      this.newAssignment = {
+        employeeSupplyId: null,
+        employeeId: null,
+        supplyId: supply.supplyId,
+        employeeSupplyStatus: 'active',
+        employeeSupplyRetirementReason: null,
+        employeeSupplyRetirementDate: null,
+        employeeSupplyCreatedAt: null,
+        employeeSupplyUpdatedAt: null,
+        deletedAt: null
+      }
       this.drawerAssignmentForm = true
     },
     onEditAssignment(assignment: EmployeeSupplyInterface) {
@@ -256,21 +318,25 @@ export default defineComponent({
       this.showConfirmDeleteAssignment = true
     },
     async confirmDeleteAssignment() {
-      if (!this.assignmentToDelete) return
+      if (!this.assignmentToDelete?.employeeSupplyId) return
 
       try {
-        // Aquí implementarías la llamada al API para eliminar la asignación
-        console.log('Deleting assignment:', this.assignmentToDelete)
+        const employeeSupplyService = new EmployeeSupplyService()
+        const response = await employeeSupplyService.delete(this.assignmentToDelete.employeeSupplyId)
 
-        // Recargar asignaciones después de eliminar
-        await this.loadAssignments()
+        if ((response as any).type === 'success') {
+          // Recargar asignaciones después de eliminar
+          await this.loadAssignments()
 
-        this.$toast.add({
-          severity: 'success',
-          summary: this.t('success'),
-          detail: this.t('assignment_deleted_successfully'),
-          life: 3000,
-        })
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('success'),
+            detail: this.t('assignment_deleted_successfully'),
+            life: 3000,
+          })
+        } else {
+          throw new Error((response as any).message || 'Error deleting assignment')
+        }
       } catch (error) {
         console.error('Error deleting assignment:', error)
         this.$toast.add({
@@ -282,6 +348,40 @@ export default defineComponent({
       } finally {
         this.showConfirmDeleteAssignment = false
         this.assignmentToDelete = null
+      }
+    },
+    async retireAssignment(assignment: EmployeeSupplyInterface) {
+      if (!assignment.employeeSupplyId) return
+
+      try {
+        const employeeSupplyService = new EmployeeSupplyService()
+        const response = await employeeSupplyService.retire(
+          assignment.employeeSupplyId,
+          assignment.employeeSupplyRetirementReason || 'Retirado por administrador',
+          assignment.employeeSupplyRetirementDate || new Date().toISOString()
+        )
+
+        if ((response as any).type === 'success') {
+          // Recargar asignaciones después de retirar
+          await this.loadAssignments()
+
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('success'),
+            detail: this.t('assignment_retired_successfully'),
+            life: 3000,
+          })
+        } else {
+          throw new Error((response as any).message || 'Error retiring assignment')
+        }
+      } catch (error) {
+        console.error('Error retiring assignment:', error)
+        this.$toast.add({
+          severity: 'error',
+          summary: this.t('error'),
+          detail: this.t('error_retiring_assignment'),
+          life: 5000,
+        })
       }
     },
     cancelDeleteAssignment() {
@@ -319,32 +419,24 @@ export default defineComponent({
     },
     async loadSupplyCharacteristics(supplyId: number) {
       try {
-        // Obtener el supplyTypeId del supply
-        const supply = this.filteredSupplies.find(s => s.supplyId === supplyId)
-        if (!supply?.supplyTypeId) {
-          console.warn('No supplyTypeId found for supply:', supplyId)
-          return []
-        }
+        // Cargar los valores de características específicos del supply
+        const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
+        const response = await supplyCharacteristicValueService.getBySupply(supplyId)
 
-        const supplyCharacteristicService = new SupplyCharacteristicService()
-        const response = await supplyCharacteristicService.getAll(1, 100, supply.supplyTypeId)
-
-        console.log('Characteristics response for supply type', supply.supplyTypeId, ':', response)
+        console.log('Supply characteristic values response for supply', supplyId, ':', response)
 
         if ((response as any).type === 'success') {
           const data = (response as any).data
-          // Según el JSON proporcionado, la estructura es supplieCharacteristics.data
-          if (data?.supplieCharacteristics?.data) {
-            return data.supplieCharacteristics.data
-          } else if (data?.supplieCaracteristic?.data) {
-            return data.supplieCaracteristic.data
+          // Según el JSON proporcionado, la estructura es data.data
+          if (data?.data && Array.isArray(data.data)) {
+            return data.data
           } else if (Array.isArray(data)) {
             return data
           }
         }
         return []
       } catch (error) {
-        console.error('Error loading supply characteristics:', error)
+        console.error('Error loading supply characteristic values:', error)
         return []
       }
     }

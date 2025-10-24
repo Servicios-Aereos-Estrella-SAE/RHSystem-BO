@@ -56,7 +56,7 @@ export default defineComponent({
           this.$toast.add({
             severity: 'success',
             summary: this.supplyType.supplyTypeId ? this.t('supply_type_updated') : this.t('supply_type_created'),
-            detail: (response as any).message,
+            detail: (response as any).message || 'Supply Type guardado correctamente',
             life: 5000,
           })
 
@@ -66,8 +66,8 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: this.supplyType.supplyTypeId ? this.t('supply_type_updated') : this.t('supply_type_created'),
-            detail: (response as any).message,
+            summary: this.t('error'),
+            detail: (response as any).message || this.t('error_saving_supply_type'),
             life: 5000,
           })
         }

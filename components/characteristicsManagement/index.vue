@@ -63,27 +63,15 @@
       :modal="true"
       class="characteristic-sidebar"
     >
-      <!-- CharacteristicForm component needs to be created -->
-      <div v-if="selectedCharacteristic" class="characteristic-form-placeholder">
-        <h3>Formulario de Característica</h3>
-        <p>Nombre: {{ selectedCharacteristic.supplieCaracteristicName }}</p>
-        <p>Tipo: {{ selectedCharacteristic.supplieCaracteristicType }}</p>
-        <div class="form-actions">
-          <Button
-            :label="t('save')"
-            icon="pi pi-check"
-            class="p-button-success"
-            :loading="isSaving"
-            @click="onSaveCharacteristic(selectedCharacteristic)"
-          />
-          <Button
-            :label="t('cancel')"
-            icon="pi pi-times"
-            class="p-button-secondary"
-            @click="onCloseCharacteristicForm"
-          />
-        </div>
-      </div>
+      <CharacteristicForm
+        v-if="selectedCharacteristic"
+        :characteristic="selectedCharacteristic"
+        :supply-type-id="supplyType.supplyTypeId ?? 0"
+        :can-update="canUpdate"
+        :can-delete="canDelete"
+        @save="onSaveCharacteristic"
+        @close="onCloseCharacteristicForm"
+      />
     </Sidebar>
 
     <Toast />

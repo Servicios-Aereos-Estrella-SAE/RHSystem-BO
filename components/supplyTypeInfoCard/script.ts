@@ -56,8 +56,18 @@ export default defineComponent({
         const supplyService = new SupplyService()
         const suppliesResponse = await supplyService.getByType(this.supplyType.supplyTypeId!)
 
-        if (suppliesResponse.status === 200) {
-          const supplies = suppliesResponse._data.data.supplies.data
+        if ((suppliesResponse as any).type === 'success') {
+          const data = (suppliesResponse as any).data
+          let supplies = []
+
+          if (data?.supplies?.data) {
+            supplies = data.supplies.data
+          } else if (data?.supplies && Array.isArray(data.supplies)) {
+            supplies = data.supplies
+          } else if (Array.isArray(data)) {
+            supplies = data
+          }
+
           this.totalSupplies = supplies.length
           this.activeSupplies = supplies.filter((supply: any) => supply.supplyStatus === 'active').length
         }
@@ -66,8 +76,18 @@ export default defineComponent({
         const employeeSupplyService = new EmployeeSupplyService()
         const assignmentsResponse = await employeeSupplyService.getAll(1, 1000)
 
-        if (assignmentsResponse.status === 200) {
-          const assignments = assignmentsResponse._data.data.employeeSupplies.data
+        if ((assignmentsResponse as any).type === 'success') {
+          const data = (assignmentsResponse as any).data
+          let assignments = []
+
+          if (data?.employeeSupplies?.data) {
+            assignments = data.employeeSupplies.data
+          } else if (data?.employeeSupplies && Array.isArray(data.employeeSupplies)) {
+            assignments = data.employeeSupplies
+          } else if (Array.isArray(data)) {
+            assignments = data
+          }
+
           this.assignedSupplies = assignments.filter((assignment: any) =>
             assignment.employeeSupplyStatus === 'active' &&
             this.supplyType?.supplyTypeId === assignment.supply?.supplyTypeId
@@ -75,6 +95,12 @@ export default defineComponent({
         }
       } catch (error) {
         console.error('Error loading supply stats:', error)
+        this.$toast.add({
+          severity: 'error',
+          summary: this.t('error'),
+          detail: this.t('error_loading_supply_stats'),
+          life: 3000,
+        })
       } finally {
         this.isLoading = false
       }

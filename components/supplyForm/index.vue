@@ -58,7 +58,7 @@
           <div class="form-field">
             <label class="field-label required">{{ t("supply_status") }}</label>
             <Dropdown
-              v-if="supply && canUpdate"
+              v-if="supply && canUpdate && supply.supplyId"
               v-model="supply.supplyStatus"
               :options="supplyStatusOptions"
               option-label="label"
@@ -67,6 +67,9 @@
               class="form-dropdown"
               :class="{ 'p-invalid': submitted && !supply.supplyStatus }"
             />
+            <div v-else-if="supply && !supply.supplyId" class="form-readonly">
+              <span class="readonly-text">{{ t('supply_will_be_active') }}</span>
+            </div>
             <small v-if="submitted && !supply.supplyStatus" class="p-error">
               {{ t("supply_status_required") }}
             </small>
@@ -126,6 +129,70 @@
             >
               {{ t("deactivation_date_required") }}
             </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Characteristics Values Section -->
+      <div v-if="supply && supply.supplyId && supplyCharacteristics.length > 0" class="form-section">
+        <h3 class="section-title">{{ t("supply_characteristics") }}</h3>
+
+        <div class="form-grid">
+          <div
+            v-for="characteristic in supplyCharacteristics"
+            :key="characteristic.supplieCaracteristicId"
+            class="form-field"
+          >
+            <label class="field-label">{{ characteristic.supplieCaracteristicName }}</label>
+            <InputText
+              v-if="characteristic.supplieCaracteristicType === 'text'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('enter_value')"
+              class="form-input"
+            />
+            <InputNumber
+              v-else-if="characteristic.supplieCaracteristicType === 'number'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('enter_value')"
+              class="form-input"
+            />
+            <Calendar
+              v-else-if="characteristic.supplieCaracteristicType === 'date'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('select_date')"
+              class="form-calendar"
+              date-format="yy-mm-dd"
+              show-icon
+            />
+            <InputText
+              v-else-if="characteristic.supplieCaracteristicType === 'email'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('enter_email')"
+              class="form-input"
+              type="email"
+            />
+            <InputText
+              v-else-if="characteristic.supplieCaracteristicType === 'url'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('enter_url')"
+              class="form-input"
+              type="url"
+            />
+            <Dropdown
+              v-else-if="characteristic.supplieCaracteristicType === 'boolean'"
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :options="booleanOptions"
+              option-label="label"
+              option-value="value"
+              :placeholder="t('select_option')"
+              class="form-dropdown"
+            />
+            <InputText
+              v-else
+              v-model="getCharacteristicValue(characteristic.supplieCaracteristicId).supplieCaracteristicValueValue"
+              :placeholder="t('enter_value')"
+              class="form-input"
+            />
           </div>
         </div>
       </div>

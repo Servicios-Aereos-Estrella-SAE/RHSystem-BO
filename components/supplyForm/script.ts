@@ -1,7 +1,11 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
+import type { SupplyCharacteristicInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicInterface'
+import type { SupplyCharacteristicValueInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicValueInterface'
 import SupplyService from '~/resources/scripts/services/SupplyService'
+import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
+import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
 import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
 
 export default defineComponent({
@@ -16,23 +20,107 @@ export default defineComponent({
   },
   setup() {
     const { t } = useI18n()
+    const supplyCharacteristicService = new SupplyCharacteristicService()
+    const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
     return {
-      t
+      t,
+      supplyCharacteristicService,
+      supplyCharacteristicValueService
     }
   },
   data: () => ({
     submitted: false,
     isLoading: false,
-    supplyStatusOptions: SUPPLY_STATUS_OPTIONS
+    supplyStatusOptions: SUPPLY_STATUS_OPTIONS,
+    supplyCharacteristics: [] as SupplyCharacteristicInterface[],
+    characteristicValues: [] as SupplyCharacteristicValueInterface[],
+    booleanOptions: [
+      { label: 'Sí', value: 'true' },
+      { label: 'No', value: 'false' }
+    ]
   }),
+  async mounted() {
+    if (this.supply.supplyId) {
+      await this.loadSupplyCharacteristics()
+      await this.loadCharacteristicValues()
+    }
+  },
   methods: {
+    async loadSupplyCharacteristics() {
+      try {
+        const response = await this.supplyCharacteristicService.getAll(1, 100, this.supplyTypeId)
+
+        if ((response as any).type === 'success') {
+          const data = (response as any).data
+          if (data?.supplieCharacteristics?.data) {
+            this.supplyCharacteristics = data.supplieCharacteristics.data
+          }
+        }
+      } catch (error) {
+        console.error('Error loading supply characteristics:', error)
+      }
+    },
+    async loadCharacteristicValues() {
+      if (!this.supply.supplyId) return
+
+      try {
+        const response = await this.supplyCharacteristicValueService.getBySupply(this.supply.supplyId)
+
+        if ((response as any).type === 'success') {
+          const data = (response as any).data
+          if (data?.supplieCaracteristic?.data) {
+            this.characteristicValues = data.supplieCaracteristic.data
+          }
+        }
+      } catch (error) {
+        console.error('Error loading characteristic values:', error)
+      }
+    },
+    getCharacteristicValue(characteristicId: number): SupplyCharacteristicValueInterface {
+      let value = this.characteristicValues.find(v => v.supplieCaracteristicId === characteristicId)
+
+      if (!value) {
+        value = {
+          supplieCaracteristicValueId: null,
+          supplieCaracteristicId: characteristicId,
+          supplieId: this.supply.supplyId!,
+          supplieCaracteristicValueValue: '',
+          supplieCaracteristicValueCreatedAt: null,
+          supplieCaracteristicValueUpdatedAt: null,
+          deletedAt: null
+        }
+        this.characteristicValues.push(value)
+      }
+
+      return value
+    },
+    async saveCharacteristicValues() {
+      for (const value of this.characteristicValues) {
+        try {
+          if (value.supplieCaracteristicValueId) {
+            // Actualizar valor existente
+            await this.supplyCharacteristicValueService.update(value.supplieCaracteristicValueId, value)
+          } else if (value.supplieCaracteristicValueValue) {
+            // Crear nuevo valor
+            await this.supplyCharacteristicValueService.create(value)
+          }
+        } catch (error) {
+          console.error('Error saving characteristic value:', error)
+        }
+      }
+    },
     async onSave() {
       this.submitted = true
       this.isLoading = true
 
-      if (!this.supply.supplyName || !this.supply.supplyDescription || !this.supply.supplyFileNumber || !this.supply.supplyStatus) {
+      if (!this.supply.supplyName || !this.supply.supplyDescription || !this.supply.supplyFileNumber) {
         this.isLoading = false
         return
+      }
+
+      // Si es un nuevo supply, establecer estado por defecto
+      if (!this.supply.supplyId) {
+        this.supply.supplyStatus = 'active'
       }
 
       // Validar campos de desactivación si es necesario
@@ -56,10 +144,15 @@ export default defineComponent({
         }
 
         if ((response as any).type === 'success') {
+          // Guardar characteristic values si existen
+          if (this.characteristicValues.length > 0) {
+            await this.saveCharacteristicValues()
+          }
+
           this.$toast.add({
             severity: 'success',
             summary: this.supply.supplyId ? this.t('supply_updated') : this.t('supply_created'),
-            detail: (response as any).message,
+            detail: (response as any).message || 'Supply guardado correctamente',
             life: 5000,
           })
 
@@ -69,8 +162,8 @@ export default defineComponent({
         } else {
           this.$toast.add({
             severity: 'error',
-            summary: this.supply.supplyId ? this.t('supply_updated') : this.t('supply_created'),
-            detail: (response as any).message,
+            summary: this.t('error'),
+            detail: (response as any).message || this.t('error_saving_supply'),
             life: 5000,
           })
         }
