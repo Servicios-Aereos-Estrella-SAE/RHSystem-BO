@@ -105,8 +105,6 @@
       </div>
     </div>
 
-    <!-- ✅ Eliminamos los cuadros de estadísticas -->
-
     <div class="box-tools-footer">
       <button
         v-if="canUpdate"
@@ -123,7 +121,7 @@
       </button>
       <button
         class="btn btn-block"
-        :disabled="isLoading"
+        :disabled="isLoading || supply?.supplyStatus !== 'active'"
         @click="handlerClickOnAssign"
       >
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -1,4 +1,6 @@
-import { defineComponent } from 'vue'
+import { defineComponent, ref, watch, toRaw, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useToast } from 'primevue/usetoast'
 import type { PropType } from 'vue'
 import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
 import type { SupplyCharacteristicInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicInterface'
@@ -18,208 +20,290 @@ export default defineComponent({
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
   },
-  setup() {
+
+  setup(props, { emit }) {
     const { t } = useI18n()
+    const toast = useToast()
+
+    // 🧱 Servicios
+    const supplyService = new SupplyService()
     const supplyCharacteristicService = new SupplyCharacteristicService()
     const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
-    return {
-      t,
-      supplyCharacteristicService,
-      supplyCharacteristicValueService
-    }
-  },
-  data: () => ({
-    submitted: false,
-    isLoading: false,
-    supplyStatusOptions: SUPPLY_STATUS_OPTIONS,
-    supplyCharacteristics: [] as SupplyCharacteristicInterface[],
-    characteristicValues: [] as SupplyCharacteristicValueInterface[],
-    booleanOptions: [
-      { label: 'Sí', value: 'true' },
-      { label: 'No', value: 'false' }
-    ]
-  }),
-  async mounted() {
-    if (this.supply.supplyId) {
-      await this.loadSupplyCharacteristics()
-      await this.loadCharacteristicValues()
-    }
-  },
-  methods: {
-    async loadSupplyCharacteristics() {
-      try {
-        const response = await this.supplyCharacteristicService.getAll(1, 100, this.supplyTypeId)
 
+    // ⚙️ Estado reactivo
+    const submitted = ref(false)
+    const isLoading = ref(false)
+    const supplyStatusOptions = SUPPLY_STATUS_OPTIONS
+    const supplyCharacteristics = ref<SupplyCharacteristicInterface[]>([])
+    const characteristicValues = ref<SupplyCharacteristicValueInterface[]>([])
+    const allFileNumbers = ref<number[]>([])
+    const booleanOptions = [
+      { label: 'Sí', value: 'true' },
+      { label: 'No', value: 'false' },
+    ]
+
+    watch(
+      () => props.supply.supplyFileNumber,
+      async (newValue) => {
+        if (newValue) {
+          await validateSupplyFileNumber(newValue)
+        }
+      }
+    )
+
+    // 🧩 Carga inicial
+    onMounted(async () => {
+      await loadAllFileNumbers()
+      if (props.supply.supplyId) {
+        await loadSupplyCharacteristics()
+        await loadCharacteristicValues()
+      }
+    })
+
+
+    async function loadAllFileNumbers() {
+      try {
+        const response = await supplyService.getAll()
+        if ((response as any).type === 'success') {
+          const data = (response as any).data
+          const all = data.supplies?.data || []
+          allFileNumbers.value = all
+            .map((s: any) => Number(s.supplyFileNumber))
+            .filter(Boolean)
+        }
+      } catch (error) {
+        console.error('Error loading all file numbers:', error)
+      }
+    }
+
+    function generateUniqueFileNumber(): number {
+      let next = 1
+      while (allFileNumbers.value.includes(next)) {
+        next++
+      }
+      return next
+    }
+
+    async function loadSupplyCharacteristics() {
+      try {
+        const response = await supplyCharacteristicService.getAll(
+          1,
+          100,
+          props.supplyTypeId
+        )
         if ((response as any).type === 'success') {
           const data = (response as any).data
           if (data?.supplieCharacteristics?.data) {
-            this.supplyCharacteristics = data.supplieCharacteristics.data
+            supplyCharacteristics.value = data.supplieCharacteristics.data
           }
         }
       } catch (error) {
         console.error('Error loading supply characteristics:', error)
       }
-    },
-    async loadCharacteristicValues() {
-      if (!this.supply.supplyId) return
+    }
 
+    async function loadCharacteristicValues() {
+      if (!props.supply.supplyId) return
       try {
-        const response = await this.supplyCharacteristicValueService.getBySupply(this.supply.supplyId)
-
+        const response = await supplyCharacteristicValueService.getBySupply(
+          props.supply.supplyId
+        )
         if ((response as any).type === 'success') {
           const data = (response as any).data
           if (data?.supplieCaracteristic?.data) {
-            this.characteristicValues = data.supplieCaracteristic.data
+            characteristicValues.value = data.supplieCaracteristic.data
           }
         }
       } catch (error) {
         console.error('Error loading characteristic values:', error)
       }
-    },
-    getCharacteristicValue(characteristicId: number): SupplyCharacteristicValueInterface {
-      let value = this.characteristicValues.find(v => v.supplieCaracteristicId === characteristicId)
+    }
 
+    function getCharacteristicValue(characteristicId: number) {
+      let value = characteristicValues.value.find(
+        (v) => v.supplieCaracteristicId === characteristicId
+      )
       if (!value) {
         value = {
           supplieCaracteristicValueId: null,
           supplieCaracteristicId: characteristicId,
-          supplieId: this.supply.supplyId!,
+          supplieId: props.supply.supplyId!,
           supplieCaracteristicValueValue: '',
           supplieCaracteristicValueCreatedAt: null,
           supplieCaracteristicValueUpdatedAt: null,
-          deletedAt: null
+          deletedAt: null,
         }
-        this.characteristicValues.push(value)
+        characteristicValues.value.push(value)
       }
-
       return value
-    },
-    async saveCharacteristicValues() {
-      for (const value of this.characteristicValues) {
+    }
+
+    async function saveCharacteristicValues() {
+      for (const value of characteristicValues.value) {
         try {
           if (value.supplieCaracteristicValueId) {
-            // Actualizar valor existente
-            await this.supplyCharacteristicValueService.update(value.supplieCaracteristicValueId, value)
+            await supplyCharacteristicValueService.update(
+              value.supplieCaracteristicValueId,
+              value
+            )
           } else if (value.supplieCaracteristicValueValue) {
-            // Crear nuevo valor
-            await this.supplyCharacteristicValueService.create(value)
+            await supplyCharacteristicValueService.create(value)
           }
         } catch (error) {
           console.error('Error saving characteristic value:', error)
         }
       }
-    },
-    async onSave() {
-  this.submitted = true
-  this.isLoading = true
+    }
 
-  if (!this.supply.supplyName || !this.supply.supplyDescription || !this.supply.supplyFileNumber) {
-    this.isLoading = false
-    return
-  }
+    // ✅ Validación del número en tiempo real
+    async function validateSupplyFileNumber(number: number) {
+      if (!number) return false
 
-  // Si es un nuevo supply, forzamos estado 'active'
-  if (!this.supply.supplyId) {
-    this.supply.supplyStatus = 'active'
-  }
+      //console.log('number', number)
+      //console.log('allFileNumbers', allFileNumbers.value)
+      //console.log('supply.supplyFileNumber', props.supply.supplyFileNumber)
 
-  // Validar desactivación si corresponde
-  const isDeactivation =
-    this.supply.supplyStatus === 'inactive' ||
-    this.supply.supplyStatus === 'lost' ||
-    this.supply.supplyStatus === 'damaged'
+      // No usar toRaw, incluye ya funciona bien con refs
+      if (
+        allFileNumbers.value.includes(number) &&
+        !props.supply.supplyId // 👈 solo si es un nuevo supply
+      ) {
+        toast.add({
+          severity: 'warn',
+          summary: t('warning'),
+          detail: t('supply_file_number_already_assigned'),
+          life: 5000,
+        })
+        return false
+      }
 
-  if (isDeactivation &&
-      (!this.supply.supplyDeactivationReason || !this.supply.supplyDeactivationDate)) {
-    this.isLoading = false
-    return
-  }
+      return true
+    }
 
-  try {
-    const supplyService = new SupplyService()
-    let response
+    async function onSave() {
+      submitted.value = true
+      isLoading.value = true
 
-    this.supply.supplyTypeId = this.supplyTypeId
+      if (!props.supply.supplyFileNumber) {
+        props.supply.supplyFileNumber = generateUniqueFileNumber()
+      }
 
-    // Si el insumo ya existe
-    if (this.supply.supplyId) {
-      // Caso especial: desactivación
-      if (isDeactivation) {
-        // 1️⃣ Desactivar primero
-        const deactivateResponse = await supplyService.deactivate(
-          this.supply.supplyId,
-          this.supply.supplyDeactivationReason!,
-          (this.supply.supplyDeactivationDate instanceof Date
-            ? this.supply.supplyDeactivationDate.toISOString()
-            : this.supply.supplyDeactivationDate) || new Date().toISOString()
-        )
+      if (!props.supply.supplyName || !props.supply.supplyFileNumber) {
+        isLoading.value = false
+        return
+      }
 
-        if ((deactivateResponse as any).type === 'success') {
-          // 2️⃣ Si la desactivación fue exitosa, actualizar el estado
-          response = await supplyService.update(this.supply.supplyId, this.supply)
+      if (!props.supply.supplyId) {
+        props.supply.supplyStatus = 'active'
+      }
+
+      const isDeactivation =
+        props.supply.supplyStatus === 'inactive' ||
+        props.supply.supplyStatus === 'lost' ||
+        props.supply.supplyStatus === 'damaged'
+
+      if (
+        isDeactivation &&
+        (!props.supply.supplyDeactivationReason ||
+          !props.supply.supplyDeactivationDate)
+      ) {
+        isLoading.value = false
+        return
+      }
+
+      try {
+        let response
+
+        props.supply.supplyTypeId = props.supplyTypeId
+
+        if (props.supply.supplyId) {
+          if (isDeactivation) {
+            const deactivateResponse = await supplyService.deactivate(
+              props.supply.supplyId,
+              props.supply.supplyDeactivationReason!,
+              props.supply.supplyDeactivationDate instanceof Date
+                ? props.supply.supplyDeactivationDate.toISOString()
+                : props.supply.supplyDeactivationDate || new Date().toISOString()
+            )
+
+            if ((deactivateResponse as any).type === 'success') {
+              response = await supplyService.update(
+                props.supply.supplyId,
+                props.supply
+              )
+            } else {
+              toast.add({
+                severity: 'error',
+                summary: t('error'),
+                detail:
+                  (deactivateResponse as any).message ||
+                  t('error_deactivating_supply'),
+                life: 5000,
+              })
+              isLoading.value = false
+              return
+            }
+          } else {
+            response = await supplyService.update(
+              props.supply.supplyId,
+              props.supply
+            )
+          }
         } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.t('error'),
-            detail: (deactivateResponse as any).message || this.t('error_deactivating_supply'),
+          response = await supplyService.create(props.supply)
+        }
+
+        if ((response as any).type === 'success') {
+          if (characteristicValues.value.length > 0) {
+            await saveCharacteristicValues()
+          }
+
+          toast.add({
+            severity: 'success',
+            summary: props.supply.supplyId
+              ? t('supply_updated')
+              : t('supply_created'),
+            detail:
+              (response as any).message || 'Insumo guardado correctamente',
             life: 5000,
           })
-          this.isLoading = false
-          return
+
+          props.clickOnSave?.(props.supply)
+          emit('save', props.supply)
         }
-      } else {
-        // Caso normal de actualización
-        response = await supplyService.update(this.supply.supplyId, this.supply)
-      }
-    } else {
-      // Creación de nuevo insumo
-      response = await supplyService.create(this.supply)
-    }
 
-    // Manejo de respuesta general
-    if ((response as any).type === 'success') {
-      if (this.characteristicValues.length > 0) {
-        await this.saveCharacteristicValues()
-      }
-
-      this.$toast.add({
-        severity: 'success',
-        summary: this.supply.supplyId ? this.t('supply_updated') : this.t('supply_created'),
-        detail: (response as any).message || 'Insumo guardado correctamente',
-        life: 5000,
-      })
-
-      if (this.clickOnSave) {
-        this.clickOnSave(this.supply)
-      }
-
-      // Emitir evento para notificar al componente padre
-      this.$emit('save', this.supply)
-    } else {
-      this.$toast.add({
-        severity: 'error',
-        summary: this.t('error'),
-        detail: (response as any).message || this.t('error_saving_supply'),
-        life: 5000,
-      })
-    }
-  } catch (error) {
-    console.error('Error saving supply:', error)
-    this.$toast.add({
-      severity: 'error',
-      summary: this.t('error'),
-      detail: this.t('error_saving_supply'),
-      life: 5000,
-    })
-  } finally {
-    this.isLoading = false
-  }
-}
-,
-    handlerClickOnClose() {
-      if (this.clickOnClose) {
-        this.clickOnClose()
+      } catch (error) {
+        console.error('Error saving supply:', error)
+        toast.add({
+          severity: 'warn',
+          summary: t('error'),
+          detail: t('error_saving_supply'),
+          life: 5000,
+        })
+      } finally {
+        isLoading.value = false
       }
     }
-  }
+
+    function handlerClickOnClose() {
+      props.clickOnClose?.()
+    }
+
+    // 🔹 Return para template
+    return {
+      t,
+      toast,
+      submitted,
+      isLoading,
+      supplyStatusOptions,
+      supplyCharacteristics,
+      characteristicValues,
+      allFileNumbers,
+      booleanOptions,
+      validateSupplyFileNumber,
+      onSave,
+      handlerClickOnClose,
+      getCharacteristicValue,
+    }
+  },
 })

@@ -4,7 +4,6 @@ import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/Emp
 import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import SupplyService from '~/resources/scripts/services/SupplyService'
-import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
 
 export default defineComponent({
   name: 'assignmentCard',

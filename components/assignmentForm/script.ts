@@ -15,6 +15,7 @@ export default defineComponent({
     clickOnClose: { type: Function, default: null },
     canUpdate: { type: Boolean, default: false, required: true },
     canDelete: { type: Boolean, default: false, required: true },
+    isNewAssignment: { type: Boolean, default: false, required: true },
   },
   setup() {
     const { t } = useI18n()

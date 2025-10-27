@@ -24,10 +24,16 @@ export default defineComponent({
     characteristics: [] as SupplyCharacteristicInterface[],
     selectedCharacteristic: null as SupplyCharacteristicInterface | null,
     drawerCharacteristicForm: false as boolean,
+
+    // Estados de carga
     isLoading: false as boolean,
     isInitialLoad: true as boolean,
     isSaving: false as boolean,
     isDeleting: false as boolean,
+
+    // Confirmación de eliminación
+    showConfirmDeleteCharacteristic: false as boolean,
+    characteristicToDelete: null as SupplyCharacteristicInterface | null,
   }),
   computed: {
     characteristicFormTitle() {
@@ -39,7 +45,6 @@ export default defineComponent({
   watch: {
     supplyType: {
       handler(newSupplyType) {
-        console.log('supplyType changed:', newSupplyType)
         if (newSupplyType?.supplyTypeId) {
           this.loadCharacteristics()
         }
@@ -49,29 +54,19 @@ export default defineComponent({
     }
   },
   async mounted() {
-    console.log('Component mounted, supplyType:', this.supplyType)
     this.isInitialLoad = true
     await this.loadCharacteristics()
     this.isInitialLoad = false
   },
   methods: {
     async loadCharacteristics() {
-      console.log('loadCharacteristics called, supplyType:', this.supplyType)
       this.isLoading = true
       try {
-        if (!this.supplyType?.supplyTypeId) {
-          console.warn('SupplyType not available for loading characteristics')
-          return
-        }
+        if (!this.supplyType?.supplyTypeId) return
 
-        console.log('Making API call to getAll with supplyTypeId:', this.supplyType.supplyTypeId)
         const response = await this.supplyCharacteristicService.getAll(1, 10, this.supplyType.supplyTypeId!)
-
-        console.log('Characteristics response:', response)
-
         if ((response as any).type === 'success') {
           const data = (response as any).data
-          // Según el JSON proporcionado, la estructura es supplieCharacteristics.data
           if (data?.supplieCharacteristics?.data) {
             this.characteristics = data.supplieCharacteristics.data
           } else if (data?.supplyCharacteristics?.data) {
@@ -97,9 +92,11 @@ export default defineComponent({
         this.isLoading = false
       }
     },
+
     async refreshCharacteristics() {
       await this.loadCharacteristics()
     },
+
     addNewCharacteristic() {
       const newCharacteristic: SupplyCharacteristicInterface = {
         supplieCaracteristicId: null,
@@ -113,26 +110,28 @@ export default defineComponent({
       this.selectedCharacteristic = newCharacteristic
       this.drawerCharacteristicForm = true
     },
+
     onEditCharacteristic(characteristic: SupplyCharacteristicInterface) {
       this.selectedCharacteristic = { ...characteristic }
       this.drawerCharacteristicForm = true
     },
-    async onDeleteCharacteristic(characteristic: SupplyCharacteristicInterface) {
-      console.log('onDeleteCharacteristic called with:', characteristic)
-      if (!characteristic.supplieCaracteristicId) {
-        console.error('Cannot delete characteristic without ID')
-        return
-      }
 
+    // ✅ Mostrar confirmación antes de eliminar
+    onDeleteCharacteristic(characteristic: SupplyCharacteristicInterface) {
+      this.characteristicToDelete = characteristic
+      this.showConfirmDeleteCharacteristic = true
+    },
+
+    // ✅ Confirmar eliminación
+    async confirmDeleteCharacteristic() {
+      if (!this.characteristicToDelete?.supplieCaracteristicId) return
       this.isDeleting = true
+
       try {
-        const response = await this.supplyCharacteristicService.delete(characteristic.supplieCaracteristicId)
+        const response = await this.supplyCharacteristicService.delete(this.characteristicToDelete.supplieCaracteristicId)
 
         if ((response as any).type === 'success') {
-          // Recargar las características desde el servidor
           await this.loadCharacteristics()
-
-          // Mostrar notificación de éxito
           this.$toast.add({
             severity: 'success',
             summary: this.t('success'),
@@ -152,33 +151,34 @@ export default defineComponent({
         })
       } finally {
         this.isDeleting = false
+        this.showConfirmDeleteCharacteristic = false
+        this.characteristicToDelete = null
       }
     },
+
+    cancelDeleteCharacteristic() {
+      this.showConfirmDeleteCharacteristic = false
+      this.characteristicToDelete = null
+    },
+
     async onSaveCharacteristic(characteristic: SupplyCharacteristicInterface) {
-      console.log('onSaveCharacteristic called with:', characteristic)
-
-      // Recargar las características después de guardar
       await this.loadCharacteristics()
-
-      // Emitir evento para notificar al componente padre
       this.$emit('save', characteristic)
 
-      // Desactivar el foco del elemento activo para evitar conflictos
       if (document.activeElement && 'blur' in document.activeElement) {
         (document.activeElement as HTMLElement).blur()
       }
 
-      // Cerrar el formulario automáticamente después de que se complete la operación
       await this.$nextTick()
       this.drawerCharacteristicForm = false
     },
+
     onCloseCharacteristicForm() {
-      console.log('onCloseCharacteristicForm called')
-      // Usar nextTick para evitar conflictos de foco
       this.$nextTick(() => {
         this.drawerCharacteristicForm = false
       })
     },
+
     onCloseCharacteristicsManagement() {
       this.$emit('close')
     }

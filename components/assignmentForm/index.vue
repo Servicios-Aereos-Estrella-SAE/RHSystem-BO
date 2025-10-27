@@ -37,6 +37,7 @@
               :options="assignmentStatusOptions"
               option-label="label"
               option-value="value"
+              :disabled="isNewAssignment === true"
               :placeholder="t('select_assignment_status')"
               class="form-dropdown"
               :class="{ 'p-invalid': submitted && !assignment.employeeSupplyStatus }"

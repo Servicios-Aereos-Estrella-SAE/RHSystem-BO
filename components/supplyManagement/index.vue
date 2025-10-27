@@ -244,6 +244,7 @@
         :can-delete="canDelete"
         @save="onSaveAssignment"
         @close="onCloseAssignmentForm"
+        :is-new-assignment="selectedAssignment === null"
       />
     </Sidebar>
 

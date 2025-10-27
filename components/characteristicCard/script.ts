@@ -27,11 +27,10 @@ export default defineComponent({
       return typeOption ? typeOption.label : type
     },
     handlerClickOnEdit() {
-      console.log('CharacteristicCard: Edit clicked for characteristic:', this.characteristic)
+      //console.log('CharacteristicCard: Edit clicked for characteristic:', this.characteristic)
       this.$emit('click-edit', this.characteristic)
     },
     handlerClickOnDelete() {
-      console.log('CharacteristicCard: Delete clicked for characteristic:', this.characteristic)
       this.$emit('click-delete', this.characteristic)
     }
   }

@@ -25,7 +25,7 @@
           </div>
 
           <div class="form-field full-width">
-            <label class="field-label required">{{
+            <label class="field-label">{{
               t("supply_type_description")
             }}</label>
             <Textarea
@@ -34,16 +34,10 @@
               :placeholder="t('enter_supply_type_description')"
               class="form-textarea"
               :class="{
-                'p-invalid': submitted && !supplyType.supplyTypeDescription,
+                'p-invalid': submitted,
               }"
               rows="3"
             />
-            <small
-              v-if="submitted && !supplyType.supplyTypeDescription"
-              class="p-error"
-            >
-              {{ t("supply_type_description_required") }}
-            </small>
           </div>
 
           <div class="form-field">

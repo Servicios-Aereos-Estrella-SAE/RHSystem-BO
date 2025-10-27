@@ -112,11 +112,11 @@ export default defineComponent({
         const response = await supplyService.getByType(this.supplyType.supplyTypeId)
 
         if ((response as any).type === 'success') {
-          console.log('API Response structure:', response)
+          //console.log('API Response structure:', response)
 
           // Verificar la estructura de la respuesta
           const responseData = (response as any).data
-          console.log('Response data:', responseData)
+          //console.log('Response data:', responseData)
 
           let supplies = []
           if (responseData?.supplies?.data) {
@@ -127,7 +127,7 @@ export default defineComponent({
             supplies = responseData
           }
 
-          console.log('Supplies found:', supplies)
+          //console.log('Supplies found:', supplies)
 
           if (supplies && supplies.length > 0) {
             // Cargar características para cada supply
@@ -150,16 +150,16 @@ export default defineComponent({
             )
 
             this.allSupplies = suppliesWithCharacteristics
-            console.log('Supplies with characteristics loaded successfully:', this.allSupplies)
+            //console.log('Supplies with characteristics loaded successfully:', this.allSupplies)
             // Aplicar filtros después de cargar
             this.filterSupplies()
           } else {
-            console.log('No supplies found in response')
+            //console.log('No supplies found in response')
             this.allSupplies = []
             this.filteredSupplies = []
           }
         } else {
-          console.log('API response not successful:', response)
+          //console.log('API response not successful:', response)
           this.allSupplies = []
           this.filteredSupplies = []
         }
@@ -175,7 +175,7 @@ export default defineComponent({
       this.isLoadingAssignments = true
       try {
         const employeeSupplyService = new EmployeeSupplyService()
-        const response = await employeeSupplyService.getAll(1, 1000)
+        const response = await employeeSupplyService.getAll(1, 1000, null, null, this.supplyType?.supplyTypeId)
         this.filteredAssignments = (response as any).type === 'success' ? (response as any).data.employeeSupplies.data : []
       } catch (error) {
         console.error('Error loading assignments:', error)
@@ -327,7 +327,7 @@ export default defineComponent({
       this.supplyToDelete = null
     },
     onAssignSupply(supply: SupplyInterface) {
-      console.log('onAssignSupply called with supply:', supply)
+      //console.log('onAssignSupply called with supply:', supply)
       this.selectedSupply = { ...supply }
       this.selectedAssignment = null
       this.newAssignment = {
@@ -447,7 +447,7 @@ export default defineComponent({
       this.$emit('close')
     },
     async onSaveAssignment(assignment: EmployeeSupplyInterface) {
-      console.log('onSaveAssignment called with:', assignment)
+      //console.log('onSaveAssignment called with:', assignment)
       this.selectedAssignment = { ...assignment }
 
       // Recargar assignments desde el servidor
@@ -471,18 +471,18 @@ export default defineComponent({
       this.drawerAssignmentForm = false
     },
     onCloseAssignmentForm() {
-      console.log('onCloseAssignmentForm called')
+      //console.log('onCloseAssignmentForm called')
       // Usar nextTick para evitar conflictos de foco
       this.$nextTick(() => {
         this.drawerAssignmentForm = false
       })
     },
     showCharacteristicsManagement() {
-      console.log('showCharacteristicsManagement', this.drawerCharacteristicsManagement)
+      //console.log('showCharacteristicsManagement', this.drawerCharacteristicsManagement)
       this.drawerCharacteristicsManagement = true
     },
     async onSaveCharacteristic() {
-      console.log('onSaveCharacteristic called in supplyManagement')
+      //console.log('onSaveCharacteristic called in supplyManagement')
       // Recargar supplies para actualizar las características
       await this.loadSupplies()
 
@@ -515,7 +515,7 @@ export default defineComponent({
         const supplyCharacteristicValueService = new SupplyCharacteristicValueService()
         const response = await supplyCharacteristicValueService.getBySupply(supplyId)
 
-        console.log('Supply characteristic values response for supply', supplyId, ':', response)
+        //console.log('Supply characteristic values response for supply', supplyId, ':', response)
 
         if ((response as any).type === 'success') {
           const data = (response as any).data

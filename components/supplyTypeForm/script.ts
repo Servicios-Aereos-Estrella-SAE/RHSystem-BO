@@ -37,7 +37,7 @@ export default defineComponent({
       this.submitted = true
       this.isLoading = true
 
-      if (!this.supplyType.supplyTypeName || !this.supplyType.supplyTypeDescription || !this.supplyType.supplyTypeSlug) {
+      if (!this.supplyType.supplyTypeName || !this.supplyType.supplyTypeSlug) {
         this.isLoading = false
         return
       }

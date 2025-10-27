@@ -13,10 +13,11 @@ export default class EmployeeSupplyService {
     }
   }
 
-  async getAll(page = 1, limit = 10, employeeId?: number, employeeSupplyStatus?: string) {
+  async getAll(page = 1, limit = 10, employeeId?: number, employeeSupplyStatus?: string, supplyTypeId?: number) {
     const query: any = { page, limit }
     if (employeeId) query.employeeId = employeeId
     if (employeeSupplyStatus) query.employeeSupplyStatus = employeeSupplyStatus
+    if (supplyTypeId) query.supplyTypeId = supplyTypeId
 
     return await $fetch(`${this.API_PATH}/employee-supplies`, {
       method: 'GET',

@@ -33,10 +33,6 @@
         <div class="stat-value">{{ activeSupplies }}</div>
         <div class="stat-label">{{ t("active_supplies") }}</div>
       </div>
-      <div class="stat-item">
-        <div class="stat-value">{{ assignedSupplies }}</div>
-        <div class="stat-label">{{ t("assigned_supplies") }}</div>
-      </div>
     </div>
 
     <div class="box-tools-footer">

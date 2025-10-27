@@ -128,7 +128,7 @@ export default defineComponent({
     },
 
     handlerClickOnEdit() {
-      console.log('handlerClickOnEdit', this.clickOnEdit, this.supply)
+      //console.log('handlerClickOnEdit', this.clickOnEdit, this.supply)
       if (this.clickOnEdit && this.supply) {
         this.clickOnEdit(this.supply)
       }
@@ -164,7 +164,7 @@ export default defineComponent({
     },
 
     handlerClickOnAssign() {
-      console.log('handlerClickOnAssign', this.clickOnAssign, this.supply)
+      //console.log('handlerClickOnAssign', this.clickOnAssign, this.supply)
       if (this.clickOnAssign && this.supply) {
         this.clickOnAssign(this.supply)
       }

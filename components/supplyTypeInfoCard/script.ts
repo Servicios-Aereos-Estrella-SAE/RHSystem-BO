@@ -106,7 +106,7 @@ export default defineComponent({
       }
     },
     handlerClickOnEdit() {
-      console.log('handlerClickOnEdit', this.clickOnEdit, this.supplyType)
+      //console.log('handlerClickOnEdit', this.clickOnEdit, this.supplyType)
       if (this.clickOnEdit && this.supplyType) {
         this.clickOnEdit(this.supplyType)
       }

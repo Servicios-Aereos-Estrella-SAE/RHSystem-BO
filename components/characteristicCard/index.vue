@@ -23,6 +23,7 @@
         @click="handlerClickOnDelete"
       />
     </div>
+
   </div>
 </template>
 

@@ -5,7 +5,7 @@
         <h3 class="section-title">{{ t('characteristic_information') }}</h3>
 
         <div class="form-grid">
-          <div class="form-field">
+          <div class="form-field full-width">
             <label class="field-label required">{{ t('characteristic_name') }}</label>
             <InputText
               v-model="characteristic.supplieCaracteristicName"
@@ -18,7 +18,7 @@
             </small>
           </div>
 
-          <div class="form-field">
+          <div class="form-field full-width">
             <label class="field-label required">{{ t('characteristic_type') }}</label>
             <Dropdown
               v-model="characteristic.supplieCaracteristicType"

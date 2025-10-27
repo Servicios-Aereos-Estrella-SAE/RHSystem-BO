@@ -5,7 +5,7 @@
         <h3 class="section-title">{{ t("supply_information") }}</h3>
 
         <div class="form-grid">
-          <div class="form-field">
+          <div class="form-field full-width">
             <label class="field-label required">{{ t("supply_name") }}</label>
             <InputText v-if="supply && canUpdate"
               v-model="supply.supplyName"
@@ -18,8 +18,8 @@
             </small>
           </div>
 
-          <div class="form-field">
-            <label class="field-label required">{{
+          <div class="form-field full-width">
+            <label class="field-label">{{
               t("supply_file_number")
             }}</label>
             <InputNumber
@@ -29,10 +29,8 @@
               class="form-input"
               :class="{ 'p-invalid': submitted && !supply.supplyFileNumber }"
               :min="1"
+              @blur="validateSupplyFileNumber(supply.supplyFileNumber || 0)"
             />
-            <small v-if="submitted && !supply.supplyFileNumber" class="p-error">
-              {{ t("supply_file_number_required") }}
-            </small>
           </div>
 
           <div class="form-field full-width">
@@ -44,15 +42,9 @@
               v-model="supply.supplyDescription"
               :placeholder="t('enter_supply_description')"
               class="form-textarea"
-              :class="{ 'p-invalid': submitted && !supply.supplyDescription }"
+              :class="{ 'p-invalid': submitted }"
               rows="3"
             />
-            <small
-              v-if="submitted && !supply.supplyDescription"
-              class="p-error"
-            >
-              {{ t("supply_description_required") }}
-            </small>
           </div>
 
           <div class="form-field">
@@ -79,7 +71,7 @@
 
       <div
         v-if="
-          supply && canUpdate && (supply.supplyStatus === 'inactive' || supply.supplyStatus === 'damaged')
+          supply && canUpdate && (supply.supplyStatus === 'inactive' || supply.supplyStatus === 'damaged' || supply.supplyStatus === 'lost')
         "
         class="form-section"
       >

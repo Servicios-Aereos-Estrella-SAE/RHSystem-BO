@@ -11,7 +11,7 @@
           {{ employeeFullName || t('loading') }}
         </div>
         <div class="employee-email">
-          {{ `${t('supply')}: ${supplyName || t('not_assigned')}` }}
+          {{ `${t('supply')}: ${assignment?.supply?.supplyName || t('not_assigned')}` }}
         </div>
       </div>
     </div>
@@ -21,7 +21,12 @@
         {{ `${t('assignment_date')}: ${formatDate(assignment?.employeeSupplyCreatedAt)}` }}
       </div>
       <div class="department">
-        {{ `${t('status')}: ${getStatusLabel(assignment?.employeeSupplyStatus)}` }}
+        <span
+          class="p-tag p-component font-medium"
+          :class="getStatusClass(assignment?.employeeSupplyStatus)"
+        >
+          {{ getStatusLabel(assignment?.employeeSupplyStatus) }}
+        </span>
       </div>
       <div class="position">
         {{ `${t('retirement_date')}: ${formatDate(assignment?.employeeSupplyRetirementDate)}` }}
@@ -34,10 +39,6 @@
     </div>
 
     <div v-else class="stats-section">
-      <div class="stat-item">
-        <div class="stat-value">{{ getStatusLabel(assignment?.employeeSupplyStatus) }}</div>
-        <div class="stat-label">{{ t("status") }}</div>
-      </div>
       <div class="stat-item">
         <div class="stat-value">{{ formatDate(assignment?.employeeSupplyCreatedAt) }}</div>
         <div class="stat-label">{{ t("assigned_date") }}</div>

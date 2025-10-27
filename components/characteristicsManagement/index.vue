@@ -76,6 +76,15 @@
 
     <Toast />
   </div>
+
+  <!-- Confirm Delete Characteristic -->
+  <div v-if="showConfirmDeleteCharacteristic" class="confirm-delete-overlay">
+    <ConfirmDelete
+      :description="characteristicToDelete ? `${t('delete_characteristic')}: ${characteristicToDelete.characteristicName}` : ''"
+      @confirmDelete="confirmDeleteCharacteristic"
+      @cancelDelete="cancelDeleteCharacteristic"
+    />
+  </div>
 </template>
 
 <script lang="ts" src="./script.ts"></script>

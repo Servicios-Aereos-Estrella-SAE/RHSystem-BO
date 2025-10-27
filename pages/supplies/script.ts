@@ -127,16 +127,16 @@ export default defineComponent({
       try {
         const supplyTypeService = new SupplyTypeService()
         const response = await supplyTypeService.getAll(1, 1000)
-        console.log('getSupplyTypes Response:', response)
+        //console.log('getSupplyTypes Response:', response)
 
         if ((response as any).type === 'success') {
           const list = (response as any).data.supplyTypes.data || []
-          console.log('Supply Types for dropdown loaded:', list.length)
+          //console.log('Supply Types for dropdown loaded:', list.length)
 
           // Filtrar elementos null/undefined
           const validList = list.filter((item: any) => item && item.supplyTypeId)
           this.supplyTypes = validList
-          console.log('Supply Types dropdown ready:', this.supplyTypes.length)
+          //console.log('Supply Types dropdown ready:', this.supplyTypes.length)
         } else {
           console.error('getSupplyTypes API Error:', response)
           this.supplyTypes = []
@@ -152,11 +152,11 @@ export default defineComponent({
       try {
         const supplyTypeService = new SupplyTypeService()
         const response = await supplyTypeService.getAll(this.currentPage, this.rowsPerPage)
-        console.log('Response:', response)
+        //console.log('Response:', response)
 
         if ((response as any).type === 'success') {
           const list = (response as any).data.supplyTypes.data || []
-          console.log('Supply Types loaded:', list.length)
+          //console.log('Supply Types loaded:', list.length)
 
           // Filtrar elementos null/undefined y validar que tengan supplyTypeId
           const validList = list.filter((item: any) =>
@@ -169,7 +169,7 @@ export default defineComponent({
           this.first = (response as any).data.supplyTypes.meta.firstPage || 0
           this.filteredSupplyTypes = validList
 
-          console.log('Filtered Supply Types loaded:', this.filteredSupplyTypes.length)
+          //console.log('Filtered Supply Types loaded:', this.filteredSupplyTypes.length)
         } else {
           console.error('API Error:', response)
           this.filteredSupplyTypes = []
@@ -382,7 +382,7 @@ export default defineComponent({
 
           // También cargar supplies relacionados si es necesario
           // Esto asegura que el SupplyManagement tenga todos los datos
-          console.log('Supply type data loaded for management:', this.selectedSupplyType)
+          //console.log('Supply type data loaded for management:', this.selectedSupplyType)
         } else {
           throw new Error('Failed to load supply type data for management')
         }
