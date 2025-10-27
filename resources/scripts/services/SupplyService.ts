@@ -35,7 +35,7 @@ export default class SupplyService {
   }
 
   async getByType(supplyTypeId: number) {
-    return await $fetch(`${this.API_PATH}/supplies/by-type/${supplyTypeId}`, {
+    return await $fetch(`${this.API_PATH}/supplies?supplyTypeId=${supplyTypeId}`, {
       method: 'GET',
       headers: { ...this.GENERAL_HEADERS }
     })

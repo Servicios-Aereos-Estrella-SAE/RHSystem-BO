@@ -64,6 +64,9 @@ export default defineComponent({
           if (this.clickOnSave) {
             this.clickOnSave(this.characteristic)
           }
+
+          // Emitir evento para notificar al componente padre
+          this.$emit('save', this.characteristic)
         } else {
           this.$toast.add({
             severity: 'error',

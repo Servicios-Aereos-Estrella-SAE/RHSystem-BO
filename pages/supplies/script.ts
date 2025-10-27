@@ -247,11 +247,12 @@ export default defineComponent({
         const supplyTypeResponse = await supplyTypeService.delete(this.selectedSupplyType.supplyTypeId!)
 
         if ((supplyTypeResponse as any).type === 'success') {
-          const index = this.filteredSupplyTypes.findIndex((supplyType: SupplyTypeInterface) => supplyType.supplyTypeId === this.selectedSupplyType?.supplyTypeId)
-          if (index !== -1) {
-            this.filteredSupplyTypes.splice(index, 1)
-            this.$forceUpdate()
-          }
+          // Recargar la lista de supply types desde el servidor
+          await this.getSupplyTypes()
+
+          // Actualizar la lista filtrada también
+          await this.handlerSearchSupplies()
+
           this.$toast.add({
             severity: 'success',
             summary: this.t('delete_supply_type'),
@@ -268,20 +269,29 @@ export default defineComponent({
         }
       }
     },
-    onSaveSupplyType(supplyType: SupplyTypeInterface) {
+    async onSaveSupplyType(supplyType: SupplyTypeInterface) {
       this.selectedSupplyType = { ...supplyType }
-      const index = this.filteredSupplyTypes.findIndex((s: SupplyTypeInterface) => s.supplyTypeId === this.selectedSupplyType?.supplyTypeId)
-      if (index !== -1) {
-        this.filteredSupplyTypes[index] = supplyType
-        this.$forceUpdate()
-      } else {
-        this.filteredSupplyTypes.push(supplyType)
-        this.$forceUpdate()
+
+      // Recargar la lista de supply types desde el servidor
+      await this.getSupplyTypes()
+
+      // Actualizar la lista filtrada también
+      await this.handlerSearchSupplies()
+
+      // Desactivar el foco del elemento activo para evitar conflictos
+      if (document.activeElement && 'blur' in document.activeElement) {
+        (document.activeElement as HTMLElement).blur()
       }
+
+      // Cerrar el formulario después de que se complete la operación
+      await this.$nextTick()
       this.drawerSupplyTypeForm = false
     },
     onCloseSupplyTypeForm() {
-      this.drawerSupplyTypeForm = false
+      // Usar nextTick para evitar conflictos de foco
+      this.$nextTick(() => {
+        this.drawerSupplyTypeForm = false
+      })
     },
     onCancelSupplyTypeDelete() {
       this.drawerSupplyTypeDelete = false

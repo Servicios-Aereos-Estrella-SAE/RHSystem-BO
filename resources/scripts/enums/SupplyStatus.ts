@@ -6,6 +6,7 @@ export enum SupplyStatus {
 }
 
 export const SUPPLY_STATUS_OPTIONS = [
+  { label: 'Todos', value: null },
   { label: 'Activo', value: SupplyStatus.ACTIVE },
   { label: 'Inactivo', value: SupplyStatus.INACTIVE },
   { label: 'Perdido', value: SupplyStatus.LOST },

@@ -77,32 +77,37 @@
     }
   }
 
-  .stats-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin: 1rem 0;
-    padding: 1rem;
-    background-color: rgba(60, 180, 229, 0.05);
-    border-radius: calc($radius / 2);
+    .stats-section {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin: 1rem 0;
+      padding: 1rem;
+      background-color: rgba(60, 180, 229, 0.05);
+      border-radius: calc($radius / 2);
 
-    .stat-item {
-      text-align: center;
+      .stat-item {
+        text-align: center;
 
-      .stat-value {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: $primary;
-        line-height: 1;
-      }
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: $primary;
+          line-height: 1;
+        }
 
-      .stat-label {
-        font-size: 0.75rem;
-        margin-top: 0.25rem;
-        line-height: 1;
+        .stat-label {
+          font-size: 0.875rem;
+          color: #666;
+          text-transform: capitalize;
+          margin-top: 0.35rem;
+          display: block;
+          line-height: 1.2;
+          word-break: keep-all;
+          content:fit;
+        }
       }
     }
-  }
 
   .box-tools-footer {
     display: flex;

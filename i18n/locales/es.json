@@ -784,5 +784,18 @@
   "error_deleting_supply": "Error al eliminar el insumo",
   "error_deleting_assignment": "Error al eliminar la asignación",
   "supply_will_be_active": "El insumo será activo",
-  "available_for_assignment": "Disponible para asignar"
+  "available_for_assignment": "Disponible para asignar",
+  "supply_characteristics": "Características del Insumo",
+  "delete_supply": "Eliminar insumo",
+  "delete_assignment": "Eliminar asignación",
+  "assignment_deleted": "Asignación eliminada",
+  "assignment_retired": "Asignación retirada",
+  "assignment_retirement_date": "Fecha de retirada de la asignación",
+  "assignment_retirement_reason": "Razón de retirada de la asignación",
+  "supplies": "Insumos",
+  "unavailable_for_assignment": "No disponible para asignar",
+  "characteristic_deleted_successfully": "Característica eliminada correctamente",
+  "deactivation_info": "Información de desactivación",
+  "supply_deactivation_reason": "Razón de desactivación del insumo",
+  "supply_deactivation_date": "Fecha de desactivación del insumo"
 }

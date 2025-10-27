@@ -36,8 +36,9 @@ export default defineComponent({
   data: () => ({
     // Supplies data
     filteredSupplies: [] as SupplyInterface[],
+    allSupplies: [] as SupplyInterface[], // Nuevo array para almacenar todos los insumos
     supplySearch: '' as string,
-    selectedSupplyStatus: 'active' as string,
+    selectedSupplyStatus: null as string | null, // Cambiado de 'active' a null para mostrar todos
     supplyStatusOptions: SUPPLY_STATUS_OPTIONS,
 
     // Assignments data
@@ -51,8 +52,8 @@ export default defineComponent({
     selectedAssignment: null as EmployeeSupplyInterface | null,
     newAssignment: {
       employeeSupplyId: null,
-      employeeId: null,
-      supplyId: null,
+      employeeId: 0,
+      supplyId: 0,
       employeeSupplyStatus: 'active',
       employeeSupplyRetirementReason: null,
       employeeSupplyRetirementDate: null,
@@ -148,18 +149,23 @@ export default defineComponent({
               })
             )
 
-            this.filteredSupplies = suppliesWithCharacteristics
-            console.log('Supplies with characteristics loaded successfully:', this.filteredSupplies)
+            this.allSupplies = suppliesWithCharacteristics
+            console.log('Supplies with characteristics loaded successfully:', this.allSupplies)
+            // Aplicar filtros después de cargar
+            this.filterSupplies()
           } else {
             console.log('No supplies found in response')
+            this.allSupplies = []
             this.filteredSupplies = []
           }
         } else {
           console.log('API response not successful:', response)
+          this.allSupplies = []
           this.filteredSupplies = []
         }
       } catch (error) {
         console.error('Error loading supplies:', error)
+        this.allSupplies = []
         this.filteredSupplies = []
       } finally {
         this.isLoadingSupplies = false
@@ -179,8 +185,36 @@ export default defineComponent({
       }
     },
     handlerSearchSupplies() {
-      // Implementar búsqueda de supplies
-      this.loadSupplies()
+      // Filtrar supplies en el frontend
+      this.filterSupplies()
+    },
+    filterSupplies() {
+      let filtered = [...this.allSupplies]
+
+      // Filtrar por status
+      if (this.selectedSupplyStatus) {
+        filtered = filtered.filter(supply => supply.supplyStatus === this.selectedSupplyStatus)
+      }
+
+      // Filtrar por búsqueda de texto
+      if (this.supplySearch.trim()) {
+        const searchLower = this.supplySearch.toLowerCase()
+        filtered = filtered.filter(supply =>
+          supply.supplyName.toLowerCase().includes(searchLower) ||
+          supply.supplyDescription?.toLowerCase().includes(searchLower) ||
+          supply.supplyFileNumber?.toString().includes(searchLower)
+        )
+      }
+
+      // Ordenar por status (active primero, luego inactive, damaged, lost)
+      const statusOrder = ['active', 'inactive', 'damaged', 'lost']
+      filtered.sort((a, b) => {
+        const indexA = statusOrder.indexOf(a.supplyStatus || '')
+        const indexB = statusOrder.indexOf(b.supplyStatus || '')
+        return indexA - indexB
+      })
+
+      this.filteredSupplies = filtered
     },
     handlerSearchAssignments() {
       // Implementar búsqueda de asignaciones
@@ -188,7 +222,7 @@ export default defineComponent({
     },
     clearSupplyFilters() {
       this.supplySearch = ''
-      this.selectedSupplyStatus = 'active'
+      this.selectedSupplyStatus = null
       this.handlerSearchSupplies()
     },
     clearAssignmentFilters() {
@@ -262,7 +296,7 @@ export default defineComponent({
         const response = await supplyService.deactivate(
           supply.supplyId,
           supply.supplyDeactivationReason || 'Desactivado por administrador',
-          supply.supplyDeactivationDate || new Date().toISOString()
+          (supply.supplyDeactivationDate instanceof Date ? supply.supplyDeactivationDate.toISOString() : supply.supplyDeactivationDate) || new Date().toISOString()
         )
 
         if ((response as any).type === 'success') {
@@ -298,8 +332,8 @@ export default defineComponent({
       this.selectedAssignment = null
       this.newAssignment = {
         employeeSupplyId: null,
-        employeeId: null,
-        supplyId: supply.supplyId,
+        employeeId: 0,
+        supplyId: supply.supplyId ?? 0,
         employeeSupplyStatus: 'active',
         employeeSupplyRetirementReason: null,
         employeeSupplyRetirementDate: null,
@@ -358,7 +392,7 @@ export default defineComponent({
         const response = await employeeSupplyService.retire(
           assignment.employeeSupplyId,
           assignment.employeeSupplyRetirementReason || 'Retirado por administrador',
-          assignment.employeeSupplyRetirementDate || new Date().toISOString()
+          (assignment.employeeSupplyRetirementDate instanceof Date ? assignment.employeeSupplyRetirementDate.toISOString() : assignment.employeeSupplyRetirementDate) || new Date().toISOString()
         )
 
         if ((response as any).type === 'success') {
@@ -388,34 +422,92 @@ export default defineComponent({
       this.showConfirmDeleteAssignment = false
       this.assignmentToDelete = null
     },
-    onSaveSupply(supply: SupplyInterface) {
+    async onSaveSupply(supply: SupplyInterface) {
       this.selectedSupply = { ...supply }
-      this.loadSupplies()
+
+      // Recargar supplies desde el servidor
+      await this.loadSupplies()
+
+      // Desactivar el foco del elemento activo para evitar conflictos
+      if (document.activeElement && 'blur' in document.activeElement) {
+        (document.activeElement as HTMLElement).blur()
+      }
+
+      // Cerrar el formulario después de que se complete la operación
+      await this.$nextTick()
       this.drawerSupplyForm = false
     },
     onCloseSupplyForm() {
-      this.drawerSupplyForm = false
+      // Usar nextTick para evitar conflictos de foco
+      this.$nextTick(() => {
+        this.drawerSupplyForm = false
+      })
     },
     onCloseSupplyManagement() {
       this.$emit('close')
     },
-    onSaveAssignment(assignment: EmployeeSupplyInterface) {
+    async onSaveAssignment(assignment: EmployeeSupplyInterface) {
+      console.log('onSaveAssignment called with:', assignment)
       this.selectedAssignment = { ...assignment }
-      this.loadAssignments()
+
+      // Recargar assignments desde el servidor
+      await this.loadAssignments()
+
+      // Mostrar notificación de éxito
+      this.$toast.add({
+        severity: 'success',
+        summary: this.t('success'),
+        detail: this.t('assignment_saved_successfully'),
+        life: 3000,
+      })
+
+      // Desactivar el foco del elemento activo para evitar conflictos
+      if (document.activeElement && 'blur' in document.activeElement) {
+        (document.activeElement as HTMLElement).blur()
+      }
+
+      // Cerrar el formulario después de que se complete la operación
+      await this.$nextTick()
       this.drawerAssignmentForm = false
     },
     onCloseAssignmentForm() {
-      this.drawerAssignmentForm = false
+      console.log('onCloseAssignmentForm called')
+      // Usar nextTick para evitar conflictos de foco
+      this.$nextTick(() => {
+        this.drawerAssignmentForm = false
+      })
     },
     showCharacteristicsManagement() {
       console.log('showCharacteristicsManagement', this.drawerCharacteristicsManagement)
       this.drawerCharacteristicsManagement = true
     },
-    onSaveCharacteristic() {
-      this.loadSupplies()
+    async onSaveCharacteristic() {
+      console.log('onSaveCharacteristic called in supplyManagement')
+      // Recargar supplies para actualizar las características
+      await this.loadSupplies()
+
+      // Mostrar notificación de éxito
+      this.$toast.add({
+        severity: 'success',
+        summary: this.t('success'),
+        detail: this.t('characteristic_saved_successfully'),
+        life: 3000,
+      })
+
+      // Desactivar el foco del elemento activo para evitar conflictos
+      if (document.activeElement && 'blur' in document.activeElement) {
+        (document.activeElement as HTMLElement).blur()
+      }
+
+      // Cerrar el drawer de características después de que se complete la operación
+      await this.$nextTick()
+      this.drawerCharacteristicsManagement = false
     },
     onCloseCharacteristicsManagement() {
-      this.drawerCharacteristicsManagement = false
+      // Usar nextTick para evitar conflictos de foco
+      this.$nextTick(() => {
+        this.drawerCharacteristicsManagement = false
+      })
     },
     async loadSupplyCharacteristics(supplyId: number) {
       try {

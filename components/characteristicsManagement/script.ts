@@ -129,10 +129,8 @@ export default defineComponent({
         const response = await this.supplyCharacteristicService.delete(characteristic.supplieCaracteristicId)
 
         if ((response as any).type === 'success') {
-          // Remover la característica de la lista
-          this.characteristics = this.characteristics.filter(
-            c => c.supplieCaracteristicId !== characteristic.supplieCaracteristicId
-          )
+          // Recargar las características desde el servidor
+          await this.loadCharacteristics()
 
           // Mostrar notificación de éxito
           this.$toast.add({
@@ -158,37 +156,28 @@ export default defineComponent({
     },
     async onSaveCharacteristic(characteristic: SupplyCharacteristicInterface) {
       console.log('onSaveCharacteristic called with:', characteristic)
-      this.isSaving = true
-      try {
-        // Recargar las características después de guardar
-        await this.loadCharacteristics()
 
-        // Mostrar notificación de éxito
-        this.$toast.add({
-          severity: 'success',
-          summary: this.t('success'),
-          detail: characteristic.supplieCaracteristicId
-            ? this.t('characteristic_updated_successfully')
-            : this.t('characteristic_created_successfully'),
-          life: 3000
-        })
+      // Recargar las características después de guardar
+      await this.loadCharacteristics()
 
-        this.drawerCharacteristicForm = false
-        this.$emit('save', characteristic)
-      } catch (error) {
-        console.error('Error saving characteristic:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: this.t('error'),
-          detail: this.t('error_saving_characteristic'),
-          life: 3000
-        })
-      } finally {
-        this.isSaving = false
+      // Emitir evento para notificar al componente padre
+      this.$emit('save', characteristic)
+
+      // Desactivar el foco del elemento activo para evitar conflictos
+      if (document.activeElement && 'blur' in document.activeElement) {
+        (document.activeElement as HTMLElement).blur()
       }
+
+      // Cerrar el formulario automáticamente después de que se complete la operación
+      await this.$nextTick()
+      this.drawerCharacteristicForm = false
     },
     onCloseCharacteristicForm() {
-      this.drawerCharacteristicForm = false
+      console.log('onCloseCharacteristicForm called')
+      // Usar nextTick para evitar conflictos de foco
+      this.$nextTick(() => {
+        this.drawerCharacteristicForm = false
+      })
     },
     onCloseCharacteristicsManagement() {
       this.$emit('close')

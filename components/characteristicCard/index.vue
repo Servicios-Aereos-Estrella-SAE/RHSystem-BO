@@ -12,14 +12,14 @@
         v-if="canUpdate"
         :label="t('edit')"
         icon="pi pi-pencil"
-        class="p-button-outlined p-button-sm"
+        class="btn btn-block"
         @click="handlerClickOnEdit"
       />
       <Button
         v-if="canDelete"
         :label="t('delete')"
         icon="pi pi-trash"
-        class="p-button-danger p-button-outlined p-button-sm"
+        class="btn btn-block"
         @click="handlerClickOnDelete"
       />
     </div>

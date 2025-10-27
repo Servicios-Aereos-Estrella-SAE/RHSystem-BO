@@ -61,12 +61,12 @@ export default defineComponent({
   methods: {
     getStatusClass(status: string) {
       const statusClasses: Record<string, string> = {
-        active: 'status-active',
-        inactive: 'status-inactive',
-        lost: 'status-lost',
-        damaged: 'status-damaged'
+        active: 'p-tag-success',
+        inactive: 'p-tag-warning',
+        lost: 'p-tag-danger',
+        damaged: 'p-tag-danger'
       }
-      return statusClasses[status] || 'status-unknown'
+      return statusClasses[status] || 'p-tag-unknown'
     },
     getStatusLabel(status: string) {
       const statusOption = SUPPLY_STATUS_OPTIONS.find(option => option.value === status)

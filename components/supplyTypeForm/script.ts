@@ -63,6 +63,9 @@ export default defineComponent({
           if (this.clickOnSave) {
             this.clickOnSave(this.supplyType)
           }
+
+          // Cerrar el formulario automáticamente después de guardar exitosamente
+          this.handlerClickOnClose()
         } else {
           this.$toast.add({
             severity: 'error',

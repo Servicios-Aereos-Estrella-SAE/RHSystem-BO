@@ -1,5 +1,48 @@
 @import '/resources/styles/variables.scss';
 
+.deactivation-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: rgba(255, 235, 235, 0.4);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: calc($radius / 2);
+
+  .section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #991b1b;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .deactivation-info {
+    font-size: 0.8rem;
+    color: #5c5c5c;
+
+    p {
+      margin: 0.25rem 0;
+    }
+  }
+}
+
+.p-tag-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.p-tag-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.p-tag-danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #f56565;
+}
+
 .user-info-card {
   position: relative;
   padding: 1rem;
@@ -117,6 +160,16 @@
 
         i {
           color: #059669;
+        }
+      }
+
+      &.unavailable {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #f56565;
+
+        i {
+          color: #991b1b;
         }
       }
     }

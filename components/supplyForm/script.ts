@@ -110,75 +110,112 @@ export default defineComponent({
       }
     },
     async onSave() {
-      this.submitted = true
-      this.isLoading = true
+  this.submitted = true
+  this.isLoading = true
 
-      if (!this.supply.supplyName || !this.supply.supplyDescription || !this.supply.supplyFileNumber) {
-        this.isLoading = false
-        return
-      }
+  if (!this.supply.supplyName || !this.supply.supplyDescription || !this.supply.supplyFileNumber) {
+    this.isLoading = false
+    return
+  }
 
-      // Si es un nuevo supply, establecer estado por defecto
-      if (!this.supply.supplyId) {
-        this.supply.supplyStatus = 'active'
-      }
+  // Si es un nuevo supply, forzamos estado 'active'
+  if (!this.supply.supplyId) {
+    this.supply.supplyStatus = 'active'
+  }
 
-      // Validar campos de desactivación si es necesario
-      if ((this.supply.supplyStatus === 'inactive' || this.supply.supplyStatus === 'damaged') &&
-          (!this.supply.supplyDeactivationReason || !this.supply.supplyDeactivationDate)) {
-        this.isLoading = false
-        return
-      }
+  // Validar desactivación si corresponde
+  const isDeactivation =
+    this.supply.supplyStatus === 'inactive' ||
+    this.supply.supplyStatus === 'lost' ||
+    this.supply.supplyStatus === 'damaged'
 
-      try {
-        const supplyService = new SupplyService()
-        let response
+  if (isDeactivation &&
+      (!this.supply.supplyDeactivationReason || !this.supply.supplyDeactivationDate)) {
+    this.isLoading = false
+    return
+  }
 
-        // Asegurar que el supplyTypeId esté asignado
-        this.supply.supplyTypeId = this.supplyTypeId
+  try {
+    const supplyService = new SupplyService()
+    let response
 
-        if (this.supply.supplyId) {
+    this.supply.supplyTypeId = this.supplyTypeId
+
+    // Si el insumo ya existe
+    if (this.supply.supplyId) {
+      // Caso especial: desactivación
+      if (isDeactivation) {
+        // 1️⃣ Desactivar primero
+        const deactivateResponse = await supplyService.deactivate(
+          this.supply.supplyId,
+          this.supply.supplyDeactivationReason!,
+          (this.supply.supplyDeactivationDate instanceof Date
+            ? this.supply.supplyDeactivationDate.toISOString()
+            : this.supply.supplyDeactivationDate) || new Date().toISOString()
+        )
+
+        if ((deactivateResponse as any).type === 'success') {
+          // 2️⃣ Si la desactivación fue exitosa, actualizar el estado
           response = await supplyService.update(this.supply.supplyId, this.supply)
-        } else {
-          response = await supplyService.create(this.supply)
-        }
-
-        if ((response as any).type === 'success') {
-          // Guardar characteristic values si existen
-          if (this.characteristicValues.length > 0) {
-            await this.saveCharacteristicValues()
-          }
-
-          this.$toast.add({
-            severity: 'success',
-            summary: this.supply.supplyId ? this.t('supply_updated') : this.t('supply_created'),
-            detail: (response as any).message || 'Supply guardado correctamente',
-            life: 5000,
-          })
-
-          if (this.clickOnSave) {
-            this.clickOnSave(this.supply)
-          }
         } else {
           this.$toast.add({
             severity: 'error',
             summary: this.t('error'),
-            detail: (response as any).message || this.t('error_saving_supply'),
+            detail: (deactivateResponse as any).message || this.t('error_deactivating_supply'),
             life: 5000,
           })
+          this.isLoading = false
+          return
         }
-      } catch (error) {
-        console.error('Error saving supply:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: this.t('error'),
-          detail: this.t('error_saving_supply'),
-          life: 5000,
-        })
-      } finally {
-        this.isLoading = false
+      } else {
+        // Caso normal de actualización
+        response = await supplyService.update(this.supply.supplyId, this.supply)
       }
-    },
+    } else {
+      // Creación de nuevo insumo
+      response = await supplyService.create(this.supply)
+    }
+
+    // Manejo de respuesta general
+    if ((response as any).type === 'success') {
+      if (this.characteristicValues.length > 0) {
+        await this.saveCharacteristicValues()
+      }
+
+      this.$toast.add({
+        severity: 'success',
+        summary: this.supply.supplyId ? this.t('supply_updated') : this.t('supply_created'),
+        detail: (response as any).message || 'Insumo guardado correctamente',
+        life: 5000,
+      })
+
+      if (this.clickOnSave) {
+        this.clickOnSave(this.supply)
+      }
+
+      // Emitir evento para notificar al componente padre
+      this.$emit('save', this.supply)
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: this.t('error'),
+        detail: (response as any).message || this.t('error_saving_supply'),
+        life: 5000,
+      })
+    }
+  } catch (error) {
+    console.error('Error saving supply:', error)
+    this.$toast.add({
+      severity: 'error',
+      summary: this.t('error'),
+      detail: this.t('error_saving_supply'),
+      life: 5000,
+    })
+  } finally {
+    this.isLoading = false
+  }
+}
+,
     handlerClickOnClose() {
       if (this.clickOnClose) {
         this.clickOnClose()

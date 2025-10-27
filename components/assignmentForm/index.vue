@@ -88,19 +88,22 @@
     </div>
 
     <div class="form-actions">
-      <Button
-        :label="t('cancel')"
-        icon="pi pi-times"
-        class="p-button-text"
-        @click="handlerClickOnClose"
-      />
-      <Button
+      <button
+      v-if="assignment && canUpdate"
         :label="assignment.employeeSupplyId ? t('update') : t('create')"
         icon="pi pi-check"
-        class="p-button-primary"
+        class="btn btn-primary btn-block"
         :loading="isLoading"
-        @click="onSave"
-      />
+        @click="onSave">
+
+
+        <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+            fill="#ffffff" class="fill-212121"></path>
+        </svg>
+        {{ $t('save') }}
+      </Button>
     </div>
   </div>
 </template>

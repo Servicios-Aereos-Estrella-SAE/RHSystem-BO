@@ -51,6 +51,7 @@
                     option-value="value"
                     :placeholder="t('select_status')"
                     class="filter-dropdown"
+                    show-clear
                     @change="handlerSearchSupplies"
                   />
                 </div>

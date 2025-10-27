@@ -116,94 +116,109 @@ export default defineComponent({
     },
 
     async onSave() {
-      this.submitted = true
-      this.isLoading = true
+  this.submitted = true
+  this.isLoading = true
 
-      if (!this.selectedEmployeeId || !this.assignment.employeeSupplyStatus) {
-        this.isLoading = false
-        return
+  if (!this.selectedEmployeeId || !this.assignment.employeeSupplyStatus) {
+    this.isLoading = false
+    return
+  }
+
+  // Verificar si el supply ya está asignado a otro empleado
+  if (this.isSupplyAlreadyAssigned && !this.assignment.employeeSupplyId) {
+    this.$toast.add({
+      severity: 'warn',
+      summary: this.t('warning'),
+      detail: this.t('supply_already_assigned'),
+      life: 5000,
+    })
+    this.isLoading = false
+    return
+  }
+
+  // Validar campos de retiro si es necesario
+  if (this.assignment.employeeSupplyStatus === 'retired' &&
+      (!this.assignment.employeeSupplyRetirementReason || !this.assignment.employeeSupplyRetirementDate)) {
+    this.isLoading = false
+    return
+  }
+
+  try {
+    let response
+
+    // 🔹 Lógica para CREACIÓN (POST)
+    if (!this.assignment.employeeSupplyId) {
+      const createPayload: any = {
+        employeeId: this.selectedEmployeeId,
+        supplyId: this.supplyId, // ✅ En creación SÍ se envía supplyId
+        employeeSupplyStatus: this.assignment.employeeSupplyStatus
       }
 
-      // Verificar si el supply ya está asignado a otro empleado
-      if (this.isSupplyAlreadyAssigned && !this.assignment.employeeSupplyId) {
-        this.$toast.add({
-          severity: 'warn',
-          summary: this.t('warning'),
-          detail: this.t('supply_already_assigned'),
-          life: 5000,
-        })
-        this.isLoading = false
-        return
+      response = await this.employeeSupplyService.create(createPayload)
+    }
+    // 🔹 Lógica para ACTUALIZACIÓN (PUT)
+    else {
+      const updatePayload: any = {
+        employeeId: this.selectedEmployeeId,
+        employeeSupplyStatus: this.assignment.employeeSupplyStatus
+        // ❌ NO enviar supplyId en actualizaciones
       }
 
-      // Validar campos de retiro si es necesario
-      if (this.assignment.employeeSupplyStatus === 'retired' &&
-          (!this.assignment.employeeSupplyRetirementReason || !this.assignment.employeeSupplyRetirementDate)) {
-        this.isLoading = false
-        return
+      // Solo incluir campos de retiro si el estado es "retired"
+      if (this.assignment.employeeSupplyStatus === 'retired') {
+        updatePayload.employeeSupplyRetirementReason = this.assignment.employeeSupplyRetirementReason
+        updatePayload.employeeSupplyRetirementDate = this.assignment.employeeSupplyRetirementDate
+      } else {
+        // Para otros estados, limpiar campos de retiro
+        updatePayload.employeeSupplyRetirementReason = null
+        updatePayload.employeeSupplyRetirementDate = null
       }
 
-      try {
-        // Asignar valores
-        this.assignment.employeeId = this.selectedEmployeeId
-        this.assignment.supplyId = this.supplyId
+      response = await this.employeeSupplyService.update(
+        this.assignment.employeeSupplyId,
+        updatePayload
+      )
+    }
 
-        let response
+    // 🔹 Mostrar mensaje dinámico según la acción
+    if ((response as any).type === 'success') {
+      const messageKey = this.assignment.employeeSupplyStatus === 'retired'
+        ? 'assignment_retired'
+        : (this.assignment.employeeSupplyId ? 'assignment_updated' : 'assignment_created')
 
-        // 🔹 Lógica mejorada para retiro o actualización
-        if (this.assignment.employeeSupplyId) {
-          if (this.assignment.employeeSupplyStatus === 'retired') {
-            response = await this.employeeSupplyService.retire(
-              this.assignment.employeeSupplyId,
-              this.assignment.employeeSupplyRetirementReason,
-              this.assignment.employeeSupplyRetirementDate
-            )
-          } else {
-            response = await this.employeeSupplyService.update(
-              this.assignment.employeeSupplyId,
-              this.assignment
-            )
-          }
-        } else {
-          response = await this.employeeSupplyService.create(this.assignment)
-        }
+      this.$toast.add({
+        severity: 'success',
+        summary: this.t('success'),
+        detail: this.t(messageKey),
+        life: 5000,
+      })
 
-        // 🔹 Mostrar mensaje dinámico según la acción
-        if ((response as any).type === 'success') {
-          const messageKey = this.assignment.employeeSupplyStatus === 'retired'
-            ? 'assignment_retired'
-            : (this.assignment.employeeSupplyId ? 'assignment_updated' : 'assignment_created')
-
-          this.$toast.add({
-            severity: 'success',
-            summary: this.t('success'),
-            detail: this.t(messageKey),
-            life: 5000,
-          })
-
-          if (this.clickOnSave) {
-            this.clickOnSave(this.assignment)
-          }
-        } else {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.t('error'),
-            detail: (response as any).message || this.t('error_saving_assignment'),
-            life: 5000,
-          })
-        }
-      } catch (error) {
-        console.error('Error saving assignment:', error)
-        this.$toast.add({
-          severity: 'error',
-          summary: this.t('error'),
-          detail: this.t('error_saving_assignment'),
-          life: 5000,
-        })
-      } finally {
-        this.isLoading = false
+      if (this.clickOnSave) {
+        this.clickOnSave(this.assignment)
       }
-    },
+
+      // Emitir evento para notificar al componente padre
+      this.$emit('save', this.assignment)
+    } else {
+      this.$toast.add({
+        severity: 'error',
+        summary: this.t('error'),
+        detail: (response as any).message || this.t('error_saving_assignment'),
+        life: 5000,
+      })
+    }
+  } catch (error) {
+    console.error('Error saving assignment:', error)
+    this.$toast.add({
+      severity: 'error',
+      summary: this.t('error'),
+      detail: this.t('error_saving_assignment'),
+      life: 5000,
+    })
+  } finally {
+    this.isLoading = false
+  }
+},
 
     handlerClickOnClose() {
       if (this.clickOnClose) {
