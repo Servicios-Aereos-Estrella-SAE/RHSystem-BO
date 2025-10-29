@@ -653,8 +653,8 @@ export default defineComponent({
     },
     loadSortingPreferences() {
       if (process.client) {
-        const savedSortBy = localStorage.getItem('employees_sortBy')
-        const savedSortOrder = localStorage.getItem('employees_sortOrder')
+        const savedSortBy = localStorage.getItem('employees_sortBy') || 'name'
+        const savedSortOrder = localStorage.getItem('employees_sortOrder') || 'ascend'
 
         // Valores predeterminados: orden ascendente por nombre
         this.sortBy = savedSortBy || 'name'

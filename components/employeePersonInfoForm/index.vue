@@ -219,9 +219,11 @@
                       </svg>
                     </Button>
                   </div><br>
-                </div><small style="position: absolute;" class="p-error"
-                  v-if="submitted && !employeeSpouse.employeeSpouseBirthday">{{ $t('birthday') }} {{ $t('is_required')
-                  }}</small>
+                </div>
+                <small style="position: absolute;" class="p-error"
+                  v-if="submitted && !employeeSpouse.employeeSpouseBirthday">
+                  {{ $t('birthday') }} {{ $t('is_required')}}
+                </small>
               </div>
 
             </div>
@@ -232,7 +234,6 @@
               {{ $t('children_information') }}
             </h2>
             <div class="head-page">
-              <div></div>
               <Button v-if="!isDeleted && canManageUserResponsible" class="btn btn-block" @click="addNewChildren">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
@@ -262,7 +263,6 @@
               {{ $t('emergency_contact_information') }}
             </h2>
             <div class="head-page">
-              <div></div>
               <Button v-if="!isDeleted && canManageUserResponsible" class="btn btn-block" @click="addNewEmergencyContact">
                 <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
                   xmlns="http://www.w3.org/2000/svg">
@@ -295,7 +295,7 @@
           </div>
 
           <!-- Sección de información médica -->
-          <div class="medical-condition-info">
+          <div class="medical-condition-info" hidden>
             <h2>
               {{ $t('medical_condition_information') }}
             </h2>
@@ -346,6 +346,7 @@
           :dismissable="false" header="Employee form" position="right" class="children-form-sidebar"
           :showCloseIcon="true">
           <div v-if="employee && employee.employeeId > 0">
+            <br>
             <employeeModalInfoCard :employee="employee" />
           </div>
           <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted" @save="onSaveChildren"
@@ -356,6 +357,7 @@
           :dismissable="false" header="Emergency Contact Form" position="right" class="emergency-contact-form-sidebar"
           :showCloseIcon="true">
           <div v-if="employee && employee.employeeId > 0">
+            <br>
             <employeeModalInfoCard :employee="employee" />
           </div>
           <EmployeeEmergencyContactForm
@@ -413,7 +415,7 @@
 
   .children-form-sidebar {
     width: 100% !important;
-    max-width: 45rem !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
@@ -423,6 +425,7 @@
   .medical-condition-form-sidebar {
     width: 100% !important;
     max-width: 60rem !important;
+
     @media screen and (max-width: $sm) {
       width: 100% !important;
     }
@@ -430,7 +433,7 @@
 
   .emergency-contact-form-sidebar {
     width: 100% !important;
-    max-width: 45rem !important;
+    max-width: 30rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
