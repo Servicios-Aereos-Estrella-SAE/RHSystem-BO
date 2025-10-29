@@ -1,37 +1,73 @@
 @import '/resources/styles/variables.scss';
 
-.folder {
-  box-sizing: border-box;
+.folder-container {
   position: relative;
-  display: grid;
-  grid-template-columns: 4rem auto;
-  gap: 0.5rem;
-  border: $border;
-  border-radius: $radius;
-  cursor: pointer;
 
-  .icon {
+  .folder {
     box-sizing: border-box;
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: $gray;
-    min-height: 4rem;
+    display: grid;
+    grid-template-columns: 4rem auto;
+    gap: 0.5rem;
+    border: $border;
     border-radius: $radius;
+    cursor: pointer;
 
-    svg {
-      width: 2rem;
+    .icon {
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: $gray;
+      min-height: 4rem;
+      border-radius: $radius;
+
+      svg {
+        width: 2rem;
+      }
+    }
+
+    .folder-name {
+      display: flex;
+      align-items: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      box-sizing: border-box;
+      padding: 1rem;
+      padding-left: 0;
     }
   }
 
-  .folder-name {
-    display: flex;
-    align-items: center;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    box-sizing: border-box;
-    padding: 1rem;
-    padding-left: 0;
+  .folder-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .btn-add-subfolder {
+      padding: 0.25rem;
+      min-width: auto;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: none;
+
+      svg {
+        width: 12px;
+        height: 12px;
+        fill: white;
+      }
+
+      &:hover {
+        background: var(--primary-color-dark);
+      }
+    }
+  }
+
+  &:hover .folder-actions {
+    opacity: 1;
   }
 }

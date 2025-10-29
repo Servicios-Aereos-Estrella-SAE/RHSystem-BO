@@ -54,6 +54,8 @@ export default defineComponent({
     proceedingFileTypeProperty: null as ProceedingFileTypePropertyInterface | null,
     activeSwicht: true,
     localeToUse: 'en',
+    drawerAddProperty: false,
+    currentProceedingFileTypeId: null as number | null,
   }),
   computed: {
   },
@@ -387,6 +389,57 @@ export default defineComponent({
     },
     capitalizeFirstLetter(str: string): string {
       return str.charAt(0).toUpperCase() + str.slice(1)
+    },
+    showAddPropertyForm() {
+      if (this.proceedingFile && this.proceedingFile.proceedingFileTypeId) {
+        this.currentProceedingFileTypeId = this.proceedingFile.proceedingFileTypeId
+        this.drawerAddProperty = true
+      }
+    },
+    onPropertyAdded(newProperty: any) {
+      // Recargar las categorías para mostrar la nueva propiedad
+      this.drawerAddProperty = false
+      this.getCategoriesEmployee()
+    },
+    onPropertyCancel() {
+      this.drawerAddProperty = false
+    },
+    async deleteProperty(property: any) {
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
+      try {
+        const proceedingFileTypePropertyService = new ProceedingFileTypePropertyService()
+        const response = await proceedingFileTypePropertyService.delete(property.proceedingFileTypePropertyId)
+
+        if (response.status === 200 || response.status === 204) {
+          this.$toast.add({
+            severity: 'success',
+            summary: this.$t('success'),
+            detail: this.$t('property_deleted_successfully'),
+            life: 3000,
+          })
+
+          // Recargar las categorías para actualizar la lista
+          this.getCategoriesEmployee()
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.$t('error'),
+            detail: response._data?.message || this.$t('error_deleting_property'),
+            life: 5000,
+          })
+        }
+      } catch (error) {
+        this.$toast.add({
+          severity: 'error',
+          summary: this.$t('error'),
+          detail: this.$t('error_deleting_property'),
+          life: 5000,
+        })
+      } finally {
+        myGeneralStore.setFullLoader(false)
+      }
     }
   }
 })
