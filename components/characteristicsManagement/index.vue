@@ -31,14 +31,24 @@
         :key="characteristic.supplieCaracteristicId ?? 0"
         class="characteristic-item"
       >
-        <CharacteristicCard
-          :characteristic="characteristic"
-          :can-update="canUpdate"
-          :can-delete="canDelete"
-          :is-deleting="isDeleting"
-          @click-edit="onEditCharacteristic"
-          @click-delete="onDeleteCharacteristic"
-        />
+        <div class="characteristic-item-content">
+          <p>{{ characteristic.supplieCaracteristicName }}</p>
+          <p>{{ characteristic.supplieCaracteristicType }}</p>
+        </div>
+        <div class="characteristic-item-actions">
+          <Button
+            :label="t('edit')"
+            icon="pi pi-pencil"
+            class="btn btn-block"
+            @click="onEditCharacteristic"
+          />
+          <Button
+            :label="t('delete')"
+            icon="pi pi-trash"
+            class="btn btn-block"
+            @click="onDeleteCharacteristic"
+          />
+        </div>
       </div>
     </div>
 

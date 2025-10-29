@@ -806,5 +806,11 @@
   "select_retirement_date": "Select retirement date",
   "retirement_date_required": "Retirement date is required",
   "retirement_information": "Retirement information",
-  "supply_deleted_successfully": "Supply deleted successfully"
+  "supply_deleted_successfully": "Supply deleted successfully",
+  "characteristic_updated":"Characteristic Updated",
+  "select_characteristic_type":"Select characteristic type",
+  "select_option":"Select option",
+  "deactivation_information":"Deactivation information",
+  "assignment_saved_successfully":"Assignament saved successfully",
+  "supply_type_updated":"Supply type updated"
 }

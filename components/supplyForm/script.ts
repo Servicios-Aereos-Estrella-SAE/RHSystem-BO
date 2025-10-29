@@ -1,4 +1,4 @@
-import { defineComponent, ref, watch, toRaw, onMounted } from 'vue'
+import { defineComponent, ref, watch, toRaw, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'primevue/usetoast'
 import type { PropType } from 'vue'
@@ -33,6 +33,8 @@ export default defineComponent({
     // ⚙️ Estado reactivo
     const submitted = ref(false)
     const isLoading = ref(false)
+    const displayForm = ref(false)
+    const characteristicDateEditModes = ref<Record<number, boolean>>({})
     const supplyStatusOptions = SUPPLY_STATUS_OPTIONS
     const supplyCharacteristics = ref<SupplyCharacteristicInterface[]>([])
     const characteristicValues = ref<SupplyCharacteristicValueInterface[]>([])
@@ -41,6 +43,14 @@ export default defineComponent({
       { label: 'Sí', value: 'true' },
       { label: 'No', value: 'false' },
     ]
+
+    // Computed para manejar la conversión de número a string
+    const supplyFileNumberDisplay = computed({
+      get: () => props.supply.supplyFileNumber?.toString() || '',
+      set: (value: string) => {
+        props.supply.supplyFileNumber = value ? Number(value) : 0
+      }
+    })
 
     watch(
       () => props.supply.supplyFileNumber,
@@ -119,7 +129,19 @@ export default defineComponent({
       }
     }
 
-    function getCharacteristicValue(characteristicId: number) {
+    function getCharacteristicValue(characteristicId: number | null) {
+      if (!characteristicId) {
+        return {
+          supplieCaracteristicValueId: null,
+          supplieCaracteristicId: null,
+          supplieId: props.supply.supplyId!,
+          supplieCaracteristicValueValue: '',
+          supplieCaracteristicValueCreatedAt: null,
+          supplieCaracteristicValueUpdatedAt: null,
+          deletedAt: null,
+        }
+      }
+
       let value = characteristicValues.value.find(
         (v) => v.supplieCaracteristicId === characteristicId
       )
@@ -289,21 +311,107 @@ export default defineComponent({
       props.clickOnClose?.()
     }
 
+    // 📅 Funciones para manejo de fecha
+    const supplyDeactivationDateDisplay = computed(() => {
+      if (!props.supply.supplyDeactivationDate) return ''
+
+      const date = props.supply.supplyDeactivationDate instanceof Date
+        ? props.supply.supplyDeactivationDate
+        : new Date(props.supply.supplyDeactivationDate)
+
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    })
+
+    function onEditDate() {
+      displayForm.value = true
+    }
+
+    function onSaveDate() {
+      displayForm.value = false
+    }
+
+    function cancelEditDate() {
+      displayForm.value = false
+    }
+
+    function onDeleteDate() {
+      props.supply.supplyDeactivationDate = null
+    }
+
+    // 📅 Funciones para manejo de fechas de características
+    function getCharacteristicDateEditMode(characteristicId: number | null): boolean {
+      if (!characteristicId) return false
+      return characteristicDateEditModes.value[characteristicId] || false
+    }
+
+    function getCharacteristicDateDisplay(characteristicId: number | null): string {
+      if (!characteristicId) return ''
+      const value = getCharacteristicValue(characteristicId)
+      if (!value.supplieCaracteristicValueValue) return ''
+
+      const date = new Date(value.supplieCaracteristicValueValue)
+      if (isNaN(date.getTime())) return value.supplieCaracteristicValueValue
+
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    }
+
+    function onEditCharacteristicDate(characteristicId: number | null) {
+      if (!characteristicId) return
+      characteristicDateEditModes.value[characteristicId] = true
+    }
+
+    function onSaveCharacteristicDate(characteristicId: number | null) {
+      if (!characteristicId) return
+      characteristicDateEditModes.value[characteristicId] = false
+    }
+
+    function cancelEditCharacteristicDate(characteristicId: number | null) {
+      if (!characteristicId) return
+      characteristicDateEditModes.value[characteristicId] = false
+    }
+
+    function onDeleteCharacteristicDate(characteristicId: number | null) {
+      if (!characteristicId) return
+      const value = getCharacteristicValue(characteristicId)
+      value.supplieCaracteristicValueValue = ''
+    }
+
     // 🔹 Return para template
     return {
       t,
       toast,
       submitted,
       isLoading,
+      displayForm,
       supplyStatusOptions,
       supplyCharacteristics,
       characteristicValues,
       allFileNumbers,
       booleanOptions,
+      supplyFileNumberDisplay,
+      supplyDeactivationDateDisplay,
       validateSupplyFileNumber,
       onSave,
       handlerClickOnClose,
       getCharacteristicValue,
+      onEditDate,
+      onSaveDate,
+      cancelEditDate,
+      onDeleteDate,
+      getCharacteristicDateEditMode,
+      getCharacteristicDateDisplay,
+      onEditCharacteristicDate,
+      onSaveCharacteristicDate,
+      cancelEditCharacteristicDate,
+      onDeleteCharacteristicDate,
     }
   },
 })

@@ -1,132 +1,90 @@
 @import '/resources/styles/variables.scss';
+
 .p-sidebar-right .p-sidebar {
   width: 40rem !important;
   height: 100%;
 }
 
 .supply-type-form {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  margin-top: 3rem;
+  position: relative;
 
-  .form-content {
-    flex: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
+  .form-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    padding: 0.5rem 0;
 
-    .form-section {
-      margin-bottom: 2rem;
+    @media screen and (max-width: $tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
 
-      .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #2c3e50;
-        margin: 0 0 1.5rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e9ecef;
-      }
+  .input-box {
+    box-sizing: border-box;
 
-      .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
-
-        .form-field {
-          display: flex;
-          flex-direction: column;
-
-          &.full-width {
-            grid-column: 1 / -1;
-          }
-
-          .field-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-
-            &.required::after {
-              content: ' *';
-              color: #e74c3c;
-            }
-          }
-
-          .form-input,
-          .form-textarea {
-            width: 100%;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-            &:focus {
-              border-color: #007bff;
-              box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-            }
-
-            &.p-invalid {
-              border-color: #e74c3c;
-            }
-          }
-
-          .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-          }
-
-          .field-help {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-          }
-
-          .p-error {
-            font-size: 0.8rem;
-            color: #e74c3c;
-            margin-top: 0.25rem;
-          }
-        }
+    .password-box {
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: 1fr 10rem;
+      gap: .5rem;
+      margin-top: 0.5rem;
+      @media screen and (max-width: $sm) {
+        grid-template-columns: 1fr 8rem;
       }
     }
   }
 
-  .form-actions {
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    display: flex;
-    justify-content: flex-end;
+  .inputs-group {
+    box-sizing: border-box;
+    border: $border-dashed;
+    border-radius: $radius;
+    padding: 1rem;
+    margin: 0 0.5rem;
+  }
+
+  .group-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    align-items: start;
+
+    @media screen and (max-width: $tablet) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .group-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 
-    .p-button {
-      min-width: 120px;
-      width: 100%;
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 1.5rem;
-      overflow-y: auto;
-      box-sizing: border-box;
-      height: 100%;
-      border-radius: $radius;
+    @media screen and (max-width: $tablet) {
+      grid-template-columns: 1fr;
     }
   }
-}
 
-// Responsive design
-@media (max-width: 768px) {
-  .supply-type-form {
-    .form-content .form-section .form-grid {
-      grid-template-columns: 1fr;
-      gap: 1rem;
+  .box-tools-footer {
+    box-sizing: border-box;
+    display: flex;
+    grid-auto-flow: dense;
+    justify-content: center;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
+    margin: 1rem 0.5rem 0;
+    padding: 0.5rem 0;
+    button {
+      width: 100%;
     }
+  }
 
-    .form-actions {
-      flex-direction: column;
-
-      .p-button {
-        width: 100%;
-      }
-    }
+  .field-help {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    line-height: 1.2;
+    max-width: 100%;
+    word-wrap: break-word;
   }
 }

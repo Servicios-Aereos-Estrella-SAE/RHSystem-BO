@@ -119,3 +119,27 @@
     }
   }
 }
+
+.characteristic-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.characteristic-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.characteristic-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.characteristic-item-content p {
+  margin: 0;
+  font-size: 0.9rem;
+}
