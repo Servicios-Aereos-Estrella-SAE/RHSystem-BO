@@ -61,7 +61,7 @@
             </button>
           </div>
 
-          <div class="box">
+          <div class="box" v-if="role">
             <h2>
               Modules
             </h2>

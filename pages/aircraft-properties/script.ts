@@ -23,11 +23,11 @@ export default defineComponent({
     canDelete: false
   }),
   computed: {},
-  created() {},
+  created() { },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
-    const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
+    const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
       this.canCreate = true
@@ -84,7 +84,8 @@ export default defineComponent({
       this.drawerAircraftPropertyForm = true
     },
     onEdit(aircraftProperty: AircraftPropertyInterface) {
-      this.aircraftProperty = { ...aircraftProperty,
+      this.aircraftProperty = {
+        ...aircraftProperty,
         aircraftPropertiesHourlyRate: Number(aircraftProperty.aircraftPropertiesHourlyRate),
         aircraftPropertiesLandingCostBase: Number(aircraftProperty.aircraftPropertiesLandingCostBase),
         aircraftPropertiesLandingCostNational: Number(aircraftProperty.aircraftPropertiesLandingCostNational),
@@ -93,7 +94,7 @@ export default defineComponent({
         aircraftPropertiesOvernightStayInternational: Number(aircraftProperty.aircraftPropertiesOvernightStayInternational),
         aircraftPropertiesFuelSurcharge: Number(aircraftProperty.aircraftPropertiesFuelSurcharge),
 
-       };
+      };
       this.drawerAircraftPropertyForm = true;
     },
     onDelete(aircraftProperty: AircraftPropertyInterface) {
@@ -141,7 +142,7 @@ export default defineComponent({
         this.$forceUpdate();
         myGeneralStore.setFullLoader(false)
       }
-      
+
       myGeneralStore.setFullLoader(false)
       this.drawerAircraftPropertyForm = false;
     }

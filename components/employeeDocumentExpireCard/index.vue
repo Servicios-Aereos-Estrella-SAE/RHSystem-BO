@@ -3,10 +3,10 @@
     <div class="exp-card-container" @click="toggleMenu(false)">
       <div class="calendar-container" :class="isExpired ? 'expired': 'next-expire'">
         <div class="calendar-header" :class="isExpired ? 'expired': 'next-expire'">
-          {{new Date(document.proceedingFileExpirationAt).toLocaleString(localeToUse, { month: 'short' }) }}
+          {{ expireDateMonthShort(document.proceedingFileExpirationAt) }}
         </div>
         <div class="calendar-day">
-          {{ new Date(document.proceedingFileExpirationAt).getDate().toString().padStart(2, '0') }}
+          {{ expireDateNumberDay(document.proceedingFileExpirationAt).toString().padStart(2, '0') }}
         </div>
       </div>
 

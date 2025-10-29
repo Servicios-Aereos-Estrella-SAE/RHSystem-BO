@@ -261,54 +261,35 @@
             <h2>
               {{ $t('emergency_contact_information') }}
             </h2>
+            <div class="head-page">
+              <div></div>
+              <Button v-if="!isDeleted && canManageUserResponsible" class="btn btn-block" @click="addNewEmergencyContact">
+                <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                    fill="#88a4bf" class="fill-000000"></path>
+                </svg>
+                {{ $t('add_emergency_contact') }}
+              </Button>
+            </div>
 
-            <div class="inputs-group">
-              <div class="group-3">
-                <div class="input-box">
-                  <label for="employeeEmergencyContactFirstname">{{ $t('first_name') }}</label>
-                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactFirstname"
-                    :placeholder="`${$t('enter')} ${$t('first_name')}`"
-                    :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactFirstname">{{
-                    $t('first_name') }} {{ $t('is_required') }}</small>
-                </div>
-                <div class="input-box">
-                  <label for="employeeEmergencyContactLastname">{{ $t('last_name') }}</label>
-                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactLastname"
-                    :placeholder="`${$t('enter')} ${$t('last_name')}`"
-                    :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactLastname">{{
-                    $t('last_name') }} {{ $t('is_required') }}</small>
-                </div>
-                <div class="input-box">
-                  <label for="employeeEmergencyContactSecondLastName">{{ $t('second_last_name') }}</label>
-                  <InputText v-model="employeeEmergencyContact.employeeEmergencyContactSecondLastname"
-                    :placeholder="`${$t('enter')} ${$t('second_last_name')}`"
-                    :disabled="isDeleted || !canManageUserResponsible" />
-                  <small class="p-error"
-                    v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactSecondLastname">{{
-                    $t('second_last_name') }}
-                    {{ $t('is_required') }}</small>
-                </div>
-              </div>
-              <div class="input-box">
-                <label for="employeeEmergencyContactPhone">{{ $t('phone') }}</label>
-                <InputMask v-model="employeeEmergencyContact.employeeEmergencyContactPhone" mask="(999) 999 99 99"
-                  :placeholder="`${$t('enter')} ${$t('phone')}`" :disabled="isDeleted || !canManageUserResponsible" />
-                <small class="p-error"
-                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactPhone">{{
-                  $t('phone') }} {{ $t('is_required') }}</small>
-              </div>
-              <div class="input-box">
-                <label for="employeeEmergencyContactRelationship">{{ $t('relationship') }}</label>
-                <InputText v-model="employeeEmergencyContact.employeeEmergencyContactRelationship"
-                  :placeholder="`${$t('enter')} ${$t('relationship')}`"
-                  :disabled="isDeleted || !canManageUserResponsible" />
-                <small class="p-error"
-                  v-if="submitted && emergencyContactIsRequired && !employeeEmergencyContact.employeeEmergencyContactRelationship">{{
-                  $t('relationship') }}{{ $t('is_required') }}</small>
+            <div v-if="employeeEmergencyContactList.length > 0" class="employee-emergency-contact-card-wrapper">
+              <EmployeeEmergencyContactCard
+                v-for="(employeeEmergencyContact, index) in employeeEmergencyContactList"
+                :key="`employee-emergency-contact-${employeeEmergencyContact.employeeEmergencyContactId}-${index}`"
+                :employeeEmergencyContact="employeeEmergencyContact"
+                :can-update="canUpdate"
+                :can-delete="canDelete"
+                :canManageUserResponsible="canManageUserResponsible"
+                :isDeleted="isDeleted"
+                :click-on-edit="() => { onEditEmployeeEmergencyContact(employeeEmergencyContact) }"
+                :click-on-delete="() => { onDeleteEmployeeEmergencyContact(employeeEmergencyContact) }"
+              />
+            </div>
+            <div v-else class="empty">
+              <div>
+                {{ $t('no_emergency_contacts_registered_yet') }}
               </div>
             </div>
           </div>
@@ -370,6 +351,22 @@
           <employeeChildrenInfoForm :employeeChildren="employeeChildren" :isDeleted="isDeleted" @save="onSaveChildren"
             :canManageUserResponsible="canManageUserResponsible" />
         </Sidebar>
+
+        <Sidebar v-model:visible="drawerEmployeeEmergencyContactForm" :blockScroll="true" :closeOnEscape="false"
+          :dismissable="false" header="Emergency Contact Form" position="right" class="emergency-contact-form-sidebar"
+          :showCloseIcon="true">
+          <div v-if="employee && employee.employeeId > 0">
+            <employeeModalInfoCard :employee="employee" />
+          </div>
+          <EmployeeEmergencyContactForm
+            :employeeEmergencyContact="employeeEmergencyContact"
+            :employeeId="employee.employeeId"
+            :isDeleted="isDeleted"
+            @save="onSaveEmergencyContact"
+            @cancel="onCancelEmergencyContactForm"
+            :canManageUserResponsible="canManageUserResponsible"
+          />
+        </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeChildrenDelete" @confirmDelete="confirmDeleteEmployeeChildren"
             @cancelDelete="onCancelEmployeeChildrenDelete" />
@@ -388,6 +385,11 @@
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeMedicalConditionDelete" @confirmDelete="confirmDeleteEmployeeMedicalCondition"
             @cancelDelete="onCancelEmployeeMedicalConditionDelete" />
+        </transition>
+
+        <transition name="page">
+          <confirmDelete v-if="drawerEmployeeEmergencyContactDelete" @confirmDelete="confirmDeleteEmployeeEmergencyContact"
+            @cancelDelete="onCancelEmployeeEmergencyContactDelete" />
         </transition>
       </div>
     </div>
@@ -421,6 +423,14 @@
   .medical-condition-form-sidebar {
     width: 100% !important;
     max-width: 60rem !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .emergency-contact-form-sidebar {
+    width: 100% !important;
+    max-width: 45rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
