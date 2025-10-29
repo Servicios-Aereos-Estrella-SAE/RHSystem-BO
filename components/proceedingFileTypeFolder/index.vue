@@ -14,7 +14,7 @@
         }}
       </div>
     </div>
-    <div v-if="canManageFiles" class="folder-actions">
+    <!-- <div v-if="canManageFiles" class="folder-actions">
       <Button class="btn btn-add-subfolder" @click.stop="addSubfolder" v-tooltip="$t('add_subfolder')">
         <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -22,7 +22,7 @@
             fill="#88a4bf" class="fill-212121"></path>
         </svg>
       </Button>
-    </div>
+    </div> -->
   </div>
 </template>
 

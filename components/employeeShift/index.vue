@@ -63,45 +63,12 @@
       </Button>
     </div>
     <div class="head-exception">
-      <div class="weeks">
-        <div class="week-box">
-          <h4>{{ $t('month') }}: {{ monthName }}</h4>
-
-          <div class="week-row">
-            <span class="label">{{ $t('hours') }}:</span>
-            <span class="value">{{ hoursAssignedMonth }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="head-exception">
-      <div class="weeks-container">
-        <div v-for="week in weeks" :key="week.weekNumber" class="week-box">
-          <h5>{{ $t('week') }}: {{ week.weekNumber }}</h5>
-
-          <div class="week-row">
-            <span class="label">{{ $t('start') }}:</span>
-            <span class="value">{{ getDateFormatted(week.start) }}</span>
-          </div>
-
-          <div class="week-row">
-            <span class="label">{{ $t('end') }}:</span>
-            <span class="value">{{ getDateFormatted(week.end) }}</span>
-          </div>
-
-          <div class="week-row">
-            <span class="label">{{ $t('hours') }}:</span>
-            <span class="value">{{ week.hours }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="head-exception">
-      <div>
-
-      </div>
-
-      <Button v-if="!displayInputCalendar && canManageExceptionRequest" title="Excepciones" class="btn"
+      <Button :title="$t('shifts_control.toggle_hours_assigned')" class="btn btn-toggle-assigned-hours" @click="toggleWeeksContainer">
+        <svg enable-background="new 0 0 64 64" height="64px" id="Layer_1" version="1.1" viewBox="0 0 64 64" width="64px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path d="M28.371,31.879c0,2.19,1.777,3.966,3.966,3.966c1.538,0,2.856-0.884,3.514-2.163l0.011,0.01l7.24-13.062l-12.71,7.794   l0.012,0.012C29.197,29.117,28.371,30.395,28.371,31.879z"/><path d="M48.315,12.981C44.251,9.429,39,7.161,33,6.822v6.027c5,0.318,7.946,1.906,10.904,4.384L48.315,12.981z"/><path d="M51.146,30h6.02c-0.404-6-2.751-10.93-6.395-14.97l-4.259,4.233C49.078,22.203,50.766,26,51.146,30z"/><path d="M51.174,33c-0.637,10-8.922,17.931-19.042,17.931c-10.535,0-19.421-8.544-19.421-19.078C12.711,21.825,21,13.62,30,12.85   V6.823C17,7.602,6.711,18.54,6.711,31.879c0,13.843,11.42,25.052,25.263,25.052C45.406,56.931,56.564,46,57.205,33H51.174z"/></g></svg>
+        {{ $t('shifts_control.toggle_hours_assigned') }}
+      </Button>
+      <div></div>
+      <Button v-if="!displayInputCalendar && canManageExceptionRequest && isRoot" :title="$t('exception_requests')" class="btn"
         @click="onClickException">
         <svg data-v-ae6e64c4="" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path data-v-ae6e64c4=""
@@ -134,6 +101,41 @@
         {{ $t('work_disabilities') }}
       </Button>
     </div>
+
+    <transition name="slide-fade">
+      <div v-show="showWeeksContainer" class="weeks-container-wrapper">
+        <div class="weeks-container">
+          <div class="week-box">
+            <h5>
+              {{ $t('month') }}: {{ monthName }}
+            </h5>
+            <div class="week-row">
+              <span class="label">{{ $t('hours') }}:</span>
+              <span class="value">{{ hoursAssignedMonth }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="weeks-container">
+          <div v-for="week in weeks" :key="week.weekNumber" class="week-box">
+            <h5>{{ $t('week') }}: {{ week.weekNumber }}</h5>
+            <div class="week-row">
+              <span class="label">{{ $t('start') }}:</span>
+              <span class="value">{{ getDateFormatted(week.start) }}</span>
+            </div>
+
+            <div class="week-row">
+              <span class="label">{{ $t('end') }}:</span>
+              <span class="value">{{ getDateFormatted(week.end) }}</span>
+            </div>
+
+            <div class="week-row">
+              <span class="label">{{ $t('hours') }}:</span>
+              <span class="value">{{ week.hours }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
 
     <div v-if="employeeCalendar.length > 0 && displayCalendar" class="calendar-wrapper">
       <EmployeeCalendarShiftDayControl v-for="(item, index) in employeeCalendar" :key="`shift-day-${index}`"

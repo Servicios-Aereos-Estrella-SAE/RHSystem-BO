@@ -80,7 +80,8 @@ export default defineComponent({
     withOutLimitDays: false,
     localeToUse: 'en',
     weeks: [] as WeekInfoInterface[],
-    hoursAssignedMonth: 0
+    hoursAssignedMonth: 0,
+    showWeeksContainer: false
   }),
   computed: {
     isRoot() {
@@ -553,6 +554,9 @@ export default defineComponent({
         .setZone('UTC-6')
         .setLocale(this.localeToUse)
         .toFormat('DD')
+    },
+    toggleWeeksContainer() {
+      this.showWeeksContainer = !this.showWeeksContainer
     }
   }
 })

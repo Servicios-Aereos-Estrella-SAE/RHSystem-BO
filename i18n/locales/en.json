@@ -755,5 +755,8 @@
   "sort_by": "Sort by",
   "select_sort_option": "Select sort option",
   "number": "Number",
-  "all_records": "All"
+  "all_records": "All",
+  "shifts_control": {
+    "toggle_hours_assigned": "Display hours assigned"
+  }
 }

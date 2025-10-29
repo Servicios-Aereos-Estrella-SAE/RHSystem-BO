@@ -1,10 +1,14 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { ProceedingFileTypeInterface } from '~/resources/scripts/interfaces/ProceedingFileTypeInterface';
+import Tooltip from 'primevue/tooltip';
 
 
 export default defineComponent({
   components: {
+  },
+  directives: {
+    tooltip: Tooltip
   },
   name: 'proceedingFileTypeFolder',
   props: {

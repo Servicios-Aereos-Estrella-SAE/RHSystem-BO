@@ -758,5 +758,8 @@
   "descend": "Descendente",
   "number": "Número de empleado",
   "select_records_per_page": "Seleccionar registros por página",
-  "all_records": "Todos"
+  "all_records": "Todos",
+  "shifts_control": {
+    "toggle_hours_assigned": "Mostrar horas asignadas"
+  }
 }

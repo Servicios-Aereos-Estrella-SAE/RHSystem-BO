@@ -6,7 +6,7 @@
 
     <div class="form-container">
       <div class="inputs-group">
-        <div class="group-3">
+        <div class="group-1">
           <div class="input-box">
             <label for="employeeEmergencyContactFirstname">{{ $t('first_name') }}</label>
             <InputText
@@ -19,6 +19,8 @@
               {{ $t('first_name') }} {{ $t('is_required') }}
             </small>
           </div>
+        </div>
+        <div class="group-1">
           <div class="input-box">
             <label for="employeeEmergencyContactLastname">{{ $t('last_name') }}</label>
             <InputText
@@ -46,6 +48,19 @@
         </div>
 
         <div class="input-box">
+          <label for="employeeEmergencyContactRelationship">{{ $t('relationship') }}</label>
+          <InputText
+            v-model="formData.employeeEmergencyContactRelationship"
+            :placeholder="`${$t('enter')} ${$t('relationship')}`"
+            :disabled="isDeleted || !canManageUserResponsible"
+            :invalid="submitted && !formData.employeeEmergencyContactRelationship"
+          />
+          <small class="p-error" v-if="submitted && !formData.employeeEmergencyContactRelationship">
+            {{ $t('relationship') }} {{ $t('is_required') }}
+          </small>
+        </div>
+
+        <div class="input-box">
           <label for="employeeEmergencyContactPhone">{{ $t('phone') }}</label>
           <InputMask
             v-model="formData.employeeEmergencyContactPhone"
@@ -58,31 +73,18 @@
             {{ $t('phone') }} {{ $t('is_required') }}
           </small>
         </div>
-
-        <div class="input-box">
-          <label for="employeeEmergencyContactRelationship">{{ $t('relationship') }}</label>
-          <InputText
-            v-model="formData.employeeEmergencyContactRelationship"
-            :placeholder="`${$t('enter')} ${$t('relationship')}`"
-            :disabled="isDeleted || !canManageUserResponsible"
-            :invalid="submitted && !formData.employeeEmergencyContactRelationship"
-          />
-          <small class="p-error" v-if="submitted && !formData.employeeEmergencyContactRelationship">
-            {{ $t('relationship') }} {{ $t('is_required') }}
-          </small>
-        </div>
       </div>
 
       <div class="form-actions">
         <Button
           :label="$t('cancel')"
-          severity="secondary"
+          class="btn btn-block"
           @click="onCancel"
           :disabled="isLoading"
         />
         <Button
           :label="isEditing ? $t('update') : $t('save')"
-          severity="primary"
+          class="btn btn-primary btn-block"
           @click="onSave"
           :disabled="isDeleted || !canManageUserResponsible || isLoading"
         />
