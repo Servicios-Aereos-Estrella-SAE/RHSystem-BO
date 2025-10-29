@@ -370,7 +370,7 @@ export default defineComponent({
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
 
-    const fullPath = this.$route.path
+    const fullPath = this.$route.path.replace(`/${this.$i18n.locale}/`, "/")
     const firstSegment = fullPath.split('/')[1]
 
     await this.setDefaultVisualizationMode()
@@ -1153,6 +1153,59 @@ export default defineComponent({
       } as AssistExcelFilterIncidentSummaryPayRollInterface
       await assistExcelService.getExcelIncidentSummaryPayRoll(filters)
     },
+    async getExcelPermissionsDates() {
+      await this.verifiySearchTime()
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+
+      try {
+        const range = this.getRange()
+        const assistService = new AssistService()
+
+        const response = await assistService.getExcelPermissionsDates(range.dateStart, range.dateEnd)
+
+        if (response && response.status === 200) {
+          // Crear blob del archivo Excel
+          const blob = new Blob([response._data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          })
+
+          // Crear URL del blob y descargar
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `permisos_${range.dateStart}_${range.dateEnd}.xlsx`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('success'),
+            detail: this.t('excel_downloaded_successfully'),
+            life: 5000,
+          })
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: this.t('error'),
+            detail: this.t('error_downloading_excel'),
+            life: 5000,
+          })
+        }
+      } catch (error: any) {
+        console.error('Error downloading Excel:', error)
+        this.$toast.add({
+          severity: 'error',
+          summary: this.t('error'),
+          detail: this.t('error_downloading_excel'),
+          life: 5000,
+        })
+      } finally {
+        myGeneralStore.setFullLoader(false)
+      }
+    },
     getRange() {
       const firstDay = this.weeklyStartDay[0]
       const lastDay = this.weeklyStartDay[this.weeklyStartDay.length - 1]
@@ -1191,7 +1244,7 @@ export default defineComponent({
       const yearEnd = assistExcelService.dateYear(endDay)
       const calendarDayEnd = assistExcelService.calendarDay(yearEnd, monthEnd, dayEnd)
 
-      return { title: `${this.capitalizeFirstLetter(this.$t('from'))} ${calendarDayStart} ${this.capitalizeFirstLetter(this.$t('to'))} ${calendarDayEnd}`, dateEnd: endDay }
+      return { title: `${this.capitalizeFirstLetter(this.$t('from'))} ${calendarDayStart} ${this.capitalizeFirstLetter(this.$t('to'))} ${calendarDayEnd}`, dateStart: startDay, dateEnd: endDay }
     },
     setSearchTime() {
       if (this.visualizationMode?.value === 'payroll') {

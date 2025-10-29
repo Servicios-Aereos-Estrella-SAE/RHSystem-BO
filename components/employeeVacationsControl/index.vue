@@ -5,7 +5,7 @@
       {{ $t('manage_vacations') }}
     </h1>
 
-    <vacationsPeriodCard :vacation-period="currentVacationPeriod" hideManager class="period-info"
+    <vacationsPeriodCard v-if="isReady" :vacation-period="currentVacationPeriod" hideManager class="period-info"
       :can-manage-vacation="canManageVacation" />
 
     <div class="head">

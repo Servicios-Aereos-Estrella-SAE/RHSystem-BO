@@ -27,7 +27,7 @@ export default defineComponent({
     const businessFavicon = ref(myGeneralStore.favicon)
 
     useHead({
-      titleTemplate: `${businessName.value} BO | %s`,
+      titleTemplate: `${businessName.value} RH | %s`,
       link: [
         { rel: 'icon', type: 'image/x-icon', href: businessFavicon.value }
       ]

@@ -17,8 +17,10 @@ export default defineComponent({
   },
   async mounted() {
   },
+  created() {
+  },
   methods: {
-    handlerClickManage () {
+    handlerClickManage() {
       this.$emit('manageVacations', this.vacationPeriod as VacationPeriodInterface)
     }
   }

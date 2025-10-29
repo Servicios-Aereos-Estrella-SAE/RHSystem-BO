@@ -82,10 +82,12 @@ export default defineComponent({
 
         const authUser = data.value as unknown as UserInterface
         if (authUser.role) {
-          if (authUser.role.roleManagementDays) {
-            this.startDateLimit = DateTime.now().minus({ days: authUser.role.roleManagementDays }).toJSDate()
-          } else {
+          if (authUser.role.roleManagementDays === null) {
             this.startDateLimit = DateTime.local(1999, 12, 29).toJSDate()
+          } else if (typeof authUser.role.roleManagementDays === 'number') {
+            const days = authUser.role.roleManagementDays
+            const date = DateTime.now().setZone('UTC-6')
+            this.startDateLimit = (days > 0 ? date.minus({ days }) : date).toJSDate()
           }
         }
       }
