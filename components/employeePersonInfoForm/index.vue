@@ -293,6 +293,38 @@
               </div>
             </div>
           </div>
+
+          <!-- Sección de información médica -->
+          <div class="medical-condition-info">
+            <h2>
+              {{ $t('medical_condition_information') }}
+            </h2>
+            <div class="head-page">
+              <div></div>
+              <Button v-if="!isDeleted && canManageUserResponsible" class="btn btn-block" @click="addNewMedicalCondition">
+                <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                    fill="#88a4bf" class="fill-000000"></path>
+                </svg>
+                {{ $t('add_medical_condition') }}
+              </Button>
+            </div>
+            <div v-if="employeeMedicalConditionsList.length > 0" class="employee-medical-conditions-card-wrapper">
+              <EmployeeMedicalConditionInfoCard v-for="(employeeMedicalCondition, index) in employeeMedicalConditionsList"
+                :key="`employee-medical-condition-${employeeMedicalCondition.employeeMedicalConditionId}-${index}`"
+                :employeeMedicalCondition="employeeMedicalCondition" :can-update="canUpdate" :can-delete="canDelete"
+                :canManageUserResponsible="canManageUserResponsible"
+                :click-on-edit="() => { onEditEmployeeMedicalCondition(employeeMedicalCondition) }"
+                :click-on-delete="() => { onDeleteEmployeeMedicalCondition(employeeMedicalCondition) }" />
+            </div>
+            <div v-else class="empty">
+              <div>
+                {{ $t('no_medical_conditions_registered_yet') }}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="box-tools-footer">
@@ -340,6 +372,21 @@
             @cancelDelete="onCancelEmployeeChildrenDelete" />
         </transition>
 
+        <!-- Sidebar para condiciones médicas -->
+        <Sidebar v-model:visible="drawerEmployeeMedicalConditionForm" :blockScroll="true" :closeOnEscape="false"
+          :dismissable="false" header="Formulario de condición médica" position="right" class="medical-condition-form-sidebar"
+          :showCloseIcon="true">
+          <div v-if="employee && employee.employeeId > 0">
+            <employeeModalInfoCard :employee="employee" />
+          </div>
+          <employeeMedicalConditionInfoForm :employeeMedicalCondition="employeeMedicalCondition" :isDeleted="isDeleted"
+            @save="onSaveMedicalCondition" :canManageUserResponsible="canManageUserResponsible" />
+        </Sidebar>
+        <transition name="page">
+          <confirmDelete v-if="drawerEmployeeMedicalConditionDelete" @confirmDelete="confirmDeleteEmployeeMedicalCondition"
+            @cancelDelete="onCancelEmployeeMedicalConditionDelete" />
+        </transition>
+
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeEmergencyContactDelete" @confirmDelete="confirmDeleteEmployeeEmergencyContact"
             @cancelDelete="onCancelEmployeeEmergencyContactDelete" />
@@ -368,6 +415,14 @@
     width: 100% !important;
     max-width: 45rem !important;
 
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .medical-condition-form-sidebar {
+    width: 100% !important;
+    max-width: 60rem !important;
     @media screen and (max-width: $sm) {
       width: 100% !important;
     }

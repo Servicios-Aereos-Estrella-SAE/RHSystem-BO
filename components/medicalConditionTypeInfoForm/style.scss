@@ -1,0 +1,109 @@
+@import '/resources/styles/variables.scss';
+
+.medical-condition-type-info-form {
+  .medical-condition-type-form {
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      .input-box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-weight: 600;
+          color: var(--text-color);
+        }
+
+        .properties-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+
+          label {
+            margin: 0;
+          }
+        }
+
+        .properties-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .property-item {
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 1rem;
+            background: var(--surface-card);
+
+            .property-form {
+              display: flex;
+              gap: 1rem;
+              align-items: flex-start;
+
+              .property-inputs {
+                flex: 1;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+
+                .input-group {
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.25rem;
+
+                  label {
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: var(--text-color-secondary);
+                  }
+                }
+              }
+
+              .property-actions {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+              }
+            }
+          }
+        }
+
+        .box-tools-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 1rem;
+          margin-top: 2rem;
+          padding-top: 1rem;
+          border-top: 1px solid var(--surface-border);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: $sm) {
+  .medical-condition-type-info-form {
+    .medical-condition-type-form {
+      .form-container {
+        .input-box {
+          .properties-list {
+            .property-item {
+              .property-form {
+                flex-direction: column;
+
+                .property-inputs {
+                  grid-template-columns: 1fr;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
