@@ -1,0 +1,111 @@
+@import '/resources/styles/variables.scss';
+
+.proceeding-file-type-property-manager {
+  padding: 1.5rem;
+
+  .property-manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h4 {
+      margin: 0;
+      color: var(--text-color);
+      font-weight: 600;
+    }
+
+    .btn-add-property {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background: var(--primary-color-dark);
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+
+  .properties-list {
+    .property-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid var(--surface-border);
+      border-radius: 0.375rem;
+      margin-bottom: 0.5rem;
+      background: var(--surface-card);
+
+      .property-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .property-name {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        .property-type {
+          font-size: 0.875rem;
+          color: var(--text-color-secondary);
+          background: var(--surface-100);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          display: inline-block;
+        }
+      }
+
+      .btn-delete-property {
+        padding: 0.5rem;
+        min-width: auto;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: transparent;
+        border: 1px solid var(--red-500);
+        color: var(--red-500);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: var(--red-500);
+          color: white;
+        }
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .no-properties {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-color-secondary);
+    font-style: italic;
+  }
+}
+
+.property-form-sidebar {
+  width: 100% !important;
+  max-width: 35rem !important;
+
+  @media screen and (max-width: $sm) {
+    width: 100% !important;
+  }
+}

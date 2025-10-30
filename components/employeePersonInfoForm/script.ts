@@ -23,6 +23,8 @@ import EmployeeChildrenService from '~/resources/scripts/services/EmployeeChildr
 import UserService from '~/resources/scripts/services/UserService'
 import type { EmployeeEmergencyContactInterface } from '~/resources/scripts/interfaces/EmployeeEmergencyContactInterface'
 import EmployeeEmergencyContactService from '~/resources/scripts/services/EmployeeEmergencyContactService'
+import type { EmployeeMedicalConditionInterface } from '~/resources/scripts/interfaces/EmployeeMedicalConditionInterface'
+import EmployeeMedicalConditionService from '~/resources/scripts/services/EmployeeMedicalConditionService'
 import { useMyGeneralStore } from '~/store/general'
 
 export default defineComponent({
@@ -113,6 +115,10 @@ export default defineComponent({
     drawerEmployeeEmergencyContactForm: false,
     drawerEmployeeEmergencyContactDelete: false,
     emergencyContactIsRequired: false,
+    employeeMedicalCondition: null as EmployeeMedicalConditionInterface | null,
+    drawerEmployeeMedicalConditionForm: false,
+    drawerEmployeeMedicalConditionDelete: false,
+    employeeMedicalConditionsList: [] as EmployeeMedicalConditionInterface[],
     canManageUserResponsible: false,
     localeToUse: 'en',
   }),
@@ -202,6 +208,9 @@ export default defineComponent({
           this.employeeEmergencyContactList = emergencyContactsResponse._data.data.employeeEmergencyContacts || []
         }
       }
+
+      // Cargar condiciones médicas del empleado
+      await this.loadEmployeeMedicalConditions()
       if (!this.employeeSpouse) {
         this.employeeSpouse = {
           employeeSpouseId: null,
@@ -628,6 +637,68 @@ export default defineComponent({
       }
       this.drawerEmployeeChildrenForm = false
     },
+
+    // Métodos para condiciones médicas
+    async loadEmployeeMedicalConditions() {
+      if (this.employee.employeeId) {
+        const employeeMedicalConditionService = new EmployeeMedicalConditionService()
+        this.employeeMedicalConditionsList = await employeeMedicalConditionService.getByEmployee(this.employee.employeeId)
+      }
+    },
+    addNewMedicalCondition() {
+      if (this.employee.employeeId) {
+        const newEmployeeMedicalCondition: EmployeeMedicalConditionInterface = {
+          employeeMedicalConditionId: undefined,
+          employeeId: this.employee.employeeId,
+          medicalConditionTypeId: 0,
+          employeeMedicalConditionDiagnosis: '',
+          employeeMedicalConditionTreatment: '',
+          employeeMedicalConditionNotes: '',
+          employeeMedicalConditionActive: 1,
+          propertyValues: []
+        }
+        this.employeeMedicalCondition = newEmployeeMedicalCondition
+        this.drawerEmployeeMedicalConditionForm = true
+      }
+    },
+    onEditEmployeeMedicalCondition(employeeMedicalCondition: EmployeeMedicalConditionInterface) {
+      this.employeeMedicalCondition = { ...employeeMedicalCondition }
+      this.drawerEmployeeMedicalConditionForm = true
+    },
+    onDeleteEmployeeMedicalCondition(employeeMedicalCondition: EmployeeMedicalConditionInterface) {
+      this.employeeMedicalCondition = { ...employeeMedicalCondition }
+      this.drawerEmployeeMedicalConditionDelete = true
+    },
+    onCancelEmployeeMedicalConditionDelete() {
+      this.drawerEmployeeMedicalConditionDelete = false
+    },
+    async confirmDeleteEmployeeMedicalCondition() {
+      if (this.employeeMedicalCondition) {
+        this.drawerEmployeeMedicalConditionDelete = false
+        const employeeMedicalConditionService = new EmployeeMedicalConditionService()
+        const employeeMedicalConditionResponse = await employeeMedicalConditionService.delete(this.employeeMedicalCondition)
+
+        if (employeeMedicalConditionResponse.status === 200) {
+          this.$toast.add({
+            severity: 'success',
+            summary: this.t('delete_employee_medical_condition'),
+            detail: employeeMedicalConditionResponse._data.message,
+            life: 5000,
+          })
+          // Recargar la lista completa para evitar cuadros vacíos
+          await this.loadEmployeeMedicalConditions()
+        } else {
+          const severityType = employeeMedicalConditionResponse.status === 500 ? 'error' : 'warn'
+          const msgError = employeeMedicalConditionResponse._data.error ? employeeMedicalConditionResponse._data.error : employeeMedicalConditionResponse._data.message
+          this.$toast.add({
+            severity: severityType,
+            summary: this.t('delete_employee_medical_condition'),
+            detail: msgError,
+            life: 5000,
+          })
+        }
+      }
+    },
     addNewEmergencyContact() {
       if (this.employee.employeeId) {
         const newEmployeeEmergencyContact: EmployeeEmergencyContactInterface = {
@@ -688,6 +759,22 @@ export default defineComponent({
           })
         }
       }
+    },
+    async onSaveMedicalCondition(employeeMedicalCondition: EmployeeMedicalConditionInterface) {
+      this.employeeMedicalCondition = { ...employeeMedicalCondition }
+      const index = this.employeeMedicalConditionsList.findIndex((a: EmployeeMedicalConditionInterface) =>
+        a.employeeMedicalConditionId === this.employeeMedicalCondition?.employeeMedicalConditionId)
+      if (index !== -1) {
+        this.employeeMedicalConditionsList[index] = employeeMedicalCondition
+        this.$forceUpdate()
+      } else {
+        this.employeeMedicalConditionsList.push(employeeMedicalCondition)
+        this.$forceUpdate()
+      }
+      this.drawerEmployeeMedicalConditionForm = false
+
+      // Recargar la lista completa para evitar cuadros vacíos
+      await this.loadEmployeeMedicalConditions()
     },
     onSaveEmergencyContact(employeeEmergencyContact: EmployeeEmergencyContactInterface) {
       this.employeeEmergencyContact = { ...employeeEmergencyContact }

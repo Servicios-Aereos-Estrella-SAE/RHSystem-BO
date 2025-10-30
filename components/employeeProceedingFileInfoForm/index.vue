@@ -34,7 +34,7 @@
           <FileUpload v-if="canManageFiles" v-model="files" name="demo[]" url="/api/upload"
             @upload="onAdvancedUpload($event)" :custom-upload="true" :maxFileSize="1000000" :fileLimit="1"
             @select="validateFiles" :disabled="!canManageFiles" :chooseLabel="$t('click_to_select_files')">
-            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+            <template #content="{ files, removeFileCallback }">
               <div v-for="(file, index) in files" :key="index" class="p-d-flex p-ai-center p-mb-2">
                 <img v-if="file && file.type.startsWith('image/')" role="presentation"
                   class="p-fileupload-file-thumbnail" :alt="file.name" width="50" :src="getObjectURL(file)" />
@@ -93,13 +93,23 @@
             <div v-for="(properties, indexCategory) in proceedingFileTypePropertyCategories" :key="indexCategory"
               class="inputs-group">
               <div v-for="(property, indexProperty) in properties" :key="indexProperty" class="property">
+                <div class="property-header">
+                  <label for="proceeding-file-property">
+                    {{ property.name }}
+                  </label>
+                  <Button v-if="canManageFiles" class="btn btn-delete-property" @click="deleteProperty(property)"
+                          v-tooltip="$t('delete_property')">
+                    <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M17 6h5v2h-2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8H2V6h5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3zM9 4v2h6V4H9zm8 4H7v12h10V8zM9 10h2v8H9v-8zm4 0h2v8h-2v-8z"
+                        fill="#dc3545" class="fill-212121"></path>
+                    </svg>
+                  </Button>
+                </div>
                 <div class="property-value-wrapper">
                   <div v-for="(value, indexValue) in property.values" :key="indexValue" class="property-value">
                     <div class="input">
                       <div class="input-box">
-                        <label for="proceeding-file-property">
-                          {{ property.name }}
-                        </label>
                         <div v-if="property.type === 'Text'">
                           <InputText :id="'input-' + indexCategory + '-' + indexProperty"
                             v-model="value.proceedingFileTypePropertyValueValue" />
@@ -155,9 +165,22 @@
           </div>
         </div>
         <div class="box-tools-footer">
+          <Button v-if="canManageFiles" :label="$t('add_property')" severity="secondary" @click="showAddPropertyForm" />
           <Button v-if="canManageFiles" :label="$t('save')" severity="primary" @click="onSave()" />
         </div>
       </div>
+    </div>
+
+    <!-- Add Property Sidebar -->
+    <div class="card flex justify-content-center">
+      <Sidebar v-model:visible="drawerAddProperty" position="right"
+        class="property-form-sidebar" :blockScroll="true" :closeOnEscape="false"
+        :dismissable="false" :showCloseIcon="true" :header="$t('add_property')">
+        <proceedingFileTypePropertyForm
+          :proceedingFileTypeId="currentProceedingFileTypeId"
+          @onSave="onPropertyAdded"
+          @onCancel="onPropertyCancel" />
+      </Sidebar>
     </div>
   </div>
 </template>
@@ -169,6 +192,19 @@
 
 <style lang="scss">
   @import './style';
+</style>
+
+<style lang="scss">
+  @import '/resources/styles/variables.scss';
+
+  .property-form-sidebar {
+    width: 100% !important;
+    max-width: 35rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
 </style>
 <style scoped>
   :deep(.p-button)[aria-label="Upload"] {

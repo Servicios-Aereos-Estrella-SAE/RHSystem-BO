@@ -41,7 +41,9 @@ export default defineComponent({
     filterFolderText: '' as string,
     filterFileText: '' as string,
     drawerProceedingFileTypeEmailForm: false as boolean,
-    drawerEmployeeContracts: false
+    drawerEmployeeContracts: false,
+    drawerProceedingFileTypeFolderForm: false as boolean,
+    currentParentId: null as number | null
   }),
   computed: {
     foldersFiltered(): ProceedingFileTypeInterface[] {
@@ -123,6 +125,17 @@ export default defineComponent({
         return
       }
       this.drawerProceedingFileTypeEmailForm = true
+    },
+    addFolder() {
+      if (!this.folderSelected) {
+        return
+      }
+      this.currentParentId = this.folderSelected.proceedingFileTypeId
+      this.drawerProceedingFileTypeFolderForm = true
+    },
+    addNewFolder() {
+      this.currentParentId = null
+      this.drawerProceedingFileTypeFolderForm = true
     },
     addNew() {
       if (!this.folderSelected) {
@@ -247,6 +260,37 @@ export default defineComponent({
     },
     capitalizeFirstLetter(str: string): string {
       return str.charAt(0).toUpperCase() + str.slice(1)
+    },
+    async onFolderSave(newFolder: ProceedingFileTypeInterface) {
+      try {
+        // Asegurar que la nueva carpeta tenga la estructura correcta
+        const folderToAdd = {
+          ...newFolder,
+          children: newFolder.children || []
+        }
+
+        // Si estamos en la carpeta raíz, agregar a la lista principal
+        if (!this.currentParentId) {
+          this.proceedingFileTypesList.push(folderToAdd)
+        } else {
+          // Si estamos en una subcarpeta, agregar a los hijos de la carpeta actual
+          if (this.folderSelected && this.folderSelected.children) {
+            this.folderSelected.children.push(folderToAdd)
+          }
+        }
+
+        this.$forceUpdate()
+      } finally {
+        // Cerrar el drawer después de procesar
+        this.drawerProceedingFileTypeFolderForm = false
+      }
+    },
+    onFolderCancel() {
+      this.drawerProceedingFileTypeFolderForm = false
+    },
+    handlerAddSubfolder(folder: ProceedingFileTypeInterface) {
+      this.currentParentId = folder.proceedingFileTypeId
+      this.drawerProceedingFileTypeFolderForm = true
     }
   }
 })
