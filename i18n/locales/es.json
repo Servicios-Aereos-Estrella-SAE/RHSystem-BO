@@ -706,7 +706,7 @@
   "supply_name": "Nombre del Insumo",
   "enter_supply_name": "Ingrese el nombre del insumo",
   "supply_name_required": "El nombre del insumo es requerido",
-  "supply_file_number": "Número de Archivo del Insumo",
+  "supply_file_number": "Folio del Insumo",
   "enter_supply_file_number": "Ingrese el número de archivo del insumo",
   "supply_file_number_required": "El número de archivo del insumo es requerido",
   "supply_description": "Descripción del Insumo",

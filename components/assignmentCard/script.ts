@@ -4,6 +4,7 @@ import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/Emp
 import { EMPLOYEE_SUPPLY_STATUS_OPTIONS, EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import SupplyService from '~/resources/scripts/services/SupplyService'
+import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
 
 export default defineComponent({
   name: 'assignmentCard',
@@ -23,6 +24,8 @@ export default defineComponent({
     const employeePhoto = ref<string | null>(null)
     const supplyName = ref<string>(t('not_assigned'))
     const isLoading = ref(false)
+    const supply = ref<SupplyInterface | null>(null)
+    const supplyFileNumber = ref<number | null>(null)
 
     /** 🔹 Cargar empleado asignado */
     const loadEmployee = async () => {
@@ -41,8 +44,9 @@ export default defineComponent({
           employeeFullName.value = `${emp.employeeFirstName} ${emp.employeeLastName} ${emp.employeeSecondLastName || ''}`.trim()
           employeePhoto.value = emp.employeePhoto || null
           const supplyResponse = await supplyService.getById(props.assignment.supplyId)
-          if (supplyResponse && (supplyResponse as any).status === 200) {
-            supplyName.value = (supplyResponse as any).data?.supply?.supplyName || t('not_assigned')
+          if (supplyResponse && (supplyResponse as any).status === 'success') {
+            supply.value = (supplyResponse as any).data?.data?.supplie || null
+            supplyFileNumber.value = (supplyResponse as any).data?.data?.supplie?.supplyFileNumber || null
           }
         } else {
           employeeFullName.value = t('not_assigned')
@@ -68,12 +72,28 @@ export default defineComponent({
     })
 
     const loadSupply = async () => {
-      if (!props.assignment?.supplyId) {
-        supplyName.value = t('not_assigned')
-        return
-      }
-      const supplyResponse = await supplyService.getById(props.assignment.supplyId)
+  if (!props.assignment?.supplyId) {
+    supplyName.value = t('not_assigned')
+    return
+  }
+
+  try {
+    const supplyResponse = await supplyService.getById(props.assignment.supplyId)
+
+    if (supplyResponse && supplyResponse.type === 'success') {
+      const supplie = supplyResponse.data?.supplie
+      supply.value = supplie
+      supplyName.value = supplie?.supplyName || t('not_assigned')
+      supplyFileNumber.value = supplie?.supplyFileNumber || null
+    } else {
+      supplyName.value = t('not_assigned')
     }
+  } catch (error) {
+    console.error('Error loading supply:', error)
+    supplyName.value = t('not_assigned')
+  }
+}
+
 
     /** 🔹 Métodos de ayuda */
     const getStatusClass = (status: string) => {
@@ -122,6 +142,9 @@ export default defineComponent({
       formatDate,
       handlerClickOnEdit,
       handlerClickOnDelete,
+      supply,
+      supplyName,
+      supplyFileNumber,
     }
   },
 })

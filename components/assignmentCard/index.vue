@@ -11,7 +11,10 @@
           {{ employeeFullName || t('loading') }}
         </div>
         <div class="employee-email">
-          {{ `${t('supply')}: ${assignment?.supply?.supplyName || t('not_assigned')}` }}
+          {{ `${t('supply')}: ${supplyName || t('not_assigned')}` }}
+        </div>
+        <div class="employee-email">
+          {{ `${t('supply_file_number')}: ${supplyFileNumber || '...'}` }}
         </div>
       </div>
     </div>
