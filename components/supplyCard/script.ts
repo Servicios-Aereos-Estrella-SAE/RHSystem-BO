@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyInterface } from '~/resources/scripts/interfaces/SupplyInterface'
-import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
+import { SUPPLY_STATUS_OPTIONS, SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/SupplyStatus'
 import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
 import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
 
@@ -56,6 +56,10 @@ export default defineComponent({
         return this.supply.supplyName.charAt(0).toUpperCase()
       }
       return 'S'
+    },
+    supplyStatusOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? SUPPLY_STATUS_OPTIONS_EN : SUPPLY_STATUS_OPTIONS
     }
   },
   methods: {
@@ -69,7 +73,7 @@ export default defineComponent({
       return statusClasses[status] || 'p-tag-unknown'
     },
     getStatusLabel(status: string) {
-      const statusOption = SUPPLY_STATUS_OPTIONS.find(option => option.value === status)
+      const statusOption = this.supplyStatusOptions.find((option: any) => option.value === status)
       return statusOption ? statusOption.label : status
     },
     formatDate(date: Date | null) {

@@ -1,7 +1,7 @@
 import { defineComponent, ref, onMounted, watch } from 'vue'
 import type { PropType } from 'vue'
 import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/EmployeeSupplyInterface'
-import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
+import { EMPLOYEE_SUPPLY_STATUS_OPTIONS, EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import SupplyService from '~/resources/scripts/services/SupplyService'
 
@@ -16,7 +16,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
     const employeeService = new EmployeeService()
     const supplyService = new SupplyService()
     const employeeFullName = ref<string>(t('not_assigned'))
@@ -86,7 +86,9 @@ export default defineComponent({
     }
 
     const getStatusLabel = (status: string) => {
-      const opt = EMPLOYEE_SUPPLY_STATUS_OPTIONS.find(o => o.value === status)
+      const lang = (locale?.value || 'es').toString().toLowerCase()
+      const options = lang.startsWith('en') ? EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN : EMPLOYEE_SUPPLY_STATUS_OPTIONS
+      const opt = options.find(o => o.value === status)
       return opt ? opt.label : status
     }
 

@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyCharacteristicInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicInterface'
-import { SUPPLY_CHARACTERISTIC_TYPES } from '~/resources/scripts/enums/SupplyCharacteristicType'
+import { SUPPLY_CHARACTERISTIC_TYPES, SUPPLY_CHARACTERISTIC_TYPES_EN } from '~/resources/scripts/enums/SupplyCharacteristicType'
 
 export default defineComponent({
   name: 'characteristicCard',
@@ -19,11 +19,17 @@ export default defineComponent({
     }
   },
   data: () => ({
-    isLoading: false as boolean,
+    isLoading: false as boolean
   }),
+  computed: {
+    characteristicTypeOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? SUPPLY_CHARACTERISTIC_TYPES_EN : SUPPLY_CHARACTERISTIC_TYPES
+    }
+  },
   methods: {
     getTypeLabel(type: string) {
-      const typeOption = SUPPLY_CHARACTERISTIC_TYPES.find(option => option.value === type)
+      const typeOption = this.characteristicTypeOptions.find((option: any) => option.value === type)
       return typeOption ? typeOption.label : type
     },
     handlerClickOnEdit() {

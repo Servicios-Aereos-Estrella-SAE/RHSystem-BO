@@ -3,7 +3,7 @@ import type { PropType } from 'vue'
 import type { EmployeeSupplyInterface } from '~/resources/scripts/interfaces/EmployeeSupplyInterface'
 import EmployeeService from '~/resources/scripts/services/EmployeeService'
 import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
-import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
+import { EMPLOYEE_SUPPLY_STATUS_OPTIONS, EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 
 export default defineComponent({
   name: 'assignmentForm',
@@ -33,11 +33,17 @@ export default defineComponent({
     isLoadingEmployees: false,
     selectedEmployeeId: null as number | null,
     employeeOptions: [] as Array<{label: string, value: number}>,
-    assignmentStatusOptions: EMPLOYEE_SUPPLY_STATUS_OPTIONS,
+    // Se resuelve vía computed
     searchText: '' as string,
     isSupplyAlreadyAssigned: false as boolean,
     currentAssignment: null as EmployeeSupplyInterface | null,
   }),
+  computed: {
+    assignmentStatusOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN : EMPLOYEE_SUPPLY_STATUS_OPTIONS
+    }
+  },
   async mounted() {
     await this.loadEmployees()
     await this.checkSupplyAssignment()

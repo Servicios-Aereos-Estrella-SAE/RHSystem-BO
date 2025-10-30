@@ -21,7 +21,7 @@
 
     <div class="info">
       <div class="business-unit">
-        {{ `${t('status')}: ${getStatusLabel(supply?.supplyStatus)}` }}
+        {{ `${t('status')}: ` }}
         <span
           class="p-tag p-component font-medium"
           :class="getStatusClass(supply?.supplyStatus)"

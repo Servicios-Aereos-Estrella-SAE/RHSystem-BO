@@ -41,6 +41,13 @@ export default class SupplyService {
     })
   }
 
+  async getWithTrashed(page = 1, limit = 10) {
+    return await $fetch(`${this.API_PATH}/supplies?includeDeleted=true`, {
+      method: 'GET',
+      headers: { ...this.GENERAL_HEADERS }
+    })
+  }
+
   async create(supply: SupplyInterface) {
     return await $fetch(`${this.API_PATH}/supplies`, {
       method: 'POST',

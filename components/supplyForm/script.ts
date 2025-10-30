@@ -8,7 +8,7 @@ import type { SupplyCharacteristicValueInterface } from '~/resources/scripts/int
 import SupplyService from '~/resources/scripts/services/SupplyService'
 import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
 import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
-import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
+import { SUPPLY_STATUS_OPTIONS, SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/SupplyStatus'
 
 export default defineComponent({
   name: 'supplyForm',
@@ -22,7 +22,7 @@ export default defineComponent({
   },
 
   setup(props, { emit }) {
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
     const toast = useToast()
 
     // 🧱 Servicios
@@ -35,7 +35,10 @@ export default defineComponent({
     const isLoading = ref(false)
     const displayForm = ref(false)
     const characteristicDateEditModes = ref<Record<number, boolean>>({})
-    const supplyStatusOptions = SUPPLY_STATUS_OPTIONS
+    const supplyStatusOptions = computed(() => {
+      const lang = (locale?.value || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? SUPPLY_STATUS_OPTIONS_EN : SUPPLY_STATUS_OPTIONS
+    })
     const supplyCharacteristics = ref<SupplyCharacteristicInterface[]>([])
     const characteristicValues = ref<SupplyCharacteristicValueInterface[]>([])
     const allFileNumbers = ref<number[]>([])
@@ -49,14 +52,27 @@ export default defineComponent({
       get: () => props.supply.supplyFileNumber?.toString() || '',
       set: (value: string) => {
         props.supply.supplyFileNumber = value ? Number(value) : 0
-      }
+      },
     })
 
+    // Validar cuando cambie el número de archivo
     watch(
       () => props.supply.supplyFileNumber,
       async (newValue) => {
         if (newValue) {
           await validateSupplyFileNumber(newValue)
+        }
+      }
+    )
+
+    // Si cambia el supplyId (p. ej. abres otro supply en el mismo componente),
+    // recargamos características y valores.
+    watch(
+      () => props.supply.supplyId,
+      async (newId, oldId) => {
+        if (newId && newId !== oldId) {
+          await loadSupplyCharacteristics()
+          await loadCharacteristicValues()
         }
       }
     )
@@ -68,12 +84,19 @@ export default defineComponent({
         await loadSupplyCharacteristics()
         await loadCharacteristicValues()
       }
+      // muestra lo que cargó (útil para debug)
+      console.log('✅ supplyCharacteristics:', supplyCharacteristics.value)
+      console.log('✅ characteristicValues:', characteristicValues.value)
     })
 
+    // -------------------------
+    // Funciones: carga / util
+    // -------------------------
 
+    // 🔹 Cargar números de archivo
     async function loadAllFileNumbers() {
       try {
-        const response = await supplyService.getAll()
+        const response = await supplyService.getWithTrashed()
         if ((response as any).type === 'success') {
           const data = (response as any).data
           const all = data.supplies?.data || []
@@ -88,12 +111,11 @@ export default defineComponent({
 
     function generateUniqueFileNumber(): number {
       let next = 1
-      while (allFileNumbers.value.includes(next)) {
-        next++
-      }
+      while (allFileNumbers.value.includes(next)) next++
       return next
     }
 
+    // 🔹 Cargar características del tipo de suministro
     async function loadSupplyCharacteristics() {
       try {
         const response = await supplyCharacteristicService.getAll(
@@ -105,6 +127,11 @@ export default defineComponent({
           const data = (response as any).data
           if (data?.supplieCharacteristics?.data) {
             supplyCharacteristics.value = data.supplieCharacteristics.data
+          } else if (data?.supplieCharacteristics) {
+            supplyCharacteristics.value = data.supplieCharacteristics
+          } else if (Array.isArray(data)) {
+            // fallback por si devuelve directamente un array
+            supplyCharacteristics.value = data
           }
         }
       } catch (error) {
@@ -112,29 +139,62 @@ export default defineComponent({
       }
     }
 
+    // 🔹 Cargar valores de características del suministro
     async function loadCharacteristicValues() {
-      if (!props.supply.supplyId) return
+      if (!props.supply.supplyId) {
+        // limpiar por si no hay supply
+        characteristicValues.value = []
+        return
+      }
+
       try {
         const response = await supplyCharacteristicValueService.getBySupply(
           props.supply.supplyId
         )
+
         if ((response as any).type === 'success') {
           const data = (response as any).data
-          if (data?.supplieCaracteristic?.data) {
-            characteristicValues.value = data.supplieCaracteristic.data
-          }
+
+          // === CORRECCIÓN SEGÚN TU API ===
+          // Tu API devuelve los valores dentro de data.data (ver ejemplo que mostrabas).
+          // También intentamos otros fallbacks por seguridad.
+          const values =
+            data?.data ||
+            data?.supplieCaracteristicValues?.data ||
+            data?.supplieCaracteristicValues ||
+            data?.supplieCaracteristic?.data ||
+            []
+
+          // Normalizar: asegurarnos que los objetos tengan las propiedades esperadas
+          // y que Vue trate la lista como reactiva (copiamos cada objeto).
+          characteristicValues.value = values.map((v: any) => ({
+            supplieCaracteristicValueId: v.supplieCaracteristicValueId ?? null,
+            supplieCaracteristicId: v.supplieCaracteristicId ?? v?.supplieCaracteristic?.supplieCaracteristicId ?? null,
+            supplieId: v.supplieId ?? props.supply.supplyId,
+            supplieCaracteristicValueValue: v.supplieCaracteristicValueValue ?? v.value ?? '',
+            supplieCaracteristicValueCreatedAt: v.supplieCaracteristicValueCreatedAt ?? null,
+            supplieCaracteristicValueUpdatedAt: v.supplieCaracteristicValueUpdatedAt ?? null,
+            deletedAt: v.deletedAt ?? null,
+            // mantén la relación anidada si viene (útil para tipos)
+            supplieCaracteristic: v.supplieCaracteristic ?? v.supplieCaracteristic
+          }))
         }
       } catch (error) {
         console.error('Error loading characteristic values:', error)
       }
     }
 
+    // -------------------------
+    // get/create value handling
+    // -------------------------
+
+    // Obtener o crear valor de característica (sin duplicados)
     function getCharacteristicValue(characteristicId: number | null) {
       if (!characteristicId) {
         return {
           supplieCaracteristicValueId: null,
           supplieCaracteristicId: null,
-          supplieId: props.supply.supplyId!,
+          supplieId: props.supply.supplyId ?? null,
           supplieCaracteristicValueValue: '',
           supplieCaracteristicValueCreatedAt: null,
           supplieCaracteristicValueUpdatedAt: null,
@@ -142,14 +202,17 @@ export default defineComponent({
         }
       }
 
+      // buscar valor existente
       let value = characteristicValues.value.find(
-        (v) => v.supplieCaracteristicId === characteristicId
+        (v) => v && v.supplieCaracteristicId === characteristicId
       )
+
       if (!value) {
+        // crear nuevo y empujarlo (solo si no existe)
         value = {
           supplieCaracteristicValueId: null,
           supplieCaracteristicId: characteristicId,
-          supplieId: props.supply.supplyId!,
+          supplieId: props.supply.supplyId ?? null,
           supplieCaracteristicValueValue: '',
           supplieCaracteristicValueCreatedAt: null,
           supplieCaracteristicValueUpdatedAt: null,
@@ -157,19 +220,31 @@ export default defineComponent({
         }
         characteristicValues.value.push(value)
       }
+
       return value
     }
+
+    // -------------------------
+    // Guardado de valores
+    // -------------------------
 
     async function saveCharacteristicValues() {
       for (const value of characteristicValues.value) {
         try {
+          // si viene id => update
           if (value.supplieCaracteristicValueId) {
             await supplyCharacteristicValueService.update(
               value.supplieCaracteristicValueId,
               value
             )
-          } else if (value.supplieCaracteristicValueValue) {
-            await supplyCharacteristicValueService.create(value)
+          } else {
+            // si no tiene id: sólo crear si hay valor (evita crear vacíos)
+            if (
+              value.supplieCaracteristicValueValue !== null &&
+              value.supplieCaracteristicValueValue !== ''
+            ) {
+              await supplyCharacteristicValueService.create(value)
+            }
           }
         } catch (error) {
           console.error('Error saving characteristic value:', error)
@@ -177,18 +252,16 @@ export default defineComponent({
       }
     }
 
-    // ✅ Validación del número en tiempo real
+    // -------------------------
+    // Validaciones y save principal
+    // -------------------------
+
     async function validateSupplyFileNumber(number: number) {
       if (!number) return false
 
-      //console.log('number', number)
-      //console.log('allFileNumbers', allFileNumbers.value)
-      //console.log('supply.supplyFileNumber', props.supply.supplyFileNumber)
-
-      // No usar toRaw, incluye ya funciona bien con refs
       if (
         allFileNumbers.value.includes(number) &&
-        !props.supply.supplyId // 👈 solo si es un nuevo supply
+        !props.supply.supplyId // si es nuevo supply y el número ya existe
       ) {
         toast.add({
           severity: 'warn',
@@ -198,7 +271,6 @@ export default defineComponent({
         })
         return false
       }
-
       return true
     }
 
@@ -206,36 +278,35 @@ export default defineComponent({
       submitted.value = true
       isLoading.value = true
 
-      if (!props.supply.supplyFileNumber) {
-        props.supply.supplyFileNumber = generateUniqueFileNumber()
-      }
-
-      if (!props.supply.supplyName || !props.supply.supplyFileNumber) {
-        isLoading.value = false
-        return
-      }
-
-      if (!props.supply.supplyId) {
-        props.supply.supplyStatus = 'active'
-      }
-
-      const isDeactivation =
-        props.supply.supplyStatus === 'inactive' ||
-        props.supply.supplyStatus === 'lost' ||
-        props.supply.supplyStatus === 'damaged'
-
-      if (
-        isDeactivation &&
-        (!props.supply.supplyDeactivationReason ||
-          !props.supply.supplyDeactivationDate)
-      ) {
-        isLoading.value = false
-        return
-      }
-
       try {
-        let response
+        if (!props.supply.supplyFileNumber) {
+          props.supply.supplyFileNumber = generateUniqueFileNumber()
+        }
 
+        if (!props.supply.supplyName || !props.supply.supplyFileNumber) {
+          isLoading.value = false
+          return
+        }
+
+        if (!props.supply.supplyId) {
+          props.supply.supplyStatus = 'active'
+        }
+
+        const isDeactivation =
+          props.supply.supplyStatus === 'inactive' ||
+          props.supply.supplyStatus === 'lost' ||
+          props.supply.supplyStatus === 'damaged'
+
+        if (
+          isDeactivation &&
+          (!props.supply.supplyDeactivationReason ||
+            !props.supply.supplyDeactivationDate)
+        ) {
+          isLoading.value = false
+          return
+        }
+
+        let response: any
         props.supply.supplyTypeId = props.supplyTypeId
 
         if (props.supply.supplyId) {
@@ -276,24 +347,21 @@ export default defineComponent({
         }
 
         if ((response as any).type === 'success') {
+          // Guardar valores (create/update) sólo si hay elementos
           if (characteristicValues.value.length > 0) {
             await saveCharacteristicValues()
           }
 
           toast.add({
             severity: 'success',
-            summary: props.supply.supplyId
-              ? t('supply_updated')
-              : t('supply_created'),
-            detail:
-              (response as any).message || 'Insumo guardado correctamente',
+            summary: props.supply.supplyId ? t('supply_updated') : t('supply_created'),
+            detail: (response as any).message || 'Insumo guardado correctamente',
             life: 5000,
           })
 
           props.clickOnSave?.(props.supply)
           emit('save', props.supply)
         }
-
       } catch (error) {
         console.error('Error saving supply:', error)
         toast.add({
@@ -307,22 +375,24 @@ export default defineComponent({
       }
     }
 
+    // -------------------------
+    // Fecha de baja y fechas de características
+    // -------------------------
+
     function handlerClickOnClose() {
       props.clickOnClose?.()
     }
 
-    // 📅 Funciones para manejo de fecha
     const supplyDeactivationDateDisplay = computed(() => {
       if (!props.supply.supplyDeactivationDate) return ''
-
-      const date = props.supply.supplyDeactivationDate instanceof Date
-        ? props.supply.supplyDeactivationDate
-        : new Date(props.supply.supplyDeactivationDate)
-
+      const date =
+        props.supply.supplyDeactivationDate instanceof Date
+          ? props.supply.supplyDeactivationDate
+          : new Date(props.supply.supplyDeactivationDate)
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
       })
     })
 
@@ -342,7 +412,7 @@ export default defineComponent({
       props.supply.supplyDeactivationDate = null
     }
 
-    // 📅 Funciones para manejo de fechas de características
+    // Fechas de características
     function getCharacteristicDateEditMode(characteristicId: number | null): boolean {
       if (!characteristicId) return false
       return characteristicDateEditModes.value[characteristicId] || false
@@ -351,15 +421,13 @@ export default defineComponent({
     function getCharacteristicDateDisplay(characteristicId: number | null): string {
       if (!characteristicId) return ''
       const value = getCharacteristicValue(characteristicId)
-      if (!value.supplieCaracteristicValueValue) return ''
-
+      if (!value || !value.supplieCaracteristicValueValue) return ''
       const date = new Date(value.supplieCaracteristicValueValue)
       if (isNaN(date.getTime())) return value.supplieCaracteristicValueValue
-
       return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
       })
     }
 
@@ -384,7 +452,9 @@ export default defineComponent({
       value.supplieCaracteristicValueValue = ''
     }
 
-    // 🔹 Return para template
+    // -------------------------
+    // Return (para template)
+    // -------------------------
     return {
       t,
       toast,

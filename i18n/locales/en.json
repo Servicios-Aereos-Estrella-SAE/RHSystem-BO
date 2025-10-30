@@ -812,5 +812,6 @@
   "select_option":"Select option",
   "deactivation_information":"Deactivation information",
   "assignment_saved_successfully":"Assignament saved successfully",
-  "supply_type_updated":"Supply type updated"
+  "supply_type_updated":"Supply type updated",
+  "select_supply_status":"Select supply status"
 }

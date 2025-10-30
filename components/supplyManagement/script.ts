@@ -7,8 +7,8 @@ import SupplyService from '~/resources/scripts/services/SupplyService'
 import EmployeeSupplyService from '~/resources/scripts/services/EmployeeSupplyService'
 import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
 import SupplyCharacteristicValueService from '~/resources/scripts/services/SupplyCharacteristicValueService'
-import { SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/SupplyStatus'
-import { EMPLOYEE_SUPPLY_STATUS_OPTIONS } from '~/resources/scripts/enums/EmployeeSupplyStatus'
+import { SUPPLY_STATUS_OPTIONS, SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/SupplyStatus'
+import { EMPLOYEE_SUPPLY_STATUS_OPTIONS, EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN } from '~/resources/scripts/enums/EmployeeSupplyStatus'
 
 export default defineComponent({
   name: 'supplyManagement',
@@ -39,13 +39,11 @@ export default defineComponent({
     allSupplies: [] as SupplyInterface[], // Nuevo array para almacenar todos los insumos
     supplySearch: '' as string,
     selectedSupplyStatus: null as string | null, // Cambiado de 'active' a null para mostrar todos
-    supplyStatusOptions: SUPPLY_STATUS_OPTIONS,
 
     // Assignments data
     filteredAssignments: [] as EmployeeSupplyInterface[],
     employeeSearch: '' as string,
     selectedAssignmentStatus: 'active' as string,
-    assignmentStatusOptions: EMPLOYEE_SUPPLY_STATUS_OPTIONS,
 
     // Form data
     selectedSupply: null as SupplyInterface | null,
@@ -88,6 +86,14 @@ export default defineComponent({
       return this.selectedAssignment?.employeeSupplyId
         ? this.t('edit_assignment')
         : this.t('add_assignment')
+    },
+    supplyStatusOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? SUPPLY_STATUS_OPTIONS_EN : SUPPLY_STATUS_OPTIONS
+    },
+    assignmentStatusOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? EMPLOYEE_SUPPLY_STATUS_OPTIONS_EN : EMPLOYEE_SUPPLY_STATUS_OPTIONS
     }
   },
   async mounted() {

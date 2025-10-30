@@ -1,7 +1,7 @@
 import { defineComponent } from 'vue'
 import type { PropType } from 'vue'
 import type { SupplyCharacteristicInterface } from '~/resources/scripts/interfaces/SupplyCharacteristicInterface'
-import { SUPPLY_CHARACTERISTIC_TYPES } from '~/resources/scripts/enums/SupplyCharacteristicType'
+import { SUPPLY_CHARACTERISTIC_TYPES, SUPPLY_CHARACTERISTIC_TYPES_EN } from '~/resources/scripts/enums/SupplyCharacteristicType'
 import SupplyCharacteristicService from '~/resources/scripts/services/SupplyCharacteristicService'
 
 export default defineComponent({
@@ -24,9 +24,14 @@ export default defineComponent({
   },
   data: () => ({
     submitted: false,
-    isLoading: false,
-    characteristicTypeOptions: SUPPLY_CHARACTERISTIC_TYPES
+    isLoading: false
   }),
+  computed: {
+    characteristicTypeOptions(): Array<{label: string, value: any}> {
+      const lang = (this.$i18n?.locale || 'es').toString().toLowerCase()
+      return lang.startsWith('en') ? SUPPLY_CHARACTERISTIC_TYPES_EN : SUPPLY_CHARACTERISTIC_TYPES
+    }
+  },
   methods: {
     async onSave() {
       this.submitted = true
