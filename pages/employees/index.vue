@@ -45,6 +45,28 @@
                 <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="getStatus"
                   aria-labelledby="basic" class="emp-status-control" />
               </div>
+              <div class="input-box">
+                <label for="sortBy">
+                  {{ $t('sort_by') }}
+                </label>
+                <Dropdown v-model="sortBy" :options="getSortOptionsWithValues" optionLabel="label" optionValue="value"
+                  :placeholder="$t('select_sort_option')" class="w-full md:w-14rem"
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
+              </div>
+              <div class="input-box">
+                <label for="rowsPerPage">
+                  {{ $t('records_per_page') }}
+                </label>
+                <Dropdown v-model="rowsPerPage" :options="paginationOptions" optionLabel="label" optionValue="value"
+                  :placeholder="$t('select_records_per_page')" class="w-full md:w-14rem"
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
+              </div>
+              <div class="input-box">
+                <label for="sortOrder">
+                  {{ $t('sort_order') }}
+                </label>
+                <SelectButton v-model="sortOrder" :options="getSortOrderOptions" aria-labelledby="basic" class="sort-order-control" />
+              </div>
 
               <div></div>
             </div>
@@ -70,6 +92,15 @@
                 <span>
                   BioTime
                 </span>
+              </Button>
+              <Button v-if="canAddExceptionGeneral" class="btn" @click="addNewExceptionGeneral">
+                <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                    fill="#88a4bf" class="fill-000000"></path>
+                </svg>
+                {{ $t('add_shift_exception_general') }}
               </Button>
               <Button class="btn" @click="getExcel">
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
@@ -109,9 +140,12 @@
 
             <div></div>
 
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+            <Paginator v-if="rowsPerPage !== -1" class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
               :alwaysShow="false" template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" @page="onPageChange" />
+            <div v-else class="pagination-info">
+              <p>{{ $t('showing_all_records') }}: {{ totalRecords }} {{ $t('records') }}</p>
+            </div>
           </div>
         </div>
 
@@ -220,11 +254,19 @@
           position="right" class="employees-sync" :showCloseIcon="true">
           <employeeSyncList :employeesSync="employeesSync" @onSaveSync="onSaveSync" />
         </Sidebar>
+        <Sidebar v-model:visible="drawerShiftExceptionGeneralForm" header="form" position="right"
+          class="shift-exception-general-form-sidebar" :showCloseIcon="true">
+          <employeeShiftExceptionGeneralInfoForm @onShiftExceptionSaveAll="onSaveShiftExceptionGeneral" />
+        </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
             @cancelDelete="onCancelEmployeeDelete" />
         </transition>
-
+        <transition name="page">
+          <shiftExceptionsGeneralError v-if="drawershiftExceptionsError" :shiftExceptions="shiftExceptionsError"
+            :quantityShiftExceptionsSaved="quantityShiftExceptionsSaved" @confirm="drawershiftExceptionsError = false"
+            @cancel="drawershiftExceptionsError = false" />
+        </transition>
 
       </NuxtLayout>
     </div>
@@ -286,4 +328,14 @@
       width: 100% !important;
     }
   }
+
+  .shift-exception-general-form-sidebar {
+    width: 40% !important;
+    max-width: 120rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
 </style>

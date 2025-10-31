@@ -40,7 +40,7 @@
       display : flex;
       justify-content: center;
       align-items: center;
-      
+
       svg {
         width: 1rem;
       }
@@ -54,27 +54,20 @@
   }
 
   .children-info {
-    
+
     .head-page {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+      grid-template-columns: 15rem auto;
       gap: 0.5rem;
-      
-      @media screen and (max-width: $desktop) {
-        grid-template-columns: 20rem repeat(2, 15rem) auto auto auto repeat(3, 10rem) 4rem;
-      }
+    }
+  }
 
-      @media screen and (max-width: $ipad) {
-        grid-template-columns: 1fr 1fr 1fr;
-      }
+  .emergency-contact-info {
 
-      @media screen and (max-width: $phone) {
-        grid-template-columns: 1fr;
-      }
-
-      .emp-status-control {
-        margin-top: 1.6rem;
-      }
+    .head-page {
+      display: grid;
+      grid-template-columns: 20rem auto;
+      gap: 0.5rem;
     }
   }
 
@@ -86,6 +79,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
     margin-top: 0.5rem;
+
     button {
       width: 100%;
     }
@@ -142,6 +136,19 @@
     grid-template-columns: repeat(2, 1fr);
     gap: .5rem;
     margin-top: 0.5rem;
+  }
+
+  .employee-emergency-contact-card-wrapper {
+    box-sizing: border-box;
+    display: grid;
+    grid-auto-flow: dense;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .5rem;
+    margin-top: 0.5rem;
+
+    @media screen and (max-width: $phone) {
+      grid-template-columns: 1fr;
+    }
   }
 
   .empty {

@@ -90,7 +90,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-    
+
         svg {
           width: 3rem;
           transform: rotate(-30deg);
@@ -129,6 +129,49 @@
     &.children {
       margin-bottom: 1rem;
     }
+
+  .add-folder-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .btn-add-folder {
+    border: $border;
+    border-radius: $radius;
+    font-size: 0.8rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 4rem auto;
+    gap: 0.5rem;
+    text-align: left;
+    background-color: white;
+    color: $icon;
+    padding: 0;
+    height: 4.15rem;
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      position: relative;
+
+      svg {
+        width: 2.5rem;
+        color: $icon;
+
+        path, line {
+          color: $icon;
+          stroke: $icon;
+        }
+      }
+    }
+  }
+}
+
 
     .folder {
       box-sizing: border-box;
@@ -170,17 +213,17 @@
   .input-search {
     height: 6rem;
     position: relative;
-    
+
     button {
       transform: translateY(-1rem);
     }
   }
 
   .files-wrapper {
-    
+
     .files-header {
       display: grid;
-      grid-template-columns: auto 15rem 5rem;
+      grid-template-columns: auto 15rem 5rem 5rem;
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
@@ -194,6 +237,13 @@
       @media screen and (max-width: $ipad) {
         grid-template-columns: 1fr;
       }
+    }
+  }
+
+  .btn-add-email {
+    svg {
+      color: $icon;
+      fill: $icon;
     }
   }
 }

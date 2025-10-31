@@ -1,11 +1,12 @@
 <template>
-  <div class="box employee-children-info-form">
+  <div class="employee-children-info-form">
     <h4>
       {{ isNewChildren ? $t('new_children') : $t('update_children') }}
     </h4>
     <div v-if="isReady" class="employee-children-form">
       <div class="form-container">
-        <div class="input-box">
+        <div class="inputs-group">
+          <div class="input-box">
           <label for="employeeChildrenFirstname">{{ $t('first_name') }}</label>
           <InputText v-model="employeeChildren.employeeChildrenFirstname"
             :placeholder="`${$t('enter')} ${$t('first_name')}`" :disabled="isDeleted || !canManageUserResponsible" />
@@ -65,6 +66,7 @@
           </div><small style="position: absolute;" class="p-error"
             v-if="submitted && !employeeChildren.employeeChildrenBirthday">{{ $t('birthday') }} {{ $t('is_required')
             }}</small>
+        </div>
         </div>
         <div class="box-tools-footer">
           <Button v-if="canManageUserResponsible" :label="$t('save')" severity="primary" @click="onSave()" />

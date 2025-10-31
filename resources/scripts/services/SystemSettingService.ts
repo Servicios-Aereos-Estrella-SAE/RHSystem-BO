@@ -260,4 +260,24 @@ export default class SystemSettingService {
     }
   }
 
+  async updateBirthdayEmailsStatus(systemSettingId: number, birthdayEmailsActive: boolean) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+
+    try {
+      await $fetch(`${this.API_PATH}/system-settings/${systemSettingId}/birthday-emails`, {
+        headers,
+        method: 'PUT',
+        body: {
+          systemSettingBirthdayEmails: birthdayEmailsActive
+        },
+        onResponse({ response }) { responseRequest = response },
+        onRequestError({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+      console.error('Error updating birthday emails status:', error)
+    }
+    return responseRequest
+  }
+
 }
