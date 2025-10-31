@@ -45,6 +45,28 @@
                 <SelectButton v-if="canReadTerminatedEmployees" v-model="status" :options="getStatus"
                   aria-labelledby="basic" class="emp-status-control" />
               </div>
+              <div class="input-box">
+                <label for="sortBy">
+                  {{ $t('sort_by') }}
+                </label>
+                <Dropdown v-model="sortBy" :options="getSortOptionsWithValues" optionLabel="label" optionValue="value"
+                  :placeholder="$t('select_sort_option')" class="w-full md:w-14rem"
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
+              </div>
+              <div class="input-box">
+                <label for="rowsPerPage">
+                  {{ $t('records_per_page') }}
+                </label>
+                <Dropdown v-model="rowsPerPage" :options="paginationOptions" optionLabel="label" optionValue="value"
+                  :placeholder="$t('select_records_per_page')" class="w-full md:w-14rem"
+                  :emptyMessage="$t('no_available_options')" :emptyFilterMessage="$t('no_results_found')" />
+              </div>
+              <div class="input-box">
+                <label for="sortOrder">
+                  {{ $t('sort_order') }}
+                </label>
+                <SelectButton v-model="sortOrder" :options="getSortOrderOptions" aria-labelledby="basic" class="sort-order-control" />
+              </div>
 
               <div></div>
             </div>
@@ -118,9 +140,12 @@
 
             <div></div>
 
-            <Paginator class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
+            <Paginator v-if="rowsPerPage !== -1" class="paginator" :first="first" :rows="rowsPerPage" :totalRecords="totalRecords"
               :alwaysShow="false" template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" @page="onPageChange" />
+            <div v-else class="pagination-info">
+              <p>{{ $t('showing_all_records') }}: {{ totalRecords }} {{ $t('records') }}</p>
+            </div>
           </div>
         </div>
 
@@ -312,4 +337,5 @@
       width: 100% !important;
     }
   }
+
 </style>

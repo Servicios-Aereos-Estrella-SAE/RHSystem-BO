@@ -272,3 +272,11 @@
 :deep(.p-selectbutton .p-button) {
   color: $text !important;
 }
+
+.inputs-group {
+  box-sizing: border-box;
+  border: $border-dashed;
+  border-radius: $radius;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}

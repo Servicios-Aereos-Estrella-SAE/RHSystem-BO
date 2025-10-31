@@ -25,7 +25,13 @@ export default defineComponent({
   setup() {
     const { t } = useI18n()
     return {
-      t
+      t,
+      paginationOptions: [
+        { label: '50', value: 50 },
+        { label: '100', value: 100 },
+        { label: '150', value: 150 },
+        { label: t('all_records'), value: -1 }
+      ],
     }
   },
   props: {},
@@ -84,13 +90,33 @@ export default defineComponent({
     drawerShiftExceptionForm: false,
     drawershiftExceptionsError: false,
     shiftExceptionsError: [] as Array<ShiftExceptionErrorInterface>,
-    quantityShiftExceptionsSaved: 0 as number
+    quantityShiftExceptionsSaved: 0 as number,
+    sortBy: 'name' as string,
+    sortOrder: 'ascend' as string,
+    sortOptions: ref(['name', 'number']),
+    sortOrderOptions: ref(['ascend', 'descend']),
   }),
   computed: {
     getStatus() {
       return this.optionsActive.map(status =>
         this.$t(`${status.toLowerCase()}`)
       )
+    },
+    getSortOptions() {
+      return this.sortOptions.map(option =>
+        this.$t(option)
+      )
+    },
+    getSortOrderOptions() {
+      return this.sortOrderOptions.map(option =>
+        this.$t(option)
+      )
+    },
+    getSortOptionsWithValues() {
+      return this.sortOptions.map(option => ({
+        label: this.$t(option),
+        value: option
+      }))
     },
     isRootUser() {
       const myGeneralStore = useMyGeneralStore()
@@ -130,12 +156,29 @@ export default defineComponent({
     },
     'employeeTypeId': function () {
       this.handlerSearchEmployee()
+    },
+    'sortBy': function () {
+      this.saveSortingPreferences()
+      this.handlerSearchEmployee()
+    },
+    'sortOrder': function () {
+      this.saveSortingPreferences()
+      this.handlerSearchEmployee()
+    },
+    'rowsPerPage': function () {
+      this.savePaginationPreferences()
+      this.handlerSearchEmployee()
     }
   },
   async mounted() {
     const myGeneralStore = useMyGeneralStore()
     myGeneralStore.setFullLoader(true)
     this.status = this.capitalizeFirstLetter(this.t('active'))
+
+    // Cargar preferencias desde localStorage
+    this.loadSortingPreferences()
+    this.loadPaginationPreferences()
+    // const systemModuleSlug = this.$route.path.toString().replaceAll('/', '')
     const systemModuleSlug = this.$route.path.replace(`/${this.$i18n.locale}/`, "/").toString().replaceAll('/', '')
     const permissions = await myGeneralStore.getAccess(systemModuleSlug)
     if (myGeneralStore.isRoot) {
@@ -194,11 +237,27 @@ export default defineComponent({
       const workSchedule = this.selectedWorkSchedule ? this.selectedWorkSchedule?.employeeWorkSchedule : null
       this.capitalizeFirstLetter(this.t('active'))
       const onlyInactive = this.status === this.capitalizeFirstLetter(this.t('terminated')) ? true : false
-      const response = await new EmployeeService().getFilteredList(this.search, this.departmentId, this.positionId, workSchedule, this.currentPage, this.rowsPerPage, onlyInactive, this.employeeTypeId)
+
+      // Si rowsPerPage es -1 (Todos), usar un número muy grande para obtener todos los registros
+      const pageSize = this.rowsPerPage === -1 ? 999999 : this.rowsPerPage
+
+      const response = await new EmployeeService().getFilteredList(
+        this.search,
+        this.departmentId,
+        this.positionId,
+        workSchedule,
+        this.currentPage,
+        pageSize,
+        onlyInactive,
+        this.employeeTypeId,
+        this.sortBy,
+        this.sortOrder
+      )
       const list = response.status === 200 ? response._data.data.employees.data : []
       this.totalRecords = response.status === 200 ? response._data.data.employees.meta.total : 0
       this.first = response.status === 200 ? response._data.data.employees.meta.first_page : 0
       this.filteredEmployees = list
+
       myGeneralStore.setFullLoader(false)
     },
     async getWorkSchedules() {
@@ -601,7 +660,7 @@ export default defineComponent({
       this.drawerShiftExceptionGeneralForm = true
     },
     async onSaveShiftExceptionGeneral(shiftExceptionsSaved: Array<ShiftExceptionInterface>, shiftExceptionsError: Array<ShiftExceptionErrorInterface>) {
-      this.isReady = false
+      // this.isReady = false
       const myGeneralStore = useMyGeneralStore()
       myGeneralStore.setFullLoader(true)
       this.drawerShiftExceptionGeneralForm = false
@@ -618,9 +677,38 @@ export default defineComponent({
         this.shiftExceptionsError = shiftExceptionsError
         this.drawershiftExceptionsError = true
       }
-      this.isReady = true
+      // this.isReady = true
       myGeneralStore.setFullLoader(false)
     },
+    // Métodos para localStorage
+    saveSortingPreferences() {
+      if (process.client) {
+        localStorage.setItem('employees_sortBy', this.sortBy)
+        localStorage.setItem('employees_sortOrder', this.sortOrder)
+      }
+    },
+    loadSortingPreferences() {
+      if (process.client) {
+        const savedSortBy = localStorage.getItem('employees_sortBy') || 'name'
+        const savedSortOrder = localStorage.getItem('employees_sortOrder') || 'ascend'
+
+        // Valores predeterminados: orden ascendente por nombre
+        this.sortBy = savedSortBy || 'name'
+        this.sortOrder = savedSortOrder || 'ascend'
+      }
+    },
+    savePaginationPreferences() {
+      if (process.client) {
+        localStorage.setItem('employees_rowsPerPage', this.rowsPerPage.toString())
+      }
+    },
+    loadPaginationPreferences() {
+      if (process.client) {
+        const savedRowsPerPage = localStorage.getItem('employees_rowsPerPage')
+        // Valor predeterminado: 50 registros por página
+        this.rowsPerPage = savedRowsPerPage ? parseInt(savedRowsPerPage) : 50
+      }
+    }
   },
 })
 
