@@ -93,6 +93,15 @@
                   BioTime
                 </span>
               </Button>
+              <Button v-if="canAddExceptionGeneral" class="btn" @click="addNewExceptionGeneral">
+                <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                    fill="#88a4bf" class="fill-000000"></path>
+                </svg>
+                {{ $t('add_shift_exception_general') }}
+              </Button>
               <Button class="btn" @click="getExcel">
                 <svg viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -245,11 +254,19 @@
           position="right" class="employees-sync" :showCloseIcon="true">
           <employeeSyncList :employeesSync="employeesSync" @onSaveSync="onSaveSync" />
         </Sidebar>
+        <Sidebar v-model:visible="drawerShiftExceptionGeneralForm" header="form" position="right"
+          class="shift-exception-general-form-sidebar" :showCloseIcon="true">
+          <employeeShiftExceptionGeneralInfoForm @onShiftExceptionSaveAll="onSaveShiftExceptionGeneral" />
+        </Sidebar>
         <transition name="page">
           <confirmDelete v-if="drawerEmployeeDelete" @confirmDelete="confirmDelete"
             @cancelDelete="onCancelEmployeeDelete" />
         </transition>
-
+        <transition name="page">
+          <shiftExceptionsGeneralError v-if="drawershiftExceptionsError" :shiftExceptions="shiftExceptionsError"
+            :quantityShiftExceptionsSaved="quantityShiftExceptionsSaved" @confirm="drawershiftExceptionsError = false"
+            @cancel="drawershiftExceptionsError = false" />
+        </transition>
 
       </NuxtLayout>
     </div>
@@ -311,4 +328,14 @@
       width: 100% !important;
     }
   }
+
+  .shift-exception-general-form-sidebar {
+    width: 40% !important;
+    max-width: 120rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
 </style>

@@ -3,6 +3,7 @@ interface ExceptionTypeInterface {
   exceptionTypeTypeName: string,
   exceptionTypeIcon: string,
   exceptionTypeSlug: string,
+  exceptionTypeIsGeneral: number,
   exceptionTypeNeedCheckInTime: boolean,
   exceptionTypeNeedCheckOutTime: boolean,
   exceptionTypeNeedReason: boolean,
