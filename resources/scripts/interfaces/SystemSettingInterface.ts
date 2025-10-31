@@ -1,4 +1,6 @@
+import SystemSettingPayrollConfigService from "../services/SystemSettingPayrollConfigService"
 import type { PeopleInterface } from "./PeopleInterface"
+import type { SystemSettingPayrollConfigInterface } from "./SystemSettingPayrollConfigInterface"
 
 interface SystemSettingInterface {
   [key: string]: any
@@ -15,6 +17,7 @@ interface SystemSettingInterface {
   systemSettingCreatedAt: Date | string | null,
   systemSettingUpdatedAt: Date | string | null,
   systemSettingDeletedAt: Date | string | null,
+  systemSettingPayrollConfigs?: Array<SystemSettingPayrollConfigInterface>
 }
 
 export type { SystemSettingInterface }

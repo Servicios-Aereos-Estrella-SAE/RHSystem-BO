@@ -10,6 +10,8 @@ import SystemModuleService from "~/resources/scripts/services/SystemModuleServic
 import type { SystemModuleInterface } from "~/resources/scripts/interfaces/SystemModuleInterface";
 import ToleranceService from "~/resources/scripts/services/ToleranceService";
 import type { ToleranceInterface } from "~/resources/scripts/interfaces/ToleranceInterface";
+import type { SystemSettingPayrollConfigInterface } from "~/resources/scripts/interfaces/SystemSettingPayrollConfigInterface";
+import SystemSettingPayrollConfigService from "~/resources/scripts/services/SystemSettingPayrollConfigService";
 import SystemSettingNotificationEmailService from "~/resources/scripts/services/SystemSettingNotificationEmailService";
 import type { SystemSettingNotificationEmailInterface } from "~/resources/scripts/interfaces/SystemSettingNotificationEmailInterface";
 
@@ -45,6 +47,10 @@ export default defineComponent({
     canUpdate: true,
     tardinessToleranceId: null,
     restrictFutureVacationSwicht: false,
+    systemSettingPayrollConfigs: [] as Array<SystemSettingPayrollConfigInterface>,
+    drawerPayrollConfigDelete: false,
+    drawerPayrollConfigForm: false,
+    systemSettingPayrollConfig: null as SystemSettingPayrollConfigInterface | null,
     // Variables para emails de notificación
     showNotificationEmails: false,
     notificationEmails: [] as SystemSettingNotificationEmailInterface[],
@@ -84,6 +90,10 @@ export default defineComponent({
       "#" + this.systemSetting.systemSettingSidebarColor;
     this.activeSwicht = isActive === 1 ? true : false;
     this.restrictFutureVacationSwicht = isRestrictFutureVacationActive === 1 ? true : false;
+    this.systemSettingPayrollConfigs = []
+    if (this.systemSetting.systemSettingId) {
+      await this.getPayrollConfigs()
+    }
 
     // Inicializar switch de emails de cumpleaños
     const birthdayEmailsActive = this.systemSetting.systemSettingBirthdayEmails ? this.systemSetting.systemSettingBirthdayEmails : 0;
@@ -98,6 +108,23 @@ export default defineComponent({
     }
   },
   methods: {
+    async getPayrollConfigs() {
+      this.systemSettingPayrollConfigs = []
+      if (this.systemSetting.systemSettingId) {
+        const systemSettingService = new SystemSettingService();
+        const systemSettingResponse = await systemSettingService.show(
+          this.systemSetting.systemSettingId
+        );
+        if (systemSettingResponse?.status === 200) {
+          const systemSetting =
+            systemSettingResponse._data.data.systemSetting
+          if (systemSetting.systemSettingPayrollConfigs) {
+            this.systemSettingPayrollConfigs = systemSetting.systemSettingPayrollConfigs
+          }
+        }
+      }
+
+    },
     async getSystemModules() {
       const response = await new SystemModuleService().getFilteredList('', 1, 100)
       const list = response.status === 200 ? response._data.data.systemModules.data : []
@@ -535,6 +562,64 @@ export default defineComponent({
       this.systemSetting.systemSettingSidebarColor = "#" + event.value;
     },
 
+    addNewPayrollConfig() {
+      if (this.systemSetting.systemSettingId) {
+        this.systemSettingPayrollConfig = {
+          systemSettingId: this.systemSetting.systemSettingId
+        } as SystemSettingPayrollConfigInterface
+        this.drawerPayrollConfigForm = true
+      }
+    },
+    onPayrollConfigSave(systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) {
+      this.drawerPayrollConfigForm = false
+      const myGeneralStore = useMyGeneralStore()
+      myGeneralStore.setFullLoader(true)
+      this.systemSettingPayrollConfig = { ...systemSettingPayrollConfig }
+      const index = this.systemSettingPayrollConfigs.findIndex((s: SystemSettingPayrollConfigInterface) => s.systemSettingPayrollConfigId === this.systemSettingPayrollConfig?.systemSettingPayrollConfigId)
+      if (index !== -1) {
+        this.systemSettingPayrollConfigs[index] = systemSettingPayrollConfig
+        this.$forceUpdate()
+      } else {
+        this.systemSettingPayrollConfigs.unshift(systemSettingPayrollConfig)
+        this.$forceUpdate()
+      }
+      myGeneralStore.setFullLoader(false)
+    },
+    onEditPayrollConfig(systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) {
+      this.systemSettingPayrollConfig = { ...systemSettingPayrollConfig }
+      this.drawerPayrollConfigForm = true
+    },
+    onDeletePayrollConfig(systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) {
+      this.systemSettingPayrollConfig = { ...systemSettingPayrollConfig }
+      this.drawerPayrollConfigDelete = true
+    },
+    async confirmDeletePayrollConfig() {
+      if (this.systemSettingPayrollConfig) {
+        this.drawerPayrollConfigDelete = false
+        const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService()
+        const systemSettingPayrollConfigResponse = await systemSettingPayrollConfigService.delete(this.systemSettingPayrollConfig)
+        if (systemSettingPayrollConfigResponse.status === 200) {
+          const index = this.systemSettingPayrollConfigs.findIndex((systemSettingPayrollConfig: SystemSettingPayrollConfigInterface) => systemSettingPayrollConfig.systemSettingPayrollConfigId === this.systemSettingPayrollConfig?.systemSettingPayrollConfigId)
+          if (index !== -1) {
+            this.systemSettingPayrollConfigs.splice(index, 1)
+            this.$forceUpdate()
+          }
+          this.$toast.add({
+            severity: 'success',
+            summary: 'Delete payroll config',
+            detail: systemSettingPayrollConfigResponse._data.message,
+            life: 5000,
+          })
+        } else {
+          this.$toast.add({
+            severity: 'error',
+            summary: 'Delete payroll config',
+            detail: systemSettingPayrollConfigResponse._data.message,
+            life: 5000,
+          })
+        }
+      }
+    },
     // Métodos para emails de notificación
     async fetchNotificationEmails() {
       if (!this.systemSetting.systemSettingId) return;
@@ -591,7 +676,7 @@ export default defineComponent({
       try {
         const service = new SystemSettingNotificationEmailService();
         const response = await service.createNotificationEmail({
-          systemSettingId: this.systemSetting.systemSettingId,
+          systemSettingId: this.systemSetting.systemSettingId as number,
           email: this.newEmail
         });
 

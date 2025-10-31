@@ -171,6 +171,32 @@
           <InputSwitch v-model="restrictFutureVacationSwicht" />
         </div>
 
+        <div v-if="!isNewSystemSetting" class="input-box">
+          <label for="tardinessTolerance">Payroll Configs</label>
+          <Button class="btn btn-block" @click="addNewPayrollConfig">
+            <svg baseProfile="tiny" version="1.2" viewBox="0 0 24 24" xml:space="preserve"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 10h-4V6a2 2 0 0 0-4 0l.071 4H6a2 2 0 0 0 0 4l4.071-.071L10 18a2 2 0 0 0 4 0v-4.071L18 14a2 2 0 0 0 0-4z"
+                fill="#88a4bf" class="fill-000000"></path>
+            </svg>
+            Add New
+          </Button>
+        </div>
+        <div v-if="!isNewSystemSetting" class="input-box">
+          <div v-if="systemSettingPayrollConfigs.length > 0" class="payroll-config-wrapper">
+            <div v-for="(systemSettingPayrollConfig, index) in systemSettingPayrollConfigs"
+              :key="`system-setting-payroll-config-file-${index}`">
+              <systemSettingPayrollConfigInfoCard :systemSettingPayrollConfig="systemSettingPayrollConfig"
+                :click-on-edit="() => { onEditPayrollConfig(systemSettingPayrollConfig) }"
+                :click-on-delete="() => { onDeletePayrollConfig(systemSettingPayrollConfig) }" />
+            </div>
+          </div>
+          <div v-else class="empty">
+            Empty list
+          </div>
+        </div>
+
         <!-- Sección de Emails de Notificación -->
         <div v-if="!isNewSystemSetting" class="input-box notification-emails-section">
           <div class="notification-emails-header">
@@ -255,6 +281,15 @@
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
       </div>
+      <transition name="page">
+        <confirmDelete v-if="drawerPayrollConfigDelete" @confirmDelete="confirmDeletePayrollConfig"
+          @cancelDelete="drawerPayrollConfigDelete = false" />
+      </transition>
+      <Sidebar v-model:visible="drawerPayrollConfigForm" header="Payroll Config form" position="right"
+        class="payroll-config-form-sidebar" :showCloseIcon="true">
+        <systemSettingPayrollConfigInfoForm :systemSettingPayrollConfig="systemSettingPayrollConfig"
+          @onPayrollConfigSave="onPayrollConfigSave" />
+      </Sidebar>
     </div>
   </div>
 </template>
@@ -289,6 +324,15 @@
   .proceeding-file-sidebar {
     width: 100% !important;
     max-width: 90rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
+  }
+
+  .payroll-config-form-sidebar {
+    width: 100% !important;
+    max-width: 25rem !important;
 
     @media screen and (max-width: $sm) {
       width: 100% !important;
