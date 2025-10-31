@@ -83,6 +83,20 @@ export default class EmployeeEmergencyContactService {
     }
   }
 
+  async getByEmployeeId(employeeId: number) {
+    let responseRequest: any = null
+    const headers = { ...this.GENERAL_HEADERS }
+
+    await $fetch(`${this.API_PATH}/employee-emergency-contacts/employee/${employeeId}`, {
+      headers,
+      onResponse({ response }) { responseRequest = response },
+      onRequestError({ response }) { responseRequest = response }
+    })
+
+    // La respuesta del API ya viene con la estructura correcta
+    return responseRequest
+  }
+
   validateInfo(employeeEmergencyContact: EmployeeEmergencyContactInterface): boolean {
 
     const hasAtLeastOneField = this.hasAtLeastOneField(employeeEmergencyContact);

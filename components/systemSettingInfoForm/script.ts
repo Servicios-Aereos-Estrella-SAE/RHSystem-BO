@@ -12,6 +12,8 @@ import ToleranceService from "~/resources/scripts/services/ToleranceService";
 import type { ToleranceInterface } from "~/resources/scripts/interfaces/ToleranceInterface";
 import type { SystemSettingPayrollConfigInterface } from "~/resources/scripts/interfaces/SystemSettingPayrollConfigInterface";
 import SystemSettingPayrollConfigService from "~/resources/scripts/services/SystemSettingPayrollConfigService";
+import SystemSettingNotificationEmailService from "~/resources/scripts/services/SystemSettingNotificationEmailService";
+import type { SystemSettingNotificationEmailInterface } from "~/resources/scripts/interfaces/SystemSettingNotificationEmailInterface";
 
 export default defineComponent({
   components: {
@@ -49,6 +51,13 @@ export default defineComponent({
     drawerPayrollConfigDelete: false,
     drawerPayrollConfigForm: false,
     systemSettingPayrollConfig: null as SystemSettingPayrollConfigInterface | null,
+    // Variables para emails de notificación
+    showNotificationEmails: false,
+    notificationEmails: [] as SystemSettingNotificationEmailInterface[],
+    newEmail: '',
+    // Variables para switch de emails de cumpleaños
+    birthdayEmailsSwitch: false,
+    isUpdatingBirthdayEmails: false,
   }),
   computed: {
     isRoot() {
@@ -85,9 +94,18 @@ export default defineComponent({
     if (this.systemSetting.systemSettingId) {
       await this.getPayrollConfigs()
     }
+
+    // Inicializar switch de emails de cumpleaños
+    const birthdayEmailsActive = this.systemSetting.systemSettingBirthdayEmails ? this.systemSetting.systemSettingBirthdayEmails : 0;
+    this.birthdayEmailsSwitch = birthdayEmailsActive === 1 ? true : false;
+
     await this.getSystemModules()
     this.isReady = true;
     this.fetchTolerances();
+    // Cargar emails de notificación si no es un nuevo system setting
+    if (!this.isNewSystemSetting) {
+      this.fetchNotificationEmails();
+    }
   },
   methods: {
     async getPayrollConfigs() {
@@ -543,6 +561,7 @@ export default defineComponent({
     updateColor(event: any) {
       this.systemSetting.systemSettingSidebarColor = "#" + event.value;
     },
+
     addNewPayrollConfig() {
       if (this.systemSetting.systemSettingId) {
         this.systemSettingPayrollConfig = {
@@ -599,6 +618,221 @@ export default defineComponent({
             life: 5000,
           })
         }
+      }
+    },
+    // Métodos para emails de notificación
+    async fetchNotificationEmails() {
+      if (!this.systemSetting.systemSettingId) return;
+
+      try {
+        const service = new SystemSettingNotificationEmailService();
+        const response = await service.getNotificationEmails(this.systemSetting.systemSettingId);
+
+        if (response && response.data) {
+          this.notificationEmails = response.data.systemSettingNotificationEmails || [];
+        } else {
+          this.notificationEmails = [];
+        }
+      } catch (error) {
+        console.error('Error fetching notification emails:', error);
+        this.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Failed to load notification emails",
+          life: 5000,
+        });
+      }
+    },
+
+    async addNotificationEmail() {
+      if (!this.newEmail || !this.isValidEmail(this.newEmail)) {
+        this.$toast.add({
+          severity: "warn",
+          summary: "Invalid Email",
+          detail: "Please enter a valid email address",
+          life: 5000,
+        });
+        return;
+      }
+
+      // Verificar si el email ya existe
+      const emailExists = this.notificationEmails.some(
+        email => email.email.toLowerCase() === this.newEmail.toLowerCase()
+      );
+
+      if (emailExists) {
+        this.$toast.add({
+          severity: "warn",
+          summary: "Email Exists",
+          detail: "This email is already configured",
+          life: 5000,
+        });
+        return;
+      }
+
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      try {
+        const service = new SystemSettingNotificationEmailService();
+        const response = await service.createNotificationEmail({
+          systemSettingId: this.systemSetting.systemSettingId as number,
+          email: this.newEmail
+        });
+
+        if (response && (response.status === 200 || response.status === 201)) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Email Added",
+            detail: "Notification email added successfully",
+            life: 5000,
+          });
+
+          // Limpiar el input y recargar la lista
+          this.newEmail = '';
+          await this.fetchNotificationEmails();
+        } else {
+          const msgError = response?._data?.message || "Failed to add notification email";
+          const severityType = response?.status === 500 ? 'error' : 'warn';
+          this.$toast.add({
+            severity: severityType,
+            summary: response?.status === 500 ? "Error" : "Warning",
+            detail: msgError,
+            life: 5000,
+          });
+        }
+      } catch (error) {
+        console.error('Error adding notification email:', error);
+        this.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Failed to add notification email",
+          life: 5000,
+        });
+      } finally {
+        myGeneralStore.setFullLoader(false);
+      }
+    },
+
+    async deleteNotificationEmail(emailId: number) {
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      try {
+        const service = new SystemSettingNotificationEmailService();
+        const response = await service.deleteNotificationEmail(emailId);
+
+        if (response && (response.status === 200 || response.status === 201)) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Email Deleted",
+            detail: "Notification email deleted successfully",
+            life: 5000,
+          });
+
+          // Recargar la lista
+          await this.fetchNotificationEmails();
+        } else {
+          const msgError = response?._data?.message || "Failed to delete notification email";
+          const severityType = response?.status === 500 ? 'error' : 'warn';
+          this.$toast.add({
+            severity: severityType,
+            summary: response?.status === 500 ? "Error" : "Warning",
+            detail: msgError,
+            life: 5000,
+          });
+        }
+      } catch (error) {
+        console.error('Error deleting notification email:', error);
+        this.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Failed to delete notification email",
+          life: 5000,
+        });
+      } finally {
+        myGeneralStore.setFullLoader(false);
+      }
+    },
+
+    toggleNotificationEmails() {
+      this.showNotificationEmails = !this.showNotificationEmails;
+    },
+
+    isValidEmail(email: string): boolean {
+      const service = new SystemSettingNotificationEmailService();
+      return service.validateEmail(email);
+    },
+
+    formatDate(dateString: string | undefined): string {
+      if (!dateString) return 'Unknown';
+
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        return 'Invalid date';
+      }
+    },
+
+    // Método para actualizar el estado de emails de cumpleaños
+    async updateBirthdayEmailsStatus() {
+      if (!this.systemSetting.systemSettingId) return;
+
+      this.isUpdatingBirthdayEmails = true;
+      const myGeneralStore = useMyGeneralStore();
+      myGeneralStore.setFullLoader(true);
+
+      try {
+        const systemSettingService = new SystemSettingService();
+        const response = await systemSettingService.updateBirthdayEmailsStatus(
+          this.systemSetting.systemSettingId,
+          this.birthdayEmailsSwitch
+        );
+
+        if (response && response.status === 200) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Birthday Emails Updated",
+            detail: `Birthday emails ${this.birthdayEmailsSwitch ? 'activated' : 'deactivated'} successfully`,
+            life: 5000,
+          });
+
+          // Actualizar el valor en el system setting
+          this.systemSetting.systemSettingBirthdayEmails = this.birthdayEmailsSwitch ? 1 : 0;
+        } else {
+          const msgError = response?._data?.message || "Failed to update birthday emails status";
+          const severityType = response?.status === 500 ? 'error' : 'warn';
+          this.$toast.add({
+            severity: severityType,
+            summary: response?.status === 500 ? "Error" : "Warning",
+            detail: msgError,
+            life: 5000,
+          });
+
+          // Revertir el switch si hay error
+          this.birthdayEmailsSwitch = !this.birthdayEmailsSwitch;
+        }
+      } catch (error) {
+        console.error('Error updating birthday emails status:', error);
+        this.$toast.add({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Failed to update birthday emails status",
+          life: 5000,
+        });
+
+        // Revertir el switch si hay error
+        this.birthdayEmailsSwitch = !this.birthdayEmailsSwitch;
+      } finally {
+        this.isUpdatingBirthdayEmails = false;
+        myGeneralStore.setFullLoader(false);
       }
     },
   },

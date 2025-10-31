@@ -61,6 +61,22 @@ export default class ProceedingFileTypeService {
     return responseRequest
   }
 
+  async createEmployeeType(proceedingFileType: any) {
+    const headers = { ...this.GENERAL_HEADERS }
+    let responseRequest: any = null
+    try {
+      await $fetch(`${this.API_PATH}/proceeding-file-types/create-employee-type`, {
+        headers,
+        method: 'POST',
+        body: proceedingFileType,
+        onResponse ({ response }) { responseRequest = response },
+        onRequestError ({ response }) { responseRequest = response }
+      })
+    } catch (error) {
+    }
+    return responseRequest
+  }
+
   async update(proceedingFileType: ProceedingFileTypeInterface) {
     const headers = { ...this.GENERAL_HEADERS }
     let responseRequest: any = null

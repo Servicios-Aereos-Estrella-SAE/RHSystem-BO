@@ -85,3 +85,109 @@
     padding-top: 0.5rem;
   }
 }
+
+// Estilos para la sección de emails de notificación
+.notification-emails-section {
+  .notification-emails-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .toggle-button {
+      padding: 0.5rem;
+    }
+  }
+
+  .birthday-emails-switch {
+    // Usa los estilos por defecto de .input-box
+  }
+
+  .notification-emails-content {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #fafafa;
+  }
+
+  .add-email-form {
+    margin-bottom: 1.5rem;
+
+    .email-input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+
+      .email-input {
+        flex: 1;
+      }
+
+      .add-button {
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .emails-list {
+    .email-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .email-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+
+        .email-icon {
+          color: #6b7280;
+        }
+
+        .email-address {
+          font-weight: 500;
+          color: #374151;
+        }
+
+        .email-date {
+          color: #6b7280;
+          margin-left: auto;
+        }
+      }
+
+      .delete-button {
+        margin-left: 1rem;
+      }
+    }
+  }
+
+  .no-emails-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    text-align: center;
+    color: #6b7280;
+    background-color: white;
+    border: 1px dashed #d1d5db;
+    border-radius: 6px;
+
+    i {
+      font-size: 1.2rem;
+    }
+  }
+}

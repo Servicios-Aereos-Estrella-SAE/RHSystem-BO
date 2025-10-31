@@ -197,6 +197,86 @@
           </div>
         </div>
 
+        <!-- Sección de Emails de Notificación -->
+        <div v-if="!isNewSystemSetting" class="input-box notification-emails-section">
+          <div class="notification-emails-header">
+            <label for="notificationEmails">Notification Emails</label>
+            <Button
+              :icon="showNotificationEmails ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+              severity="secondary"
+              text
+              @click="toggleNotificationEmails"
+              class="toggle-button"
+            />
+          </div>
+
+          <!-- Switch para activar/desactivar emails de cumpleaños -->
+          <div class="input-box birthday-emails-switch">
+            <label for="birthdayEmailsSwitch">
+              {{ birthdayEmailsSwitch ? 'Birthday Emails Active' : 'Birthday Emails Inactive' }}
+            </label>
+            <InputSwitch
+              v-model="birthdayEmailsSwitch"
+              @change="updateBirthdayEmailsStatus"
+              :disabled="isUpdatingBirthdayEmails"
+            />
+          </div>
+
+          <div v-if="showNotificationEmails" class="notification-emails-content">
+            <!-- Formulario para agregar email -->
+            <div class="add-email-form">
+              <div class="email-input-group">
+                <InputText
+                  v-model="newEmail"
+                  placeholder="Enter email address"
+                  class="email-input"
+                  @keyup.enter="addNotificationEmail"
+                />
+                <Button
+                  label="Add Email"
+                  severity="primary"
+                  @click="addNotificationEmail"
+                  :disabled="!newEmail || !isValidEmail(newEmail)"
+                  class="add-button"
+                />
+              </div>
+              <small v-if="newEmail && !isValidEmail(newEmail)" class="p-error">
+                Please enter a valid email address
+              </small>
+            </div>
+
+            <!-- Lista de emails existentes -->
+            <div v-if="notificationEmails.length > 0" class="emails-list">
+              <div
+                v-for="email in notificationEmails"
+                :key="email.systemSettingNotificationEmailId"
+                class="email-item"
+              >
+                <div class="email-info">
+                  <i class="pi pi-envelope email-icon"></i>
+                  <span class="email-address">{{ email.email }}</span>
+                  <small class="email-date">
+                    Added: {{ formatDate(email.systemSettingNotificationEmailCreatedAt) }}
+                  </small>
+                </div>
+                <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  text
+                  @click="deleteNotificationEmail(email.systemSettingNotificationEmailId)"
+                  class="delete-button"
+                />
+              </div>
+            </div>
+
+            <!-- Mensaje cuando no hay emails -->
+            <div v-else class="no-emails-message">
+              <i class="pi pi-info-circle"></i>
+              <span>No notification emails configured</span>
+            </div>
+          </div>
+        </div>
+
         <div class="box-tools-footer">
           <Button label="Save" severity="primary" @click="onSave()" />
         </div>
