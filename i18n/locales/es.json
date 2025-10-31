@@ -822,5 +822,7 @@
   "retirement_reason_required": "La razón de retiro es requerida",
   "select_retirement_date": "Seleccionar fecha de retiro",
   "retirement_date_required": "La fecha de retiro es requerida",
-  "supply_deleted_successfully": "Insumo eliminado correctamente"
+  "supply_deleted_successfully": "Insumo eliminado correctamente",
+  "file_number": "Folio",
+  "select_option": "Seleccionar opción"
 }
