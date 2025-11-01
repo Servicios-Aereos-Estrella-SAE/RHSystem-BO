@@ -123,6 +123,7 @@
   "see_positions": "Ver posiciones",
   "invalid_date": "Fecha no válida",
   "you_should_select_a_valid_date_only_thursdays_are_valid": "Debes seleccionar una fecha válida. Solo los jueves son válidos.",
+  "you_should_select_a_valid_date": "Debes seleccionar una fecha válida.",
   "excel_assist": "Asistencia Excel",
   "excel_was_created_successfully": "El archivo de Excel se creó correctamente.",
   "department_attendance_monitor": "Monitor de Asistencia del Departamento",

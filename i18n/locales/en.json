@@ -123,6 +123,7 @@
   "see_positions": "See positions",
   "invalid_date": "Invalid Date",
   "you_should_select_a_valid_date_only_thursdays_are_valid": "You should select a valid date. Only Thursdays are valid.",
+  "you_should_select_a_valid_date": "You should select a valid date.",
   "excel_assist": "Excel Assist",
   "excel_was_created_successfully": "Excel was created successfully.",
   "department_attendance_monitor": "Department Attendance Monitor",

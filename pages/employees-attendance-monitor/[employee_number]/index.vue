@@ -273,41 +273,41 @@
 </template>
 
 <script>
-import Script from './script.ts'
-export default Script
+  import Script from './script.ts'
+  export default Script
 </script>
 
 <style lang="scss" scoped>
-@import './style';
+  @import './style';
 </style>
 
 <style lang="scss">
-@import './style';
+  @import './style';
 
-.employee-assist-sidebar {
-  width: 100% !important;
-  max-width: 32rem !important;
-
-  @media screen and (max-width: $sm) {
+  .employee-assist-sidebar {
     width: 100% !important;
+    max-width: 32rem !important;
+
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.vacation-form-sidebar {
-  width: 35rem !important;
-  max-width: 80rem !important;
+  .vacation-form-sidebar {
+    width: 35rem !important;
+    max-width: 80rem !important;
 
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 
-.sidebar-shifts {
-  width: 90% !important;
-  max-width: 120rem !important;
+  .sidebar-shifts {
+    width: 90% !important;
+    max-width: 120rem !important;
 
-  @media screen and (max-width: $sm) {
-    width: 100% !important;
+    @media screen and (max-width: $sm) {
+      width: 100% !important;
+    }
   }
-}
 </style>

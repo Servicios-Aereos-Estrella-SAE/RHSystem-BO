@@ -1,5 +1,7 @@
 import type { AttendanceMonitorPeriodType } from "../enums/AttendanceMonitorPeriodType"
 import { DateTime } from 'luxon'
+import type { AssistPeriodCategoriesInterface } from "../interfaces/AssistPeriodCategoriesInterface";
+import SystemSettingPayrollConfigService from "../services/SystemSettingPayrollConfigService";
 
 export default class AttendanceMonitorController {
 
@@ -27,13 +29,13 @@ export default class AttendanceMonitorController {
     return serieData
   }
 
-  getDepartmentPeriodCategories(period: keyof typeof AttendanceMonitorPeriodType, periodDate: Date, localeToUse: string): string[] {
+  getDepartmentPeriodCategories(period: keyof typeof AttendanceMonitorPeriodType, localeToUse: string, filters: AssistPeriodCategoriesInterface): string[] {
     switch (period) {
       case 'yearly':
         return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       case 'monthly': {
-        const month = parseInt(DateTime.fromJSDate(periodDate).toFormat('LL'))
-        const year = parseInt(DateTime.fromJSDate(periodDate).toFormat('yyyy'))
+        const month = parseInt(DateTime.fromJSDate(filters.periodSelected).toFormat('LL'))
+        const year = parseInt(DateTime.fromJSDate(filters.periodSelected).toFormat('yyyy'))
         const date = DateTime.local(year, month, 1).setLocale(localeToUse)
         const days = date.daysInMonth
         const categories = []
@@ -47,7 +49,7 @@ export default class AttendanceMonitorController {
         return categories
       }
       case 'weekly': {
-        const date = DateTime.fromJSDate(periodDate)
+        const date = DateTime.fromJSDate(filters.periodSelected)
         const start = date.startOf('week')
         const daysList = []
 
@@ -72,21 +74,126 @@ export default class AttendanceMonitorController {
         return daysList
       }
       case 'payroll': {
-        const date = DateTime.fromJSDate(periodDate)
-        const start = date.startOf('week').minus({ days: 1 })
-        let thursday = start.plus({ days: 3 })
-        let startDate = thursday.minus({ days: 24 })
         const daysList = []
+        if (filters.paymentType === 'biweekly') {
+          const date = DateTime.fromJSDate(filters.periodSelected)
+          let startDate, endDate
+          if (date.day === 1) {
+            const previousMonth = date.minus({ months: 1 })
+            startDate = previousMonth.set({ day: 16 })
+            endDate = previousMonth.endOf('month')
+          } else {
+            startDate = date.set({ day: 1 })
+            endDate = date.set({ day: 15 })
+          }
 
-        for (let index = 0; index < 14; index++) {
-          const currentDay = startDate.plus({ days: index })
-          const year = parseInt(currentDay.toFormat('yyyy'))
-          const month = parseInt(currentDay.toFormat('LL'))
-          const day = parseInt(currentDay.toFormat('dd'))
-          const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
-          const formatedDay = dayDate.toFormat('DD')
+          let currentDay = startDate
 
-          daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+          while (currentDay <= endDate) {
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+            const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
+            const formatedDay = dayDate.toFormat('DD')
+
+            daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+            currentDay = currentDay.plus({ days: 1 })
+          }
+        } else if (filters.paymentType === 'specific_day_of_month') {
+          const date = DateTime.fromJSDate(filters.periodSelected)
+          const dayToBePaid = filters.dayToBePaid
+          if (dayToBePaid && typeof dayToBePaid === 'number' && dayToBePaid > 0 && dayToBePaid <= 31) {
+            const previousMonth = date.minus({ months: 1 })
+
+            const startDay = Math.min(dayToBePaid, previousMonth.daysInMonth!)
+            const startDate = previousMonth.set({ day: startDay })
+
+            const nextMonth = startDate.plus({ months: 1 })
+
+            const endDay = Math.min(dayToBePaid, nextMonth.daysInMonth!)
+            const endDate = nextMonth.set({ day: endDay })
+
+            let currentDay = startDate
+
+            while (currentDay <= endDate) {
+              const year = parseInt(currentDay.toFormat('yyyy'))
+              const month = parseInt(currentDay.toFormat('LL'))
+              const day = parseInt(currentDay.toFormat('dd'))
+              const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
+              const formatedDay = dayDate.toFormat('DD')
+
+              daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+              currentDay = currentDay.plus({ days: 1 })
+            }
+          }
+        } else if (filters.paymentType === 'fixed_day_every_n_weeks') {
+          const targetDay = filters.fixedDayToBePaid
+          const systemSettingPayrollConfigService = new SystemSettingPayrollConfigService();
+          const dayIndex = systemSettingPayrollConfigService.getDayIndex(targetDay)
+          if (targetDay && dayIndex >= 0 && filters.daysToOffset && filters.fixedEveryNWeeksToBePaid) {
+            const date = DateTime.fromJSDate(filters.periodSelected)
+            const startOfWeek = date.startOf('week')
+
+            let dayWeek = startOfWeek.plus({ days: dayIndex })
+
+            let startDate = dayWeek.minus({ days: filters.daysToOffset })
+            for (let index = 0; index < filters.fixedEveryNWeeksToBePaid * 7; index++) {
+              const currentDay = startDate.plus({ days: index })
+              const year = parseInt(currentDay.toFormat('yyyy'))
+              const month = parseInt(currentDay.toFormat('LL'))
+              const day = parseInt(currentDay.toFormat('dd'))
+              const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
+              const formatedDay = dayDate.toFormat('DD')
+
+              daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+            }
+          }
+
+        } else if (filters.paymentType === 'fourteenth') {
+          if (filters.periodsToOffset && filters.periodSelected) {
+            const endDate = DateTime.fromJSDate(filters.periodSelected).startOf('day')
+            const paymentDatesLuxon = filters.paymentDates.map(date =>
+              DateTime.fromJSDate(date).startOf('day')
+            )
+            const selectedIndex = paymentDatesLuxon.findIndex(date =>
+              date.hasSame(endDate, 'day')
+            )
+            if (selectedIndex !== -1 && selectedIndex - filters.periodsToOffset >= 0) {
+              const startDate = paymentDatesLuxon[selectedIndex - filters.periodsToOffset]
+
+              let currentDay = startDate
+
+              while (currentDay < endDate) {
+                const year = parseInt(currentDay.toFormat('yyyy'))
+                const month = parseInt(currentDay.toFormat('LL'))
+                const day = parseInt(currentDay.toFormat('dd'))
+                const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
+                const formatedDay = dayDate.toFormat('DD')
+
+                daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+
+                currentDay = currentDay.plus({ days: 1 })
+              }
+
+            }
+          }
+        } else {
+          const date = DateTime.fromJSDate(filters.periodSelected)
+          const start = date.startOf('week').minus({ days: 1 })
+          let thursday = start.plus({ days: 3 })
+          let startDate = thursday.minus({ days: 24 })
+
+
+          for (let index = 0; index < 14; index++) {
+            const currentDay = startDate.plus({ days: index })
+            const year = parseInt(currentDay.toFormat('yyyy'))
+            const month = parseInt(currentDay.toFormat('LL'))
+            const day = parseInt(currentDay.toFormat('dd'))
+            const dayDate = DateTime.local(year, month, day).setLocale(localeToUse)
+            const formatedDay = dayDate.toFormat('DD')
+
+            daysList.push(`<div class="graph-label-attendance-monitor-period">${formatedDay}</div>`)
+          }
         }
 
         return daysList

@@ -9,3 +9,4 @@ interface HolidayInterface {
   holidayUpdatedAt: Date | string,
   holidayDeletedAt: Date | string | null,
 }
+export type { HolidayInterface }

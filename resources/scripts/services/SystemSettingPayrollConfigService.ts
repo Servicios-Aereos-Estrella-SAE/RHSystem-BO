@@ -1,5 +1,9 @@
+import { DateTime } from "luxon"
 import type { GeneralHeadersInterface } from "../interfaces/GeneralHeadersInterface"
 import type { SystemSettingPayrollConfigInterface } from "../interfaces/SystemSettingPayrollConfigInterface"
+import AssistService from "./AssistService"
+import type { AssistNoPaymentDatesInterface } from "../interfaces/AssistNoPaymentDatesInterface"
+import HolidayService from "./HolidayService"
 
 export default class SystemSettingPayrollConfigService {
   protected API_PATH: string
@@ -103,16 +107,30 @@ export default class SystemSettingPayrollConfigService {
         console.error('Wrong fixed every n weeks')
         return false;
       }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
+        console.error('Wrong number of over days to offset')
+        return false;
+      }
     } else if (paymentType === 'biweekly' || paymentType === 'specific_day_of_month') {
       if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
         console.error('Wrong number of days to be paid')
         return false;
       }
+    } else if (paymentType === 'fourteenth') {
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid) {
+        console.error('Wrong number of days to be paid')
+        return false;
+      }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid) {
+        console.error('Wrong number of days end to be paid')
+        return false;
+      }
+      if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
+        console.error('Wrong number of over periods to offset')
+        return false;
+      }
     }
-    if (!systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset) {
-      console.error('Wrong number of over days to offset')
-      return false;
-    }
+
     if (!systemSettingPayrollConfig.systemSettingPayrollConfigApplySince) {
       console.error('Wrong apply since')
       return false;
@@ -123,5 +141,122 @@ export default class SystemSettingPayrollConfigService {
     }
 
     return true;
+  }
+  getDayIndex(value: string | null): number {
+    if (!value) return -1
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    const normalized = value.toLowerCase()
+    return days.indexOf(normalized)
+  }
+  getNextPayDateBiweekly() {
+    const today = DateTime.now()
+
+    if (today.day === 1 || today.day === 15) {
+      return today.toJSDate()
+    }
+
+    if (today.day > 15) {
+      let nextPayDate = today.plus({ months: 1 }).set({ day: 1 })
+      return nextPayDate.toJSDate()
+    }
+
+    let nextPayDate = today.set({ day: 15 })
+    return nextPayDate.toJSDate()
+  }
+  getNextPayDateMonthly(dayToBePaid: number | null) {
+    const today = DateTime.now()
+
+    if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+      return null
+    }
+
+    if (today.day === dayToBePaid) {
+      return today.toJSDate()
+    }
+
+    if (today.day < dayToBePaid) {
+      const possibleDate = today.set({ day: dayToBePaid })
+      if (possibleDate.isValid) {
+        return possibleDate.toJSDate()
+      }
+    }
+
+    let nextMonthDate = today.plus({ months: 1 }).set({ day: dayToBePaid })
+    if (!nextMonthDate.isValid) {
+      nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
+    }
+
+    return nextMonthDate.toJSDate()
+  }
+  getNextPayDateWeekDay(fixedEveryNWeeksToBePaid: number | null, dateApplySince: string | null, fixedDayToBePaid: string | null) {
+    const today = DateTime.now()
+    if (fixedEveryNWeeksToBePaid && dateApplySince) {
+      const targetDay = fixedDayToBePaid
+      const dayIndex = this.getDayIndex(targetDay) + 1
+
+      const applySince = DateTime.fromJSDate(new Date(dateApplySince))
+      let startDate = applySince.set({ weekday: dayIndex as 1 | 2 | 3 | 4 | 5 | 6 | 7 })
+
+      if (startDate < applySince) {
+        startDate = startDate.plus({ weeks: 1 })
+      }
+
+      while (startDate < today) {
+        startDate = startDate.plus({ weeks: fixedEveryNWeeksToBePaid })
+      }
+
+      return startDate.toJSDate()
+    } else {
+      return today.toJSDate()
+    }
+  }
+  async getNextPayDateFourteenth(dayToBePaid: number | null, dayEndToBePaid: number | null, filters: AssistNoPaymentDatesInterface) {
+    const today = DateTime.now()
+
+    if (typeof dayToBePaid !== 'number' || dayToBePaid < 1 || dayToBePaid > 31) {
+      return null
+    }
+
+    if (typeof dayEndToBePaid !== 'number' || dayEndToBePaid < 1 || dayEndToBePaid > 31) {
+      return null
+    }
+    const holidayService = new HolidayService()
+    const response = await holidayService.getFilteredList('', null, null, 1, 99999)
+    const holidays: string[] = []
+    const list = response.status === 200 ? response._data.holidays.data : []
+    for await (const holiday of list) {
+      const formattedDate = new Date(holiday.holidayDate).toISOString().slice(0, 10)
+      holidays.push(formattedDate)
+    }
+    const assistService = new AssistService()
+    if (today.day === dayToBePaid) {
+      return assistService.adjustToValidDate(today, filters, holidays).toJSDate()
+    }
+
+    if (today.day === dayEndToBePaid) {
+      return assistService.adjustToValidDate(today, filters, holidays).toJSDate()
+    }
+
+
+    if (today.day < dayToBePaid) {
+      const possibleDate = today.set({ day: dayToBePaid })
+      if (possibleDate.isValid) {
+        return assistService.adjustToValidDate(possibleDate, filters, holidays).toJSDate()
+      }
+    }
+
+    if (today.day < dayEndToBePaid) {
+      const possibleDate = today.set({ day: dayEndToBePaid })
+      if (possibleDate.isValid) {
+        return assistService.adjustToValidDate(possibleDate, filters, holidays).toJSDate()
+      }
+    }
+
+    let nextMonthDate = today.plus({ months: 1 }).set({ day: dayToBePaid })
+    if (!nextMonthDate.isValid) {
+      nextMonthDate = nextMonthDate.set({ day: nextMonthDate.endOf('month').day });
+    }
+
+    return assistService.adjustToValidDate(nextMonthDate, filters, holidays).toJSDate()
   }
 }

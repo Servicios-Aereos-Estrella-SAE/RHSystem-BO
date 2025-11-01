@@ -39,6 +39,8 @@ export default defineComponent({
         return 'Specific day'
       } else if (type === 'biweekly') {
         return 'Biweekly'
+      } else if (type === 'fourteenth') {
+        return 'Fourteenth'
       }
     }
   }

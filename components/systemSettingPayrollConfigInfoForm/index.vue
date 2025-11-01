@@ -38,16 +38,18 @@
           <label for="systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n weeks</label>
           <InputNumber id="systemSettingPayrollConfigFixedEveryNWeeks"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks"
-            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks" />
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks"
+            :disabled="!isNewSystemSettingPayrollConfig" />
           <small class="p-error"
             v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigFixedEveryNWeeks">Fixed every n
             weeks is
             required.</small>
         </div>
 
-        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'specific_day_of_month'"
+        <div
+          v-if="['specific_day_of_month', 'fourteenth'].includes(systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType)"
           class="input-box">
-          <label for="systemSettingPayrollConfigNumberOfDaysToBePaid">Config number of days to be paid</label>
+          <label for="systemSettingPayrollConfigNumberOfDaysToBePaid">Config number of day to be paid</label>
           <InputNumber id="systemSettingPayrollConfigNumberOfDaysToBePaid"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid"
             :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid" :min="1"
@@ -55,21 +57,63 @@
             :disabled="!isNewSystemSettingPayrollConfig || systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'biweekly'" />
           <small class="p-error"
             v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysToBePaid">Config number
-            of days to be paid is
+            of day to be paid is
             required.</small>
         </div>
 
-        <div class="input-box">
-          <label for="systemSettingPayrollConfigNumberOfOverdueDaysToOffset">Config number of overdue days to
-            offset</label>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="systemSettingPayrollConfigNumberOfDaysEndToBePaid">Config number of day end to be paid</label>
+          <InputNumber id="systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid"
+            :min="1" :max="31" :disabled="!isNewSystemSettingPayrollConfig" />
+          <small class="p-error"
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfDaysEndToBePaid">Config
+            number
+            of day end to be paid is
+            required.</small>
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateInMonthsOf31Days">
+            {{ advanceDateInMonthsOf31Days ?
+            'Active Advance Date In Months Of 31 Days'
+            :
+            'Inactive Advance Date In Months Of 31 Days' }}</label>
+          <InputSwitch v-model="advanceDateInMonthsOf31Days" :disabled="!isNewSystemSettingPayrollConfig" />
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateOnHolidays">
+            {{ advanceDateOnHolidays ? 'Active Advance Date On Holidays' : 'Inactive Advance Date On Holidays'
+            }}</label>
+          <InputSwitch v-model="advanceDateOnHolidays" :disabled="!isNewSystemSettingPayrollConfig" />
+        </div>
+        <div v-if="systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'" class="input-box">
+          <label for="advanceDateOnWeekends">
+            {{ advanceDateOnWeekends ? 'Active Advance Date On Weekends' : 'Inactive Advance Date On Weekends'
+            }}</label>
+          <InputSwitch v-model="advanceDateOnWeekends" :disabled="!isNewSystemSettingPayrollConfig" />
+        </div>
+
+        <div
+          v-if="['fixed_day_every_n_weeks', 'fourteenth'].includes(systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType)"
+          class="input-box">
+          <label for="systemSettingPayrollConfigNumberOfOverdueDaysToOffset">
+            {{ systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'
+            ? 'Config number of overdue periods to offset'
+            : 'Config number of overdue days to offset' }}
+          </label>
+
           <InputNumber id="systemSettingPayrollConfigNumberOfOverdueDaysToOffset"
             v-model="systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset"
             :invalid="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset"
             :disabled="!isNewSystemSettingPayrollConfig" />
+
           <small class="p-error"
-            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset">Config
-            number of overdue days to offset is
-            required.</small>
+            v-if="submitted && !systemSettingPayrollConfig.systemSettingPayrollConfigNumberOfOverdueDaysToOffset">
+            {{ systemSettingPayrollConfig.systemSettingPayrollConfigPaymentType === 'fourteenth'
+            ? 'Config number of overdue periods to offset is required.'
+            : 'Config number of overdue days to offset is required.' }}
+          </small>
         </div>
 
         <div class="input-box">
