@@ -33,7 +33,6 @@ export default defineComponent({
     isLoadingEmployees: false,
     selectedEmployeeId: null as number | null,
     employeeOptions: [] as Array<{label: string, value: number}>,
-    // Se resuelve vía computed
     searchText: '' as string,
     isSupplyAlreadyAssigned: false as boolean,
     currentAssignment: null as EmployeeSupplyInterface | null,
@@ -45,12 +44,21 @@ export default defineComponent({
     }
   },
   async mounted() {
-    await this.loadEmployees()
-    await this.checkSupplyAssignment()
-    if (this.assignment.employeeSupplyId) {
-      this.selectedEmployeeId = this.assignment.employeeId
-    }
-  },
+  await this.loadEmployees()
+  await this.checkSupplyAssignment()
+
+  // ✅ Si ya hay un assignment cargado, asignar empleado y convertir fechas
+  if (this.assignment.employeeSupplyId) {
+    this.selectedEmployeeId = this.assignment.employeeId
+  }
+
+  // ✅ Convertir las fechas que vienen del backend en formato ISO a Date
+  const parseDate = (value: any) => (value ? new Date(value) : null)
+
+  this.assignment.employeeSupplyExpirationDate = parseDate(this.assignment.employeeSupplyExpirationDate)
+  this.assignment.employeeSupplyRetirementDate = parseDate(this.assignment.employeeSupplyRetirementDate)
+}
+,
   methods: {
     async loadEmployees(searchText = '') {
       this.isLoadingEmployees = true
@@ -161,6 +169,13 @@ export default defineComponent({
         employeeSupplyStatus: this.assignment.employeeSupplyStatus
       }
 
+      // Agregar fecha de expiración si existe
+      if (this.assignment.employeeSupplyExpirationDate) {
+        createPayload.employeeSupplyExpirationDate = this.assignment.employeeSupplyExpirationDate instanceof Date
+          ? this.assignment.employeeSupplyExpirationDate.toISOString()
+          : this.assignment.employeeSupplyExpirationDate
+      }
+
       response = await this.employeeSupplyService.create(createPayload)
     }
     // 🔹 Lógica para ACTUALIZACIÓN (PUT)
@@ -171,20 +186,39 @@ export default defineComponent({
         // ❌ NO enviar supplyId en actualizaciones
       }
 
-      // Solo incluir campos de retiro si el estado es "retired"
-      if (this.assignment.employeeSupplyStatus === 'retired') {
-        updatePayload.employeeSupplyRetirementReason = this.assignment.employeeSupplyRetirementReason
-        updatePayload.employeeSupplyRetirementDate = this.assignment.employeeSupplyRetirementDate
-      } else {
-        // Para otros estados, limpiar campos de retiro
-        updatePayload.employeeSupplyRetirementReason = null
-        updatePayload.employeeSupplyRetirementDate = null
+      // Agregar fecha de expiración si existe
+      if (this.assignment.employeeSupplyExpirationDate !== undefined) {
+        updatePayload.employeeSupplyExpirationDate = this.assignment.employeeSupplyExpirationDate
+          ? (this.assignment.employeeSupplyExpirationDate instanceof Date
+            ? this.assignment.employeeSupplyExpirationDate.toISOString()
+            : this.assignment.employeeSupplyExpirationDate)
+          : null
       }
 
+      // 🔹 Primero hacer el PUT con los campos normales (sin campos de retiro)
       response = await this.employeeSupplyService.update(
         this.assignment.employeeSupplyId,
         updatePayload
       )
+
+      // 🔹 Si el PUT fue exitoso Y el estado es "retired", hacer POST a /retire
+      if ((response as any).type === 'success' && this.assignment.employeeSupplyStatus === 'retired') {
+        const retirementReason = this.assignment.employeeSupplyRetirementReason || ''
+        const retirementDate = this.assignment.employeeSupplyRetirementDate instanceof Date
+          ? this.assignment.employeeSupplyRetirementDate.toISOString()
+          : (this.assignment.employeeSupplyRetirementDate || new Date().toISOString())
+
+        const retireResponse = await this.employeeSupplyService.retire(
+          this.assignment.employeeSupplyId!,
+          retirementReason,
+          retirementDate
+        )
+
+        // Si el POST a retire falla, usar ese error como respuesta
+        if ((retireResponse as any).type !== 'success') {
+          response = retireResponse
+        }
+      }
     }
 
     // 🔹 Mostrar mensaje dinámico según la acción

@@ -20,9 +20,7 @@
     </div>
 
     <div class="info">
-      <div class="business-unit">
-        {{ `${t('assignment_date')}: ${formatDate(assignment?.employeeSupplyCreatedAt)}` }}
-      </div>
+      
       <div class="department">
         <span
           class="p-tag p-component font-medium"
@@ -30,9 +28,6 @@
         >
           {{ getStatusLabel(assignment?.employeeSupplyStatus) }}
         </span>
-      </div>
-      <div class="position">
-        {{ `${t('retirement_date')}: ${formatDate(assignment?.employeeSupplyRetirementDate)}` }}
       </div>
     </div>
 
@@ -49,6 +44,19 @@
       <div class="stat-item">
         <div class="stat-value">{{ formatDate(assignment?.employeeSupplyRetirementDate) }}</div>
         <div class="stat-label">{{ t("retirement_date") }}</div>
+      </div>
+      <div v-if="assignment?.employeeSupplyExpirationDate" class="stat-item">
+        <div class="stat-value">{{ formatDate(assignment?.employeeSupplyExpirationDate) }}</div>
+        <div class="stat-label">{{ t("expiration_date") }}</div>
+      </div>
+      <div v-if="getExpirationStatus" class="stat-item">
+        <div
+          class="stat-value"
+          :class="`expiration-${getExpirationStatus.class}`"
+        >
+          {{ getExpirationStatus.text }}
+        </div>
+        <div class="stat-label">{{ t("expiration_status") }}</div>
       </div>
     </div>
 

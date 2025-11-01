@@ -72,27 +72,27 @@ export default defineComponent({
     })
 
     const loadSupply = async () => {
-  if (!props.assignment?.supplyId) {
-    supplyName.value = t('not_assigned')
-    return
-  }
+      if (!props.assignment?.supplyId) {
+        supplyName.value = t('not_assigned')
+        return
+      }
 
-  try {
-    const supplyResponse = await supplyService.getById(props.assignment.supplyId)
+      try {
+        const supplyResponse: any = await supplyService.getById(props.assignment.supplyId)
 
-    if (supplyResponse && supplyResponse.type === 'success') {
-      const supplie = supplyResponse.data?.supplie
-      supply.value = supplie
-      supplyName.value = supplie?.supplyName || t('not_assigned')
-      supplyFileNumber.value = supplie?.supplyFileNumber || null
-    } else {
-      supplyName.value = t('not_assigned')
+        if (supplyResponse && supplyResponse.type === 'success') {
+          const supplie = supplyResponse.data?.supplie
+          supply.value = supplie
+          supplyName.value = supplie?.supplyName || t('not_assigned')
+          supplyFileNumber.value = supplie?.supplyFileNumber || null
+        } else {
+          supplyName.value = t('not_assigned')
+        }
+      } catch (error) {
+        console.error('Error loading supply:', error)
+        supplyName.value = t('not_assigned')
+      }
     }
-  } catch (error) {
-    console.error('Error loading supply:', error)
-    supplyName.value = t('not_assigned')
-  }
-}
 
 
     /** 🔹 Métodos de ayuda */
@@ -114,8 +114,51 @@ export default defineComponent({
 
     const formatDate = (date: Date | string | null) => {
       if (!date) return '---'
-      return new Date(date).toLocaleDateString()
+
+      try {
+        const dateObj = typeof date === 'string' ? new Date(date) : date
+
+        // Verificar que la fecha es válida
+        if (isNaN(dateObj.getTime())) return '---'
+
+        // Extraer año, mes y día y formatear como YYYY-MM-DD
+        const year = dateObj.getFullYear()
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+        const day = String(dateObj.getDate()).padStart(2, '0')
+
+        return `${year}-${month}-${day}`
+      } catch (error) {
+        console.error('Error formatting date:', error)
+        return '---'
+      }
     }
+
+    const getExpirationStatus = computed(() => {
+      const expirationDate = props.assignment?.employeeSupplyExpirationDate
+      if (!expirationDate) return null
+
+      const expiration = new Date(expirationDate)
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      expiration.setHours(0, 0, 0, 0)
+
+      const diffTime = expiration.getTime() - today.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      if (diffDays < 0) {
+        return {
+          text: t('expired'),
+          class: 'expired',
+          days: null
+        }
+      } else {
+        return {
+          text: diffDays === 0 ? t('expires_today') : t('days_remaining', { days: diffDays }),
+          class: diffDays <= 7 ? 'warning' : diffDays <= 30 ? 'caution' : 'ok',
+          days: diffDays
+        }
+      }
+    })
 
     const assignmentInitial = computed(() => {
       const name = employeeFullName.value
@@ -140,6 +183,7 @@ export default defineComponent({
       getStatusClass,
       getStatusLabel,
       formatDate,
+      getExpirationStatus,
       handlerClickOnEdit,
       handlerClickOnDelete,
       supply,

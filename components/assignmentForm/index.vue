@@ -43,6 +43,14 @@
             {{ t("assignment_status_required") }}
           </small>
         </div>
+        <div class="input-box">
+          <label for="expirationDate">{{ t("expiration_date") }}</label>
+          <Calendar
+            v-model="assignment.employeeSupplyExpirationDate"
+            :placeholder="t('select_expiration_date')"
+            date-format="yy-mm-dd"
+          />
+        </div>
       </div>
 
       <div

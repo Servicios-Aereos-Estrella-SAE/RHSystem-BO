@@ -5,6 +5,7 @@ export interface EmployeeSupplyInterface {
   employeeSupplyStatus: string
   employeeSupplyRetirementReason: string | null
   employeeSupplyRetirementDate: Date | null
+  employeeSupplyExpirationDate: Date | null
   employeeSupplyCreatedAt: Date | null
   employeeSupplyUpdatedAt: Date | null
   deletedAt: Date | null
